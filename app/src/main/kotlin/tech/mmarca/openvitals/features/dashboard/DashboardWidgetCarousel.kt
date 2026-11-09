@@ -35,6 +35,7 @@ import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.boundsInRoot
 import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
@@ -59,21 +60,42 @@ internal fun DashboardWidgetCarousel(
     actionContent: @Composable () -> Unit,
     hiddenContent: @Composable () -> Unit,
 ) {
+    val context = LocalContext.current
+    val layoutPreferences = remember(context) {
+        context.getSharedPreferences("dashboard_widget_layout", android.content.Context.MODE_PRIVATE)
+    }
+    var sixTileMode by remember {
+        mutableStateOf(layoutPreferences.getBoolean("six_tile_carousel", true))
+    }
+    val widgetSizeOverrides = remember {
+        mutableStateMapOf<DashboardWidgetId, Int>().apply {
+            DashboardWidgetId.entries.forEach { id ->
+                val saved = layoutPreferences.getInt("size_" + id.name, 0)
+                if (saved in listOf(1, 2, 4)) put(id, saved)
+            }
+        }
+    }
+    val cycleWidgetSize: (DashboardWidgetId) -> Unit = { id ->
+        val current = widgetSizeOverrides[id] ?: id.dashboardWidgetRowSpan()
+        val next = when (current) { 1 -> 2; 2 -> 4; else -> 1 }
+        widgetSizeOverrides[id] = next
+        layoutPreferences.edit().putInt("size_" + id.name, next).apply()
+    }
+    val sizeFor: (DashboardWidgetId) -> Int = { id ->
+        widgetSizeOverrides[id] ?: id.dashboardWidgetRowSpan()
+    }
     val fixedIds = dashboardWidgetIdsThatFitRows(
         widgetIds = visibleIds,
         rows = DashboardFixedWidgetRows,
+        sizeFor = sizeFor,
     )
     val fixedIdSet = fixedIds.toSet()
     val carouselIds = visibleIds.filterNot { it in fixedIdSet }
-    var sixTileMode by remember { mutableStateOf(true) }
-    val widgetSizeOverrides = remember { mutableStateMapOf<DashboardWidgetId, Int>() }
-    val cycleWidgetSize: (DashboardWidgetId) -> Unit = { id ->
-        val current = widgetSizeOverrides[id] ?: id.dashboardWidgetRowSpan()
-        widgetSizeOverrides[id] = when (current) { 1 -> 2; 2 -> 4; else -> 1 }
-    }
+    val carouselRows = if (carouselIds.any { sizeFor(it) == 4 }) 4 else if (sixTileMode) DashboardCarouselWidgetRows else DashboardFixedWidgetRows
     val carouselPages = dashboardWidgetIdsInGridPages(
         widgetIds = carouselIds,
-        rows = if (sixTileMode) DashboardCarouselWidgetRows else DashboardFixedWidgetRows,
+        rows = carouselRows,
+        sizeFor = sizeFor,
     )
     val pagerState = rememberPagerState(pageCount = { carouselPages.size.coerceAtLeast(1) })
     val widgetBounds = remember { mutableStateMapOf<DashboardWidgetId, Rect>() }
@@ -251,7 +273,10 @@ internal fun DashboardWidgetCarousel(
                 ) {
                     Text(text = if (sixTileMode) "6 widgets per page" else "Compact pages", color = MaterialTheme.colorScheme.onSurfaceVariant)
                     Surface(
-                        modifier = Modifier.padding(start = 12.dp).clickable { sixTileMode = !sixTileMode },
+                        modifier = Modifier.padding(start = 12.dp).clickable {
+                            sixTileMode = !sixTileMode
+                            layoutPreferences.edit().putBoolean("six_tile_carousel", sixTileMode).apply()
+                        },
                         shape = CircleShape,
                         color = MaterialTheme.colorScheme.primaryContainer,
                     ) {
@@ -288,7 +313,7 @@ internal fun DashboardWidgetCarousel(
                     val pageIds = carouselPages.getOrNull(page).orEmpty()
                     DashboardWidgetGrid(
                         ids = pageIds,
-                        rows = if (sixTileMode) DashboardCarouselWidgetRows else DashboardFixedWidgetRows,
+                        rows = carouselRows,
                         specsById = specsById,
                         isEditingDashboard = isEditingDashboard,
                         widgetBounds = widgetBounds,
