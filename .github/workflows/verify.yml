@@ -90,3 +90,44 @@ jobs:
       - uses: gradle/actions/setup-gradle@v5
       - run: scripts/ci-android-gradle.sh verifyCiLint
       - run: git diff --check
+
+  # Compile a real installable APK and verify that Android can launch it.
+  emulator-smoke:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 55
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          submodules: true
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: gradle/actions/setup-gradle@v5
+      - run: scripts/ci-android-gradle.sh :app:assembleCi
+      - uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 35
+          target: google_apis
+          arch: x86_64
+          profile: pixel_6
+          disable-animations: true
+          script: |
+            set -euxo pipefail
+            APK=$(find app/build/outputs/apk/ci -name '*.apk' -type f | head -1)
+            test -s "$APK"
+            adb install -r "$APK"
+            adb shell monkey -p tech.mmarca.openvitals.ci 1
+            sleep 15
+            adb shell pidof tech.mmarca.openvitals.ci
+            mkdir -p dashboard-emulator-evidence
+            adb shell screencap -p /sdcard/dashboard.png
+            adb pull /sdcard/dashboard.png dashboard-emulator-evidence/dashboard.png
+            adb logcat -d -t 2000 > dashboard-emulator-evidence/logcat.txt
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: dashboard-ci-apk-emulator
+          path: |
+            app/build/outputs/apk/ci/*.apk
+            dashboard-emulator-evidence/
