@@ -44,14 +44,15 @@ internal fun DashboardSummaryCard(
     modifier: Modifier = Modifier,
     onClick: (() -> Unit)? = null,
 ) {
-    val progressTrackColor = accentColor.copy(alpha = 0.24f)
-    val progressFillColor = accentColor
+    val tileColors = dashboardTileColors(accentColor)
+    val progressTrackColor = tileColors.ringTrack
+    val progressFillColor = tileColors.ring
     val subtitle = summarySubtitle(value = value, progress = progress)
 
     OpenVitalsCard(
         modifier = modifier.fillMaxSize(),
         onClick = onClick,
-        containerColor = dashboardTileContainerColor(accentColor),
+        containerColor = tileColors.container,
         shape = RoundedCornerShape(Radii.xl),
     ) {
         BoxWithConstraints(

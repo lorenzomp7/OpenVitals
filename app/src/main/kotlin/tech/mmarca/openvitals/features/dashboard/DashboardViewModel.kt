@@ -436,9 +436,14 @@ class DashboardViewModel @Inject constructor(
             .let { if (onlyWidgets == null) it.copy(missingPermissions = emptySet()) else it }
         publishDashboardData(
             data = seed,
-            loadingWidgets = metricWidgetIds + listOfNotNull(
-                DashboardWidgetId.BODY_ENERGY.takeIf { wantsBodyEnergy },
-            ),
+            // A reload of the day on screen keeps its numbers until the new ones land.
+            loadingWidgets = if (hadExistingData) {
+                emptySet()
+            } else {
+                metricWidgetIds + listOfNotNull(
+                    DashboardWidgetId.BODY_ENERGY.takeIf { wantsBodyEnergy },
+                )
+            },
             sleepWindow = sleepWindow,
             activityWeekMode = activityWeekMode,
             goals = dailyGoals,

@@ -1,7 +1,9 @@
 # A debug APK of a personal branch, to install by hand. It runs on a push to
 # a claude/ branch or from the Actions tab, and publishes nothing: the APK is
 # a workflow artifact. The debug build installs beside the Play Store app
-# (its id ends in .debug).
+# (its id ends in .debug). It is signed with the key in personal/, the same
+# on every run, so each build installs over the last one and keeps its Health
+# Connect permissions. It is not debuggable: a debuggable build runs slowly.
 name: personal-apk
 
 on:
@@ -31,6 +33,12 @@ jobs:
       - run: echo "GRADLE_USER_HOME=$RUNNER_TEMP/gradle-user-home" >> "$GITHUB_ENV"
       - uses: gradle/actions/setup-gradle@v5
       - run: scripts/ci-android-gradle.sh :app:assembleDebug
+        env:
+          OPENVITALS_RELEASE_STORE_FILE: ${{ github.workspace }}/personal/personal.p12
+          OPENVITALS_RELEASE_STORE_PASSWORD: openvitals-personal
+          OPENVITALS_RELEASE_KEY_ALIAS: personal
+          OPENVITALS_SIGN_DEBUG_WITH_RELEASE_KEY: "true"
+          OPENVITALS_PUBLISHED_DEBUG_APK: "true"
       - uses: actions/upload-artifact@v7
         with:
           name: openvitals-debug-apk
