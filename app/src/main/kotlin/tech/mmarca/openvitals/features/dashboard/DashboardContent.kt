@@ -80,6 +80,8 @@ internal fun DashboardContent(
     /** The day the user asked for, ahead of [data] while a switch loads. */
     selectedDate: LocalDate = data.date,
     display: DashboardDisplayState,
+    /** The workouts of the days before [data]'s, newest first, listed under the day's own. */
+    earlierWorkouts: List<ExerciseData> = emptyList(),
     unitFormatter: UnitFormatter,
     dateTimeFormatterProvider: DateTimeFormatterProvider,
     canGoForward: Boolean,
@@ -249,7 +251,14 @@ internal fun DashboardContent(
 
                 dashboardActivitiesToday(
                     // The old day's workouts must not sit under the new day's date.
-                    workouts = if (awaitingSelectedDay) emptyList() else dashboardActivitiesForDay(data),
+                    workouts = if (awaitingSelectedDay) {
+                        emptyList()
+                    } else {
+                        // The selected day first, then back through the days before it.
+                        val ofDay = dashboardActivitiesForDay(data)
+                        val shown = ofDay.map { it.id }.toSet()
+                        ofDay + earlierWorkouts.filterNot { it.id in shown }
+                    },
                     isLoading = awaitingSelectedDay,
                     zone = zone,
                     unitFormatter = unitFormatter,

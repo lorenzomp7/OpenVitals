@@ -58,6 +58,10 @@ internal fun LazyListScope.dashboardActivitiesToday(
             key = { index -> workouts[index].id.ifBlank { "workout_$index" } },
         ) { index ->
             val workout = workouts[index]
+            // A date heading where the list crosses into another day.
+            val day = workout.startTime.atZone(zone).toLocalDate()
+            val previousDay = workouts.getOrNull(index - 1)?.startTime?.atZone(zone)?.toLocalDate()
+            val dayHeading = day.takeIf { index > 0 && it != previousDay }
             val editable = workout.isOpenVitalsEntry && workout.id.isNotBlank()
             val openAction = workout.id.takeIf { it.isNotBlank() }?.let { activityId ->
                 { onOpenActivity(activityId) }
@@ -76,6 +80,18 @@ internal fun LazyListScope.dashboardActivitiesToday(
                     modifier = cardModifier,
                     onClick = openAction,
                     onEdit = editAction,
+                )
+            }
+            if (dayHeading != null) {
+                Text(
+                    text = dateTimeFormatterProvider.mediumDate().format(dayHeading),
+                    style = MaterialTheme.typography.labelLarge,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.padding(
+                        start = DashboardScreenPadding,
+                        end = DashboardScreenPadding,
+                        top = 10.dp,
+                    ),
                 )
             }
             if (editable) {

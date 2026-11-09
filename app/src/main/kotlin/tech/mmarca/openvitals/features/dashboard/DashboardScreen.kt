@@ -134,6 +134,7 @@ fun DashboardScreen(
                     ErrorMessage(error?.resolve() ?: stringResource(R.string.unknown_error))
                 loadedData != null -> DashboardContent(
                     data = loadedData,
+                    earlierWorkouts = state.earlierWorkouts.takeIf { state.earlierWorkoutsBefore == loadedData.date }.orEmpty(),
                     selectedDate = selectedDate,
                     display = display,
                     unitFormatter = unitFormatter,

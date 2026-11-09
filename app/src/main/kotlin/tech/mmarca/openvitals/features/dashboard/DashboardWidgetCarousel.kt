@@ -29,7 +29,8 @@ import tech.mmarca.openvitals.features.dashboard.components.DashboardMultiRingHe
 private val DashboardHeroSectionTopPadding = 16.dp
 private val DashboardHeroSectionBottomPadding = 0.dp
 private val DashboardGridTopPadding = 16.dp
-private val DashboardHeroRingHeight = 236.dp
+private val DashboardHeroRingHeight = 204.dp
+private val DashboardHeroTopPadding = 6.dp
 private const val DashboardHeroRingCount = 3
 
 @Composable
@@ -177,7 +178,7 @@ internal fun DashboardWidgetCarousel(
                         .padding(
                             start = DashboardScreenPadding,
                             end = DashboardScreenPadding,
-                            top = DashboardHeroSectionTopPadding,
+                            top = DashboardHeroTopPadding,
                         )
                         .fillMaxWidth()
                         .height(DashboardHeroRingHeight),

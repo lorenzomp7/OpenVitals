@@ -86,6 +86,9 @@ data class DashboardUiState(
     val healthConnectAvailability: HealthConnectAvailability = HealthConnectAvailability.AVAILABLE,
     val minimumPermissionsGranted: Boolean = true,
     val display: DashboardDisplayState = DashboardDisplayState(),
+    /** The workouts of the days before [earlierWorkoutsBefore], newest first. */
+    val earlierWorkouts: List<tech.mmarca.openvitals.domain.model.ExerciseData> = emptyList(),
+    val earlierWorkoutsBefore: LocalDate? = null,
     val loadingWidgets: Set<DashboardWidgetId> = emptySet(),
     /** Tiles whose last read Health Connect refused or the backoff skipped. Reloaded alone when it ends. */
     val degradedWidgets: Set<DashboardWidgetId> = emptySet(),
@@ -139,6 +142,9 @@ data class DashboardDailyGoals(
     val fatGrams: Double = MetricDailyGoalKey.FAT_GRAMS.defaultValue,
     val mindfulnessMinutes: Double = MetricDailyGoalKey.MINDFULNESS_MINUTES.defaultValue,
 )
+
+private const val EarlierWorkoutsLookbackDays = 30L
+private const val EarlierWorkoutsLimit = 20
 
 @HiltViewModel
 class DashboardViewModel @Inject constructor(
@@ -388,6 +394,22 @@ class DashboardViewModel @Inject constructor(
         }
     }
 
+    /** The workouts of the days before [date], for the list under the day's own. */
+    private suspend fun loadEarlierWorkouts(date: LocalDate, generation: Long) {
+        val repository = activityRepository ?: return
+        val earlier = runCatching {
+            repository.loadWorkouts(date.minusDays(EarlierWorkoutsLookbackDays), date.minusDays(1))
+        }.getOrNull() ?: return
+        if (generation != loadGeneration) return
+        _uiState.update {
+            it.copy(
+                earlierWorkouts = earlier.sortedByDescending { workout -> workout.startTime }
+                    .take(EarlierWorkoutsLimit),
+                earlierWorkoutsBefore = date,
+            )
+        }
+    }
+
     private suspend fun LoadCoordinator.LoadScope.runLoadPass(
         clampedDate: LocalDate,
         refreshMode: RefreshMode,
@@ -461,6 +483,9 @@ class DashboardViewModel @Inject constructor(
                         generation = generation,
                     )
                 }
+            }
+            if (onlyWidgets == null) {
+                launch { loadEarlierWorkouts(clampedDate, generation) }
             }
             if (wantsBodyEnergy) {
                 launch {

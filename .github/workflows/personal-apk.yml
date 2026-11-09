@@ -24,6 +24,8 @@ defaults:
 
 jobs:
   apk:
+    # A commit marked [no-apk] is for the screenshots only.
+    if: "!contains(github.event.head_commit.message, '[no-apk]')"
     runs-on: ubuntu-26.04
     steps:
       - uses: actions/checkout@v5

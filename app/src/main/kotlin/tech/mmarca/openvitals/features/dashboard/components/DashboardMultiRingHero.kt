@@ -35,7 +35,7 @@ import tech.mmarca.openvitals.ui.components.AutoResizeText
 import tech.mmarca.openvitals.ui.components.OpenVitalsCard
 import tech.mmarca.openvitals.ui.theme.Radii
 
-private val HeroPadding = 14.dp
+private val HeroPadding = 10.dp
 private val HeroRingStroke = 14.dp
 private val HeroSideStroke = 10.dp
 
