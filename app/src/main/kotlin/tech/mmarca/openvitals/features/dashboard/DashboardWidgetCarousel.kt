@@ -76,7 +76,7 @@ internal fun DashboardWidgetCarousel(
         }
     }
     val cycleWidgetSize: (DashboardWidgetId) -> Unit = { id ->
-        val current = widgetSizeOverrides[id] ?: id.dashboardWidgetRowSpan()
+        val current = widgetSizeOverrides[id] ?: id.dashboardWidgetRowSpan() * 2
         val next = when (current) { 1 -> 2; 2 -> 4; else -> 1 }
         widgetSizeOverrides[id] = next
         layoutPreferences.edit().putInt("size_" + id.name, next).apply()
