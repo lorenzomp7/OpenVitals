@@ -3,6 +3,11 @@ package tech.mmarca.openvitals.features.dashboard
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.clickable
+import androidx.compose.material3.Text
+import androidx.compose.material3.Surface
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -60,9 +65,10 @@ internal fun DashboardWidgetCarousel(
     )
     val fixedIdSet = fixedIds.toSet()
     val carouselIds = visibleIds.filterNot { it in fixedIdSet }
+    var sixTileMode by remember { mutableStateOf(true) }
     val carouselPages = dashboardWidgetIdsInGridPages(
         widgetIds = carouselIds,
-        rows = DashboardCarouselWidgetRows,
+        rows = if (sixTileMode) DashboardCarouselWidgetRows else DashboardFixedWidgetRows,
     )
     val pagerState = rememberPagerState(pageCount = { carouselPages.size.coerceAtLeast(1) })
     val widgetBounds = remember { mutableStateMapOf<DashboardWidgetId, Rect>() }
@@ -230,6 +236,23 @@ internal fun DashboardWidgetCarousel(
 
             actionContent()
 
+            if (isEditingDashboard) {
+                Row(
+                    modifier = Modifier.fillMaxWidth().padding(horizontal = DashboardScreenPadding, vertical = 8.dp),
+                    horizontalArrangement = Arrangement.End,
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Text(text = if (sixTileMode) "6 widgets per page" else "Compact pages", color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    Surface(
+                        modifier = Modifier.padding(start = 12.dp).clickable { sixTileMode = !sixTileMode },
+                        shape = CircleShape,
+                        color = MaterialTheme.colorScheme.primaryContainer,
+                    ) {
+                        Text(text = "Change", modifier = Modifier.padding(horizontal = 14.dp, vertical = 8.dp), fontWeight = FontWeight.Medium)
+                    }
+                }
+            }
+
             if (carouselPages.isNotEmpty()) {
                 HorizontalDivider(
                     // 16dp above the rule and 4 below; the carousel adds its own 8.
@@ -258,7 +281,7 @@ internal fun DashboardWidgetCarousel(
                     val pageIds = carouselPages.getOrNull(page).orEmpty()
                     DashboardWidgetGrid(
                         ids = pageIds,
-                        rows = DashboardCarouselWidgetRows,
+                        rows = if (sixTileMode) DashboardCarouselWidgetRows else DashboardFixedWidgetRows,
                         specsById = specsById,
                         isEditingDashboard = isEditingDashboard,
                         widgetBounds = widgetBounds,
