@@ -212,6 +212,8 @@ internal fun DashboardWidgetGrid(
     bottomPadding: Dp = DashboardWidgetSectionPadding,
     /** Sizes the section so a full-span widget is square, as the shipped design draws the hero rings. */
     squareRowSpan: Boolean = false,
+    widgetSizeOverrides: Map<DashboardWidgetId, Int> = emptyMap(),
+    onCycleWidgetSize: (DashboardWidgetId) -> Unit = {},
 ) {
     val visibleSpecs = remember(ids, specsById) { ids.mapNotNull { specsById[it] } }
     if (visibleSpecs.isEmpty()) return
@@ -262,7 +264,7 @@ internal fun DashboardWidgetGrid(
             val visibleIndex = ids.indexOf(spec.id)
             val previousId = ids.getOrNull(visibleIndex - 1)
             val nextId = ids.getOrNull(visibleIndex + 1)
-            val rowSpan = spec.id.dashboardWidgetRowSpan().coerceIn(1, rows)
+            val rowSpan = (widgetSizeOverrides[spec.id] ?: spec.id.dashboardWidgetRowSpan()).coerceIn(1, rows)
             val dragGestureDetector = remember(spec.id) {
                 DashboardDragGestureDetector { dragAmount ->
                     onDragWidgetBy(spec.id, dragAmount)
@@ -305,6 +307,8 @@ internal fun DashboardWidgetGrid(
                             dragGestureDetector = dragGestureDetector,
                         ),
                         onRemove = { onRemoveWidget(spec.id) },
+                        onCycleSize = { onCycleWidgetSize(spec.id) },
+                        sizeLabel = "${rowSpan}×1",
                         onMovePrevious = previousId?.let { targetId ->
                             { onMoveWidgetToTarget(spec.id, targetId) }
                         },
@@ -383,6 +387,8 @@ internal fun DashboardWidgetTile(
     hideContent: Boolean = false,
     dragHandleModifier: Modifier,
     onRemove: () -> Unit,
+    onCycleSize: (() -> Unit)? = null,
+    sizeLabel: String = "",
     onMovePrevious: (() -> Unit)?,
     onMoveNext: (() -> Unit)?,
     modifier: Modifier = Modifier,
@@ -463,6 +469,17 @@ internal fun DashboardWidgetTile(
             displayedSpec.content(Modifier.fillMaxSize())
         }
         if (isEditingDashboard) {
+            if (onCycleSize != null) {
+                Text(
+                    text = sizeLabel,
+                    modifier = Modifier.align(Alignment.BottomEnd)
+                        .padding(8.dp)
+                        .background(MaterialTheme.colorScheme.primaryContainer, CircleShape)
+                        .clickable(onClick = onCycleSize)
+                        .padding(horizontal = 12.dp, vertical = 8.dp),
+                    color = MaterialTheme.colorScheme.onPrimaryContainer,
+                )
+            }
             Box(
                 contentAlignment = Alignment.Center,
                 modifier = Modifier
