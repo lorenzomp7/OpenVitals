@@ -264,7 +264,7 @@ internal fun DashboardWidgetGrid(
             val visibleIndex = ids.indexOf(spec.id)
             val previousId = ids.getOrNull(visibleIndex - 1)
             val nextId = ids.getOrNull(visibleIndex + 1)
-            val rowSpan = (widgetSizeOverrides[spec.id] ?: spec.id.dashboardWidgetRowSpan()).coerceIn(1, rows)
+            val sizeInSpaces = (widgetSizeOverrides[spec.id] ?: spec.id.dashboardWidgetRowSpan() * 2).coerceIn(1, rows * 2)
             val dragGestureDetector = remember(spec.id) {
                 DashboardDragGestureDetector { dragAmount ->
                     onDragWidgetBy(spec.id, dragAmount)
@@ -280,8 +280,7 @@ internal fun DashboardWidgetGrid(
                 Box(
                     modifier = Modifier
                         .height(
-                            rowHeight * rowSpan +
-                                DashboardWidgetGridSpacing * (rowSpan - 1).coerceAtLeast(0)
+                            (rowHeight + DashboardWidgetGridSpacing) * (sizeInSpaces / 2f) - DashboardWidgetGridSpacing
                         )
                         .onGloballyPositioned { coordinates ->
                             val bounds = coordinates.boundsInRoot()
@@ -308,7 +307,7 @@ internal fun DashboardWidgetGrid(
                         ),
                         onRemove = { onRemoveWidget(spec.id) },
                         onCycleSize = { onCycleWidgetSize(spec.id) },
-                        sizeLabel = "${rowSpan}×1",
+                        sizeLabel = "$sizeInSpaces spaces",
                         onMovePrevious = previousId?.let { targetId ->
                             { onMoveWidgetToTarget(spec.id, targetId) }
                         },
