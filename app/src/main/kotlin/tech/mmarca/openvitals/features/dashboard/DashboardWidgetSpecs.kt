@@ -158,6 +158,31 @@ internal fun dashboardWidgetSpecs(
     isEditingDashboard: Boolean,
     onOpenMetric: (DashboardWidgetId) -> Unit,
     onSyncWatch: () -> Unit = {},
+): List<DashboardWidgetSpec> = dashboardWidgetSpecsWithoutHero(
+    display = display,
+    unitFormatter = unitFormatter,
+    widgetIds = widgetIds,
+    isEditingDashboard = isEditingDashboard,
+    onOpenMetric = onOpenMetric,
+    onSyncWatch = onSyncWatch,
+).map { spec ->
+    spec.copy(
+        hero = display.widgets[spec.id]?.toHeroRing(
+            title = spec.title,
+            accentColor = dashboardWidgetMeta(spec.id).accentColor,
+            onClick = if (isEditingDashboard) null else ({ onOpenMetric(spec.id) }),
+        ),
+    )
+}
+
+@Composable
+private fun dashboardWidgetSpecsWithoutHero(
+    display: DashboardDisplayState,
+    unitFormatter: UnitFormatter,
+    widgetIds: Collection<DashboardWidgetId>,
+    isEditingDashboard: Boolean,
+    onOpenMetric: (DashboardWidgetId) -> Unit,
+    onSyncWatch: () -> Unit = {},
 ): List<DashboardWidgetSpec> = buildList {
     val loadingMessage = stringResource(R.string.loading)
     val openMetric: (DashboardWidgetId) -> (() -> Unit)? = { widgetId ->
@@ -593,8 +618,39 @@ internal data class DashboardWidgetSpec(
     val id: DashboardWidgetId,
     val title: String,
     val style: DashboardWidgetStyle = DashboardWidgetStyle.PILL,
+    /** What the widget shows as one ring of the multi-ring hero. */
+    val hero: DashboardHeroRing? = null,
     val content: @Composable (Modifier) -> Unit,
 )
+
+/** One metric of the multi-ring hero: a headline number and how far round its ring goes. */
+internal data class DashboardHeroRing(
+    val title: String,
+    val value: String,
+    val fraction: Float,
+    val accentColor: Color,
+    val onClick: (() -> Unit)?,
+)
+
+private fun DashboardWidgetDisplayModel.toHeroRing(
+    title: String,
+    accentColor: Color,
+    onClick: (() -> Unit)?,
+): DashboardHeroRing {
+    val cardio = weeklyCardioLoad
+    val sleep = sleepScore
+    return when {
+        cardio != null -> DashboardHeroRing(title, "${cardio.progressPercent}%", cardio.progressFraction, accentColor, onClick)
+        sleep != null -> DashboardHeroRing(title, sleep.score.toString(), sleep.score / 100f, accentColor, onClick)
+        else -> DashboardHeroRing(
+            title = title,
+            value = value?.takeIf { hasValue && !isLoading }?.value?.takeIf { it.isNotBlank() } ?: "–",
+            fraction = progress?.fraction ?: 0f,
+            accentColor = accentColor,
+            onClick = onClick,
+        )
+    }
+}
 
 internal data class DashboardWidgetProgress(
     val fraction: Float,

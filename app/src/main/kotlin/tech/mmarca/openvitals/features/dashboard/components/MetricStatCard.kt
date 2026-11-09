@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -34,11 +33,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.foundation.layout.fillMaxHeight
 import tech.mmarca.openvitals.ui.theme.Radii
 
-private val MetricStatIconSize = 28.dp
-private val MetricStatIconGlyphSize = 16.dp
+private val MetricStatIconCapsuleWidth = 38.dp
+private val MetricStatIconCapsuleShape = RoundedCornerShape(18.dp)
+private val MetricStatIconGlyphSize = 20.dp
 
 /** The dashboard's tile corner: rounder than the default card. */
-internal val DashboardTileShape = RoundedCornerShape(Radii.lg)
+internal val DashboardTileShape = RoundedCornerShape(24.dp)
 
 /** The tones one dashboard tile draws with, all from its metric's hue. */
 internal data class DashboardTileColors(
@@ -124,13 +124,15 @@ internal fun MetricStatCard(
                 // fillMaxSize: a wrap-height Row in a fixed-height Box pins to the top.
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(horizontal = 14.dp, vertical = 10.dp),
+                    .padding(start = 6.dp, end = 12.dp, top = 6.dp, bottom = 6.dp),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
+                // The icon sits in a darker capsule the height of the tile.
                 Box(
                     modifier = Modifier
-                        .size(MetricStatIconSize)
-                        .background(color = tileColors.iconContainer, shape = CircleShape),
+                        .fillMaxHeight()
+                        .width(MetricStatIconCapsuleWidth)
+                        .background(color = tileColors.iconContainer, shape = MetricStatIconCapsuleShape),
                     contentAlignment = Alignment.Center,
                 ) {
                     Icon(
@@ -148,8 +150,9 @@ internal fun MetricStatCard(
                     if (showTitle) {
                         AutoResizeText(
                             text = title,
-                            style = MaterialTheme.typography.labelMedium,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            style = MaterialTheme.typography.labelLarge,
+                            fontWeight = FontWeight.SemiBold,
+                            color = tileColors.icon,
                             maxLines = 1,
                         )
                     }

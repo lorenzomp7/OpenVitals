@@ -145,6 +145,19 @@ class ActivityOverviewViewModel @Inject constructor(
                 selectedDate = today,
                 error = null,
             )
+            if (_uiState.value.days.isEmpty()) {
+                // The selected day alone reads in a fraction of the month's time,
+                // so the screen opens on it while the history loads behind.
+                runCatching { loadActivityOverview(end, end) }.onSuccess { quick ->
+                    if (!isCurrent) return@load
+                    val profile = bodyProfilePreferences.bodyProfile().normalized(end)
+                    val quickDays = withContext(dispatchers.default) { quick.toDays(end, end, profile) }
+                    if (!isCurrent) return@load
+                    if (_uiState.value.days.isEmpty()) {
+                        _uiState.value = _uiState.value.copy(days = quickDays)
+                    }
+                }
+            }
             runCatching {
                 loadActivityOverview(start, end)
             }.onSuccess { result ->

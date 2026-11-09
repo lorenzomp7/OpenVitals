@@ -23,12 +23,14 @@ import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
+import tech.mmarca.openvitals.features.dashboard.components.DashboardMultiRingHero
 
 /** The shipped layout's section rhythm, top to bottom. */
 private val DashboardHeroSectionTopPadding = 16.dp
 private val DashboardHeroSectionBottomPadding = 0.dp
 private val DashboardGridTopPadding = 16.dp
 private val DashboardHeroRingHeight = 236.dp
+private const val DashboardHeroRingCount = 3
 
 @Composable
 internal fun DashboardWidgetCarousel(
@@ -40,11 +42,15 @@ internal fun DashboardWidgetCarousel(
     actionContent: @Composable () -> Unit,
     hiddenContent: @Composable () -> Unit,
 ) {
-    // Outside edit mode a leading steps widget is the hero: one large ring
-    // across the page. Edit mode keeps it in the grid so it can be dragged.
-    val heroId = visibleIds.firstOrNull()
-        ?.takeIf { !isEditingDashboard && it == DashboardWidgetId.STEPS && it in specsById }
-    val fixedIds = if (heroId != null) {
+    // Outside edit mode the first three widgets share the hero: the first is
+    // the centre ring, the next two the arcs beside it. Edit mode keeps them
+    // in the grid so they can be dragged, which is how the user picks them.
+    val heroIds = if (isEditingDashboard) {
+        emptyList()
+    } else {
+        visibleIds.take(DashboardHeroRingCount).filter { specsById[it]?.hero != null }
+    }
+    val fixedIds = if (heroIds.isNotEmpty()) {
         emptyList()
     } else {
         dashboardWidgetIdsThatFitRows(
@@ -54,7 +60,7 @@ internal fun DashboardWidgetCarousel(
     }
     val fixedIdSet = fixedIds.toSet()
     // Every other widget, in one grid that scrolls with the page.
-    val carouselIds = visibleIds.filterNot { it in fixedIdSet || it == heroId }
+    val carouselIds = visibleIds.filterNot { it in fixedIdSet || it in heroIds }
     val carouselRows = dashboardWidgetGridRows(carouselIds)
     val widgetBounds = remember { mutableStateMapOf<DashboardWidgetId, Rect>() }
     var contentBounds by remember { mutableStateOf<Rect?>(null) }
@@ -161,9 +167,13 @@ internal fun DashboardWidgetCarousel(
             .onGloballyPositioned { coordinates -> contentBounds = coordinates.boundsInRoot() },
     ) {
         Column {
-            heroId?.let { id ->
-                specsById[id]?.content?.invoke(
-                    Modifier
+            if (heroIds.isNotEmpty()) {
+                val rings = heroIds.mapNotNull { specsById[it]?.hero }
+                DashboardMultiRingHero(
+                    center = rings[0],
+                    left = rings.getOrNull(1),
+                    right = rings.getOrNull(2),
+                    modifier = Modifier
                         .padding(
                             start = DashboardScreenPadding,
                             end = DashboardScreenPadding,

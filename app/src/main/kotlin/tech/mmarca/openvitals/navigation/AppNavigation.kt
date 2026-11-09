@@ -1,5 +1,8 @@
 package tech.mmarca.openvitals.navigation
 
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
@@ -81,6 +84,7 @@ import tech.mmarca.openvitals.ui.components.LocalAppBarState
 import tech.mmarca.openvitals.ui.components.OpenWatchMoveNoticePrompt
 import tech.mmarca.openvitals.ui.components.PrivacyReconsentPrompt
 
+private const val NavFadeMillis = 140
 internal const val CardioLoadDetailRoute = "activity/cardio_load"
 internal const val SleepEfficiencyDetailRoute = "recovery/sleep_efficiency"
 internal const val SleepScoreDetailRoute = "recovery/sleep_score"
@@ -338,6 +342,12 @@ fun AppNavigation(
             navController = navController,
             startDestination = startDestination,
             modifier = Modifier.padding(innerPadding),
+            // One screen fades over the other, which stays whole underneath:
+            // the default scales the leaving screen down over the one behind it.
+            enterTransition = { fadeIn(tween(NavFadeMillis)) },
+            exitTransition = { fadeOut(tween(durationMillis = 1, delayMillis = NavFadeMillis)) },
+            popEnterTransition = { fadeIn(tween(1)) },
+            popExitTransition = { fadeOut(tween(NavFadeMillis)) },
         ) {
             composable(Screen.Onboarding.route) {
                 val onboardingViewModel = hiltViewModel<OnboardingViewModel>()
