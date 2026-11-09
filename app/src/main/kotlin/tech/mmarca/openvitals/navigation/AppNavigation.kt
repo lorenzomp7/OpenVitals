@@ -348,6 +348,10 @@ fun AppNavigation(
             exitTransition = { fadeOut(tween(durationMillis = 1, delayMillis = NavFadeMillis)) },
             popEnterTransition = { fadeIn(tween(1)) },
             popExitTransition = { fadeOut(tween(NavFadeMillis)) },
+            // The back gesture has its own pair, and its default shrinks the
+            // leaving screen to 70% over the one behind.
+            predictivePopEnterTransition = { _ -> fadeIn(tween(1)) },
+            predictivePopExitTransition = { _ -> fadeOut(tween(NavFadeMillis)) },
         ) {
             composable(Screen.Onboarding.route) {
                 val onboardingViewModel = hiltViewModel<OnboardingViewModel>()
