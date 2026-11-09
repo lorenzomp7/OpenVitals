@@ -91,7 +91,7 @@ internal fun DashboardWidgetCarousel(
     )
     val fixedIdSet = fixedIds.toSet()
     val carouselIds = visibleIds.filterNot { it in fixedIdSet }
-    val carouselRows = if (carouselIds.any { sizeFor(it) == 4 }) 4 else if (sixTileMode) DashboardCarouselWidgetRows else DashboardFixedWidgetRows
+    val carouselRows = if (sixTileMode) DashboardCarouselWidgetRows else DashboardFixedWidgetRows
     val carouselPages = dashboardWidgetIdsInGridPages(
         widgetIds = carouselIds,
         rows = carouselRows,
