@@ -217,6 +217,22 @@ fun dashboardWidgetIdsInGridPages(
 }
 
 /**
+ * The rows one scrolling grid needs for [widgetIds]: each widget goes to the
+ * shortest column, first on a tie, as the staggered grid places it.
+ */
+fun dashboardWidgetGridRows(
+    widgetIds: List<DashboardWidgetId>,
+    columns: Int = DashboardWidgetGridColumns,
+): Int {
+    val usedRows = IntArray(columns)
+    widgetIds.forEach { widgetId ->
+        val column = usedRows.indices.minByOrNull { usedRows[it] } ?: return 0
+        usedRows[column] += widgetId.dashboardWidgetRowSpan()
+    }
+    return usedRows.maxOrNull() ?: 0
+}
+
+/**
  * Whether the provider can serve this widget's metric. BODY_ENERGY follows
  * heart rate. A widget with no metric is never gated.
  */

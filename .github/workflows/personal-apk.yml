@@ -1,0 +1,38 @@
+# A debug APK of a personal branch, to install by hand. It runs on a push to
+# a claude/ branch or from the Actions tab, and publishes nothing: the APK is
+# a workflow artifact. The debug build installs beside the Play Store app
+# (its id ends in .debug).
+name: personal-apk
+
+on:
+  push:
+    branches: ["claude/**"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: personal-apk-${{ github.ref }}
+  cancel-in-progress: true
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  apk:
+    runs-on: ubuntu-26.04
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          # The OpenLink library is a submodule the app builds from.
+          submodules: true
+      - run: echo "GRADLE_USER_HOME=$RUNNER_TEMP/gradle-user-home" >> "$GITHUB_ENV"
+      - uses: gradle/actions/setup-gradle@v5
+      - run: scripts/ci-android-gradle.sh :app:assembleDebug
+      - uses: actions/upload-artifact@v7
+        with:
+          name: openvitals-debug-apk
+          path: app/build/outputs/apk/debug/*.apk
+          if-no-files-found: error

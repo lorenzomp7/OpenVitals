@@ -26,9 +26,11 @@ import tech.mmarca.openvitals.features.dashboard.DashboardWidgetProgress
 import tech.mmarca.openvitals.ui.components.AutoResizeText
 import tech.mmarca.openvitals.ui.components.ChartReveal
 import tech.mmarca.openvitals.ui.components.OpenVitalsCard
-import tech.mmarca.openvitals.ui.theme.accentSurfaceContainerColor
+import androidx.compose.foundation.shape.RoundedCornerShape
+import tech.mmarca.openvitals.ui.theme.Radii
 
-private val SummaryCardPadding = 6.dp
+private val SummaryCardPadding = 10.dp
+private val SummaryHeroRingSize = 200.dp
 private val SummaryArcStartAngle = 130f
 private val SummaryArcSweepAngle = 280f
 
@@ -42,18 +44,15 @@ internal fun DashboardSummaryCard(
     modifier: Modifier = Modifier,
     onClick: (() -> Unit)? = null,
 ) {
-    val progressTrackColor = accentSurfaceContainerColor(
-        accentColor = accentColor,
-        amoledAlpha = 0.2f,
-        fallback = MaterialTheme.colorScheme.outlineVariant,
-    )
-    val progressFillColor = accentColor.copy(alpha = 0.65f)
+    val progressTrackColor = accentColor.copy(alpha = 0.24f)
+    val progressFillColor = accentColor
     val subtitle = summarySubtitle(value = value, progress = progress)
 
     OpenVitalsCard(
         modifier = modifier.fillMaxSize(),
         onClick = onClick,
-        containerColor = MaterialTheme.colorScheme.surfaceContainer,
+        containerColor = dashboardTileContainerColor(accentColor),
+        shape = RoundedCornerShape(Radii.xl),
     ) {
         BoxWithConstraints(
             modifier = Modifier
@@ -63,6 +62,8 @@ internal fun DashboardSummaryCard(
         ) {
             val ringSize = minOf(maxWidth, maxHeight)
             val strokeWidth = summaryRingStroke(ringSize)
+            // The hero ring is large enough for display type.
+            val isHero = ringSize >= SummaryHeroRingSize
 
             Box(
                 modifier = Modifier.size(ringSize),
@@ -108,13 +109,21 @@ internal fun DashboardSummaryCard(
                 ) {
                     AutoResizeText(
                         text = title,
-                        style = MaterialTheme.typography.labelSmall,
+                        style = if (isHero) {
+                            MaterialTheme.typography.titleSmall
+                        } else {
+                            MaterialTheme.typography.labelSmall
+                        },
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                         maxLines = 1,
                     )
                     AutoResizeText(
                         text = value.value,
-                        style = MaterialTheme.typography.headlineSmall,
+                        style = if (isHero) {
+                            MaterialTheme.typography.displayMedium
+                        } else {
+                            MaterialTheme.typography.headlineSmall
+                        },
                         fontWeight = FontWeight.Bold,
                         color = MaterialTheme.colorScheme.onSurface,
                         maxLines = 1,
@@ -122,7 +131,11 @@ internal fun DashboardSummaryCard(
                     if (subtitle.isNotBlank()) {
                         AutoResizeText(
                             text = subtitle,
-                            style = MaterialTheme.typography.labelSmall,
+                            style = if (isHero) {
+                                MaterialTheme.typography.bodyMedium
+                            } else {
+                                MaterialTheme.typography.labelSmall
+                            },
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                             maxLines = 2,
                         )
@@ -143,4 +156,4 @@ private fun summarySubtitle(
 }
 
 private fun summaryRingStroke(ringSize: Dp): Dp =
-    (ringSize * 0.09f).coerceIn(5.dp, 10.dp)
+    (ringSize * 0.09f).coerceIn(5.dp, 18.dp)

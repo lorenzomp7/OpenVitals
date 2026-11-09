@@ -29,11 +29,24 @@ import tech.mmarca.openvitals.features.dashboard.dashboardDisplayValue
 import tech.mmarca.openvitals.ui.components.AutoResizeText
 import tech.mmarca.openvitals.ui.theme.Spacing
 import tech.mmarca.openvitals.ui.components.OpenVitalsCard
-import tech.mmarca.openvitals.ui.theme.accentSurfaceContainerColor
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.ui.graphics.compositeOver
+import tech.mmarca.openvitals.ui.theme.Radii
+import tech.mmarca.openvitals.ui.theme.isAmoledColorScheme
 
 private val MetricStatIconSize = 28.dp
 private val MetricStatIconGlyphSize = 16.dp
 private val MetricStatProgressHeight = 3.dp
+
+/** The dashboard's tile corner: rounder than the default card. */
+internal val DashboardTileShape = RoundedCornerShape(Radii.lg)
+
+/** A tile washed in its metric's colour, over black on AMOLED. */
+@Composable
+internal fun dashboardTileContainerColor(accentColor: Color): Color =
+    accentColor.copy(alpha = if (isAmoledColorScheme()) 0.16f else 0.14f).compositeOver(
+        if (isAmoledColorScheme()) Color.Black else MaterialTheme.colorScheme.surfaceContainer,
+    )
 
 @Composable
 internal fun MetricStatCard(
@@ -51,24 +64,21 @@ internal fun MetricStatCard(
     trailing: (@Composable () -> Unit)? = null,
     onClick: (() -> Unit)? = null,
 ) {
-    val iconContainerColor = accentSurfaceContainerColor(
-        accentColor = accentColor,
-        amoledAlpha = 0.16f,
-        fallback = MaterialTheme.colorScheme.surfaceContainerHighest,
-    )
-    val progressFillColor = accentColor.copy(alpha = 0.55f)
+    val iconContainerColor = accentColor.copy(alpha = 0.22f)
+    val progressFillColor = accentColor.copy(alpha = 0.7f)
 
     OpenVitalsCard(
         modifier = modifier.fillMaxWidth(),
         onClick = onClick,
-        containerColor = MaterialTheme.colorScheme.surfaceContainer,
+        containerColor = dashboardTileContainerColor(accentColor),
+        shape = DashboardTileShape,
     ) {
         Box(modifier = Modifier.fillMaxSize()) {
             Row(
                 // fillMaxSize: a wrap-height Row in a fixed-height Box pins to the top.
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(horizontal = 12.dp, vertical = 10.dp),
+                    .padding(horizontal = 14.dp, vertical = 10.dp),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 Box(
@@ -127,9 +137,11 @@ internal fun MetricStatCard(
                 Box(
                     modifier = Modifier
                         .align(Alignment.BottomStart)
+                        // Inset, so the tile's round corners do not cut the bar.
+                        .padding(start = 20.dp, end = 20.dp, bottom = 6.dp)
                         .height(MetricStatProgressHeight)
                         .fillMaxWidth(progressFraction.coerceIn(0f, 1f))
-                        .clip(MaterialTheme.shapes.extraSmall)
+                        .clip(CircleShape)
                         .background(progressFillColor),
                 )
             }

@@ -428,4 +428,18 @@ class DashboardContentLayoutTest {
         )
         assertEquals(notSetUp, visible[4])
     }
+
+    @Test
+    fun `one scrolling grid is as tall as its longest column`() {
+        // The ring takes two rows of the first column; the tiles fill the second, then alternate.
+        val ids = listOf(
+            DashboardWidgetId.WEEKLY_CARDIO_LOAD,
+            DashboardWidgetId.DISTANCE,
+            DashboardWidgetId.CALORIES_OUT,
+            DashboardWidgetId.SLEEP,
+            DashboardWidgetId.HYDRATION,
+        )
+        assertEquals(3, dashboardWidgetGridRows(ids))
+        assertEquals(0, dashboardWidgetGridRows(emptyList()))
+    }
 }
