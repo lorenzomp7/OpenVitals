@@ -66,6 +66,11 @@ internal fun DashboardWidgetCarousel(
     val fixedIdSet = fixedIds.toSet()
     val carouselIds = visibleIds.filterNot { it in fixedIdSet }
     var sixTileMode by remember { mutableStateOf(true) }
+    val widgetSizeOverrides = remember { mutableStateMapOf<DashboardWidgetId, Int>() }
+    val cycleWidgetSize: (DashboardWidgetId) -> Unit = { id ->
+        val current = widgetSizeOverrides[id] ?: id.dashboardWidgetRowSpan()
+        widgetSizeOverrides[id] = when (current) { 1 -> 2; 2 -> 4; else -> 1 }
+    }
     val carouselPages = dashboardWidgetIdsInGridPages(
         widgetIds = carouselIds,
         rows = if (sixTileMode) DashboardCarouselWidgetRows else DashboardFixedWidgetRows,
@@ -232,6 +237,8 @@ internal fun DashboardWidgetCarousel(
                 topPadding = DashboardHeroSectionTopPadding,
                 bottomPadding = DashboardHeroSectionBottomPadding,
                 squareRowSpan = true,
+                widgetSizeOverrides = widgetSizeOverrides,
+                onCycleWidgetSize = cycleWidgetSize,
             )
 
             actionContent()
@@ -299,6 +306,8 @@ internal fun DashboardWidgetCarousel(
                         onRemoveWidget = onRemoveWidget,
                         topPadding = DashboardCarouselTopPadding,
                         bottomPadding = DashboardHeroSectionBottomPadding,
+                        widgetSizeOverrides = widgetSizeOverrides,
+                        onCycleWidgetSize = cycleWidgetSize,
                     )
                 }
 
