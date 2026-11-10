@@ -112,18 +112,7 @@ jobs:
           arch: x86_64
           profile: pixel_6
           disable-animations: true
-          script: |
-            set -eu
-            APK=$(find app/build/outputs/apk/ci -name '*.apk' -type f | head -1)
-            test -s "$APK"
-            adb install -r "$APK"
-            adb shell monkey -p tech.mmarca.openvitals.ci 1
-            sleep 15
-            adb shell pidof tech.mmarca.openvitals.ci
-            mkdir -p dashboard-emulator-evidence
-            adb shell screencap -p /sdcard/dashboard.png
-            adb pull /sdcard/dashboard.png dashboard-emulator-evidence/dashboard.png
-            adb logcat -d -t 2000 > dashboard-emulator-evidence/logcat.txt
+          script: bash scripts/emulator-smoke.sh
       - uses: actions/upload-artifact@v4
         if: always()
         with:
