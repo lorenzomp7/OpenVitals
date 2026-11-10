@@ -2,7 +2,7 @@ name: verify
 on:
   pull_request:
   push:
-    branches: [main, claude_chatgpt_rebuilt]
+    branches: [main, main_chatgpt, claude_chatgpt_rebuilt]
   workflow_dispatch:
   workflow_call:
 permissions:
