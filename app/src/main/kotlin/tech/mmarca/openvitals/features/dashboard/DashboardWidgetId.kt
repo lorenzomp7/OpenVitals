@@ -182,12 +182,13 @@ fun dashboardWidgetIdsThatFitRows(
     widgetIds: List<DashboardWidgetId>,
     rows: Int,
     columns: Int = DashboardWidgetGridColumns,
+    sizeFor: (DashboardWidgetId) -> Int = { it.dashboardWidgetRowSpan() * 2 },
 ): List<DashboardWidgetId> {
     val usedRows = IntArray(columns)
     return buildList {
         widgetIds.forEach { widgetId ->
-            val rowSpan = widgetId.dashboardWidgetRowSpan().coerceIn(1, rows)
-            val column = usedRows.indices.firstOrNull { usedRows[it] + rowSpan <= rows }
+            val rowSpan = sizeFor(widgetId).coerceIn(1, rows * 2)
+            val column = usedRows.indices.firstOrNull { usedRows[it] + rowSpan <= rows * 2 }
             if (column != null) {
                 usedRows[column] += rowSpan
                 add(widgetId)
@@ -200,6 +201,7 @@ fun dashboardWidgetIdsInGridPages(
     widgetIds: List<DashboardWidgetId>,
     rows: Int,
     columns: Int = DashboardWidgetGridColumns,
+    sizeFor: (DashboardWidgetId) -> Int = { it.dashboardWidgetRowSpan() * 2 },
 ): List<List<DashboardWidgetId>> {
     val pages = mutableListOf<List<DashboardWidgetId>>()
     var remaining = widgetIds
@@ -208,6 +210,7 @@ fun dashboardWidgetIdsInGridPages(
             widgetIds = remaining,
             rows = rows,
             columns = columns,
+            sizeFor = sizeFor,
         ).ifEmpty { listOf(remaining.first()) }
         pages += page
         val pageIds = page.toSet()

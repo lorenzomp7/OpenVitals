@@ -16,7 +16,7 @@ name: verify
 on:
   pull_request:
   push:
-    branches: [main]
+    branches: [main, main_claude]
 
 permissions:
   contents: read
@@ -90,3 +90,40 @@ jobs:
       - uses: gradle/actions/setup-gradle@v5
       - run: scripts/ci-android-gradle.sh verifyCiLint
       - run: git diff --check
+
+  # Compile a real installable APK and verify that Android can launch it.
+  emulator-smoke:
+    runs-on: ubuntu-26.04
+    timeout-minutes: 55
+    env:
+      MAPBOX_PUBLIC_TOKEN: ${{ secrets.MAPBOX_PUBLIC_TOKEN }}
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          submodules: true
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: gradle/actions/setup-gradle@v5
+      - run: scripts/ci-android-gradle.sh :app:assembleCi
+      - name: Enable KVM
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+      - uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 35
+          target: google_apis
+          arch: x86_64
+          profile: pixel_6
+          disable-animations: true
+          script: bash scripts/emulator-smoke.sh
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: dashboard-ci-apk-emulator
+          path: |
+            app/build/outputs/apk/ci/*.apk
+            dashboard-emulator-evidence/

@@ -102,6 +102,13 @@ android {
 
     defaultConfig {
         applicationId = "tech.mmarca.openvitals"
+        val mapboxToken = providers.environmentVariable("MAPBOX_PUBLIC_TOKEN")
+            .orElse(providers.gradleProperty("mapboxPublicToken")).orElse("").get().trim()
+        require(mapboxToken.isEmpty() || mapboxToken.matches(Regex("pk\\.[A-Za-z0-9._-]+"))) {
+            "MAPBOX_PUBLIC_TOKEN must be a public pk. token; secret tokens are never accepted."
+        }
+        buildConfigField("String", "MAPBOX_PUBLIC_TOKEN", "\"$mapboxToken\"")
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         minSdk = 26
         targetSdk = 36
         versionCode = versionCodeOverride.orElse(baseVersionCode).get()
@@ -324,6 +331,7 @@ dependencies {
 
     // Offline maps
     implementation(libs.maplibre.android.sdk)
+    implementation("com.mapbox.maps:android-ndk27:11.34.2")
     implementation(libs.mapsforge.map.android)
     implementation(libs.mapsforge.themes)
 
