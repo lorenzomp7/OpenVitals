@@ -28,12 +28,6 @@ jobs:
           submodules: true
       - run: echo "GRADLE_USER_HOME=$RUNNER_TEMP/gradle-user-home" >> "$GITHUB_ENV"
       - uses: gradle/actions/setup-gradle@v5
-      - name: Regenerate OCR dependency locks for review
-        run: |
-          scripts/ci-android-gradle.sh :app:dependencies --write-locks --no-configuration-cache > "$RUNNER_TEMP/lock-resolution.log" 2>&1 || { tail -100 "$RUNNER_TEMP/lock-resolution.log"; exit 1; }
-          echo 'BEGIN_APP_LOCKFILE'
-          cat app/gradle.lockfile
-          echo 'END_APP_LOCKFILE'
       - name: Build APKs and run unit tests and preflight once
         run: scripts/ci-android-gradle.sh -Popenvitals.testForks=4 :app:assembleCi :app:assembleCiAndroidTest verifyCiUnitTest verifyCiPreflight
       - run: git diff --check
