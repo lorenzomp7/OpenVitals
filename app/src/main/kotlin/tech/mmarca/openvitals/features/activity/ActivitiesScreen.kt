@@ -42,7 +42,7 @@ fun ActivitiesScreen(
     var workoutToDelete by remember { mutableStateOf<ExerciseData?>(null) }
 
     LifecycleEventEffect(Lifecycle.Event.ON_RESUME) {
-        viewModel.resumeCurrentPeriod(refreshCurrent = true)
+        viewModel.resumeCurrentPeriod(refreshCurrent = false)
     }
 
     WithHealthConnectFeatureScreen(

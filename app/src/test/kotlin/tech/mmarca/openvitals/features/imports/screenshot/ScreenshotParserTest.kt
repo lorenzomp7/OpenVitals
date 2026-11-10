@@ -5,13 +5,13 @@ import org.junit.Test
 
 class ScreenshotParserTest {
     @Test fun `recognizes Italian decimals and grouped steps without importing timestamps`() {
-        val values = ScreenshotParser.parse("10/11/2026 15:11 75,4 kg 10.235 passi 4,25 km 480 kcal 72 bpm")
-        assertEquals(listOf(ScreenshotValue("kg", "75.4"), ScreenshotValue("steps", "10235"),
-            ScreenshotValue("km", "4.25"), ScreenshotValue("kcal", "480"), ScreenshotValue("bpm", "72")), values)
+        val values = ScreenshotParser.parse("10/11/2026 15:11 Peso 75,4 kg 10.235 passi 4,25 km 480 kcal 72 bpm")
+        assertEquals(setOf(ScreenshotValue("kg", "75.4"), ScreenshotValue("steps", "10235"),
+            ScreenshotValue("km", "4.25"), ScreenshotValue("kcal", "480"), ScreenshotValue("bpm", "72")), values.toSet())
     }
     @Test fun `ignores unsupported numbers and duplicate OCR labels`() {
         assertTrue(ScreenshotParser.parse("2026 15:11 69% 4G 13 of 13 selected").isEmpty())
-        assertEquals(listOf(ScreenshotValue("kg", "75.4")), ScreenshotParser.parse("75.4 kg\n75.4 kg"))
+        assertTrue(ScreenshotParser.parse("75.4 kg\n75.4 kg").isEmpty())
     }
     @Test fun `extracts Pixel and Samsung screenshot timestamps and rejects invalid dates`() {
         val expected = java.time.LocalDateTime.of(2026, 11, 10, 14, 30, 25)
@@ -35,5 +35,21 @@ class ScreenshotParserTest {
         assertEquals(2, ScreenshotParser.workoutType("Corsa su tapis roulant\n45:30", labels))
         assertNull(ScreenshotParser.workoutType("Corso di cucina", labels))
         assertNull(ScreenshotParser.workoutType("Attività sconosciuta", labels))
+    }
+    @Test fun `body tiles keep weight separate from fat and muscle masses`() {
+        val lines = listOf(
+            ScreenshotOcrLine("WEIGHT", 50, 50, 150, 80),
+            ScreenshotOcrLine("BMI", 300, 50, 350, 80),
+            ScreenshotOcrLine("69.5 kg", 50, 110, 170, 140),
+            ScreenshotOcrLine("23.4", 300, 110, 350, 140),
+            ScreenshotOcrLine("BODY FAT %", 40, 210, 180, 240),
+            ScreenshotOcrLine("BODY FAT MASS", 280, 210, 450, 240),
+            ScreenshotOcrLine("14.2 %", 50, 260, 150, 290),
+            ScreenshotOcrLine("9.8 kg", 300, 260, 400, 290),
+            ScreenshotOcrLine("MUSCLE MASS", 50, 350, 190, 380),
+            ScreenshotOcrLine("56.7 kg", 50, 400, 150, 430),
+        )
+        assertEquals(setOf(ScreenshotValue("kg", "69.5"), ScreenshotValue("body_fat", "14.2")),
+            ScreenshotParser.parseLines(lines).toSet())
     }
 }

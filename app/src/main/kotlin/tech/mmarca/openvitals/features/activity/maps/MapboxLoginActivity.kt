@@ -77,7 +77,12 @@ class MapboxLoginActivity : ComponentActivity() {
                 throw cancelled
             } catch (_: Exception) {
                 // Do not send credentials, callbacks or provider responses into logs/crash reports.
-                status = R.string.screen_error_generic
+                status = when (active?.phase) {
+                    MapboxLoginPhase.EXCHANGE -> R.string.mapbox_error_exchange
+                    MapboxLoginPhase.ACCOUNT -> R.string.mapbox_error_account
+                    MapboxLoginPhase.PUBLIC_TOKEN -> R.string.mapbox_error_public_token
+                    else -> R.string.mapbox_error_connection
+                }
             } finally {
                 active?.close()
                 session = null

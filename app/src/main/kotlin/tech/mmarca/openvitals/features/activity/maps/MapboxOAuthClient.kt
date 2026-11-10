@@ -15,6 +15,9 @@ internal class MapboxOAuthClient : AutoCloseable {
     private val state = MapboxOAuthProtocol.randomValue()
     private val verifier = MapboxOAuthProtocol.randomValue()
     private var clientId = ""
+    private var clientSecret: String? = null
+    var phase: MapboxLoginPhase = MapboxLoginPhase.CONNECT
+        private set
 
     fun prepare(): String {
         val body = JSONObject().put("client_name", "OpenVitals personal maps")
@@ -25,18 +28,29 @@ internal class MapboxOAuthClient : AutoCloseable {
         val registration = JSONObject(request(MapboxOAuthProtocol.REGISTER + "?scope=" +
             MapboxOAuthProtocol.encode(MapboxOAuthProtocol.SCOPE), body.toString(), "application/json"))
         val scopes = registration.optString("scope").split(' ').filter { it.isNotBlank() }.toSet()
-        if (scopes != setOf(MapboxOAuthProtocol.SCOPE)) throw MapboxLoginFailure()
+        if (scopes.isNotEmpty() && MapboxOAuthProtocol.SCOPE !in scopes) throw MapboxLoginFailure()
         clientId = registration.optString("client_id").takeIf { it.isNotBlank() } ?: throw MapboxLoginFailure()
+        clientSecret = registration.optString("client_secret").takeIf { it.isNotBlank() }
         return MapboxOAuthProtocol.authorizationUrl(clientId, redirect, state, verifier)
     }
 
     fun complete(): String {
         val code = awaitCode()
-        val exchange = MapboxOAuthProtocol.form(mapOf("grant_type" to "authorization_code", "code" to code,
-            "client_id" to clientId, "redirect_uri" to redirect, "code_verifier" to verifier))
+        phase = MapboxLoginPhase.EXCHANGE
+        val params = mutableMapOf("grant_type" to "authorization_code", "code" to code,
+            "client_id" to clientId, "redirect_uri" to redirect, "code_verifier" to verifier)
+        clientSecret?.let { params["client_secret"] = it }
+        val exchange = MapboxOAuthProtocol.form(params)
         val credentials = JSONObject(request(MapboxOAuthProtocol.TOKEN, exchange, "application/x-www-form-urlencoded"))
         val oauth = credentials.optString("access_token").takeIf { it.isNotBlank() } ?: throw MapboxLoginFailure()
-        val username = MapboxOAuthProtocol.username(oauth)
+        phase = MapboxLoginPhase.ACCOUNT
+        val username = credentials.optString("username").takeIf { it.matches(Regex("[A-Za-z0-9_-]{1,128}")) }
+            ?: runCatching { MapboxOAuthProtocol.username(oauth) }.getOrElse {
+                val metadata = JSONObject(request("https://api.mapbox.com/tokens/v2?access_token=" + MapboxOAuthProtocol.encode(oauth)))
+                metadata.optJSONObject("token")?.optString("u")?.takeIf { name -> name.matches(Regex("[A-Za-z0-9_-]{1,128}")) }
+                    ?: throw MapboxLoginFailure()
+            }
+        phase = MapboxLoginPhase.PUBLIC_TOKEN
         // Restrict the request to the default PUBLIC token; never fetch secret-token metadata.
         val url = "https://api.mapbox.com/tokens/v2/$username?default=true&usage=pk&access_token=" +
             MapboxOAuthProtocol.encode(oauth)
@@ -112,5 +126,7 @@ internal class MapboxOAuthClient : AutoCloseable {
         }
     }
 
-    override fun close() { listener.close() }
+    override fun close() { clientSecret = null; listener.close() }
 }
+
+internal enum class MapboxLoginPhase { CONNECT, EXCHANGE, ACCOUNT, PUBLIC_TOKEN }

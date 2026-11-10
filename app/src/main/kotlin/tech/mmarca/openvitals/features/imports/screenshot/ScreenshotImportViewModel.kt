@@ -52,7 +52,7 @@ internal class ScreenshotImportViewModel @Inject constructor(
         mutable.value = ScreenshotImportState(busy = true)
         viewModelScope.launch {
             try {
-                val (text, timestamp) = withContext(Dispatchers.IO) {
+                val (recognized, timestamp) = withContext(Dispatchers.IO) {
                     val name = runCatching {
                         context.contentResolver.query(uri, arrayOf(android.provider.OpenableColumns.DISPLAY_NAME), null, null, null)?.use { cursor ->
                             if (cursor.moveToFirst()) cursor.getString(0) else null
@@ -61,15 +61,19 @@ internal class ScreenshotImportViewModel @Inject constructor(
                     val image = InputImage.fromFilePath(context, uri)
                     val recognizer = TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS)
                     try {
-                        val recognized = suspendCancellableCoroutine<String> { continuation ->
+                        val recognized = suspendCancellableCoroutine<com.google.mlkit.vision.text.Text> { continuation ->
                             recognizer.process(image)
-                                .addOnSuccessListener { if (continuation.isActive) continuation.resume(it.text) }
+                                .addOnSuccessListener { if (continuation.isActive) continuation.resume(it) }
                                 .addOnFailureListener { if (continuation.isActive) continuation.resumeWithException(it) }
                         }
                         recognized to ScreenshotParser.filenameTime(name)
                     } finally { recognizer.close() }
                 }
-                val values = ScreenshotParser.parse(text)
+                val text = recognized.text
+                val lines = recognized.textBlocks.flatMap { it.lines }.mapNotNull { line ->
+                    line.boundingBox?.let { box -> ScreenshotOcrLine(line.text, box.left, box.top, box.right, box.bottom) }
+                }
+                val values = ScreenshotParser.parseLines(lines)
                 val seconds = values.firstOrNull { it.kind == "duration_min" }?.value?.toDoubleOrNull()?.times(60)?.let { kotlin.math.round(it).toLong() } ?: 0L
                 mutable.value = ScreenshotImportState(values = values,
                     exerciseType = ScreenshotParser.workoutType(text, screenshotWorkoutLabels(context)),

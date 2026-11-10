@@ -166,7 +166,16 @@ internal fun dashboardWidgetSpecs(
     onOpenMetric = onOpenMetric,
     onSyncWatch = onSyncWatch,
 ).map { spec ->
+    val model = display.widgets[spec.id]
+    val details = listOfNotNull(
+        model?.measurementSubtitle,
+        model?.progress?.let { stringResource(R.string.daily_goal) + ": " + it.goalLabelValue.text },
+        model?.progress?.let { "${(it.fraction * 100).toInt()}%" },
+        model?.sleepScore?.let { model.value?.text },
+        model?.weeklyCardioLoad?.let { model.value?.text },
+    ).filter { it.isNotBlank() }.distinct()
     spec.copy(
+        details = details,
         hero = display.widgets[spec.id]?.toHeroRing(
             title = spec.title,
             accentColor = dashboardWidgetMeta(spec.id).accentColor,
@@ -622,6 +631,7 @@ internal data class DashboardWidgetSpec(
     /** What the widget shows as one ring of the multi-ring hero. */
     val hero: DashboardHeroRing? = null,
     val content: @Composable (Modifier) -> Unit,
+    val details: List<String> = emptyList(),
 )
 
 /** One metric of the multi-ring hero: a headline number and how far round its ring goes. */

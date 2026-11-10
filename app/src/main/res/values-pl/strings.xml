@@ -3840,10 +3840,10 @@
     <string name="dashboard_history_load_older">Wczytaj starsze aktywności</string>
     <string name="dashboard_period_summary">Sumy okresu; średnie snu i wskaźników serca. Inne pomiary: ostatnia wartość. Trening: ostatni tydzień.</string>
     <string name="screenshot_import_title">Import screenshot</string>
-    <string name="screenshot_import_body">Text recognition runs on this phone. Review and remove incorrect suggestions. Supported: kg, steps, km, total kcal and individual bpm readings. Do not import averages as individual readings or data already saved by another app.</string>
+    <string name="screenshot_import_body">Recognized on this phone. Review values before saving to Health Connect.</string>
     <string name="screenshot_import_pick">Choose screenshot</string>
     <string name="screenshot_import_total_kcal">Total calories burned (kcal)</string>
-    <string name="screenshot_import_time_help">Data i godzina są proponowane z nazwy pliku, jeśli dostępne. To czas zrzutu: sprawdź rzeczywisty czas pomiaru. Dla treningu: koniec = zrzut, początek = koniec minus czas trwania. Sprawdź oba; przedział musi odpowiadać czasowi trwania. Format lokalny: 2026-11-10T14:30.</string>
+    <string name="screenshot_import_time_help">Time comes from the filename. For workouts: end = screenshot, start = end minus duration. Correct if needed.</string>
     <string name="screenshot_import_start">Start / measurement time</string>
     <string name="screenshot_import_end">End</string>
     <string name="screenshot_import_confirm">I checked values, units, dates, interval and calorie type.</string>
@@ -3853,4 +3853,10 @@
     <string name="screenshot_import_saved">Saved in Health Connect. Refresh the relevant OpenVitals screen.</string>
     <string name="screenshot_import_close">Close</string>
     <string name="screenshot_import_duration">Czas treningu (minuty)</string>
+    <string name="mapbox_error_connection">Cannot connect to Mapbox. Check your connection and try again.</string>
+    <string name="mapbox_error_exchange">Mapbox did not complete authorization. Start sign-in again.</string>
+    <string name="mapbox_error_account">Mapbox did not return an account name. Start sign-in again.</string>
+    <string name="mapbox_error_public_token">Signed in, but the public map token could not be retrieved. Check the default public token in your Mapbox account.</string>
+    <string name="action_show_more">Show all</string>
+    <string name="action_show_less">Show less</string>
 </resources>

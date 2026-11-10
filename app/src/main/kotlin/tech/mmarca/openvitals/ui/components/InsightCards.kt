@@ -60,6 +60,9 @@ fun InsightStatGrid(
                             .fillMaxHeight(),
                     )
                 }
+                repeat((columns.coerceAtLeast(1) - rowStats.size).coerceAtLeast(0)) {
+                    Spacer(Modifier.weight(1f))
+                }
             }
         }
     }

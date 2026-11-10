@@ -3804,10 +3804,10 @@
     <string name="dashboard_history_load_older">Carica attività precedenti</string>
     <string name="dashboard_period_summary">Totali del periodo; sonno e parametri cardiaci medi. Altre misure: ultimo valore. Allenamento: settimana finale.</string>
     <string name="screenshot_import_title">Importa screenshot</string>
-    <string name="screenshot_import_body">Il riconoscimento avviene sul telefono. Controlla ed elimina i suggerimenti errati. Supportati: kg, passi, km, kcal totali e singole misurazioni bpm. Non importare medie come singole misurazioni o dati già salvati da altre app.</string>
+    <string name="screenshot_import_body">Riconoscimento sul telefono. Controlla i valori prima di salvarli in Health Connect.</string>
     <string name="screenshot_import_pick">Scegli screenshot</string>
     <string name="screenshot_import_total_kcal">Calorie bruciate totali (kcal)</string>
-    <string name="screenshot_import_time_help">Data e ora sono proposte dal nome dello screenshot, se disponibili. È l’ora dello scatto: verifica quella effettiva della misurazione. Per un allenamento, la fine proposta è lo scatto e l’inizio è fine meno durata. Controlla entrambi; l’intervallo deve coincidere con la durata. Usa date locali come 2026-11-10T14:30.</string>
+    <string name="screenshot_import_time_help">Data e ora dal nome del file. Per gli allenamenti: fine = screenshot, inizio = fine meno durata. Correggi se necessario.</string>
     <string name="screenshot_import_start">Inizio / ora misurazione</string>
     <string name="screenshot_import_end">Fine</string>
     <string name="screenshot_import_confirm">Ho verificato valori, unità, date, intervallo e tipo di calorie.</string>
@@ -3817,4 +3817,10 @@
     <string name="screenshot_import_saved">Salvato in Health Connect. Aggiorna la schermata di OpenVitals.</string>
     <string name="screenshot_import_close">Chiudi</string>
     <string name="screenshot_import_duration">Durata allenamento (minuti)</string>
+    <string name="mapbox_error_connection">Cannot connect to Mapbox. Check your connection and try again.</string>
+    <string name="mapbox_error_exchange">Mapbox did not complete authorization. Start sign-in again.</string>
+    <string name="mapbox_error_account">Mapbox did not return an account name. Start sign-in again.</string>
+    <string name="mapbox_error_public_token">Signed in, but the public map token could not be retrieved. Check the default public token in your Mapbox account.</string>
+    <string name="action_show_more">Mostra tutti</string>
+    <string name="action_show_less">Mostra meno</string>
 </resources>

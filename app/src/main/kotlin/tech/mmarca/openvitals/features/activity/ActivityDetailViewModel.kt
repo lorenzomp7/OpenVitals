@@ -138,6 +138,8 @@ internal class ActivityDetailViewModel @Inject constructor(
         val workout = repository.loadWorkout(activityId)
             ?: return ActivityDetailUiState(isLoading = false, error = ScreenError.NotFound)
                 .withSplitsCutAt(splitDistanceMeters)
+        _uiState.value = ActivityDetailUiState(isLoading = false, workout = workout)
+            .withSplitsCutAt(splitDistanceMeters)
         return coroutineScope {
             // Speed, cadence, markers and recovery degrade to empty on failure.
             // The session and the heart-rate read do not.

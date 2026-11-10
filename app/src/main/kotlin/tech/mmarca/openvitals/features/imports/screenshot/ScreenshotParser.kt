@@ -16,7 +16,37 @@ internal object ScreenshotParser {
             val raw = match.groupValues[1].trim()
             ScreenshotValue(kind, if (kind == "steps") raw.replace(Regex("[., ]"), "") else raw.replace(',', '.'))
         }.toList()
-    }.distinct() + listOfNotNull(durationMinutes(text)?.let { ScreenshotValue("duration_min", it.toString()) })
+    }.filterNot { it.kind == "kg" }.distinct() + labeledBodyValues(text) +
+        listOfNotNull(durationMinutes(text)?.let { ScreenshotValue("duration_min", it.toString()) })
+
+    private fun labeledBodyValues(text: String): List<ScreenshotValue> = listOfNotNull(
+        Regex("""(?i)(?:weight|peso(?: corporeo)?)\s*[:：]?\s*(\d{2,3}(?:[.,]\d+)?)\s*kg\b""")
+            .find(text)?.let { ScreenshotValue("kg", it.groupValues[1].replace(',', '.')) },
+        Regex("""(?i)(?:body fat\s*%|body fat percentage|grasso corporeo\s*%|massa grassa\s*%)\s*[:：]?\s*(\d{1,2}(?:[.,]\d+)?)\s*%""")
+            .find(text)?.let { ScreenshotValue("body_fat", it.groupValues[1].replace(',', '.')) },
+    )
+
+    /** Match columns geometrically: a neighbouring BMI/muscle/fat mass tile cannot become weight. */
+    fun parseLines(lines: List<ScreenshotOcrLine>): List<ScreenshotValue> {
+        val labels = listOf(
+            "kg" to Regex("""(?i)^(?:weight|peso(?: corporeo)?)$"""),
+            "body_fat" to Regex("""(?i)^(?:body fat\s*%|body fat percentage|grasso corporeo\s*%|massa grassa\s*%)$"""),
+        )
+        val body = labels.mapNotNull { (kind, pattern) ->
+            val label = lines.firstOrNull { pattern.matches(it.text.trim()) } ?: return@mapNotNull null
+            val unit = if (kind == "kg") "kg" else "%"
+            val valuePattern = Regex("""^(\d{1,3}(?:[.,]\d+)?)\s*$unit$""", RegexOption.IGNORE_CASE)
+            lines.filter { it.top >= label.bottom &&
+                kotlin.math.abs(it.centerX - label.centerX) <= maxOf(label.width, it.width) * 0.75 &&
+                it.top - label.bottom <= maxOf(label.height, it.height) * 8
+            }.sortedBy { it.top - label.bottom }.firstNotNullOfOrNull { candidate ->
+                valuePattern.find(candidate.text.trim())?.let { ScreenshotValue(kind, it.groupValues[1].replace(',', '.')) }
+            }
+        }
+        // Body screens have no single-heart-rate reading; never treat a BPM average as an instant sample.
+        val text = lines.joinToString("\n") { it.text }
+        return (parse(text).filterNot { it.kind in setOf("kg", "body_fat") } + body).distinct()
+    }
 
     /** Require a duration label: an unlabelled clock could be the phone status bar. */
     private fun durationMinutes(text: String): Double? {
@@ -63,4 +93,10 @@ internal object ScreenshotParser {
         val length = matches.maxOfOrNull { it.first } ?: return null
         return matches.filter { it.first == length }.map { it.second }.distinct().singleOrNull()
     }
+}
+
+internal data class ScreenshotOcrLine(val text: String, val left: Int, val top: Int, val right: Int, val bottom: Int) {
+    val centerX get() = (left + right) / 2.0
+    val width get() = right - left
+    val height get() = bottom - top
 }

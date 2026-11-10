@@ -63,9 +63,9 @@ internal object MapboxOAuthProtocol {
             val allowed = item.optJSONArray("allowedUrls")
             val names = (0 until scopes.length()).map { scopes.getString(it) }.toSet()
             val token = item.optString("token")
-            if (item.optString("usage") == "pk" && item.optBoolean("default") &&
+            if (item.optString("usage", "pk") == "pk" && item.optBoolean("default", true) &&
                 (allowed == null || allowed.length() == 0) &&
-                names.containsAll(setOf("styles:read", "styles:tiles", "fonts:read")) && isPublicToken(token)
+                names.containsAll(setOf("styles:read", "fonts:read")) && isPublicToken(token)
             ) return token
         }
         throw MapboxLoginFailure()

@@ -230,6 +230,11 @@ class HealthConnectManager @Inject constructor(
     fun permissionContract() =
         permissionService.permissionContract()
 
+    internal suspend fun readDashboardRangeTotals(
+        query: tech.mmarca.openvitals.domain.model.DashboardQuery,
+        base: tech.mmarca.openvitals.domain.model.DashboardData,
+    ): tech.mmarca.openvitals.domain.model.DashboardData = DashboardRangeHealthReader(readerSupport).read(query, base)
+
     suspend fun readSteps(date: LocalDate): Long =
         activityReader.readSteps(date)
 

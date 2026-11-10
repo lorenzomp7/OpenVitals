@@ -5,6 +5,7 @@ import androidx.health.connect.client.records.metadata.Metadata
 import androidx.health.connect.client.units.Energy
 import androidx.health.connect.client.units.Length
 import androidx.health.connect.client.units.Mass
+import androidx.health.connect.client.units.Percentage
 import java.security.MessageDigest
 import java.time.LocalDateTime
 import java.time.ZoneId
@@ -26,6 +27,7 @@ internal fun screenshotRecords(values: List<Pair<String, String>>, start: String
         val offset = from.offset
         when (kind) {
             "kg" -> WeightRecord(time, offset, Mass.kilograms(value), metadata)
+            "body_fat" -> { require(value <= 100); BodyFatRecord(time, offset, Percentage(value), metadata) }
             "duration_min" -> {
                 val seconds = kotlin.math.round(value * 60).toLong()
                 require(seconds > 0 && seconds <= 7 * 24 * 60 * 60)
@@ -60,6 +62,7 @@ internal fun screenshotPermissions(kinds: List<String>): Set<String> = kinds.map
     androidx.health.connect.client.permission.HealthPermission.getWritePermission(when (kind) {
         "duration_min" -> ExerciseSessionRecord::class
         "kg" -> WeightRecord::class
+        "body_fat" -> BodyFatRecord::class
         "steps" -> StepsRecord::class
         "km" -> DistanceRecord::class
         "kcal" -> TotalCaloriesBurnedRecord::class

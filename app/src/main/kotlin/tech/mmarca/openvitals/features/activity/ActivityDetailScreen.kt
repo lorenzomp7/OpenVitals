@@ -324,6 +324,9 @@ internal fun ActivityDetailContent(
             item {
                 ActivitySplitsCard(
                     splits = splits,
+                    useSpeed = !workout.exerciseType.let { it == androidx.health.connect.client.records.ExerciseSessionRecord.EXERCISE_TYPE_RUNNING ||
+                        it == androidx.health.connect.client.records.ExerciseSessionRecord.EXERCISE_TYPE_WALKING ||
+                        it == androidx.health.connect.client.records.ExerciseSessionRecord.EXERCISE_TYPE_HIKING },
                     splitDistanceMeters = splitDistanceMeters,
                     slowestPaceSeconds = slowestSplitPaceSeconds,
                     fastestPaceSeconds = fastestSplitPaceSeconds,
@@ -430,16 +433,6 @@ internal fun ActivityDetailContent(
         item {
             SegmentsCard(
                 segments = workout.segments,
-                unitFormatter = unitFormatter,
-                dateTimeFormatterProvider = dateTimeFormatterProvider,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp, vertical = 4.dp),
-            )
-        }
-        item {
-            LapsCard(
-                laps = workout.laps,
                 unitFormatter = unitFormatter,
                 dateTimeFormatterProvider = dateTimeFormatterProvider,
                 modifier = Modifier

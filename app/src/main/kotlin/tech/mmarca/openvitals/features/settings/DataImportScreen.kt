@@ -182,6 +182,12 @@ private fun LazyListScope.dataImportCards(
     state: DataImportUiState,
     actions: DataImportActions,
 ) {
+    item {
+        tech.mmarca.openvitals.features.imports.screenshot.ScreenshotImportCard(
+            modifier = Modifier.padding(horizontal = LayoutMetrics.screenGutter),
+        )
+    }
+    item { SettingsCardSpacer() }
     item { SectionHeader(stringResource(SettingsSection.DATA_IMPORT.titleRes)) }
     item {
         AppleHealthImportCard(
@@ -263,11 +269,6 @@ private fun LazyListScope.dataImportCards(
         )
     }
     item { SettingsCardSpacer() }
-    item {
-        tech.mmarca.openvitals.features.imports.screenshot.ScreenshotImportCard(
-            modifier = Modifier.padding(horizontal = LayoutMetrics.screenGutter),
-        )
-    }
     item { SettingsCardSpacer() }
     item {
         CsvImportCard(

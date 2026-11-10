@@ -30,6 +30,9 @@ import com.mapbox.maps.plugin.annotation.generated.CircleAnnotationOptions
 import com.mapbox.maps.plugin.annotation.generated.PolylineAnnotationOptions
 import com.mapbox.maps.plugin.annotation.generated.createCircleAnnotationManager
 import com.mapbox.maps.plugin.annotation.generated.createPolylineAnnotationManager
+import androidx.lifecycle.compose.LocalLifecycleOwner
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import kotlinx.coroutines.Dispatchers
@@ -81,7 +84,17 @@ private fun MapboxRouteContent(points: List<ExerciseRoutePoint>, dark: Boolean, 
             }
         }
     }
-    DisposableEffect(mapView) {
+    val lifecycleOwner = LocalLifecycleOwner.current
+    DisposableEffect(mapView, lifecycleOwner) {
+        val observer = LifecycleEventObserver { _, event ->
+            when (event) {
+                Lifecycle.Event.ON_START -> mapView.onStart()
+                Lifecycle.Event.ON_STOP -> mapView.onStop()
+                else -> Unit
+            }
+        }
+        lifecycleOwner.lifecycle.addObserver(observer)
+        if (lifecycleOwner.lifecycle.currentState.isAtLeast(Lifecycle.State.STARTED)) mapView.onStart()
         // Keep the local preview visible until a cartographic style has actually loaded.
         val errorSubscription = mapView.mapboxMap.subscribeMapLoadingError { ready = false }
         val loadedSubscription = mapView.mapboxMap.subscribeMapLoaded { ready = true }
@@ -105,6 +118,8 @@ private fun MapboxRouteContent(points: List<ExerciseRoutePoint>, dark: Boolean, 
             }
         }
         onDispose {
+            lifecycleOwner.lifecycle.removeObserver(observer)
+            mapView.onStop()
             errorSubscription.cancel()
             loadedSubscription.cancel()
             mapView.onDestroy()

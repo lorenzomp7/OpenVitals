@@ -45,6 +45,7 @@ internal fun dashboardVisibleWidgetIds(
         .filter { it in specIds }
         // While editing, an unsupported metric the user never placed goes to the tray.
         .filterNot { isEditingDashboard && it in display.unsupportedIds && it !in placedWidgetIds }
+    if (placedWidgetIds.isNotEmpty()) return ordered
     if (isEditingDashboard || !sortEmptyTilesLast) return ordered
     val fixed = dashboardWidgetIdsThatFitRows(ordered, DashboardFixedWidgetRows).toSet()
     val rest = ordered.filterNot { it in fixed }

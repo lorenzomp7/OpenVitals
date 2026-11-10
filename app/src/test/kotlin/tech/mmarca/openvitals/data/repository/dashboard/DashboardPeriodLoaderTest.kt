@@ -21,9 +21,9 @@ class DashboardPeriodLoaderTest {
         val wanted = setOf(DashboardMetric.STEPS, DashboardMetric.DISTANCE)
         val granted = wanted.flatMap { MetricReadPermissions.forMetric(it, false) }.toSet()
         every { hc.managedPermissions } returns granted
-        coEvery { hc.readDailySteps(start, end, true, true, false, false, false, false) } returns listOf(
-            DailySteps(start, 1000, 700.0), DailySteps(end, 3000, 2100.0),
-        )
+        coEvery { hc.readDashboardRangeTotals(any(), any()) } answers {
+            secondArg<DashboardData>().copy(steps = 4000, distanceMeters = 2800.0)
+        }
         val anchor = start.plusMonths(5)
         var snapshotQuery: DashboardQuery? = null
         val result = DashboardPeriodLoader(hc).load(
@@ -33,9 +33,9 @@ class DashboardPeriodLoaderTest {
         assertEquals(2800.0, result.distanceMeters, 0.0)
         assertEquals(anchor, result.date)
         assertEquals(DatePeriod(start, end), result.period)
-        assertEquals(end, snapshotQuery?.date)
-        assertTrue(snapshotQuery!!.visibleMetrics.isEmpty())
-        coVerify(exactly = 1) { hc.readDailySteps(any(), any(), any(), any(), any(), any(), any(), any()) }
+        assertNull(snapshotQuery)
+        coVerify(exactly = 1) { hc.readDashboardRangeTotals(any(), any()) }
+        coVerify(exactly = 0) { hc.readDailySteps(any(), any(), any(), any(), any(), any(), any(), any()) }
     }
 
     @Test fun `missing permission is reported without reading the range`() = runTest {

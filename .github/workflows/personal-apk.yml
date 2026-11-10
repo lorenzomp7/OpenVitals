@@ -1,7 +1,7 @@
 name: personal-apk
 on:
   push:
-    branches: [claude_chatgpt_rebuilt]
+    branches: [main_chatgpt]
   workflow_dispatch:
 permissions:
   contents: read

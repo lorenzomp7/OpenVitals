@@ -19,14 +19,24 @@ No OpenVitals account is required. This personal fork enables Internet access fo
 
 Personal development is consolidated on `main_chatgpt`: see [build, signing and verification](docs/engineering/personal-build.md).
 
-## Install
+## This personal version
 
-| Channel | Link |
-| --- | --- |
-| Google Play | [Install or join testing](https://play.google.com/store/apps/details?id=tech.mmarca.openvitals) |
-| F-Droid | [Install from F-Droid](https://f-droid.org/en/packages/tech.mmarca.openvitals/) |
-| GitHub releases | [Download signed release and debug APKs](https://github.com/Hale-MTU/OpenVitals/releases) |
-| Source | [Build it yourself](#build-from-source) |
+The development branch is [`main_chatgpt`](https://github.com/lorenzomp7/OpenVitals/tree/main_chatgpt), based on Claude's `ce318725` and the consolidated personal changes. Upstream OpenVitals is maintained by [Hale-MTU](https://github.com/Hale-MTU/OpenVitals).
+
+- Dashboard with Day / Week / Month / Year, remembered selection, and the same period passed to Activities.
+- Three widget sizes (1, 2 and 4 spaces), richer information at larger sizes, editable top summary, and optional sideways pages of six medium widgets. Custom order is preserved in display and editing.
+- Period totals use a combined Health Connect aggregate. Returning from another screen keeps a recently loaded dashboard; pull to refresh or a saved entry requests fresh data.
+- Workout summaries choose metrics by sport. Detailed splits are compact and expandable, and cycling uses speed instead of running pace.
+- Saved GPS workouts use Mapbox after browser sign-in on the phone, with encrypted local token storage. The GPS-only preview remains available without cartography. No token is included in the source or APK.
+- Import screenshots from **Settings → Data import** or Android's **Share → OpenVitals**. OCR runs on the phone. Body weight and body-fat percentage are identified by their labels/positions; muscle mass and fat mass are not silently imported as weight. Review the suggested values, workout type, date and time before saving to Health Connect. Screenshot capture time is not necessarily measurement time.
+
+## Install this version
+
+Open [Actions](https://github.com/lorenzomp7/OpenVitals/actions), select a successful **verify** run for `main_chatgpt`, download **ci-apks**, unzip it and install **app-ci.apk**. The `androidTest` APK is the test runner, not the application. CI builds use a separate `.ci` application ID and can coexist with another installation.
+
+A personally signed debug APK is produced by the manual **personal-apk** workflow once signing is configured; see [personal builds](docs/engineering/personal-build.md). This fork's changes are not included in the upstream Play Store / F-Droid builds.
+
+Device validation is still necessary for your Mapbox account, the provider's speed on a large personal Health Connect history, and OCR layouts not covered by tests. CI does not log into a personal Mapbox account or access personal health records.
 
 ## What you can do with OpenVitals
 

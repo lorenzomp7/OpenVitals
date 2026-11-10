@@ -57,19 +57,9 @@ internal fun DashboardWidgetCarousel(
     // Outside edit mode the first three widgets share the hero: the first is
     // the centre ring, the next two the arcs beside it. Edit mode keeps them
     // in the grid so they can be dragged, which is how the user picks them.
-    val heroIds = if (isEditingDashboard) {
-        emptyList()
-    } else {
-        visibleIds.take(DashboardHeroRingCount).filter { specsById[it]?.hero != null && widgetSizes[it] == null }
-    }
-    val fixedIds = if (heroIds.isNotEmpty()) {
-        emptyList()
-    } else {
-        dashboardWidgetIdsThatFitRows(
-            widgetIds = visibleIds,
-            rows = DashboardFixedWidgetRows,
-        )
-    }
+    val topIds = visibleIds.take(DashboardHeroRingCount)
+    val heroIds = if (isEditingDashboard) emptyList() else topIds.filter { specsById[it]?.hero != null }
+    val fixedIds = if (isEditingDashboard) topIds else emptyList()
     val sizeOf: (DashboardWidgetId) -> DashboardTileSize? = { id ->
         specsById[id]?.let { dashboardTileSize(it, widgetSizes) }
     }
@@ -80,7 +70,7 @@ internal fun DashboardWidgetCarousel(
     // Every other widget, in one grid that scrolls with the page.
     val carouselIds = visibleIds.filterNot { it in fixedIdSet || it in heroIds }
     val carouselRows = dashboardWidgetGridRows(carouselIds)
-    val widgetBounds = remember { mutableStateMapOf<DashboardWidgetId, Rect>() }
+    val widgetBounds = remember { mutableMapOf<DashboardWidgetId, Rect>() }
     var contentBounds by remember { mutableStateOf<Rect?>(null) }
     var fixedSectionBounds by remember { mutableStateOf<Rect?>(null) }
     var carouselSectionBounds by remember { mutableStateOf<Rect?>(null) }
@@ -143,7 +133,7 @@ internal fun DashboardWidgetCarousel(
     }
 
     fun dropTargetIdsFor(draggedId: DashboardWidgetId, draggedBounds: Rect): List<DashboardWidgetId> {
-        val currentPageIds = carouselIds
+        val currentPageIds = carouselIds.filter { widgetBounds[it]?.overlaps(draggedBounds) == true }.ifEmpty { carouselIds }
         val dropCenter = draggedBounds.center
         val isOverFixedSection = fixedSectionBounds?.containsPoint(dropCenter) == true
         val isOverCarouselSection = carouselSectionBounds?.containsPoint(dropCenter) == true

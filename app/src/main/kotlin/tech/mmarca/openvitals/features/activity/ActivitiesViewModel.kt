@@ -81,7 +81,9 @@ class ActivitiesViewModel @Inject constructor(
 ) : ViewModel() {
 
     private val goalKey = MetricDailyGoalKey.WORKOUT_MINUTES
-    private val initialRange = periodPreferences.timeRangeFor(PeriodRangePreferenceKey.ACTIVITIES)
+    private val initialRange = savedStateHandle.get<String>("range")?.let {
+        runCatching { TimeRange.valueOf(it) }.getOrNull()
+    } ?: periodPreferences.timeRangeFor(PeriodRangePreferenceKey.ACTIVITIES)
     private val initialActivityWeekMode = periodPreferences.activityWeekMode
     private val periodDriver = PeriodSelectionDriver(
         initialRange = initialRange,
@@ -94,6 +96,7 @@ class ActivitiesViewModel @Inject constructor(
     private val _uiState = MutableStateFlow(
         ActivitiesUiState(
             selectedRange = initialRange,
+            selectedDate = savedStateHandle.selectedDayOrNull() ?: LocalDate.now(),
             activityWeekMode = initialActivityWeekMode,
             dailyGoalMinutes = goalKey.normalize(dailyGoalPreferences.dailyGoalFor(goalKey)),
         )
@@ -235,7 +238,7 @@ class ActivitiesViewModel @Inject constructor(
                         heartRepository.loadDailyHRV(windows.current.start, currentDataEnd)
                     }
                     val heartRateSamples = async {
-                        if (query.range == TimeRange.YEAR) {
+                        if (query.range != TimeRange.DAY) {
                             emptyList()
                         } else {
                             heartRepository.loadHeartRateSamples(windows.current.start, currentDataEnd)

@@ -1,6 +1,6 @@
 # Consolidated personal build
 
-`claude_chatgpt_rebuilt` starts directly from Claude's `claude/adoring-brown-692amx` at `ce31872527acfd27ca6c4080e9b82c1162831329` and integrates all changes from `main_chatgpt` at `220605999f36def2626bb454f45b3582cda1c47e`. Claude's full history and the fast first-day activity load are retained. The older branches remain unchanged. The screenshot-only `personal-shots` branch is not merged into application history.
+`main_chatgpt` starts from the consolidated branch that was rebuilt directly from Claude's `claude/adoring-brown-692amx` at `ce31872527acfd27ca6c4080e9b82c1162831329` and integrates all changes from `main_chatgpt` at `220605999f36def2626bb454f45b3582cda1c47e`. Claude's full history and the fast first-day activity load are retained. The older branches remain unchanged. The screenshot-only `personal-shots` branch is not merged into application history.
 
 ## Verification
 
@@ -20,7 +20,7 @@ powershell -ExecutionPolicy Bypass -File scripts/setup-personal-signing.ps1
 
 The script generates a fresh key outside the repository, stores a password backup protected with Windows DPAPI, and configures three Actions secrets through GitHub CLI. Re-running reuses that new key, preserving update compatibility. Keep the local key backup; the password backup belongs to the Windows account that created it. Losing it can prevent future updates with the same signature.
 
-Then run `personal-apk` manually, or push a commit containing `[apk]` to `claude_chatgpt_rebuilt`. The app installs under `tech.mmarca.openvitals.debug`. The new signature cannot update an installed APK signed with the exposed old key; installing it may require removing the old personal build. Preserve/export personal app data before doing so. The CI APK has a separate `.ci` package and remains available without personal signing secrets.
+Then run `personal-apk` manually, or push a commit containing `[apk]` to `main_chatgpt`. The app installs under `tech.mmarca.openvitals.debug`. The new signature cannot update an installed APK signed with the exposed old key; installing it may require removing the old personal build. Preserve/export personal app data before doing so. The CI APK has a separate `.ci` package and remains available without personal signing secrets.
 
 For maps, sign in to Mapbox on the phone as described in [Mapbox configuration](mapbox.md). Neither build receives a Mapbox secret from GitHub.
 
@@ -32,4 +32,4 @@ Older workouts are requested in 30-day windows, revealed ten at a time and loade
 
 ## Dashboard periods
 
-The selector at the top left offers Day, Week, Month and Year, remembers the choice, and reuses the shared period navigation and week preference. Future dates are capped at today. Activity, nutrition, hydration and mindfulness are totals over the selected period; sleep is the mean of recorded nights and heart rate/HRV are means of recorded days. Goals for cumulative metrics scale to the elapsed period length. Other measurement tiles retain their latest-value semantics; training tiles retain their explicitly weekly window at the period end. The dashboard states these distinctions. Older-workout pagination is available in Day only; other ranges show the workouts inside the chosen period. Range reads use Health Connect aggregates rather than loading one dashboard per day.
+The selector at the top left offers Day, Week, Month and Year, remembers the choice, and reuses the shared period navigation and week preference. Future dates are capped at today. Activity, nutrition, hydration and mindfulness are totals over the selected period; sleep is the mean of recorded nights and heart rate is the Health Connect aggregate average and HRV is the mean of recorded days. Goals for cumulative metrics scale to the elapsed period length. Other measurement tiles retain their latest-value semantics; training tiles retain their explicitly weekly window at the period end. The dashboard states these distinctions. Older-workout pagination is available in Day only; other ranges show the workouts inside the chosen period. Range reads use Health Connect aggregates rather than loading one dashboard per day.

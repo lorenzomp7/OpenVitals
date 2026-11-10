@@ -134,6 +134,9 @@ class DashboardViewModel @Inject constructor(
      * same day is absorbed; FORCE and date changes restart.
      */
     private var inFlightLoadDate: LocalDate? = null
+    private var lastSettledKey: Pair<LocalDate, TimeRange>? = null
+    private var lastSettledAt = 0L
+
 
     init {
         observeOpenWatch()
@@ -176,6 +179,13 @@ class DashboardViewModel @Inject constructor(
                 forceLoad(_uiState.value.selectedDate, RefreshMode.NORMAL)
             }
         }
+    }
+
+    private var consumedRefreshRequest = 0
+    fun onRefreshRequest(request: Int) {
+        if (request <= consumedRefreshRequest) return
+        consumedRefreshRequest = request
+        refresh()
     }
 
     fun refresh() {
@@ -294,6 +304,11 @@ class DashboardViewModel @Inject constructor(
     fun load(date: LocalDate, refreshMode: RefreshMode = RefreshMode.NORMAL) {
         val clampedDate = date.coerceAtMost(LocalDate.now())
         if (refreshMode == RefreshMode.NORMAL && clampedDate == inFlightLoadDate) return
+        if (refreshMode == RefreshMode.NORMAL &&
+            lastSettledKey == (clampedDate to _uiState.value.selectedRange) &&
+            System.currentTimeMillis() - lastSettledAt < 300_000L &&
+            _uiState.value.data != null && _uiState.value.degradedWidgets.isEmpty()
+        ) return
         forceLoad(date = clampedDate, refreshMode = refreshMode)
     }
 
@@ -364,7 +379,8 @@ class DashboardViewModel @Inject constructor(
         val widgets = _uiState.value.dashboardWidgets.filter { onlyWidgets == null || it in onlyWidgets }
         // Widget order is load order: first-screen tiles read first.
         val orderedMetrics = widgets.mapNotNull { it.toDashboardMetricOrNull() }.distinct()
-        val groups = dashboardMetricLoadGroups(orderedMetrics)
+        val groups = if (current.selectedRange == TimeRange.DAY) dashboardMetricLoadGroups(orderedMetrics)
+            else listOf(orderedMetrics.toSet()).filter { it.isNotEmpty() }
         val metricWidgetIds = widgets.filter { it.toDashboardMetricOrNull() != null }.toSet()
         val wantsBodyEnergy = bodyEnergyRepository != null &&
             DashboardWidgetId.BODY_ENERGY in widgets
@@ -427,6 +443,10 @@ class DashboardViewModel @Inject constructor(
                 isRefreshing = false,
             )
         }
+        if (failures.all { it == null } && _uiState.value.degradedWidgets.isEmpty()) {
+            lastSettledKey = clampedDate to _uiState.value.selectedRange
+            lastSettledAt = System.currentTimeMillis()
+        }
         // Once per app open, after the load settles: the background passes. Not after a
         // load Health Connect refused; those reads come first when it answers again.
         historySyncScheduler?.let { scheduler ->
@@ -462,7 +482,7 @@ class DashboardViewModel @Inject constructor(
             activityWeekMode = activityWeekMode,
             visibleMetrics = metrics,
             // Nothing is gated on a pass any more, so the tile can afford these reads.
-            includeHistoricalBaselines = true,
+            includeHistoricalBaselines = _uiState.value.selectedRange == TimeRange.DAY,
             includeWeeklyTrainingSignals = DashboardMetric.WEEKLY_CARDIO_LOAD in metrics,
         )
         var failure: Throwable? = null
@@ -668,23 +688,15 @@ class DashboardViewModel @Inject constructor(
         // The same list the grid lays out: an unsupported metric the user never placed is in the
         // tray, not the rows. Counting it here put the section boundary one tile off the screen's.
         val state = _uiState.value
-        val fixedWidgetIds = dashboardWidgetIdsThatFitRows(
-            widgetIds = current.filterNot {
-                it == DashboardWidgetId.WORKOUT ||
-                    (it in state.display.unsupportedIds && it !in state.placedDashboardWidgets)
-            },
-            rows = DashboardFixedWidgetRows,
-        )
+        val fixedWidgetIds = current.filterNot {
+            it == DashboardWidgetId.WORKOUT ||
+                (it in state.display.unsupportedIds && it !in state.placedDashboardWidgets)
+        }.take(3)
         val fromFixedSection = widgetId in fixedWidgetIds
         val targetFixedSection = targetWidgetId in fixedWidgetIds
         val updated = current.toMutableList().apply {
-            if (fromFixedSection == targetFixedSection) {
-                removeAt(fromIndex)
-                add(targetIndex, widgetId)
-            } else {
-                this[fromIndex] = targetWidgetId
-                this[targetIndex] = widgetId
-            }
+            this[fromIndex] = targetWidgetId
+            this[targetIndex] = widgetId
         }
 
         updateDashboardWidgets(updated)

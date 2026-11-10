@@ -15,6 +15,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.background
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -84,6 +85,7 @@ internal fun packDashboardTiles(
     val placements = mutableListOf<DashboardTilePlacement>()
     var page = 0
     var taken = mutableListOf<BooleanArray>()
+    var cursor = 0
 
     fun fits(size: DashboardTileSize, row: Int, column: Int): Boolean {
         if (column + size.columns > DashboardTileColumns) return false
@@ -99,7 +101,7 @@ internal fun packDashboardTiles(
         val lastRow = rowsPerPage ?: (taken.size + size.rows)
         for (row in 0 until lastRow) {
             for (column in 0 until DashboardTileColumns) {
-                if (fits(size, row, column)) return row to column
+                if (row * DashboardTileColumns + column >= cursor && fits(size, row, column)) return row to column
             }
         }
         return null
@@ -110,9 +112,11 @@ internal fun packDashboardTiles(
         if (gap == null) {
             page += 1
             taken = mutableListOf()
+            cursor = 0
             gap = firstGap(size) ?: (0 to 0)
         }
         val (row, column) = gap
+        cursor = row * DashboardTileColumns + column + size.columns
         while (taken.size < row + size.rows) taken.add(BooleanArray(DashboardTileColumns))
         for (r in row until row + size.rows) {
             for (c in column until column + size.columns) taken[r][c] = true
@@ -152,6 +156,7 @@ internal fun DashboardPackedTiles(
     Column(modifier = modifier, horizontalAlignment = Alignment.CenterHorizontally) {
         HorizontalPager(
             state = pagerState,
+            beyondViewportPageCount = 1,
             pageSpacing = DashboardTileGap,
             verticalAlignment = Alignment.Top,
         ) { page ->
@@ -241,20 +246,15 @@ internal fun DashboardPlacedTileGrid(
 @Composable
 internal fun DashboardSizedTile(spec: DashboardWidgetSpec, size: DashboardTileSize) {
     val ring = spec.hero
-    val ownSize = if (spec.style == DashboardWidgetStyle.CIRCLE) DashboardTileSize.LARGE else DashboardTileSize.MEDIUM
-    when {
-        ring == null || size == ownSize -> spec.content(Modifier.fillMaxSize())
-        size == DashboardTileSize.MEDIUM -> MetricStatCard(
-            title = ring.title,
-            value = DisplayValue(ring.value, ""),
-            icon = ring.icon,
-            accentColor = ring.accentColor,
-            modifier = Modifier.fillMaxSize(),
-            progressFraction = ring.fraction.takeIf { it > 0f },
-            onClick = ring.onClick,
+    if (ring == null) { spec.content(Modifier.fillMaxSize()); return }
+    when (size) {
+        DashboardTileSize.SMALL -> DashboardSmallTile(ring)
+        DashboardTileSize.MEDIUM -> MetricStatCard(
+            title = ring.title, value = DisplayValue(ring.value, ""), icon = ring.icon,
+            accentColor = ring.accentColor, modifier = Modifier.fillMaxSize(),
+            subtitle = spec.details.firstOrNull(), onClick = ring.onClick,
         )
-        size == DashboardTileSize.SMALL -> DashboardSmallTile(ring)
-        else -> DashboardLargeTile(ring)
+        DashboardTileSize.LARGE -> DashboardLargeTile(ring, spec.details.take(2))
     }
 }
 
@@ -297,7 +297,7 @@ private fun DashboardSmallTile(ring: DashboardHeroRing) {
 
 /** Four spaces: the number inside its ring, for a widget that has no ring drawing of its own. */
 @Composable
-private fun DashboardLargeTile(ring: DashboardHeroRing) {
+private fun DashboardLargeTile(ring: DashboardHeroRing, details: List<String>) {
     val colors = dashboardTileColors(ring.accentColor)
     OpenVitalsCard(
         modifier = Modifier.fillMaxSize(),
@@ -324,7 +324,7 @@ private fun DashboardLargeTile(ring: DashboardHeroRing) {
                 }
             }
             Column(
-                modifier = Modifier.padding(horizontal = 30.dp),
+                modifier = Modifier.padding(horizontal = 10.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
                 AutoResizeText(
@@ -343,6 +343,10 @@ private fun DashboardLargeTile(ring: DashboardHeroRing) {
                     maxLines = 1,
                     minFontSize = 13.sp,
                 )
+                details.forEach { detail ->
+                    AutoResizeText(text = detail, style = MaterialTheme.typography.bodySmall,
+                        color = colors.icon, maxLines = 1, textAlign = TextAlign.Center)
+                }
             }
         }
     }

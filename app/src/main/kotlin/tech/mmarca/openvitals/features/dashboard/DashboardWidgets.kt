@@ -334,25 +334,7 @@ internal fun DashboardWidgetTile(
     sizeLabel: String? = null,
     onCycleSize: (() -> Unit)? = null,
 ) {
-    val wiggleRotation = if (isEditingDashboard && loopingMotionAllowed()) {
-        val wiggleTransition = rememberInfiniteTransition(label = "DashboardWidgetWiggle")
-        val rotation by wiggleTransition.animateFloat(
-            initialValue = -DashboardEditWiggleDegrees,
-            targetValue = DashboardEditWiggleDegrees,
-            animationSpec = infiniteRepeatable(
-                animation = tween(
-                    durationMillis = Motion.editWiggleMillis,
-                    delayMillis = (spec.id.ordinal % 4) * 35,
-                    easing = LinearEasing,
-                ),
-                repeatMode = RepeatMode.Reverse,
-            ),
-            label = "DashboardWidgetWiggleRotation",
-        )
-        rotation
-    } else {
-        0f
-    }
+    val wiggleRotation = 0f
     val removeWidgetLabel = stringResource(R.string.cd_remove_widget)
     val movePreviousLabel = stringResource(R.string.cd_move_widget_up)
     val moveNextLabel = stringResource(R.string.cd_move_widget_down)

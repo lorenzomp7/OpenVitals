@@ -41,7 +41,7 @@ class MapboxOAuthProtocolTest {
         val valid = """{"usage":"pk","default":true,"scopes":["styles:read","styles:tiles","fonts:read"],"token":"pk.fixture.signature"}"""
         assertEquals("pk.fixture.signature", MapboxOAuthProtocol.defaultPublicToken(JSONArray("[$valid]")))
         for (bad in listOf(valid.replace("\"pk\"", "\"sk\""), valid.replace("true", "false"),
-            valid.replace("styles:tiles", "other:read"), valid.replace("pk.fixture", "sk.fixture"),
+            valid.replace("styles:read", "other:read"), valid.replace("pk.fixture", "sk.fixture"),
             valid.replace("\"default\":true", "\"allowedUrls\":[\"https://example.com\"],\"default\":true"))) {
             assertThrows(MapboxLoginFailure::class.java) { MapboxOAuthProtocol.defaultPublicToken(JSONArray("[$bad]")) }
         }

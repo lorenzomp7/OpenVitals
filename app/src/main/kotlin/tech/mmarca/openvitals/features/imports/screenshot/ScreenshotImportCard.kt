@@ -12,6 +12,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import tech.mmarca.openvitals.R
@@ -45,8 +47,9 @@ internal fun ScreenshotImportDialog(onDismiss: () -> Unit, initialUri: android.n
     }
     var typeMenu by remember { mutableStateOf(false) }
     val permissions = rememberHealthConnectPermissionLauncher()
-    Dialog(onDismissRequest = { if (!state.busy) onDismiss() }) {
-        Surface(shape = MaterialTheme.shapes.large) {
+    val dialogHeight = LocalConfiguration.current.screenHeightDp.dp * 0.88f
+    Dialog(onDismissRequest = { if (!state.busy) onDismiss() }, properties = DialogProperties(usePlatformDefaultWidth = false)) {
+        Surface(modifier = Modifier.padding(16.dp).fillMaxWidth().heightIn(max = dialogHeight), shape = MaterialTheme.shapes.large) {
             Column(Modifier.padding(16.dp).verticalScroll(rememberScrollState()), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 Text(stringResource(R.string.screenshot_import_title), style = MaterialTheme.typography.titleLarge)
                 Text(stringResource(R.string.screenshot_import_body))
@@ -57,7 +60,7 @@ internal fun ScreenshotImportDialog(onDismiss: () -> Unit, initialUri: android.n
                 state.values.forEachIndexed { index, item ->
                     Row {
                         OutlinedTextField(value = item.value, onValueChange = { confirmed = false; viewModel.edit(index, it) },
-                            label = { Text(when (item.kind) { "kcal" -> stringResource(R.string.screenshot_import_total_kcal); "duration_min" -> stringResource(R.string.screenshot_import_duration); else -> item.kind }) },
+                            label = { Text(when (item.kind) { "kg" -> stringResource(R.string.metric_weight); "body_fat" -> stringResource(R.string.metric_body_fat); "kcal" -> stringResource(R.string.screenshot_import_total_kcal); "duration_min" -> stringResource(R.string.screenshot_import_duration); else -> item.kind }) },
                             enabled = !state.busy && !state.saved, modifier = Modifier.weight(1f))
                         TextButton(onClick = { confirmed = false; viewModel.remove(index) }, enabled = !state.busy && !state.saved) { Text("×") }
                     }
@@ -78,8 +81,8 @@ internal fun ScreenshotImportDialog(onDismiss: () -> Unit, initialUri: android.n
                         }
                     }
                     Text(stringResource(R.string.screenshot_import_time_help))
-                    OutlinedTextField(start, { start = it; confirmed = false }, label = { Text(stringResource(R.string.screenshot_import_start)) }, enabled = !state.busy && !state.saved)
-                    OutlinedTextField(end, { end = it; confirmed = false }, label = { Text(stringResource(R.string.screenshot_import_end)) }, enabled = !state.busy && !state.saved)
+                    ScreenshotTimePicker(start, stringResource(R.string.screenshot_import_start), !state.busy && !state.saved) { start = it; confirmed = false }
+                    ScreenshotTimePicker(end, stringResource(R.string.screenshot_import_end), !state.busy && !state.saved) { end = it; confirmed = false }
                     Row {
                         Checkbox(confirmed, { confirmed = it }, enabled = !state.busy && !state.saved)
                         Text(stringResource(R.string.screenshot_import_confirm), modifier = Modifier.weight(1f))
@@ -95,6 +98,25 @@ internal fun ScreenshotImportDialog(onDismiss: () -> Unit, initialUri: android.n
                 if (state.saved) Text(stringResource(R.string.screenshot_import_saved))
                 TextButton(onClick = onDismiss, enabled = !state.busy) { Text(stringResource(R.string.screenshot_import_close)) }
             }
+        }
+    }
+}
+
+@Composable
+private fun ScreenshotTimePicker(value: String, label: String, enabled: Boolean, onValue: (String) -> Unit) {
+    val context = androidx.compose.ui.platform.LocalContext.current
+    val date = runCatching { java.time.LocalDateTime.parse(value) }.getOrNull()
+    OutlinedButton(enabled = enabled, modifier = Modifier.fillMaxWidth(), onClick = {
+        val seed = date ?: java.time.LocalDateTime.now()
+        android.app.DatePickerDialog(context, { _, year, month, day ->
+            android.app.TimePickerDialog(context, { _, hour, minute ->
+                onValue(java.time.LocalDateTime.of(year, month + 1, day, hour, minute).toString())
+            }, seed.hour, seed.minute, android.text.format.DateFormat.is24HourFormat(context)).show()
+        }, seed.year, seed.monthValue - 1, seed.dayOfMonth).show()
+    }) {
+        Column(Modifier.fillMaxWidth()) {
+            Text(label, style = MaterialTheme.typography.labelMedium)
+            Text(date?.format(java.time.format.DateTimeFormatter.ofPattern("d MMM yyyy, HH:mm:ss")) ?: "—")
         }
     }
 }

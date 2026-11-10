@@ -77,9 +77,7 @@ fun DashboardScreen(
         viewModel.resumeCurrentDay()
     }
     androidx.compose.runtime.LaunchedEffect(refreshRequest) {
-        if (refreshRequest > 0) {
-            viewModel.refresh()
-        }
+        viewModel.onRefreshRequest(refreshRequest)
     }
     val context = LocalContext.current
     val errorMessage = error?.resolve()

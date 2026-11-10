@@ -38,31 +38,11 @@ internal fun DashboardQuickActions(
         horizontalArrangement = Arrangement.spacedBy(DashboardActionsSpacing),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        OpenVitalsTonalButton(
-            onClick = onOpenLog,
-            contentPadding = DashboardQuickActionContentPadding,
-            modifier = Modifier
-                .weight(1f)
-                .height(DashboardQuickActionHeight),
-        ) {
-            Icon(
-                imageVector = Icons.Outlined.Add,
-                contentDescription = null,
-                modifier = Modifier.size(DashboardQuickActionIconSize),
-            )
-            Spacer(Modifier.width(6.dp))
-            Text(
-                text = stringResource(R.string.dashboard_action_log),
-                maxLines = 1,
-                softWrap = false,
-                overflow = TextOverflow.Ellipsis,
-            )
-        }
         OpenVitalsButton(
             onClick = onStartActivity,
             contentPadding = DashboardQuickActionContentPadding,
             modifier = Modifier
-                .weight(1f)
+                .weight(1.0f)
                 .height(DashboardQuickActionHeight),
         ) {
             Icon(
@@ -73,6 +53,26 @@ internal fun DashboardQuickActions(
             Spacer(Modifier.width(6.dp))
             Text(
                 text = stringResource(R.string.dashboard_action_start_workout),
+                maxLines = 1,
+                softWrap = false,
+                overflow = TextOverflow.Ellipsis,
+            )
+        }
+        OpenVitalsTonalButton(
+            onClick = onOpenLog,
+            contentPadding = DashboardQuickActionContentPadding,
+            modifier = Modifier
+                .weight(0.70f)
+                .height(DashboardQuickActionHeight),
+        ) {
+            Icon(
+                imageVector = Icons.Outlined.Add,
+                contentDescription = null,
+                modifier = Modifier.size(DashboardQuickActionIconSize),
+            )
+            Spacer(Modifier.width(6.dp))
+            Text(
+                text = stringResource(R.string.dashboard_action_log),
                 maxLines = 1,
                 softWrap = false,
                 overflow = TextOverflow.Ellipsis,

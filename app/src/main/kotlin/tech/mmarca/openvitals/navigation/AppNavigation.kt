@@ -345,7 +345,7 @@ fun AppNavigation(
             // One screen fades over the other, which stays whole underneath:
             // the default scales the leaving screen down over the one behind it.
             enterTransition = { fadeIn(tween(NavFadeMillis)) },
-            exitTransition = { fadeOut(tween(durationMillis = 1, delayMillis = NavFadeMillis)) },
+            exitTransition = { fadeOut(tween(NavFadeMillis)) },
             popEnterTransition = { fadeIn(tween(1)) },
             popExitTransition = { fadeOut(tween(NavFadeMillis)) },
             // The back gesture has its own pair, and its default shrinks the
@@ -382,7 +382,10 @@ fun AppNavigation(
                         )
                     },
                     onOpenActivities = {
-                        navController.navigate(Screen.Activity.route)
+                        val selected = dashboardViewModel.uiState.value
+                        navController.navigate(Screen.Activity.route.withSelectedDay(selected.selectedDate) +
+                            (if (selected.selectedDate == java.time.LocalDate.now()) "?" else "&") +
+                            "range=${selected.selectedRange.name}")
                     },
                     onOpenActivity = { activityId ->
                         navController.navigate(Screen.ActivityDetail.createRoute(activityId))
@@ -664,8 +667,9 @@ fun AppNavigation(
             }
 
             composable(
-                route = Screen.Activity.route + SELECTED_DAY_QUERY_PATTERN,
-                arguments = listOf(navArgument(SELECTED_DAY_ARG) { type = NavType.StringType; nullable = true; defaultValue = null }),
+                route = Screen.Activity.route + SELECTED_DAY_QUERY_PATTERN + "&range={range}",
+                arguments = listOf(navArgument(SELECTED_DAY_ARG) { type = NavType.StringType; nullable = true; defaultValue = null },
+                    navArgument("range") { type = NavType.StringType; nullable = true; defaultValue = null }),
             ) {
                 val activitiesViewModel = hiltViewModel<ActivitiesViewModel>()
                 ActivitiesScreen(

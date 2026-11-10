@@ -55,13 +55,5 @@ internal fun DashboardPeriodSelector(
             onOpenCalendar = onOpenCalendar,
             weekPeriodMode = state.activityWeekMode.toWeekPeriodMode(),
         )
-        if (state.selectedRange != TimeRange.DAY) {
-            Text(
-                stringResource(R.string.dashboard_period_summary),
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier.padding(top = 4.dp, bottom = 4.dp),
-            )
-        }
     }
 }
