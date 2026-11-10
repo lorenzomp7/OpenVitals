@@ -4,6 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Modifier
@@ -129,7 +130,10 @@ private val mixedSizes = mapOf(
 @Composable
 private fun PhoneSurface(theme: AppThemeMode, content: @Composable () -> Unit) {
     OpenVitalsTheme(themeMode = theme, dynamicColor = false) {
-        CompositionLocalProvider(LocalDensity provides Density(density = 2.625f, fontScale = 1f)) {
+        CompositionLocalProvider(
+            LocalDensity provides Density(density = 2.625f, fontScale = 1f),
+            LocalContentColor provides MaterialTheme.colorScheme.onBackground,
+        ) {
             Box(
                 modifier = Modifier
                     .requiredSize(411.dp, 880.dp)
