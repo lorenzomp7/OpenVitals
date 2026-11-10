@@ -707,12 +707,17 @@ class DashboardViewModelTest {
 
         val midRefresh = vm.uiState.value
         assertTrue(DashboardWidgetId.WEIGHT in midRefresh.loadingWidgets)
-        assertEquals(true, midRefresh.display.widgets[DashboardWidgetId.WEIGHT]?.isLoading)
+        assertTrue(midRefresh.isRefreshing)
+        assertEquals(false, midRefresh.display.widgets[DashboardWidgetId.WEIGHT]?.isLoading)
+        assertEquals(false, midRefresh.display.widgets[DashboardWidgetId.STEPS]?.isLoading)
+        assertEquals(9_000L, midRefresh.data?.steps)
         assertEquals(settled, midRefresh.display.lastDemoted)
 
         refreshGate.complete(Unit)
         advanceUntilIdle()
         assertEquals(settled, vm.uiState.value.display.lastDemoted)
+        assertFalse(vm.uiState.value.isRefreshing)
+        assertTrue(vm.uiState.value.loadingWidgets.isEmpty())
     }
 
     @Test fun `newer load wins when navigation requests overlap`() = runTest {

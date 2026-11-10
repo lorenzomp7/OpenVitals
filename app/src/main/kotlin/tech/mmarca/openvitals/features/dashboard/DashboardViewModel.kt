@@ -112,6 +112,7 @@ class DashboardViewModel @Inject constructor(
     private val loadCoordinator = LoadCoordinator()
     private var userPinnedPastDay = false
     private var permissionPromptDismissedForLoad = false
+    private var keepVisibleValuesWhileRefreshing = false
     private var loadGeneration = 0L
 
     /** Serialises publishing: each merge is a read-modify-write of the shared state. */
@@ -309,7 +310,10 @@ class DashboardViewModel @Inject constructor(
                 )
             } finally {
                 // A superseded job must not clear the newer load's marker.
-                if (isCurrent) inFlightLoadDate = null
+                if (isCurrent) {
+                    inFlightLoadDate = null
+                    keepVisibleValuesWhileRefreshing = false
+                }
             }
         }
     }
@@ -373,19 +377,16 @@ class DashboardViewModel @Inject constructor(
         // Nothing here may await a metric: the screen shows "loading" tiles at once.
         val existingData = current.data?.takeIf { it.date == clampedDate }
         val hadExistingData = existingData != null
+        keepVisibleValuesWhileRefreshing = hadExistingData
         val seed = (existingData ?: DashboardData(date = clampedDate))
             // A reload re-establishes these; the merge can only add to the set. A partial pass keeps them.
             .let { if (onlyWidgets == null) it.copy(missingPermissions = emptySet()) else it }
         publishDashboardData(
             data = seed,
-            // A reload of the day on screen keeps its numbers until the new ones land.
-            loadingWidgets = if (hadExistingData) {
-                emptySet()
-            } else {
-                metricWidgetIds + listOfNotNull(
-                    DashboardWidgetId.BODY_ENERGY.takeIf { wantsBodyEnergy },
-                )
-            },
+            // Track pending reads even when their previous values stay visible.
+            loadingWidgets = metricWidgetIds + listOfNotNull(
+                DashboardWidgetId.BODY_ENERGY.takeIf { wantsBodyEnergy },
+            ),
             sleepWindow = sleepWindow,
             activityWeekMode = activityWeekMode,
             goals = dailyGoals,
@@ -711,7 +712,8 @@ class DashboardViewModel @Inject constructor(
             dailyGoals = dailyGoals,
             unitFormatter = unitFormatter,
             dateTimeFormatterProvider = dateTimeFormatterProvider,
-            loadingWidgets = loadingWidgets,
+            // A same-day refresh retains the rendered values without losing pending-read state.
+            loadingWidgets = if (keepVisibleValuesWhileRefreshing) emptySet() else loadingWidgets,
             degradedWidgets = _uiState.value.degradedWidgets,
             bodyEnergySetupCompleted = prefs.bodyEnergyCalibration().setupCompleted,
             // Only edit mode shows unsupported metrics, in the add tray.
