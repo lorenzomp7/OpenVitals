@@ -224,7 +224,7 @@ internal fun DashboardWidgetGrid(
     if (placements.isEmpty()) return
     DashboardPlacedTileGrid(
         placements = placements,
-        rowHeight = dashboardWidgetRowHeight(),
+        rowHeight = dashboardWidgetRowHeight() + if (isEditingDashboard) 48.dp else 0.dp,
         modifier = modifier.fillMaxWidth().padding(
             start = DashboardWidgetHorizontalPadding, end = DashboardWidgetHorizontalPadding,
             top = topPadding, bottom = bottomPadding,
@@ -403,55 +403,48 @@ internal fun DashboardWidgetTile(
     ) {
         AnimatedContent(
             targetState = spec.id,
-            modifier = Modifier.fillMaxSize(),
+            modifier = Modifier.fillMaxSize().padding(top = if (isEditingDashboard) 48.dp else 0.dp),
             label = "DashboardWidgetSwap",
         ) { widgetId ->
             val displayedSpec = specsById[widgetId] ?: spec
             displayedSpec.content(Modifier.fillMaxSize())
         }
-        if (isEditingDashboard && sizeLabel != null && onCycleSize != null) {
-            Box(
-                contentAlignment = Alignment.Center,
-                modifier = Modifier
-                    // Beside the remove button, level with it, so neither covers the other.
-                    .align(Alignment.TopEnd)
-                    .padding(top = 13.dp, end = 58.dp)
-                    .size(34.dp)
-                    .background(color = MaterialTheme.colorScheme.primary, shape = CircleShape)
-                    .clickable(
-                        onClickLabel = stringResource(R.string.dashboard_widget_size_action),
-                        onClick = onCycleSize,
-                    ),
-            ) {
-                Text(
-                    text = sizeLabel,
-                    style = MaterialTheme.typography.labelLarge,
-                    color = MaterialTheme.colorScheme.onPrimary,
-                )
-            }
-        }
         if (isEditingDashboard) {
-            Box(
-                contentAlignment = Alignment.Center,
-                modifier = Modifier
-                    .align(Alignment.TopEnd)
-                    .padding(6.dp)
-                    .size(48.dp)
-                    .background(
-                        color = MaterialTheme.colorScheme.surface.copy(alpha = 0.88f),
-                        shape = CircleShape,
-                    )
-                    .clickable(
+            Row(
+                modifier = Modifier.align(Alignment.TopEnd).width(96.dp).height(48.dp),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                if (sizeLabel != null && onCycleSize != null) {
+                    Box(
+                        contentAlignment = Alignment.Center,
+                        modifier = Modifier.weight(1f).fillMaxHeight().clickable(
+                            onClickLabel = stringResource(R.string.dashboard_widget_size_action),
+                            onClick = onCycleSize,
+                        ),
+                    ) {
+                        Text(
+                            text = sizeLabel,
+                            style = MaterialTheme.typography.labelLarge,
+                            color = MaterialTheme.colorScheme.onPrimary,
+                            modifier = Modifier.background(MaterialTheme.colorScheme.primary, CircleShape)
+                                .padding(horizontal = 12.dp, vertical = 6.dp),
+                        )
+                    }
+                }
+                Box(
+                    contentAlignment = Alignment.Center,
+                    modifier = Modifier.weight(1f).fillMaxHeight().clickable(
                         onClickLabel = removeWidgetLabel,
                         onClick = onRemove,
                     ),
-            ) {
-                Icon(
-                    imageVector = Icons.Outlined.Close,
-                    contentDescription = null,
-                    tint = MaterialTheme.colorScheme.onSurface,
-                    modifier = Modifier.size(18.dp),
-                )
+                ) {
+                    Icon(
+                        imageVector = Icons.Outlined.Close,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.onSurface,
+                        modifier = Modifier.size(18.dp),
+                    )
+                }
             }
         }
     }
