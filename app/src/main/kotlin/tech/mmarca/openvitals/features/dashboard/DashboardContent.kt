@@ -71,7 +71,7 @@ internal fun dashboardTrayWidgetIds(
 internal fun dashboardActivitiesForDay(data: DashboardData): List<ExerciseData> =
     data.workouts.ifEmpty { data.workout?.let(::listOf).orEmpty() }
 
-private val DashboardScrollTopPadding = 4.dp
+private val DashboardScrollTopPadding = 0.dp
 private val DashboardScrollBottomPadding = 24.dp
 private val DashboardQuickActionsTopPadding = 14.dp
 
@@ -217,7 +217,7 @@ internal fun DashboardContent(
                         onPrevious = onPreviousDay,
                         onNext = onNextDay,
                         onOpenCalendar = onOpenCalendar,
-                        modifier = Modifier.padding(horizontal = DashboardScreenPadding, vertical = 4.dp),
+                        modifier = Modifier.padding(horizontal = DashboardScreenPadding),
                     ) else DayNavigator(
                         date = selectedDate,
                         canGoForward = canGoForward,

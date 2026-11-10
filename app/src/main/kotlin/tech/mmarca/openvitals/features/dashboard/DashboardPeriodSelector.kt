@@ -2,7 +2,8 @@ package tech.mmarca.openvitals.features.dashboard
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.height
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.ArrowDropDown
 import androidx.compose.material3.DropdownMenu
@@ -33,7 +34,11 @@ internal fun DashboardPeriodSelector(
     var expanded by remember { mutableStateOf(false) }
     Column(modifier) {
         Box {
-            TextButton(onClick = { expanded = true }) {
+            TextButton(
+                onClick = { expanded = true },
+                modifier = Modifier.height(36.dp),
+                contentPadding = PaddingValues(horizontal = 8.dp),
+            ) {
                 Text(timeRangeLabel(state.selectedRange))
                 Icon(Icons.Outlined.ArrowDropDown, contentDescription = null)
             }
