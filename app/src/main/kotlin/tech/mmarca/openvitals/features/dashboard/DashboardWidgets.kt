@@ -474,8 +474,9 @@ internal fun DashboardWidgetTile(
             Box(
                 contentAlignment = Alignment.Center,
                 modifier = Modifier
-                    .align(Alignment.BottomEnd)
-                    .padding(6.dp)
+                    // Beside the remove button, level with it, so neither covers the other.
+                    .align(Alignment.TopEnd)
+                    .padding(top = 13.dp, end = 58.dp)
                     .size(34.dp)
                     .background(color = MaterialTheme.colorScheme.primary, shape = CircleShape)
                     .clickable(
