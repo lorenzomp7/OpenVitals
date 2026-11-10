@@ -13,6 +13,7 @@ jobs:
     if: github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[apk]')
     runs-on: ubuntu-26.04
     timeout-minutes: 40
+    env:
       OPENVITALS_RELEASE_KEYSTORE_BASE64: ${{ secrets.OPENVITALS_PERSONAL_KEYSTORE_BASE64 }}
       OPENVITALS_RELEASE_STORE_PASSWORD: ${{ secrets.OPENVITALS_PERSONAL_STORE_PASSWORD }}
       OPENVITALS_RELEASE_KEY_ALIAS: ${{ secrets.OPENVITALS_PERSONAL_KEY_ALIAS }}
