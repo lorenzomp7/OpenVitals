@@ -208,6 +208,9 @@ internal fun DashboardWidgetGrid(
     onMoveWidgetToTarget: (DashboardWidgetId, DashboardWidgetId) -> Unit,
     onRemoveWidget: (DashboardWidgetId) -> Unit,
     modifier: Modifier = Modifier,
+    /** The size each tile will have outside edit mode, shown on its size button. */
+    sizeOf: (DashboardWidgetId) -> DashboardTileSize? = { null },
+    onCycleWidgetSize: ((DashboardWidgetId) -> Unit)? = null,
     topPadding: Dp = DashboardWidgetSectionPadding,
     bottomPadding: Dp = DashboardWidgetSectionPadding,
     /** Sizes the section so a full-span widget is square, as the shipped design draws the hero rings. */
@@ -305,6 +308,8 @@ internal fun DashboardWidgetGrid(
                             dragGestureDetector = dragGestureDetector,
                         ),
                         onRemove = { onRemoveWidget(spec.id) },
+                        sizeLabel = sizeOf(spec.id)?.spaces?.toString(),
+                        onCycleSize = onCycleWidgetSize?.let { cycle -> { cycle(spec.id) } },
                         onMovePrevious = previousId?.let { targetId ->
                             { onMoveWidgetToTarget(spec.id, targetId) }
                         },
@@ -386,6 +391,9 @@ internal fun DashboardWidgetTile(
     onMovePrevious: (() -> Unit)?,
     onMoveNext: (() -> Unit)?,
     modifier: Modifier = Modifier,
+    /** The spaces this tile takes outside edit mode; tapping the button moves to the next size. */
+    sizeLabel: String? = null,
+    onCycleSize: (() -> Unit)? = null,
 ) {
     val wiggleRotation = if (isEditingDashboard && loopingMotionAllowed()) {
         val wiggleTransition = rememberInfiniteTransition(label = "DashboardWidgetWiggle")
@@ -461,6 +469,26 @@ internal fun DashboardWidgetTile(
         ) { widgetId ->
             val displayedSpec = specsById[widgetId] ?: spec
             displayedSpec.content(Modifier.fillMaxSize())
+        }
+        if (isEditingDashboard && sizeLabel != null && onCycleSize != null) {
+            Box(
+                contentAlignment = Alignment.Center,
+                modifier = Modifier
+                    .align(Alignment.BottomEnd)
+                    .padding(6.dp)
+                    .size(34.dp)
+                    .background(color = MaterialTheme.colorScheme.primary, shape = CircleShape)
+                    .clickable(
+                        onClickLabel = stringResource(R.string.dashboard_widget_size_action),
+                        onClick = onCycleSize,
+                    ),
+            ) {
+                Text(
+                    text = sizeLabel,
+                    style = MaterialTheme.typography.labelLarge,
+                    color = MaterialTheme.colorScheme.onPrimary,
+                )
+            }
         }
         if (isEditingDashboard) {
             Box(

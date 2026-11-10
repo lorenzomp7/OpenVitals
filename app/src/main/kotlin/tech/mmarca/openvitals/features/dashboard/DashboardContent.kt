@@ -97,6 +97,10 @@ internal fun DashboardContent(
     onOpenCalendar: () -> Unit,
     onMoveWidgetToTarget: (DashboardWidgetId, DashboardWidgetId) -> Unit,
     onRemoveWidget: (DashboardWidgetId) -> Unit,
+    widgetSizes: Map<DashboardWidgetId, Int> = emptyMap(),
+    pagedLayout: Boolean = false,
+    onSetWidgetSize: (DashboardWidgetId, Int) -> Unit = { _, _ -> },
+    onSetPagedLayout: (Boolean) -> Unit = {},
     onAddWidget: (DashboardWidgetId) -> Unit,
     onOpenMetric: (DashboardWidgetId) -> Unit,
     onSyncWatch: () -> Unit = {},
@@ -221,6 +225,10 @@ internal fun DashboardContent(
                             isEditingDashboard = isEditingDashboard,
                             onMoveWidgetToTarget = onMoveWidgetToTarget,
                             onRemoveWidget = onRemoveWidget,
+                            widgetSizes = widgetSizes,
+                            pagedLayout = pagedLayout,
+                            onSetWidgetSize = onSetWidgetSize,
+                            onSetPagedLayout = onSetPagedLayout,
                             actionContent = {
                                 DashboardQuickActions(
                                     isEditingDashboard = isEditingDashboard,

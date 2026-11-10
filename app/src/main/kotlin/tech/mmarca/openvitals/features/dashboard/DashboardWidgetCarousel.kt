@@ -1,5 +1,12 @@
 package tech.mmarca.openvitals.features.dashboard
 
+import androidx.compose.foundation.layout.Row
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Switch
+import androidx.compose.material3.Text
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.res.stringResource
+import tech.mmarca.openvitals.R
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -29,7 +36,7 @@ import tech.mmarca.openvitals.features.dashboard.components.DashboardMultiRingHe
 private val DashboardHeroSectionTopPadding = 16.dp
 private val DashboardHeroSectionBottomPadding = 0.dp
 private val DashboardGridTopPadding = 16.dp
-private val DashboardHeroRingHeight = 204.dp
+private val DashboardHeroRingHeight = 200.dp
 private val DashboardHeroTopPadding = 6.dp
 private const val DashboardHeroRingCount = 3
 
@@ -40,6 +47,10 @@ internal fun DashboardWidgetCarousel(
     isEditingDashboard: Boolean,
     onMoveWidgetToTarget: (DashboardWidgetId, DashboardWidgetId) -> Unit,
     onRemoveWidget: (DashboardWidgetId) -> Unit,
+    widgetSizes: Map<DashboardWidgetId, Int> = emptyMap(),
+    pagedLayout: Boolean = false,
+    onSetWidgetSize: (DashboardWidgetId, Int) -> Unit = { _, _ -> },
+    onSetPagedLayout: (Boolean) -> Unit = {},
     actionContent: @Composable () -> Unit,
     hiddenContent: @Composable () -> Unit,
 ) {
@@ -58,6 +69,12 @@ internal fun DashboardWidgetCarousel(
             widgetIds = visibleIds,
             rows = DashboardFixedWidgetRows,
         )
+    }
+    val sizeOf: (DashboardWidgetId) -> DashboardTileSize? = { id ->
+        specsById[id]?.let { dashboardTileSize(it, widgetSizes) }
+    }
+    val cycleSize: (DashboardWidgetId) -> Unit = { id ->
+        sizeOf(id)?.let { onSetWidgetSize(id, it.next().spaces) }
     }
     val fixedIdSet = fixedIds.toSet()
     // Every other widget, in one grid that scrolls with the page.
@@ -202,6 +219,8 @@ internal fun DashboardWidgetCarousel(
                 onDropWidget = ::dropWidget,
                 onMoveWidgetToTarget = onMoveWidgetToTarget,
                 onRemoveWidget = onRemoveWidget,
+                sizeOf = sizeOf,
+                onCycleWidgetSize = cycleSize,
                 modifier = Modifier
                     .onGloballyPositioned { coordinates -> fixedSectionBounds = coordinates.boundsInRoot() }
                     .zIndex(if (draggingWidgetId in fixedIds) 2f else 0f),
@@ -213,7 +232,43 @@ internal fun DashboardWidgetCarousel(
 
             actionContent()
 
-            if (carouselIds.isNotEmpty()) {
+            if (isEditingDashboard) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(
+                            start = DashboardScreenPadding,
+                            end = DashboardScreenPadding,
+                            top = DashboardGridTopPadding,
+                        ),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Text(
+                        text = stringResource(R.string.dashboard_paged_layout_toggle),
+                        style = MaterialTheme.typography.bodyLarge,
+                        color = MaterialTheme.colorScheme.onSurface,
+                        modifier = Modifier.weight(1f),
+                    )
+                    Switch(checked = pagedLayout, onCheckedChange = onSetPagedLayout)
+                }
+            }
+            if (carouselIds.isNotEmpty() && !isEditingDashboard) {
+                DashboardPackedTiles(
+                    ids = carouselIds,
+                    specsById = specsById,
+                    sizes = widgetSizes,
+                    paged = pagedLayout,
+                    rowHeight = dashboardWidgetRowHeight(),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(
+                            start = DashboardScreenPadding,
+                            end = DashboardScreenPadding,
+                            top = DashboardGridTopPadding,
+                            bottom = DashboardSectionSeparatorSpacing,
+                        ),
+                )
+            } else if (carouselIds.isNotEmpty()) {
                 DashboardWidgetGrid(
                     ids = carouselIds,
                     rows = carouselRows,
@@ -232,6 +287,8 @@ internal fun DashboardWidgetCarousel(
                     onDropWidget = ::dropWidget,
                     onMoveWidgetToTarget = onMoveWidgetToTarget,
                     onRemoveWidget = onRemoveWidget,
+                    sizeOf = sizeOf,
+                    onCycleWidgetSize = cycleSize,
                     modifier = Modifier
                         .onGloballyPositioned { coordinates -> carouselSectionBounds = coordinates.boundsInRoot() }
                         .zIndex(if (draggingWidgetId in carouselIds) 2f else 0f),

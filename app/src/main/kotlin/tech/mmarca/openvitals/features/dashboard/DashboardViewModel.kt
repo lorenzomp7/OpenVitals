@@ -81,6 +81,9 @@ data class DashboardUiState(
     val placedDashboardWidgets: Set<DashboardWidgetId> = emptySet(),
     val dailyGoals: DashboardDailyGoals = DashboardDailyGoals(),
     val isEditingDashboard: Boolean = false,
+    /** The spaces (1, 2 or 4) chosen for a widget; one left out keeps its own size. */
+    val widgetSizes: Map<DashboardWidgetId, Int> = emptyMap(),
+    val pagedLayout: Boolean = false,
     val sortEmptyTilesLast: Boolean = true,
     val healthConnectSyncEnabled: Boolean = true,
     val healthConnectAvailability: HealthConnectAvailability = HealthConnectAvailability.AVAILABLE,
@@ -179,6 +182,10 @@ class DashboardViewModel @Inject constructor(
                     prefs.setDashboardKnownWidgetIds(known)
                 },
             ),
+            widgetSizes = prefs.dashboardWidgetSizes().mapNotNull { (name, spaces) ->
+                DashboardWidgetId.entries.firstOrNull { it.name == name }?.let { it to spaces }
+            }.toMap(),
+            pagedLayout = prefs.dashboardPagedLayout(),
             placedDashboardWidgets = prefs.dashboardWidgetOrder()
                 ?.let { stored -> dashboardWidgetIdsFromStored(stored).toSet() }
                 .orEmpty(),
@@ -687,6 +694,17 @@ class DashboardViewModel @Inject constructor(
     private fun unacknowledgedWidgetPermissions(missingPermissions: Set<String>): Set<String> =
         if (permissionPromptDismissedForLoad) emptySet()
         else missingPermissions - prefs.acknowledgedPermissionsFor(HealthConnectFeature.DASHBOARD)
+
+    fun setWidgetSize(widgetId: DashboardWidgetId, spaces: Int) {
+        val sizes = _uiState.value.widgetSizes + (widgetId to spaces)
+        prefs.setDashboardWidgetSizes(sizes.mapKeys { it.key.name })
+        _uiState.value = _uiState.value.copy(widgetSizes = sizes)
+    }
+
+    fun setPagedLayout(paged: Boolean) {
+        prefs.setDashboardPagedLayout(paged)
+        _uiState.value = _uiState.value.copy(pagedLayout = paged)
+    }
 
     fun toggleDashboardEdit() {
         val editing = !_uiState.value.isEditingDashboard

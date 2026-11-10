@@ -40,7 +40,7 @@ private val HeroRingStroke = 14.dp
 private val HeroSideStroke = 10.dp
 
 /** How far the side arcs sit outside the centre ring, as a multiple of its radius. */
-private const val HeroSideRadiusFactor = 1.34f
+private const val HeroSideRadiusFactor = 1.28f
 
 /** Each side arc spans this many degrees, centred on the horizontal. */
 private const val HeroSideSweep = 100f
@@ -77,7 +77,7 @@ internal fun DashboardMultiRingHero(
             // The centre ring is as large as the height allows, less when the
             // sides need room for their arcs and numbers.
             val byHeight = maxHeight / 2 - HeroRingStroke / 2
-            val byWidth = if (hasSides) (maxWidth / 2 - 76.dp) / HeroSideRadiusFactor else maxWidth / 2
+            val byWidth = if (hasSides) (maxWidth / 2 - 62.dp) / HeroSideRadiusFactor else maxWidth / 2
             val ringRadius: Dp = minOf(byHeight, byWidth)
             val sideRadius = ringRadius * HeroSideRadiusFactor
             val sideWidth = (maxWidth / 2 - sideRadius - HeroSideStroke).coerceAtLeast(0.dp)

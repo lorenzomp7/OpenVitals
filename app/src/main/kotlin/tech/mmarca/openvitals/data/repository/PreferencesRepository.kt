@@ -875,6 +875,33 @@ class PreferencesRepository @Inject constructor(
         }
     }
 
+    /** The spaces (1, 2 or 4) the user gave a dashboard widget; one left out keeps its own size. */
+    fun dashboardWidgetSizes(): Map<String, Int> =
+        prefs.getString(KEY_DASHBOARD_WIDGET_SIZES, null)
+            ?.split(KEY_VALUE_SEPARATOR)
+            ?.mapNotNull { entry ->
+                val parts = entry.split('=')
+                parts.getOrNull(1)?.toIntOrNull()?.let { parts[0] to it }
+            }
+            ?.toMap()
+            .orEmpty()
+
+    fun setDashboardWidgetSizes(sizes: Map<String, Int>) {
+        prefs.edit {
+            putString(
+                KEY_DASHBOARD_WIDGET_SIZES,
+                sizes.entries.joinToString(KEY_VALUE_SEPARATOR) { "${it.key}=${it.value}" },
+            )
+        }
+    }
+
+    /** Whether the dashboard's tiles sit in pages swiped sideways rather than one long sheet. */
+    fun dashboardPagedLayout(): Boolean = prefs.getBoolean(KEY_DASHBOARD_PAGED_LAYOUT, false)
+
+    fun setDashboardPagedLayout(paged: Boolean) {
+        prefs.edit { putBoolean(KEY_DASHBOARD_PAGED_LAYOUT, paged) }
+    }
+
     /** Widget ids already offered, so an update's new widget differs from a removed one. */
     fun dashboardKnownWidgetIds(): Set<String>? =
         prefs.getString(KEY_DASHBOARD_KNOWN_WIDGETS, null)
@@ -1340,6 +1367,8 @@ class PreferencesRepository @Inject constructor(
         private const val KEY_FAVORITE_ACTIVITY_EXERCISE_TYPE = "favorite_activity_exercise_type"
         private const val KEY_DASHBOARD_WIDGET_ORDER = "dashboard_widget_order"
         private const val KEY_DASHBOARD_KNOWN_WIDGETS = "dashboard_known_widget_ids"
+        private const val KEY_DASHBOARD_WIDGET_SIZES = "dashboard_widget_sizes"
+        private const val KEY_DASHBOARD_PAGED_LAYOUT = "dashboard_paged_layout"
         private const val KEY_DASHBOARD_SORT_EMPTY_TILES_LAST = "dashboard_sort_empty_tiles_last"
         private const val KEY_STEP_DISTANCE_BACKFILL_ENABLED = "step_distance_backfill_enabled"
         private const val KEY_STEP_DISTANCE_PURGE_PENDING = "step_distance_purge_pending"

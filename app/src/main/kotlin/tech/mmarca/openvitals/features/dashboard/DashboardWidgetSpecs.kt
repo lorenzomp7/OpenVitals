@@ -170,6 +170,7 @@ internal fun dashboardWidgetSpecs(
         hero = display.widgets[spec.id]?.toHeroRing(
             title = spec.title,
             accentColor = dashboardWidgetMeta(spec.id).accentColor,
+            icon = dashboardWidgetMeta(spec.id).icon,
             onClick = if (isEditingDashboard) null else ({ onOpenMetric(spec.id) }),
         ),
     )
@@ -629,24 +630,28 @@ internal data class DashboardHeroRing(
     val value: String,
     val fraction: Float,
     val accentColor: Color,
+    val icon: ImageVector,
     val onClick: (() -> Unit)?,
 )
 
 private fun DashboardWidgetDisplayModel.toHeroRing(
     title: String,
     accentColor: Color,
+    icon: ImageVector,
     onClick: (() -> Unit)?,
 ): DashboardHeroRing {
     val cardio = weeklyCardioLoad
     val sleep = sleepScore
     return when {
-        cardio != null -> DashboardHeroRing(title, "${cardio.progressPercent}%", cardio.progressFraction, accentColor, onClick)
-        sleep != null -> DashboardHeroRing(title, sleep.score.toString(), sleep.score / 100f, accentColor, onClick)
+        cardio != null -> DashboardHeroRing(title, "${cardio.progressPercent}%", cardio.progressFraction, accentColor, icon, onClick)
+        sleep != null -> DashboardHeroRing(title, sleep.score.toString(), sleep.score / 100f, accentColor, icon, onClick)
         else -> DashboardHeroRing(
             title = title,
-            value = value?.takeIf { hasValue && !isLoading }?.value?.takeIf { it.isNotBlank() } ?: "–",
+            // With its unit: "6.4" alone does not say kilometres.
+            value = value?.takeIf { hasValue && !isLoading }?.text?.takeIf { it.isNotBlank() } ?: "–",
             fraction = progress?.fraction ?: 0f,
             accentColor = accentColor,
+            icon = icon,
             onClick = onClick,
         )
     }

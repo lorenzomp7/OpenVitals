@@ -152,6 +152,10 @@ fun DashboardScreen(
                     onOpenCalendar = { showDatePicker = true },
                     onMoveWidgetToTarget = viewModel::moveDashboardWidgetToTarget,
                     onRemoveWidget = viewModel::removeDashboardWidget,
+                    widgetSizes = state.widgetSizes,
+                    pagedLayout = state.pagedLayout,
+                    onSetWidgetSize = viewModel::setWidgetSize,
+                    onSetPagedLayout = viewModel::setPagedLayout,
                     onAddWidget = viewModel::addDashboardWidget,
                     // The OpenWatch tile opens OpenWatch, not a metric screen.
                     onOpenMetric = { id ->

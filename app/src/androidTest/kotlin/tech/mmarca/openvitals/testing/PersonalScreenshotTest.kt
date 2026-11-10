@@ -38,7 +38,19 @@ class PersonalScreenshotTest {
     @Test
     fun dashboardDarkEditing() = photograph("personal_dashboard_dark_editing", isEditing = true)
 
-    private fun photograph(name: String, isEditing: Boolean) {
+    @Test
+    fun dashboardDarkSizes() = photograph("personal_dashboard_dark_sizes", isEditing = false, sizes = mixedSizes)
+
+    @Test
+    fun dashboardDarkPaged() =
+        photograph("personal_dashboard_dark_paged", isEditing = false, sizes = mixedSizes, paged = true)
+
+    private fun photograph(
+        name: String,
+        isEditing: Boolean,
+        sizes: Map<DashboardWidgetId, Int> = emptyMap(),
+        paged: Boolean = false,
+    ) {
         val unitFormatter = testUnitFormatter()
         val dateTimeFormatterProvider = DateTimeFormatterProvider()
         val data = dashboardFixtureData()
@@ -60,6 +72,8 @@ class PersonalScreenshotTest {
                     isRefreshing = false,
                     dashboardWidgets = personalWidgetIds,
                     isEditingDashboard = isEditing,
+                    widgetSizes = sizes,
+                    pagedLayout = paged,
                     onPreviousDay = {},
                     onNextDay = {},
                     onOpenCalendar = {},
@@ -93,6 +107,18 @@ private val personalWidgetIds = listOf(
     DashboardWidgetId.HYDRATION,
     DashboardWidgetId.BODY_FAT,
     DashboardWidgetId.SPO2,
+    DashboardWidgetId.ACTIVE_CALORIES,
+    DashboardWidgetId.FLOORS,
+    DashboardWidgetId.ELEVATION,
+)
+
+/** One tile of four spaces, a run of one-space tiles, the rest at two. */
+private val mixedSizes = mapOf(
+    DashboardWidgetId.CALORIES_OUT to 4,
+    DashboardWidgetId.AVG_HEART_RATE to 1,
+    DashboardWidgetId.WEIGHT to 1,
+    DashboardWidgetId.RESTING_HEART_RATE to 1,
+    DashboardWidgetId.HYDRATION to 1,
 )
 
 /** A Pixel-sized dark screen, at a phone's density. */
