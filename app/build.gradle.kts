@@ -37,10 +37,9 @@ val hasReleaseSigning = listOf(
     effectiveReleaseKeyPassword,
 ).all { !it.isNullOrBlank() }
 
-val personalBuild = System.getenv("OPENVITALS_PERSONAL_BUILD") == "true"
 val signDebugWithReleaseKey = System.getenv("OPENVITALS_SIGN_DEBUG_WITH_RELEASE_KEY") == "true"
-require(!personalBuild || (signDebugWithReleaseKey && hasReleaseSigning)) {
-    "Personal APKs require the persistent private signing key; temporary debug signing is forbidden."
+require(!signDebugWithReleaseKey || hasReleaseSigning) {
+    "An explicitly signed debug APK requires a complete persistent signing configuration."
 }
 
 // The release pipeline publishes a debug APK: not debuggable, since it is
@@ -133,8 +132,8 @@ android {
 
     buildTypes {
         debug {
-            applicationIdSuffix = if (personalBuild) ".personal" else ".debug"
-            versionNameSuffix = if (personalBuild) "-personal" else "-debug"
+            applicationIdSuffix = ".debug"
+            versionNameSuffix = "-debug"
             buildConfigField("boolean", "OPENVITALS_DIAGNOSTICS", "true")
             if (signDebugWithReleaseKey && hasReleaseSigning) {
                 signingConfig = signingConfigs.getByName("release")

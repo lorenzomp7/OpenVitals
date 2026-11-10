@@ -32,9 +32,9 @@ The development branch is [`main_chatgpt`](https://github.com/lorenzomp7/OpenVit
 
 ## Install this version
 
-For phone installation, use **OpenVitals-personal.apk** from a successful **personal-apk** run after configuring the private signing secrets ([setup](docs/engineering/personal-build.md)). It installs alongside existing CI/debug packages and uses the same private key for future updates. **app-ci.apk** from **verify** is a test build with a temporary runner signature and is not a reliable update channel. The `androidTest` APK is the test runner, not the application. CI builds use a separate `.ci` application ID and can coexist with another installation.
+For phone installation, download **OpenVitals-personal.apk** from a successful **personal-apk** run. It uses the same persistent development signature and `.debug` application ID as Claude's personal APK, so it updates that app without uninstalling. No PC setup or new signing secrets are needed. **app-ci.apk** from **verify** is a separate test app with a temporary runner signature; the `androidTest` APK is the test runner, not the application. See [personal builds](docs/engineering/personal-build.md) for update verification and CI migration details.
 
-A personally signed debug APK is produced by the manual **personal-apk** workflow once signing is configured; see [personal builds](docs/engineering/personal-build.md). This fork's changes are not included in the upstream Play Store / F-Droid builds.
+This fork's changes are not included in the upstream Play Store / F-Droid builds.
 
 Device validation is still necessary for your Mapbox account, the provider's speed on a large personal Health Connect history, and OCR layouts not covered by tests. CI does not log into a personal Mapbox account or access personal health records.
 

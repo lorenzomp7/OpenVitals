@@ -5,6 +5,7 @@ on:
   workflow_dispatch:
 permissions:
   contents: read
+  actions: read
 concurrency:
   group: personal-apk-${{ github.ref }}
   cancel-in-progress: true
@@ -13,28 +14,27 @@ jobs:
     if: github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[apk]')
     runs-on: ubuntu-26.04
     timeout-minutes: 40
-    env:
-      OPENVITALS_RELEASE_KEYSTORE_BASE64: ${{ secrets.OPENVITALS_PERSONAL_KEYSTORE_BASE64 }}
-      OPENVITALS_RELEASE_STORE_PASSWORD: ${{ secrets.OPENVITALS_PERSONAL_STORE_PASSWORD }}
-      OPENVITALS_RELEASE_KEY_ALIAS: ${{ secrets.OPENVITALS_PERSONAL_KEY_ALIAS }}
     steps:
       - uses: actions/checkout@v5
         with:
           submodules: true
       - uses: gradle/actions/setup-gradle@v5
-      - name: Prepare private signing key
-        run: |
-          test -n "$OPENVITALS_RELEASE_KEYSTORE_BASE64" || { echo '::error::Configure personal signing secrets using scripts/setup-personal-signing.ps1'; exit 1; }
-          test -n "$OPENVITALS_RELEASE_STORE_PASSWORD"
-          test -n "$OPENVITALS_RELEASE_KEY_ALIAS"
-          umask 077
-          printf '%s' "$OPENVITALS_RELEASE_KEYSTORE_BASE64" | base64 -d > "$RUNNER_TEMP/openvitals-personal.p12"
-          echo "OPENVITALS_RELEASE_STORE_FILE=$RUNNER_TEMP/openvitals-personal.p12" >> "$GITHUB_ENV"
+      - name: Verify existing personal signing key
+        run: keytool -list -keystore personal/personal.p12 -storepass openvitals-personal -alias personal > /dev/null
+      - name: Download previous Claude APK for real update verification
+        uses: actions/download-artifact@v4
+        with:
+          name: openvitals-debug-apk
+          run-id: 42711097393
+          github-token: ${{ github.token }}
+          path: previous-apk
       - name: Set increasing personal version code
         run: echo "OPENVITALS_VERSION_CODE=$((1070400000 + GITHUB_RUN_NUMBER))" >> "$GITHUB_ENV"
       - name: Build signed personal APK
         env:
-          OPENVITALS_PERSONAL_BUILD: 'true'
+          OPENVITALS_RELEASE_STORE_FILE: ${{ github.workspace }}/personal/personal.p12
+          OPENVITALS_RELEASE_STORE_PASSWORD: openvitals-personal
+          OPENVITALS_RELEASE_KEY_ALIAS: personal
           OPENVITALS_SIGN_DEBUG_WITH_RELEASE_KEY: 'true'
           OPENVITALS_PUBLISHED_DEBUG_APK: 'true'
         run: scripts/ci-android-gradle.sh :app:assembleDebug
@@ -44,7 +44,7 @@ jobs:
           AAPT=$(find "$ANDROID_HOME/build-tools" -name aapt -type f | sort -V | tail -1)
           SIGNER=$(find "$ANDROID_HOME/build-tools" -name apksigner -type f | sort -V | tail -1)
           "$AAPT" dump badging "$APK" > "$RUNNER_TEMP/personal-badging.txt"
-          grep -q "package: name='tech.mmarca.openvitals.personal'" "$RUNNER_TEMP/personal-badging.txt"
+          grep -q "package: name='tech.mmarca.openvitals.debug'" "$RUNNER_TEMP/personal-badging.txt"
           mkdir -p personal-apk
           "$SIGNER" verify --verbose --print-certs "$APK" > personal-apk/signing-certificate.txt
           cp "$APK" personal-apk/OpenVitals-personal.apk
@@ -67,6 +67,3 @@ jobs:
           name: openvitals-personal-apk
           path: personal-apk/
           if-no-files-found: error
-      - name: Remove temporary signing key
-        if: always()
-        run: rm -f "$RUNNER_TEMP/openvitals-personal.p12"

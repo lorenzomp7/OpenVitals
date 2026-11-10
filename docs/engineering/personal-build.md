@@ -10,17 +10,11 @@ The manual `personal-screenshots` workflow reuses `verify`; it never rewrites a 
 
 ## Personal signing
 
-The previously exposed `personal.p12` is removed from the current tree. It remains in the inherited Claude history; deleting the file does not erase that history. Its old key must not sign future personal APKs. New personal APKs use the private signing secrets below.
+The phone-installable APK uses the same existing personal development key and application ID (`tech.mmarca.openvitals.debug`) as Claude's personal APK. The key in `personal/personal.p12` is a shared development key, already present in Claude's branch, and is not the upstream release signing key. No PC setup or Actions secrets are required.
 
-From a local Windows checkout, with GitHub CLI authenticated and JDK 17+ installed, run:
+Run `personal-apk` manually, or push a commit containing `[apk]` to `main_chatgpt`. Its version code increases with the workflow run number. Before publishing `OpenVitals-personal.apk`, the workflow downloads the previously distributed Claude APK from run `42711097393`, compares the signing certificates, installs that earlier APK on an emulator, and updates it with the new APK without uninstalling. An update of that `.debug` app preserves its local settings and permissions.
 
-```powershell
-powershell -ExecutionPolicy Bypass -File scripts/setup-personal-signing.ps1
-```
-
-The script generates a fresh key outside the repository, stores a password backup protected with Windows DPAPI, and configures three Actions secrets through GitHub CLI. Re-running reuses that new key, preserving update compatibility. Keep the local key backup; the password backup belongs to the Windows account that created it. Losing it can prevent future updates with the same signature.
-
-Then run `personal-apk` manually, or push a commit containing `[apk]` to `main_chatgpt`. The app installs under `tech.mmarca.openvitals.personal`, alongside existing `.ci` and `.debug` builds. The personal build refuses to compile without the persistent private signing key; it never falls back to a temporary debug key. Its version code increases with the personal workflow run number. The workflow verifies the package/certificate, installation, update without uninstall and launch on an emulator before publishing `OpenVitals-personal.apk`. Existing local preferences are not automatically copied between packages. The former CI packages use ephemeral runner debug keys and cannot reliably update one another. An APK contains the certificate but cannot recover a discarded private key. Keep the old installation while setting up the personal build; do not uninstall it to work around signature errors. The CI APK has a separate `.ci` package and remains available without personal signing secrets.
+The `.ci` test package is a different app with a temporary runner signature. It cannot be converted into the `.debug` app by installing an APK. Leave it installed if you need to keep its local settings; the personal APK can coexist with it. Use the settings export/import section to transfer configuration between installed versions that support it. Health Connect records remain in Health Connect.
 
 For maps, sign in to Mapbox on the phone as described in [Mapbox configuration](mapbox.md). Neither build receives a Mapbox secret from GitHub.
 
