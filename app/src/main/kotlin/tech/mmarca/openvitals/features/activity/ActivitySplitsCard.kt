@@ -121,7 +121,7 @@ internal fun ActivitySplitsCard(
                     slowestPaceSeconds = slowestPaceSeconds,
                     fastestPaceSeconds = fastestPaceSeconds,
                     // The estimated source gives every split the same pace; no bar.
-                    showBar = splits.source != SplitSource.ESTIMATED,
+                    showBar = splits.source != SplitSource.ESTIMATED && !useSpeed,
                 )
                 Spacer(Modifier.height(10.dp))
             }
@@ -197,7 +197,7 @@ private fun SplitRow(
         }
         Spacer(Modifier.height(4.dp))
         Text(
-            text = splitDetailLine(split, delta, unitFormatter),
+            text = splitDetailLine(split, delta.takeUnless { useSpeed }, unitFormatter),
             style = muted,
             color = mutedColor,
             modifier = Modifier.padding(start = 24.dp),

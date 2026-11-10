@@ -58,8 +58,8 @@ internal fun DashboardWidgetCarousel(
     // the centre ring, the next two the arcs beside it. Edit mode keeps them
     // in the grid so they can be dragged, which is how the user picks them.
     val topIds = visibleIds.take(DashboardHeroRingCount)
-    val heroIds = if (isEditingDashboard) emptyList() else topIds.filter { specsById[it]?.hero != null }
-    val fixedIds = if (isEditingDashboard) topIds else emptyList()
+    val heroIds = if (!isEditingDashboard && topIds.all { specsById[it]?.hero != null }) topIds else emptyList()
+    val fixedIds = if (heroIds.isEmpty()) topIds else emptyList()
     val sizeOf: (DashboardWidgetId) -> DashboardTileSize? = { id ->
         specsById[id]?.let { dashboardTileSize(it, widgetSizes) }
     }

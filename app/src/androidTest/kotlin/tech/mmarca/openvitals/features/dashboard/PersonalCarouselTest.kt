@@ -45,7 +45,7 @@ class PersonalCarouselTest {
                 }
             }
             composeRule.waitForIdle()
-            val bounds = ids.drop(4).take(6).map { id ->
+            val bounds = ids.drop(3).take(6).map { id ->
                 composeRule.onNodeWithTag(id.name).assertIsDisplayed().fetchSemanticsNode().boundsInRoot
             }
             assertEquals("Two columns", 2, bounds.map { it.left.toInt() }.distinct().size)

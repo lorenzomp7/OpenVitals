@@ -28,7 +28,7 @@ internal class MapboxOAuthClient : AutoCloseable {
         val registration = JSONObject(request(MapboxOAuthProtocol.REGISTER + "?scope=" +
             MapboxOAuthProtocol.encode(MapboxOAuthProtocol.SCOPE), body.toString(), "application/json"))
         val scopes = registration.optString("scope").split(' ').filter { it.isNotBlank() }.toSet()
-        if (scopes.isNotEmpty() && MapboxOAuthProtocol.SCOPE !in scopes) throw MapboxLoginFailure()
+        if (scopes.isNotEmpty() && scopes != setOf(MapboxOAuthProtocol.SCOPE)) throw MapboxLoginFailure()
         clientId = registration.optString("client_id").takeIf { it.isNotBlank() } ?: throw MapboxLoginFailure()
         clientSecret = registration.optString("client_secret").takeIf { it.isNotBlank() }
         return MapboxOAuthProtocol.authorizationUrl(clientId, redirect, state, verifier)

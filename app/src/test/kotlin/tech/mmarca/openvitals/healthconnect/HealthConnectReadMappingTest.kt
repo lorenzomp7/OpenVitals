@@ -485,6 +485,24 @@ class HealthConnectReadMappingTest {
             assertThat(failure).isInstanceOf(IllegalArgumentException::class.java)
         }
 
+    @Test fun `year dashboard headline totals use the actual combined aggregate reader`() = runTest {
+        val client = seeded(
+            androidx.health.connect.client.records.StepsRecord(sessionStart, ZoneOffset.UTC, sessionEnd, ZoneOffset.UTC,
+                2400L, Metadata.manualEntry()),
+            DistanceRecord(sessionStart, ZoneOffset.UTC, sessionEnd, ZoneOffset.UTC,
+                Length.meters(1800.0), Metadata.manualEntry()),
+        )
+        val date = java.time.LocalDate.of(2026, 1, 2)
+        val query = tech.mmarca.openvitals.domain.model.DashboardQuery(date = date,
+            period = tech.mmarca.openvitals.core.period.DatePeriod(date.withDayOfYear(1), date.withMonth(12).withDayOfMonth(31)),
+            visibleMetrics = setOf(tech.mmarca.openvitals.domain.model.DashboardMetric.STEPS,
+                tech.mmarca.openvitals.domain.model.DashboardMetric.DISTANCE))
+        val result = DashboardRangeHealthReader(support(client)).read(query,
+            tech.mmarca.openvitals.domain.model.DashboardData(date = date))
+        assertThat(result.steps).isEqualTo(2400L)
+        assertThat(result.distanceMeters).isWithin(1e-6).of(1800.0)
+    }
+
     // Harness.
 
     private val sessionStart: Instant = Instant.parse("2026-01-02T08:00:00Z")

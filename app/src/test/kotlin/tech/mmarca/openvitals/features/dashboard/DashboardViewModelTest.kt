@@ -725,7 +725,7 @@ class DashboardViewModelTest {
         assertNull(vm.uiState.value.error)
     }
 
-    @Test fun `a resume after the open load settles still reloads the day`() = runTest {
+    @Test fun `a resume after the open load settles reuses the recent day`() = runTest {
         val loader = mockDashboardDataLoader()
         var loads = 0
         coEvery { loader.loadDashboard(any<DashboardQuery>()) } coAnswers {
@@ -737,11 +737,11 @@ class DashboardViewModelTest {
         advanceUntilIdle()
         assertEquals(1, loads)
 
-        // Returning from the background must genuinely reload.
+        // A short navigation round trip keeps the settled result.
         vm.resumeCurrentDay()
         advanceUntilIdle()
 
-        assertEquals(2, loads)
+        assertEquals(1, loads)
     }
 
     @Test fun `force refresh is not absorbed by an in-flight load`() = runTest {

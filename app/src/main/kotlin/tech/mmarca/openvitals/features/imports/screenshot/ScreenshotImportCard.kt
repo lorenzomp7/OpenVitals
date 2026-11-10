@@ -81,7 +81,7 @@ internal fun ScreenshotImportDialog(onDismiss: () -> Unit, initialUri: android.n
                         }
                     }
                     Text(stringResource(R.string.screenshot_import_time_help))
-                    ScreenshotTimePicker(start, stringResource(R.string.screenshot_import_start), !state.busy && !state.saved) { start = it; confirmed = false }
+                    ScreenshotTimePicker(start, stringResource(R.string.screenshot_import_start), !state.busy && !state.saved) { start = it; if (end.isBlank() && state.values.none { v -> v.kind == "duration_min" }) end = it; confirmed = false }
                     ScreenshotTimePicker(end, stringResource(R.string.screenshot_import_end), !state.busy && !state.saved) { end = it; confirmed = false }
                     Row {
                         Checkbox(confirmed, { confirmed = it }, enabled = !state.busy && !state.saved)
@@ -110,7 +110,7 @@ private fun ScreenshotTimePicker(value: String, label: String, enabled: Boolean,
         val seed = date ?: java.time.LocalDateTime.now()
         android.app.DatePickerDialog(context, { _, year, month, day ->
             android.app.TimePickerDialog(context, { _, hour, minute ->
-                onValue(java.time.LocalDateTime.of(year, month + 1, day, hour, minute).toString())
+                onValue(java.time.LocalDateTime.of(year, month + 1, day, hour, minute, seed.second).toString())
             }, seed.hour, seed.minute, android.text.format.DateFormat.is24HourFormat(context)).show()
         }, seed.year, seed.monthValue - 1, seed.dayOfMonth).show()
     }) {
