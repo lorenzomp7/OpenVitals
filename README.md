@@ -32,7 +32,7 @@ The development branch is [`main_chatgpt`](https://github.com/lorenzomp7/OpenVit
 
 ## Install this version
 
-Open [Actions](https://github.com/lorenzomp7/OpenVitals/actions), select a successful **verify** run for `main_chatgpt`, download **ci-apks**, unzip it and install **app-ci.apk**. The `androidTest` APK is the test runner, not the application. CI builds use a separate `.ci` application ID and can coexist with another installation.
+For phone installation, use **OpenVitals-personal.apk** from a successful **personal-apk** run after configuring the private signing secrets ([setup](docs/engineering/personal-build.md)). It installs alongside existing CI/debug packages and uses the same private key for future updates. **app-ci.apk** from **verify** is a test build with a temporary runner signature and is not a reliable update channel. The `androidTest` APK is the test runner, not the application. CI builds use a separate `.ci` application ID and can coexist with another installation.
 
 A personally signed debug APK is produced by the manual **personal-apk** workflow once signing is configured; see [personal builds](docs/engineering/personal-build.md). This fork's changes are not included in the upstream Play Store / F-Droid builds.
 

@@ -37,7 +37,12 @@ val hasReleaseSigning = listOf(
     effectiveReleaseKeyPassword,
 ).all { !it.isNullOrBlank() }
 
+val personalBuild = System.getenv("OPENVITALS_PERSONAL_BUILD") == "true"
 val signDebugWithReleaseKey = System.getenv("OPENVITALS_SIGN_DEBUG_WITH_RELEASE_KEY") == "true"
+require(!personalBuild || (signDebugWithReleaseKey && hasReleaseSigning)) {
+    "Personal APKs require the persistent private signing key; temporary debug signing is forbidden."
+}
+
 // The release pipeline publishes a debug APK: not debuggable, since it is
 // public, but not run through R8 either. It was until 2026-10, to match the
 // release build's size and shape; that second R8 pass was six minutes of
@@ -128,8 +133,8 @@ android {
 
     buildTypes {
         debug {
-            applicationIdSuffix = ".debug"
-            versionNameSuffix = "-debug"
+            applicationIdSuffix = if (personalBuild) ".personal" else ".debug"
+            versionNameSuffix = if (personalBuild) "-personal" else "-debug"
             buildConfigField("boolean", "OPENVITALS_DIAGNOSTICS", "true")
             if (signDebugWithReleaseKey && hasReleaseSigning) {
                 signingConfig = signingConfigs.getByName("release")
