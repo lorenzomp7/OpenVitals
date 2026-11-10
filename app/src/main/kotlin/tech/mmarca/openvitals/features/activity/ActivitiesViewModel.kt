@@ -110,6 +110,23 @@ class ActivitiesViewModel @Inject constructor(
         load()
     }
 
+    /** Read workout intervals for range cardio load, never an entire week/month of raw pulse data. */
+    private suspend fun loadOverviewHeartSamples(
+        range: TimeRange, start: LocalDate, end: LocalDate, workouts: List<ExerciseData>,
+    ): List<HeartRateSample> {
+        if (range == TimeRange.YEAR) return emptyList()
+        if (range == TimeRange.DAY) return heartRepository.loadHeartRateSamples(start, end)
+        val windows = mutableListOf<Pair<java.time.Instant, java.time.Instant>>()
+        workouts.sortedBy { it.startTime }.forEach { workout ->
+            val previous = windows.lastOrNull()
+            if (previous != null && !workout.startTime.isAfter(previous.second)) {
+                windows[windows.lastIndex] = previous.first to maxOf(previous.second, workout.endTime)
+            } else windows += workout.startTime to workout.endTime
+        }
+        return windows.flatMap { (from, to) -> heartRepository.loadHeartRateSamples(from, to) }
+            .distinctBy { it.time to it.source }
+    }
+
     private fun observeActivityWeekMode() {
         viewModelScope.launch {
             periodPreferences.activityWeekModeFlow.drop(1).collect { mode ->
@@ -238,11 +255,7 @@ class ActivitiesViewModel @Inject constructor(
                         heartRepository.loadDailyHRV(windows.current.start, currentDataEnd)
                     }
                     val heartRateSamples = async {
-                        if (query.range != TimeRange.DAY) {
-                            emptyList()
-                        } else {
-                            heartRepository.loadHeartRateSamples(windows.current.start, currentDataEnd)
-                        }
+                        loadOverviewHeartSamples(query.range, windows.current.start, currentDataEnd, workouts.await())
                     }
                     val loadedRestingHeartRate = restingHeartRate.await()
                     val loadedWorkouts = workouts.await()

@@ -294,8 +294,7 @@ class DashboardViewModel @Inject constructor(
 
     fun resumeCurrentDay() {
         refreshPreferences()
-        // Reload whenever the user returns to today: ON_RESUME is the only signal
-        // that Health Connect data may have changed.
+        // A short navigation round trip reuses the settled period; explicit refresh and writes bypass it.
         if (!userPinnedPastDay) {
             load(LocalDate.now())
         }
@@ -304,7 +303,8 @@ class DashboardViewModel @Inject constructor(
     fun load(date: LocalDate, refreshMode: RefreshMode = RefreshMode.NORMAL) {
         val clampedDate = date.coerceAtMost(LocalDate.now())
         if (refreshMode == RefreshMode.NORMAL && clampedDate == inFlightLoadDate) return
-        if (refreshMode == RefreshMode.NORMAL &&
+        if (refreshMode == RefreshMode.NORMAL && inFlightLoadDate == null &&
+            _uiState.value.selectedDate == clampedDate && _uiState.value.data?.date == clampedDate &&
             lastSettledKey == (clampedDate to _uiState.value.selectedRange) &&
             System.currentTimeMillis() - lastSettledAt < 300_000L &&
             _uiState.value.data != null && _uiState.value.degradedWidgets.isEmpty()
