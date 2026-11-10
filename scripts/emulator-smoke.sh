@@ -12,6 +12,6 @@ adb shell dumpsys activity activities > dashboard-emulator-evidence/activities.t
 adb shell uiautomator dump /sdcard/window.xml
 adb pull /sdcard/window.xml dashboard-emulator-evidence/window.xml
 mkdir -p dashboard-emulator-evidence
-adb shell screencap -p /sdcard/dashboard.png
-adb pull /sdcard/dashboard.png dashboard-emulator-evidence/dashboard.png
+adb shell screencap -p /sdcard/launch.png
+adb pull /sdcard/launch.png dashboard-emulator-evidence/launch.png
 adb logcat -d -t 2000 > dashboard-emulator-evidence/logcat.txt

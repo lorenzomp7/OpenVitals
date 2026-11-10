@@ -93,7 +93,7 @@ jobs:
 
   # Compile a real installable APK and verify that Android can launch it.
   emulator-smoke:
-    runs-on: macos-15-intel
+    runs-on: ubuntu-26.04
     timeout-minutes: 55
     env:
       MAPBOX_PUBLIC_TOKEN: ${{ secrets.MAPBOX_PUBLIC_TOKEN }}
@@ -106,7 +106,12 @@ jobs:
           distribution: temurin
           java-version: '17'
       - uses: gradle/actions/setup-gradle@v5
-      - run: ./gradlew :app:assembleCi
+      - run: scripts/ci-android-gradle.sh :app:assembleCi
+      - name: Enable KVM
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
       - uses: reactivecircus/android-emulator-runner@v2
         with:
           api-level: 35

@@ -1,6 +1,6 @@
 # OpenVitals Privacy Policy
 
-Last updated for this personal fork: November 10, 2026
+Last updated: November 10, 2026
 
 OpenVitals is a local-first Android app for viewing health and fitness data from Health Connect.
 
