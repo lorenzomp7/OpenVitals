@@ -30,6 +30,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import tech.mmarca.openvitals.features.dashboard.DashboardHeroRing
 import tech.mmarca.openvitals.ui.components.AutoResizeText
 import tech.mmarca.openvitals.ui.components.OpenVitalsCard
@@ -38,6 +39,7 @@ import tech.mmarca.openvitals.ui.theme.Radii
 private val HeroPadding = 10.dp
 private val HeroRingStroke = 14.dp
 private val HeroSideStroke = 10.dp
+private val HeroValueFloor = 13.sp
 
 /** How far the side arcs sit outside the centre ring, as a multiple of its radius. */
 private const val HeroSideRadiusFactor = 1.28f
@@ -179,6 +181,8 @@ private fun HeroLabel(
             fontWeight = FontWeight.Bold,
             color = color,
             maxLines = 1,
+            // A number with its unit shrinks to fit beside the arc instead of being cut.
+            minFontSize = HeroValueFloor,
         )
         AutoResizeText(
             text = ring.title.uppercase(),

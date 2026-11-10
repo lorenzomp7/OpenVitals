@@ -29,6 +29,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import tech.mmarca.openvitals.core.presentation.DisplayValue
 import tech.mmarca.openvitals.features.dashboard.components.DashboardTileShape
 import tech.mmarca.openvitals.features.dashboard.components.MetricStatCard
@@ -275,6 +276,7 @@ private fun DashboardSmallTile(ring: DashboardHeroRing) {
                 color = MaterialTheme.colorScheme.onSurface,
                 textAlign = TextAlign.Center,
                 maxLines = 1,
+                minFontSize = 11.sp,
                 modifier = Modifier.padding(top = 4.dp),
             )
         }
@@ -327,6 +329,7 @@ private fun DashboardLargeTile(ring: DashboardHeroRing) {
                     color = MaterialTheme.colorScheme.onSurface,
                     textAlign = TextAlign.Center,
                     maxLines = 1,
+                    minFontSize = 13.sp,
                 )
             }
         }
