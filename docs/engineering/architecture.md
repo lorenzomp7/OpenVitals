@@ -714,3 +714,7 @@ The architecture is working well when:
 - shared extraction happens for scaffolding, not for semantics
 - device protocol code stays transport-free and testable without a radio
 - a new device integration adds a port implementation, not a second radio-arbitration scheme
+
+### Personal dashboard periods
+
+`DashboardPeriodLoader` in `data/repository/dashboard` reuses `HealthConnectManager` readers for bounded range aggregation. `DashboardPeriodSelector` and `DashboardPeriod` reuse the shared period model and navigator; `PeriodRangePreferenceKey.DASHBOARD` persists the chosen range. No additional pacer, retry loop or background read is introduced.

@@ -11,6 +11,7 @@ data class DashboardQuery(
     val visibleMetrics: Set<DashboardMetric> = DashboardMetric.entries.toSet(),
     val includeHistoricalBaselines: Boolean = true,
     val includeWeeklyTrainingSignals: Boolean = true,
+    val period: tech.mmarca.openvitals.core.period.DatePeriod? = null,
 )
 
 enum class DashboardMetric {

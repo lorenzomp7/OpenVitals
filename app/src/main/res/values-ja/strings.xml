@@ -3840,4 +3840,5 @@
     <string name="dashboard_paged_layout_toggle">1ページ6個、横にスワイプ</string>
     <string name="dashboard_widget_size_action">サイズを変更</string>
     <string name="dashboard_history_load_older">以前のアクティビティを読み込む</string>
+    <string name="dashboard_period_summary">期間の合計、睡眠と心臓指標の平均。その他の測定値は最新値。トレーニングは最後の週。</string>
 </resources>

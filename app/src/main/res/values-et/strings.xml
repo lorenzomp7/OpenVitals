@@ -3772,4 +3772,5 @@
     <string name="dashboard_paged_layout_toggle">Kuus paani lehel, pühi küljele</string>
     <string name="dashboard_widget_size_action">Muuda suurust</string>
     <string name="dashboard_history_load_older">Laadi varasemaid tegevusi</string>
+    <string name="dashboard_period_summary">Perioodi summad; keskmine uni ja südamenäitajad. Muud mõõtmised: viimane väärtus. Treening: viimane nädal.</string>
 </resources>

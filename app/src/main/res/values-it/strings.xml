@@ -3802,4 +3802,5 @@
     <string name="dashboard_paged_layout_toggle">Pagine da 6, scorri lateralmente</string>
     <string name="dashboard_widget_size_action">Cambia dimensione</string>
     <string name="dashboard_history_load_older">Carica attività precedenti</string>
+    <string name="dashboard_period_summary">Totali del periodo; sonno e parametri cardiaci medi. Altre misure: ultimo valore. Allenamento: settimana finale.</string>
 </resources>

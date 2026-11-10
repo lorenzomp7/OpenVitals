@@ -3838,4 +3838,5 @@
     <string name="dashboard_paged_layout_toggle">Stránky po 6, přejetí do strany</string>
     <string name="dashboard_widget_size_action">Změnit velikost</string>
     <string name="dashboard_history_load_older">Načíst starší aktivity</string>
+    <string name="dashboard_period_summary">Součty za období; průměr spánku a srdečních hodnot. Ostatní měření: poslední hodnota. Trénink: poslední týden.</string>
 </resources>

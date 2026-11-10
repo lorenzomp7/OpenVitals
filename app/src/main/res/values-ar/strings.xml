@@ -107,4 +107,5 @@
     <string name="dashboard_paged_layout_toggle">ست بطاقات في الصفحة، اسحب جانبياً</string>
     <string name="dashboard_widget_size_action">تغيير الحجم</string>
     <string name="dashboard_history_load_older">تحميل الأنشطة السابقة</string>
+    <string name="dashboard_period_summary">إجماليات الفترة؛ متوسط النوم ومؤشرات القلب. القياسات الأخرى: أحدث قيمة. التدريب: الأسبوع الأخير.</string>
 </resources>

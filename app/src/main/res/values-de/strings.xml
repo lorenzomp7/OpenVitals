@@ -3772,4 +3772,5 @@
     <string name="dashboard_paged_layout_toggle">Seiten mit 6 Kacheln, seitlich wischen</string>
     <string name="dashboard_widget_size_action">Größe ändern</string>
     <string name="dashboard_history_load_older">Ältere Aktivitäten laden</string>
+    <string name="dashboard_period_summary">Periodensummen; Schlaf und Herzwerte im Durchschnitt. Andere Messwerte: letzter Wert. Training: letzte Woche.</string>
 </resources>

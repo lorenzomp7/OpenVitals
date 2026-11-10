@@ -4,6 +4,7 @@ enum class PeriodRangePreferenceKey(
     val storageKey: String,
     val defaultRange: TimeRange,
 ) {
+    DASHBOARD("dashboard_range", TimeRange.DAY),
     STEPS("detail_range_steps", TimeRange.WEEK),
     CALORIES("detail_range_calories", TimeRange.WEEK),
     ACTIVITIES("detail_range_activities", TimeRange.WEEK),

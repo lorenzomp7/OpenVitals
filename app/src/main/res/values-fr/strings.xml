@@ -3805,4 +3805,5 @@
     <string name="dashboard_paged_layout_toggle">Pages de 6, balayage latéral</string>
     <string name="dashboard_widget_size_action">Changer la taille</string>
     <string name="dashboard_history_load_older">Charger les activités précédentes</string>
+    <string name="dashboard_period_summary">Totaux de la période ; sommeil et mesures cardiaques moyens. Autres mesures : dernière valeur. Entraînement : dernière semaine.</string>
 </resources>

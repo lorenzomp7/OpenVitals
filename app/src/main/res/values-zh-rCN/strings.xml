@@ -3773,4 +3773,5 @@
     <string name="dashboard_paged_layout_toggle">每页6个，左右滑动</string>
     <string name="dashboard_widget_size_action">更改大小</string>
     <string name="dashboard_history_load_older">加载更早的活动</string>
+    <string name="dashboard_period_summary">期间总计；睡眠和心脏指标的平均值。其他测量：最新值。训练：最后一周。</string>
 </resources>

@@ -3799,4 +3799,5 @@
     <string name="dashboard_paged_layout_toggle">Páginas de 6, deslize para o lado</string>
     <string name="dashboard_widget_size_action">Alterar tamanho</string>
     <string name="dashboard_history_load_older">Carregar atividades anteriores</string>
+    <string name="dashboard_period_summary">Totais do período; médias de sono e métricas cardíacas. Outras medidas: último valor. Treino: última semana.</string>
 </resources>

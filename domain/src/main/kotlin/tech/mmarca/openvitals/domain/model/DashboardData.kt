@@ -80,6 +80,7 @@ data class DashboardData(
      */
     val supportedMetrics: Set<DashboardMetric>? = null,
     val metricSourcePackages: Map<DashboardMetric, String> = emptyMap(),
+    val period: tech.mmarca.openvitals.core.period.DatePeriod? = null,
     val caloriesKcalSource: CaloriesBurnedSource = if (caloriesKcal > 0.0) {
         CaloriesBurnedSource.RECORDED_TOTAL
     } else {

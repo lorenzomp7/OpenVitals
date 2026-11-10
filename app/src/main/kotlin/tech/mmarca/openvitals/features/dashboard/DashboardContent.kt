@@ -83,6 +83,8 @@ internal fun DashboardContent(
     /** The workouts of the days before [data]'s, newest first, listed under the day's own. */
     earlierWorkouts: List<ExerciseData> = emptyList(),
     historyState: DashboardWorkoutHistoryState? = null,
+    periodState: DashboardUiState? = null,
+    onSelectRange: (tech.mmarca.openvitals.core.period.TimeRange) -> Unit = {},
     onLoadMoreWorkouts: () -> Unit = {},
     unitFormatter: UnitFormatter,
     dateTimeFormatterProvider: DateTimeFormatterProvider,
@@ -126,7 +128,10 @@ internal fun DashboardContent(
     }
     // While a switch loads, the tiles read "loading" rather than the old day's numbers.
     // Ordering keeps the old day's partition until the new day lands.
-    val awaitingSelectedDay = data.date != selectedDate
+    val awaitingSelectedDay = data.date != selectedDate ||
+        (periodState != null && data.period != periodState.dashboardPeriod().takeIf {
+            periodState.selectedRange != tech.mmarca.openvitals.core.period.TimeRange.DAY
+        })
     val widgetDisplay = remember(display, awaitingSelectedDay) {
         if (awaitingSelectedDay) {
             display.copy(
@@ -205,7 +210,14 @@ internal fun DashboardContent(
             ) {
                 // Explicit keys, or a change above re-creates every sibling below.
                 item(key = "day_navigator") {
-                    DayNavigator(
+                    if (periodState != null) DashboardPeriodSelector(
+                        state = periodState,
+                        onSelectRange = onSelectRange,
+                        onPrevious = onPreviousDay,
+                        onNext = onNextDay,
+                        onOpenCalendar = onOpenCalendar,
+                        modifier = Modifier.padding(horizontal = DashboardScreenPadding, vertical = 4.dp),
+                    ) else DayNavigator(
                         date = selectedDate,
                         canGoForward = canGoForward,
                         onPreviousDay = onPreviousDay,

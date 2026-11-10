@@ -3839,4 +3839,5 @@
     <string name="dashboard_paged_layout_toggle">По 6 плиток на странице, листайте вбок</string>
     <string name="dashboard_widget_size_action">Изменить размер</string>
     <string name="dashboard_history_load_older">Загрузить предыдущие тренировки</string>
+    <string name="dashboard_period_summary">Итоги периода; средние показатели сна и сердца. Другие измерения: последнее значение. Тренировки: последняя неделя.</string>
 </resources>

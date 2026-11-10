@@ -79,6 +79,8 @@ class DashboardViewModelTest {
     ) = mockk<PreferencesRepository>().also {
         every { it.acknowledgedPermissionsFor(any()) } returns emptySet()
         every { it.acknowledgePermissionsFor(any(), any()) } returns Unit
+        every { it.timeRangeFor(any()) } returns tech.mmarca.openvitals.core.period.TimeRange.DAY
+        every { it.setTimeRangeFor(any(), any()) } returns Unit
         every { it.sleepWindow } returns sleepWindow
         every { it.activityWeekMode } returns activityWeekMode
         every { it.showOpenVitalsCalculatedCalories } returns showOpenVitalsCalculatedCalories

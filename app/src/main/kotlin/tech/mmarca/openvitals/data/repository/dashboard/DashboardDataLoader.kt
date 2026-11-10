@@ -164,7 +164,12 @@ class DashboardDataLoader @Inject constructor(
 
     suspend fun loadDashboard(query: DashboardQuery): DashboardData =
         withContext(dispatchers.io) {
-            loadDashboardInternal(query, dashboardLoadInputs())
+            val inputs = dashboardLoadInputs()
+            if (query.period != null) {
+                DashboardPeriodLoader(hc, inputs.showOpenVitalsCalculatedCalories).load(query, inputs.granted) { dailyQuery ->
+                    loadDashboardInternal(dailyQuery, inputs)
+                }
+            } else loadDashboardInternal(query, inputs)
         }
 
     private suspend fun dashboardLoadInputs(): DashboardLoadInputs =

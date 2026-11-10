@@ -457,4 +457,5 @@
     <string name="dashboard_paged_layout_toggle">Σελίδες των 6, σύρετε στο πλάι</string>
     <string name="dashboard_widget_size_action">Αλλαγή μεγέθους</string>
     <string name="dashboard_history_load_older">Φόρτωση παλαιότερων δραστηριοτήτων</string>
+    <string name="dashboard_period_summary">Σύνολα περιόδου· μέσοι όροι ύπνου και καρδιακών μετρήσεων. Άλλες μετρήσεις: τελευταία τιμή. Προπόνηση: τελευταία εβδομάδα.</string>
 </resources>

@@ -3833,4 +3833,5 @@
     <string name="dashboard_paged_layout_toggle">Pages of 6, swiped sideways</string>
     <string name="dashboard_widget_size_action">Change size</string>
     <string name="dashboard_history_load_older">Load older activities</string>
+    <string name="dashboard_period_summary">Period totals; average sleep and heart metrics. Other measurements: latest value. Training: final week.</string>
 </resources>

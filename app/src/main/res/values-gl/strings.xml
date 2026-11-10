@@ -3843,4 +3843,5 @@ Se Acceder a rutas de exercicio non aparece no diálogo de acceso, abre os axust
     <string name="dashboard_paged_layout_toggle">Páxinas de 6, desliza lateralmente</string>
     <string name="dashboard_widget_size_action">Cambiar tamaño</string>
     <string name="dashboard_history_load_older">Cargar actividades anteriores</string>
+    <string name="dashboard_period_summary">Totais do período; medias de sono e métricas cardíacas. Outras medidas: último valor. Adestramento: última semana.</string>
 </resources>
