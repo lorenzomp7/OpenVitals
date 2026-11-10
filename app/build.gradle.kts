@@ -304,6 +304,8 @@ dependencies {
     implementation(libs.kotlinx.serialization.json)
     // Reads the QR code of a SMART Health Card from an image or a PDF page.
     implementation(libs.zxing.core)
+    // Bundled Latin OCR: no model download or screenshot upload.
+    implementation("com.google.mlkit:text-recognition:16.0.1")
     // The live preview and frames for scanning a SMART Health Card with the camera.
     implementation(libs.androidx.camera.camera2)
     implementation(libs.androidx.camera.lifecycle)

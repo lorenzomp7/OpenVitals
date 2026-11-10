@@ -49,6 +49,7 @@ class MainActivity : AppCompatActivity() {
     @Inject lateinit var unitFormatter: UnitFormatter
     @Inject lateinit var dateTimeFormatterProvider: DateTimeFormatterProvider
 
+    private var sharedScreenshot by mutableStateOf<Uri?>(null)
     private var nextRouteImportRequestId = 0L
     private var routeImportRequest by mutableStateOf<ExternalRouteImportRequest?>(null)
     private var externalNavigationRoute by mutableStateOf<String?>(null)
@@ -65,9 +66,12 @@ class MainActivity : AppCompatActivity() {
         // pushed a second copy of a widget's screen, and re-ran a file import over the user's
         // edits and their unsaved recording draft.
         if (savedInstanceState == null) {
+            updateScreenshotRequest(intent)
             updateRouteImportRequest(intent)
             updateExternalNavigationRoute(intent)
         }
+
+        if (savedInstanceState != null) sharedScreenshot = savedInstanceState.getString("sharedScreenshot")?.let(Uri::parse)
 
         setContent {
             val appThemeMode by preferencesRepository.appThemeModeFlow.collectAsStateWithLifecycle()
@@ -125,6 +129,11 @@ class MainActivity : AppCompatActivity() {
                     LocalAppBarState provides rememberedAppBarState,
                 ) {
                     AppLockGate(enabled = preferencesRepository.appLockEnabled) {
+                        sharedScreenshot?.let { uri ->
+                            tech.mmarca.openvitals.features.imports.screenshot.ScreenshotImportDialog(
+                                initialUri = uri, onDismiss = { sharedScreenshot = null },
+                            )
+                        }
                         AppNavigation(
                             unitFormatter = unitFormatter,
                             dateTimeFormatterProvider = dateTimeFormatterProvider,
@@ -157,8 +166,18 @@ class MainActivity : AppCompatActivity() {
         if (redirectHealthConnectOnboardingIfNeeded(intent)) {
             return
         }
+        updateScreenshotRequest(intent)
         updateRouteImportRequest(intent)
         updateExternalNavigationRoute(intent)
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        outState.putString("sharedScreenshot", sharedScreenshot?.toString())
+        super.onSaveInstanceState(outState)
+    }
+
+    private fun updateScreenshotRequest(intent: Intent?) {
+        sharedScreenshot = intent?.screenshotImportUri()
     }
 
     private fun redirectHealthConnectOnboardingIfNeeded(intent: Intent?): Boolean {
@@ -288,3 +307,10 @@ private val RouteImportMimeTypes = setOf(
 )
 
 private val RouteImportExtensions = setOf("gpx", "kml", "kmz", "fit", "tcx")
+
+/** Accept only explicitly shared content images, never private file paths. */
+internal fun Intent.screenshotImportUri(): Uri? {
+    if (action != Intent.ACTION_SEND || type?.startsWith("image/") != true) return null
+    return (streamUri() ?: clipData?.takeIf { it.itemCount == 1 }?.getItemAt(0)?.uri)
+        ?.takeIf { it.scheme == ContentResolver.SCHEME_CONTENT }
+}

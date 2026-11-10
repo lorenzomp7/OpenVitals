@@ -2,7 +2,7 @@ name: verify
 on:
   pull_request:
   push:
-    branches: [main]
+    branches: [main, claude_chatgpt_rebuilt]
   workflow_dispatch:
   workflow_call:
 permissions:
@@ -44,6 +44,8 @@ jobs:
             app/build/reports/tests/
             domain/build/reports/tests/
   emulator:
+    # Device checks are requested explicitly, as on the Claude branch.
+    if: github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[shots]')
     needs: app-test
     runs-on: ubuntu-26.04
     timeout-minutes: 20

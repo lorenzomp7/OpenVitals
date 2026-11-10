@@ -14,6 +14,10 @@ The repo now has one Android app module for the local app. The goal is to keep b
 
 Saved workout route cards use `features/activity/maps/ActivityMapboxMap.kt` and Mapbox cartography after an on-device Mapbox login. OAuth and encrypted token storage live in the same `features/activity/maps` package; GitHub builds contain no personal map token. Internet access is enabled for this feature. Route samples remain local and the existing preview is the fallback. See [Mapbox configuration](mapbox.md).
 
+## Screenshot import
+
+`features/imports/screenshot/` runs bundled ML Kit Latin OCR locally from Data Import settings. It suggests explicit-unit values and labelled workout durations; users edit/remove them and confirm local timestamps before writing. Filename timestamps prefill capture time (not guaranteed measurement time); a duration suggests a start time before capture. Missing or invalid filenames leave times blank. MainActivity accepts single image ACTION_SEND shares and opens the same review dialog inside AppLockGate, preserving a pending URI across recreation. A confirmed duration writes an ExerciseSessionRecord and must match the confirmed interval. Workout labels are recognized using existing Italian, English and current-locale exercise names; the review provides a type selector, and an unrecognized type requires a selection before saving. `healthconnect/ScreenshotRecords.kt` maps confirmed values to records; writes use `AppleHealthImportRepository` and stable IDs. No image or OCR text is uploaded or persisted. Calories mean total burned, bpm means an individual reading; averages and unsupported metrics must be removed. Existing records from other apps are not automatically deduplicated.
+
 ## Current Snapshot
 
 - App namespace: `tech.mmarca.openvitals`
@@ -714,3 +718,7 @@ The architecture is working well when:
 - shared extraction happens for scaffolding, not for semantics
 - device protocol code stays transport-free and testable without a radio
 - a new device integration adds a port implementation, not a second radio-arbitration scheme
+
+### Personal dashboard periods
+
+`DashboardPeriodLoader` in `data/repository/dashboard` reuses `HealthConnectManager` readers for bounded range aggregation. `DashboardPeriodSelector` and `DashboardPeriod` reuse the shared period model and navigator; `PeriodRangePreferenceKey.DASHBOARD` persists the chosen range. No additional pacer, retry loop or background read is introduced.

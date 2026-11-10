@@ -264,6 +264,12 @@ private fun LazyListScope.dataImportCards(
     }
     item { SettingsCardSpacer() }
     item {
+        tech.mmarca.openvitals.features.imports.screenshot.ScreenshotImportCard(
+            modifier = Modifier.padding(horizontal = LayoutMetrics.screenGutter),
+        )
+    }
+    item { SettingsCardSpacer() }
+    item {
         CsvImportCard(
             onOpenCsvImport = actions.onOpenCsvImport,
             modifier = Modifier.padding(horizontal = LayoutMetrics.screenGutter),

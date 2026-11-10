@@ -3773,4 +3773,19 @@
     <string name="dashboard_paged_layout_toggle">每页6个，左右滑动</string>
     <string name="dashboard_widget_size_action">更改大小</string>
     <string name="dashboard_history_load_older">加载更早的活动</string>
+    <string name="dashboard_period_summary">期间总计；睡眠和心脏指标的平均值。其他测量：最新值。训练：最后一周。</string>
+    <string name="screenshot_import_title">Import screenshot</string>
+    <string name="screenshot_import_body">Text recognition runs on this phone. Review and remove incorrect suggestions. Supported: kg, steps, km, total kcal and individual bpm readings. Do not import averages as individual readings or data already saved by another app.</string>
+    <string name="screenshot_import_pick">Choose screenshot</string>
+    <string name="screenshot_import_total_kcal">Total calories burned (kcal)</string>
+    <string name="screenshot_import_time_help">如文件名包含日期和时间，将自动建议填入。这是截图时间，请核对实际测量时间。运动结束时间默认为截图时间，开始时间为结束时间减去时长。请核对两者，时间范围必须与时长一致。本地日期格式：2026-11-10T14:30。</string>
+    <string name="screenshot_import_start">Start / measurement time</string>
+    <string name="screenshot_import_end">End</string>
+    <string name="screenshot_import_confirm">I checked values, units, dates, interval and calorie type.</string>
+    <string name="screenshot_import_permissions">Allow Health Connect writes</string>
+    <string name="screenshot_import_save">Confirm and save</string>
+    <string name="screenshot_import_empty">Choose an image with explicit units or labels. No supported values found yet.</string>
+    <string name="screenshot_import_saved">Saved in Health Connect. Refresh the relevant OpenVitals screen.</string>
+    <string name="screenshot_import_close">Close</string>
+    <string name="screenshot_import_duration">运动时长（分钟）</string>
 </resources>

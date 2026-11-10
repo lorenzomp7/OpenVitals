@@ -135,8 +135,10 @@ fun DashboardScreen(
                     ErrorMessage(error?.resolve() ?: stringResource(R.string.unknown_error))
                 loadedData != null -> DashboardContent(
                     data = loadedData,
-                    earlierWorkouts = history.workouts.takeIf { history.date == loadedData.date }.orEmpty(),
-                    historyState = history.takeIf { it.date == selectedDate },
+                    earlierWorkouts = history.workouts.takeIf { history.date == loadedData.date && state.selectedRange == tech.mmarca.openvitals.core.period.TimeRange.DAY }.orEmpty(),
+                    historyState = history.takeIf { it.date == selectedDate && state.selectedRange == tech.mmarca.openvitals.core.period.TimeRange.DAY },
+                    periodState = state,
+                    onSelectRange = viewModel::selectRange,
                     onLoadMoreWorkouts = {
                         if (history.error == tech.mmarca.openvitals.core.presentation.ScreenError.PermissionDenied) {
                             permissionLauncher.launch(viewModel.workoutHistoryPermissions)
@@ -146,7 +148,7 @@ fun DashboardScreen(
                     display = display,
                     unitFormatter = unitFormatter,
                     dateTimeFormatterProvider = dateTimeFormatterProvider,
-                    canGoForward = selectedDate.isBefore(LocalDate.now()),
+                    canGoForward = state.canAdvancePeriod(),
                     isRefreshing = state.isRefreshing && !pullRefreshRequested,
                     syncPaused = hcUx.syncPaused,
                     // Rate-limited is not "no data": the banner counts down to the retry.

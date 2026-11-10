@@ -1,6 +1,5 @@
 package tech.mmarca.openvitals.features.dashboard
 
-import androidx.compose.runtime.Immutable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -19,6 +18,7 @@ import tech.mmarca.openvitals.core.performance.LoadCoordinator
 import tech.mmarca.openvitals.data.repository.BleDeviceRepository
 import tech.mmarca.openvitals.domain.model.HealthConnectAvailability
 import tech.mmarca.openvitals.domain.model.RefreshMode
+import tech.mmarca.openvitals.domain.preferences.toWeekPeriodMode
 import tech.mmarca.openvitals.domain.preferences.ActivityWeekMode
 import tech.mmarca.openvitals.domain.preferences.SleepWindow
 import tech.mmarca.openvitals.domain.model.BleConnectionStatus
@@ -62,88 +62,6 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 
-@Immutable
-data class DashboardUiState(
-    val selectedDate: LocalDate = LocalDate.now(),
-    val data: DashboardData? = null,
-    val isLoading: Boolean = true,
-    val isRefreshing: Boolean = false,
-    val error: ScreenError? = null,
-    val unacknowledgedWidgetPermissions: Set<String> = emptySet(),
-    val sleepWindow: SleepWindow = SleepWindow.Default,
-    val activityWeekMode: ActivityWeekMode = ActivityWeekMode.MONDAY_TO_SUNDAY,
-    val showOpenVitalsCalculatedCalories: Boolean = false,
-    val dashboardWidgets: List<DashboardWidgetId> = DefaultDashboardWidgetIds,
-    /**
-     * The widgets the user placed. Only these keep an unsupported metric in
-     * the edit grid; a default-layout one belongs in the add tray.
-     */
-    val placedDashboardWidgets: Set<DashboardWidgetId> = emptySet(),
-    val dailyGoals: DashboardDailyGoals = DashboardDailyGoals(),
-    val isEditingDashboard: Boolean = false,
-    /** The spaces (1, 2 or 4) chosen for a widget; one left out keeps its own size. */
-    val widgetSizes: Map<DashboardWidgetId, Int> = emptyMap(),
-    val pagedLayout: Boolean = false,
-    val sortEmptyTilesLast: Boolean = true,
-    val healthConnectSyncEnabled: Boolean = true,
-    val healthConnectAvailability: HealthConnectAvailability = HealthConnectAvailability.AVAILABLE,
-    val minimumPermissionsGranted: Boolean = true,
-    val display: DashboardDisplayState = DashboardDisplayState(),
-    val loadingWidgets: Set<DashboardWidgetId> = emptySet(),
-    /** Tiles whose last read Health Connect refused or the backoff skipped. Reloaded alone when it ends. */
-    val degradedWidgets: Set<DashboardWidgetId> = emptySet(),
-    /** When Health Connect's refusal ends, epoch millis, or null while it is answering. */
-    val rateLimitDeadlineEpochMillis: Long? = null,
-    val sensorStatus: DashboardSensorStatus = DashboardSensorStatus(),
-    /** The OpenWatch tile, from OpenLink; null hides it. */
-    val openWatch: tech.mmarca.openvitals.openwatch.OpenWatchTileDisplay? = null,
-)
-
-@Immutable
-data class DashboardSensorStatus(
-    val devices: List<DashboardSensorDeviceStatus> = emptyList(),
-) {
-    val hasDevices: Boolean
-        get() = devices.isNotEmpty()
-
-    val enabledCount: Int
-        get() = devices.count { it.enabled }
-
-    val connectedCount: Int
-        get() = devices.count { it.connectionStatus == BleConnectionStatus.CONNECTED }
-
-    val lowestBatteryPercent: Int?
-        get() = devices.mapNotNull { it.batteryPercent }.minOrNull()
-}
-
-@Immutable
-data class DashboardSensorDeviceStatus(
-    val id: String,
-    val displayName: String,
-    val enabled: Boolean,
-    val connectionStatus: BleConnectionStatus,
-    val batteryPercent: Int?,
-)
-
-@Immutable
-data class DashboardDailyGoals(
-    val steps: Double = MetricDailyGoalKey.STEPS.defaultValue,
-    val distanceMeters: Double = MetricDailyGoalKey.DISTANCE_METERS.defaultValue,
-    val caloriesOutKcal: Double = MetricDailyGoalKey.CALORIES_OUT_KCAL.defaultValue,
-    val activeCaloriesKcal: Double = MetricDailyGoalKey.ACTIVE_CALORIES_KCAL.defaultValue,
-    val floors: Double = MetricDailyGoalKey.FLOORS.defaultValue,
-    val elevationMeters: Double = MetricDailyGoalKey.ELEVATION_METERS.defaultValue,
-    val wheelchairPushes: Double = MetricDailyGoalKey.WHEELCHAIR_PUSHES.defaultValue,
-    val sleepHours: Double = MetricDailyGoalKey.SLEEP_HOURS.defaultValue,
-    val hydrationLiters: Double = 2.0,
-    val caloriesInKcal: Double = MetricDailyGoalKey.CALORIES_IN_KCAL.defaultValue,
-    val proteinGrams: Double = MetricDailyGoalKey.PROTEIN_GRAMS.defaultValue,
-    val carbsGrams: Double = MetricDailyGoalKey.CARBS_GRAMS.defaultValue,
-    val fatGrams: Double = MetricDailyGoalKey.FAT_GRAMS.defaultValue,
-    val mindfulnessMinutes: Double = MetricDailyGoalKey.MINDFULNESS_MINUTES.defaultValue,
-)
-
-
 @HiltViewModel
 class DashboardViewModel @Inject constructor(
     private val loadDashboardDayUseCase: LoadDashboardDayUseCase,
@@ -168,6 +86,7 @@ class DashboardViewModel @Inject constructor(
 
     private val _uiState = MutableStateFlow(
         DashboardUiState(
+            selectedRange = prefs.timeRangeFor(tech.mmarca.openvitals.core.period.PeriodRangePreferenceKey.DASHBOARD),
             // Appends widgets added by an update to a layout saved before them.
             dashboardWidgets = dashboardWidgetIdsWithNewOnesAppended(
                 storedIds = prefs.dashboardWidgetOrder(),
@@ -191,6 +110,11 @@ class DashboardViewModel @Inject constructor(
         )
     )
     val uiState: StateFlow<DashboardUiState> = _uiState.asStateFlow()
+    private val periodDriver = tech.mmarca.openvitals.core.period.PeriodSelectionDriver(
+        initialRange = _uiState.value.selectedRange,
+        initialWeekPeriodMode = prefs.activityWeekMode.toWeekPeriodMode(),
+        onRangeSelected = { prefs.setTimeRangeFor(tech.mmarca.openvitals.core.period.PeriodRangePreferenceKey.DASHBOARD, it) },
+    )
     private val loadCoordinator = LoadCoordinator()
     private var userPinnedPastDay = false
     private var permissionPromptDismissedForLoad = false
@@ -380,12 +304,14 @@ class DashboardViewModel @Inject constructor(
         onlyWidgets: Set<DashboardWidgetId>? = null,
     ) {
         val clampedDate = date.coerceAtMost(LocalDate.now())
+        periodDriver.weekPeriodMode = prefs.activityWeekMode.toWeekPeriodMode()
+        periodDriver.selectDate(clampedDate)
         // The date flips before any read, so the navigator answers instantly.
         _uiState.value = _uiState.value.copy(
             selectedDate = clampedDate,
             sortEmptyTilesLast = prefs.dashboardSortEmptyTilesLast,
         )
-        if (onlyWidgets == null) history.reset(clampedDate)
+        if (onlyWidgets == null && _uiState.value.selectedRange == TimeRange.DAY) history.reset(clampedDate)
         val generation = ++loadGeneration
         inFlightLoadDate = clampedDate
         loadCoordinator.launch(viewModelScope) load@{
@@ -444,9 +370,10 @@ class DashboardViewModel @Inject constructor(
             DashboardWidgetId.BODY_ENERGY in widgets
 
         // Nothing here may await a metric: the screen shows "loading" tiles at once.
-        val existingData = current.data?.takeIf { it.date == clampedDate }
+        val requestedPeriod = current.dashboardPeriod().takeIf { current.selectedRange != TimeRange.DAY }
+        val existingData = current.data?.takeIf { it.date == clampedDate && it.period == requestedPeriod }
         val hadExistingData = existingData != null
-        val seed = (existingData ?: DashboardData(date = clampedDate))
+        val seed = (existingData ?: DashboardData(date = clampedDate, period = requestedPeriod))
             // A reload re-establishes these; the merge can only add to the set. A partial pass keeps them.
             .let { if (onlyWidgets == null) it.copy(missingPermissions = emptySet()) else it }
         publishDashboardData(
@@ -473,7 +400,7 @@ class DashboardViewModel @Inject constructor(
                     )
                 }
             }
-            if (onlyWidgets == null) {
+            if (onlyWidgets == null && current.selectedRange == TimeRange.DAY) {
                 launch { history.loadMore() }
             }
             if (wantsBodyEnergy) {
@@ -530,6 +457,7 @@ class DashboardViewModel @Inject constructor(
             .toSet()
         val query = DashboardQuery(
             date = date,
+            period = _uiState.value.dashboardPeriod().takeIf { _uiState.value.selectedRange != TimeRange.DAY },
             sleepWindow = sleepWindow,
             activityWeekMode = activityWeekMode,
             visibleMetrics = metrics,
@@ -568,7 +496,7 @@ class DashboardViewModel @Inject constructor(
             withHealthConnectReadOutcome {
                 repository.loadTimeline(
                     BodyEnergyTimelineQuery(
-                        period = DatePeriod(date, date),
+                        period = _uiState.value.dashboardPeriod().end.let { DatePeriod(it, it) },
                         range = TimeRange.DAY,
                         refreshMode = refreshMode,
                     )
@@ -643,25 +571,25 @@ class DashboardViewModel @Inject constructor(
         )
     }
 
-    fun previousDay() {
-        val date = _uiState.value.selectedDate.minusDays(1)
-        userPinnedPastDay = date.isBefore(LocalDate.now())
-        load(date)
+    fun selectRange(range: TimeRange) {
+        if (range == _uiState.value.selectedRange) return
+        periodDriver.selectRange(range)
+        _uiState.update { it.copy(selectedRange = range) }
+        userPinnedPastDay = _uiState.value.dashboardPeriod().end.isBefore(LocalDate.now())
+        forceLoad(_uiState.value.selectedDate, RefreshMode.NORMAL)
     }
 
+    fun previousDay() = selectDate(periodDriver.previousPeriod().selectedDate)
+
     fun nextDay() {
-        val today = LocalDate.now()
-        val next = _uiState.value.selectedDate.plusDays(1)
-        if (!next.isAfter(today)) {
-            userPinnedPastDay = next.isBefore(today)
-            load(next)
-        }
+        periodDriver.nextPeriod()?.let { selectDate(it.selectedDate) }
     }
 
     fun selectDate(date: LocalDate) {
-        val today = LocalDate.now()
-        val clampedDate = date.coerceAtMost(today)
-        userPinnedPastDay = clampedDate.isBefore(today)
+        val clampedDate = periodDriver.selectDate(date).selectedDate
+        userPinnedPastDay = tech.mmarca.openvitals.core.period.periodFor(
+            _uiState.value.selectedRange, clampedDate, weekPeriodMode = prefs.activityWeekMode.toWeekPeriodMode(),
+        ).end.isBefore(LocalDate.now())
         load(clampedDate)
     }
 
@@ -778,7 +706,7 @@ class DashboardViewModel @Inject constructor(
     ): DashboardDisplayState = withContext(dispatchers.default) {
         DashboardPresentationMapper.build(
             data = data,
-            dailyGoals = dailyGoals,
+            dailyGoals = dailyGoals.forPeriod(data.period),
             unitFormatter = unitFormatter,
             dateTimeFormatterProvider = dateTimeFormatterProvider,
             loadingWidgets = loadingWidgets,
