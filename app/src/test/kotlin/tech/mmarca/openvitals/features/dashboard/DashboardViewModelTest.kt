@@ -84,6 +84,10 @@ class DashboardViewModelTest {
         every { it.showOpenVitalsCalculatedCalories } returns showOpenVitalsCalculatedCalories
         every { it.dailyGoalFor(any()) } answers { firstArg<MetricDailyGoalKey>().defaultValue }
         every { it.hydrationDailyGoalLiters } returns 2.0
+        every { it.dashboardWidgetSizes() } returns emptyMap()
+        every { it.setDashboardWidgetSizes(any()) } returns Unit
+        every { it.dashboardPagedLayout() } returns false
+        every { it.setDashboardPagedLayout(any()) } returns Unit
         every { it.dashboardWidgetOrder() } returns null
         every { it.dashboardSortEmptyTilesLast } returns true
         every { it.setDashboardWidgetOrder(any()) } returns Unit
@@ -93,6 +97,41 @@ class DashboardViewModelTest {
         every { it.setDashboardKnownWidgetIds(any()) } returns Unit
         every { it.healthConnectSyncEnabled } returns true
         every { it.bodyEnergyCalibration() } returns BodyEnergyCalibration.Automatic
+    }
+
+    @Test fun `saved tile sizes and paging are restored while unknown widget ids are ignored`() = runTest {
+        val preferences = prefs()
+        every { preferences.dashboardWidgetSizes() } returns mapOf(
+            "STEPS" to 4, "DISTANCE" to 2, "WEIGHT" to 1, "REMOVED_WIDGET" to 2,
+        )
+        every { preferences.dashboardPagedLayout() } returns true
+        val loader = mockDashboardDataLoader()
+        loader.answersEveryPassWith(DashboardData(date = today))
+
+        val vm = dashboardViewModel(loader, preferences)
+
+        assertEquals(
+            mapOf(DashboardWidgetId.STEPS to 4, DashboardWidgetId.DISTANCE to 2, DashboardWidgetId.WEIGHT to 1),
+            vm.uiState.value.widgetSizes,
+        )
+        assertTrue(vm.uiState.value.pagedLayout)
+    }
+
+    @Test fun `tile size and paging changes persist without replacing other saved sizes`() = runTest {
+        val preferences = prefs()
+        every { preferences.dashboardWidgetSizes() } returns mapOf("STEPS" to 4)
+        val loader = mockDashboardDataLoader()
+        loader.answersEveryPassWith(DashboardData(date = today))
+        val vm = dashboardViewModel(loader, preferences)
+
+        vm.setWidgetSize(DashboardWidgetId.DISTANCE, 1)
+        vm.setPagedLayout(true)
+
+        verify { preferences.setDashboardWidgetSizes(mapOf("STEPS" to 4, "DISTANCE" to 1)) }
+        verify { preferences.setDashboardPagedLayout(true) }
+        assertEquals(4, vm.uiState.value.widgetSizes[DashboardWidgetId.STEPS])
+        assertEquals(1, vm.uiState.value.widgetSizes[DashboardWidgetId.DISTANCE])
+        assertTrue(vm.uiState.value.pagedLayout)
     }
 
     // Initial load.
