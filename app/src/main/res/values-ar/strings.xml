@@ -121,4 +121,5 @@
     <string name="screenshot_import_empty">Choose an image with explicit units or labels. No supported values found yet.</string>
     <string name="screenshot_import_saved">Saved in Health Connect. Refresh the relevant OpenVitals screen.</string>
     <string name="screenshot_import_close">Close</string>
+    <string name="screenshot_import_duration">مدة التمرين (بالدقائق)</string>
 </resources>

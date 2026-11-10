@@ -26,6 +26,9 @@ import tech.mmarca.openvitals.healthconnect.screenshotRecords
 
 internal data class ScreenshotImportState(
     val values: List<ScreenshotValue> = emptyList(),
+    val exerciseType: Int? = null,
+    val suggestedStart: String = "",
+    val suggestedEnd: String = "",
     val busy: Boolean = false,
     val saved: Boolean = false,
     val error: ScreenError? = null,
@@ -38,23 +41,40 @@ internal class ScreenshotImportViewModel @Inject constructor(
 ) : ViewModel() {
     private val mutable = MutableStateFlow(ScreenshotImportState())
     val state = mutable.asStateFlow()
+    private var sharedUri: Uri? = null
+    fun scanShared(uri: Uri) {
+        if (sharedUri == uri) return
+        sharedUri = uri
+        scan(uri)
+    }
     fun scan(uri: Uri) {
         if (mutable.value.busy) return
         mutable.value = ScreenshotImportState(busy = true)
         viewModelScope.launch {
             try {
-                val text = withContext(Dispatchers.IO) {
+                val (text, timestamp) = withContext(Dispatchers.IO) {
+                    val name = runCatching {
+                        context.contentResolver.query(uri, arrayOf(android.provider.OpenableColumns.DISPLAY_NAME), null, null, null)?.use { cursor ->
+                            if (cursor.moveToFirst()) cursor.getString(0) else null
+                        }
+                    }.getOrNull().orEmpty()
                     val image = InputImage.fromFilePath(context, uri)
                     val recognizer = TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS)
                     try {
-                        suspendCancellableCoroutine<String> { continuation ->
+                        val recognized = suspendCancellableCoroutine<String> { continuation ->
                             recognizer.process(image)
                                 .addOnSuccessListener { if (continuation.isActive) continuation.resume(it.text) }
                                 .addOnFailureListener { if (continuation.isActive) continuation.resumeWithException(it) }
                         }
+                        recognized to ScreenshotParser.filenameTime(name)
                     } finally { recognizer.close() }
                 }
-                mutable.value = ScreenshotImportState(values = ScreenshotParser.parse(text))
+                val values = ScreenshotParser.parse(text)
+                val seconds = values.firstOrNull { it.kind == "duration_min" }?.value?.toDoubleOrNull()?.times(60)?.let { kotlin.math.round(it).toLong() } ?: 0L
+                mutable.value = ScreenshotImportState(values = values,
+                    exerciseType = ScreenshotParser.workoutType(text, screenshotWorkoutLabels(context)),
+                    suggestedStart = timestamp?.minusSeconds(seconds)?.toString().orEmpty(),
+                    suggestedEnd = timestamp?.toString().orEmpty())
             } catch (error: Exception) {
                 if (error is kotlinx.coroutines.CancellationException) throw error
                 mutable.value = ScreenshotImportState(error = (if (error.isPermissionFailure()) SecurityException("Health Connect permission required") else IllegalStateException("Check the image, values, date format and Health Connect availability")).toScreenError())
@@ -67,13 +87,17 @@ internal class ScreenshotImportViewModel @Inject constructor(
         }, saved = false)
     }
     fun remove(index: Int) { mutable.value = mutable.value.copy(values = mutable.value.values.filterIndexed { i, _ -> i != index }) }
+    fun selectExerciseType(type: Int) {
+        mutable.value = mutable.value.copy(exerciseType = type, saved = false)
+    }
     fun save(start: String, end: String) {
         if (mutable.value.busy || mutable.value.values.isEmpty() || mutable.value.saved) return
         val values = mutable.value.values
         mutable.value = mutable.value.copy(busy = true, error = null)
         viewModelScope.launch {
             try {
-                repository.insertImportedRecords(screenshotRecords(values.map { it.kind to it.value }, start, end))
+                repository.insertImportedRecords(screenshotRecords(values.map { it.kind to it.value }, start, end,
+                    if (values.any { it.kind == "duration_min" }) requireNotNull(mutable.value.exerciseType) else null))
                 mutable.value = mutable.value.copy(busy = false, saved = true)
             } catch (error: Exception) {
                 if (error is kotlinx.coroutines.CancellationException) throw error

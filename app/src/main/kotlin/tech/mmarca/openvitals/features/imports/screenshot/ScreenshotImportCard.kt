@@ -29,7 +29,7 @@ internal fun ScreenshotImportCard(modifier: Modifier = Modifier) {
 }
 
 @Composable
-private fun ScreenshotImportDialog(onDismiss: () -> Unit, viewModel: ScreenshotImportViewModel = hiltViewModel()) {
+internal fun ScreenshotImportDialog(onDismiss: () -> Unit, initialUri: android.net.Uri? = null, viewModel: ScreenshotImportViewModel = hiltViewModel()) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     var start by rememberSaveable { mutableStateOf("") }
     var end by rememberSaveable { mutableStateOf("") }
@@ -37,6 +37,13 @@ private fun ScreenshotImportDialog(onDismiss: () -> Unit, viewModel: ScreenshotI
     val picker = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument()) { uri ->
         if (uri != null) { confirmed = false; viewModel.scan(uri) }
     }
+    LaunchedEffect(initialUri) { initialUri?.let(viewModel::scanShared) }
+    LaunchedEffect(state.suggestedStart, state.suggestedEnd) {
+        start = state.suggestedStart
+        end = state.suggestedEnd
+        confirmed = false
+    }
+    var typeMenu by remember { mutableStateOf(false) }
     val permissions = rememberHealthConnectPermissionLauncher()
     Dialog(onDismissRequest = { if (!state.busy) onDismiss() }) {
         Surface(shape = MaterialTheme.shapes.large) {
@@ -50,12 +57,26 @@ private fun ScreenshotImportDialog(onDismiss: () -> Unit, viewModel: ScreenshotI
                 state.values.forEachIndexed { index, item ->
                     Row {
                         OutlinedTextField(value = item.value, onValueChange = { confirmed = false; viewModel.edit(index, it) },
-                            label = { Text(if (item.kind == "kcal") stringResource(R.string.screenshot_import_total_kcal) else item.kind) },
+                            label = { Text(when (item.kind) { "kcal" -> stringResource(R.string.screenshot_import_total_kcal); "duration_min" -> stringResource(R.string.screenshot_import_duration); else -> item.kind }) },
                             enabled = !state.busy && !state.saved, modifier = Modifier.weight(1f))
                         TextButton(onClick = { confirmed = false; viewModel.remove(index) }, enabled = !state.busy && !state.saved) { Text("×") }
                     }
                 }
                 if (state.values.isNotEmpty()) {
+                    if (state.values.any { it.kind == "duration_min" }) {
+                        Box {
+                            TextButton(onClick = { typeMenu = true }, enabled = !state.busy && !state.saved) {
+                                Text(state.exerciseType?.let { stringResource(tech.mmarca.openvitals.features.activity.exerciseTypeLabelRes(it)) }
+                                    ?: stringResource(R.string.activity_entry_type_label))
+                            }
+                            DropdownMenu(expanded = typeMenu, onDismissRequest = { typeMenu = false }) {
+                                tech.mmarca.openvitals.domain.model.ExerciseTypeNames.byType.keys.forEach { type ->
+                                    DropdownMenuItem(text = { Text(stringResource(tech.mmarca.openvitals.features.activity.exerciseTypeLabelRes(type))) },
+                                        onClick = { viewModel.selectExerciseType(type); confirmed = false; typeMenu = false })
+                                }
+                            }
+                        }
+                    }
                     Text(stringResource(R.string.screenshot_import_time_help))
                     OutlinedTextField(start, { start = it; confirmed = false }, label = { Text(stringResource(R.string.screenshot_import_start)) }, enabled = !state.busy && !state.saved)
                     OutlinedTextField(end, { end = it; confirmed = false }, label = { Text(stringResource(R.string.screenshot_import_end)) }, enabled = !state.busy && !state.saved)
@@ -66,7 +87,7 @@ private fun ScreenshotImportDialog(onDismiss: () -> Unit, viewModel: ScreenshotI
                     TextButton(onClick = { permissions.launch(screenshotPermissions(state.values.map { it.kind })) }, enabled = !state.busy) {
                         Text(stringResource(R.string.screenshot_import_permissions))
                     }
-                    Button(onClick = { viewModel.save(start, end) }, enabled = confirmed && !state.busy && !state.saved && start.isNotBlank() && end.isNotBlank()) {
+                    Button(onClick = { viewModel.save(start, end) }, enabled = (state.values.none { it.kind == "duration_min" } || state.exerciseType != null) && confirmed && !state.busy && !state.saved && start.isNotBlank() && end.isNotBlank()) {
                         Text(stringResource(R.string.screenshot_import_save))
                     }
                 } else if (!state.busy && !state.saved) Text(stringResource(R.string.screenshot_import_empty))
