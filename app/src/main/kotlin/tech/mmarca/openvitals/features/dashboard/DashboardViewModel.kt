@@ -451,14 +451,10 @@ class DashboardViewModel @Inject constructor(
             .let { if (onlyWidgets == null) it.copy(missingPermissions = emptySet()) else it }
         publishDashboardData(
             data = seed,
-            // A reload of the day on screen keeps its numbers until the new ones land.
-            loadingWidgets = if (hadExistingData) {
-                emptySet()
-            } else {
-                metricWidgetIds + listOfNotNull(
-                    DashboardWidgetId.BODY_ENERGY.takeIf { wantsBodyEnergy },
-                )
-            },
+            // Keep the loading/sort contract even when a previous answer is cached.
+            loadingWidgets = metricWidgetIds + listOfNotNull(
+                DashboardWidgetId.BODY_ENERGY.takeIf { wantsBodyEnergy },
+            ),
             sleepWindow = sleepWindow,
             activityWeekMode = activityWeekMode,
             goals = dailyGoals,
