@@ -8,14 +8,16 @@ import org.junit.Test
 class LocalAppManifestPolicyTest {
 
     @Test
-    fun `local app removes inherited network access`() {
+    fun `personal app permits cartography network access but removes wifi access`() {
         val manifest = File("src/main/AndroidManifest.xml").readText()
         val permissionTags = manifestTags(manifest, "uses-permission")
         val featureTags = manifestTags(manifest, "uses-feature")
 
+        listOf("android.permission.INTERNET", "android.permission.ACCESS_NETWORK_STATE").forEach { permission ->
+            assertTrue(permissionTags.any { it.names(permission) && !it.removesNode() })
+        }
+
         listOf(
-            "android.permission.INTERNET",
-            "android.permission.ACCESS_NETWORK_STATE",
             "android.permission.ACCESS_WIFI_STATE",
         ).forEach { permission ->
             assertTrue(

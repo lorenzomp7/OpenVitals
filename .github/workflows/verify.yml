@@ -95,6 +95,8 @@ jobs:
   emulator-smoke:
     runs-on: macos-15-intel
     timeout-minutes: 55
+    env:
+      MAPBOX_PUBLIC_TOKEN: ${{ secrets.MAPBOX_PUBLIC_TOKEN }}
     steps:
       - uses: actions/checkout@v5
         with:

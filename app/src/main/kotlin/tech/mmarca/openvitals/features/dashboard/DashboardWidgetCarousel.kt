@@ -82,7 +82,7 @@ internal fun DashboardWidgetCarousel(
         layoutPreferences.edit().putInt("size_" + id.name, next).apply()
     }
     val sizeFor: (DashboardWidgetId) -> Int = { id ->
-        widgetSizeOverrides[id] ?: id.dashboardWidgetRowSpan()
+        widgetSizeOverrides[id] ?: id.dashboardWidgetRowSpan() * 2
     }
     val fixedIds = dashboardWidgetIdsThatFitRows(
         widgetIds = visibleIds,

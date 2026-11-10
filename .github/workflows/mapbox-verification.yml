@@ -1,0 +1,37 @@
+name: Personal Mapbox verification
+on:
+  pull_request:
+    paths:
+      - 'app/**'
+      - 'settings.gradle.kts'
+      - '.github/workflows/mapbox-verification.yml'
+permissions:
+  contents: read
+jobs:
+  build:
+    runs-on: ubuntu-26.04
+    timeout-minutes: 40
+    env:
+      MAPBOX_PUBLIC_TOKEN: ${{ secrets.MAPBOX_PUBLIC_TOKEN }}
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          submodules: true
+      - uses: gradle/actions/setup-gradle@v5
+      - name: Resolve Mapbox locks and verify build
+        run: scripts/ci-android-gradle.sh --write-locks :app:assembleCi :app:assembleCiAndroidTest verifyCiUnitTest verifyCiPreflight
+      - name: Record resolved locks for review
+        if: always()
+        run: |
+          echo LOCKFILE_BEGIN
+          cat app/gradle.lockfile
+          echo LOCKFILE_END
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: mapbox-build
+          path: |
+            app/build/outputs/apk/ci/*.apk
+            app/build/outputs/apk/androidTest/ci/*.apk
+            app/gradle.lockfile
+            app/build/reports/tests/

@@ -88,7 +88,7 @@ When adding a new detail feature, follow this shape:
 
 Do not break these without an explicit decision. They are app-wide, and each has a section in [docs/engineering/architecture.md](docs/engineering/architecture.md).
 
-- **No `INTERNET` permission.** The manifest removes `INTERNET`, `ACCESS_NETWORK_STATE`, and `ACCESS_WIFI_STATE`. Phone-to-phone sync is Bluetooth Classic specifically so this stays true. Never add a dependency that needs a socket.
+- **Personal fork Mapbox exception.** Saved workout maps may use `INTERNET` and `ACCESS_NETWORK_STATE` for Mapbox cartography. Health Connect records stay local; no route upload API is introduced. Wi-Fi permissions remain removed. See `docs/engineering/mapbox.md` for token and cache configuration.
 - **One foreground service at a time.** Activity recording, the Apple Health import, and phone sync contend for the single foreground slot and refuse rather than queue. No service starts without a tap.
 - **A missing permission is `ScreenError.PermissionDenied`.** Use `isPermissionFailure()` / `toScreenError()`; never pattern-match exception messages. The screens render this as a grant affordance.
 - **One Health Connect backoff, one pacer, one tally.** A refusal is process-wide state in `HealthConnectRateLimitBackoff`, read under the reader semaphore, climbing 1, 2, 5, 15 minutes; `HealthConnectCallPacer` spaces call starts; `HealthConnectCallCounters` counts every call by operation name for the report email. A screen read that is skipped or refused marks `HealthConnectReadOutcome`, and the dashboard reloads those tiles alone when the deadline passes. Never add a second backoff, a retry loop around a reader, or a toast for a rate limit.

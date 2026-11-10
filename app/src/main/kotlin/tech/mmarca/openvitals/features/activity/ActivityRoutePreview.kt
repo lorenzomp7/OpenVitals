@@ -21,9 +21,9 @@ internal fun RoutePreview(
     val routeGeometry = remember(points, routeBreakIndexes) {
         points.toRoutePreviewGeometry(routeBreakIndexes)
     }
-    val routeColor = WorkoutColor
-    val startColor = androidx.compose.material3.MaterialTheme.colorScheme.primary
-    val endColor = androidx.compose.material3.MaterialTheme.colorScheme.tertiary
+    val routeColor = androidx.compose.ui.graphics.Color(0xFF29B6F6)
+    val startColor = androidx.compose.ui.graphics.Color(0xFF22C55E)
+    val endColor = androidx.compose.ui.graphics.Color(0xFFEF4444)
     val backgroundColor = androidx.compose.material3.MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.35f)
     val borderColor = androidx.compose.material3.MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.7f)
 

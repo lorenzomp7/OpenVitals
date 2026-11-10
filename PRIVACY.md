@@ -126,7 +126,7 @@ Health Connect remains the source of truth for the health data it has a record t
 
 If reminders are enabled, Android may restore the local reminder schedule after a device restart. OpenVitals uses the notification permission for reminders, active recording notifications and sync notifications.
 
-OpenVitals opts out of Android's cloud backup. When you move to a new phone, Android can copy the app's data across; the crash report and the import and sync reports stay behind. The shipping app manifest removes inherited Android network permissions, including `INTERNET`.
+OpenVitals opts out of Android's cloud backup. When you move to a new phone, Android can copy the app's data across; the crash report and the import and sync reports stay behind. This personal fork permits Internet and network-state access for Mapbox cartography in saved workouts. Mapbox receives map resource requests and may collect SDK telemetry according to its policies; its attribution control provides the telemetry choice. The app does not upload Health Connect workout records. Without a configured public token, the map uses the local fallback.
 
 ## Diagnostics
 
