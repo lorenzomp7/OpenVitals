@@ -3803,4 +3803,17 @@
     <string name="dashboard_widget_size_action">Cambia dimensione</string>
     <string name="dashboard_history_load_older">Carica attività precedenti</string>
     <string name="dashboard_period_summary">Totali del periodo; sonno e parametri cardiaci medi. Altre misure: ultimo valore. Allenamento: settimana finale.</string>
+    <string name="screenshot_import_title">Importa screenshot</string>
+    <string name="screenshot_import_body">Il riconoscimento avviene sul telefono. Controlla ed elimina i suggerimenti errati. Supportati: kg, passi, km, kcal totali e singole misurazioni bpm. Non importare medie come singole misurazioni o dati già salvati da altre app.</string>
+    <string name="screenshot_import_pick">Scegli screenshot</string>
+    <string name="screenshot_import_total_kcal">Calorie bruciate totali (kcal)</string>
+    <string name="screenshot_import_time_help">Inserisci data e ora locali come 2026-11-10T14:30. Inizio è l’ora della misurazione; fine serve per passi, distanza e calorie. Per singole misurazioni ripeti inizio. Per totali giornalieri usa l’intervallo effettivo della giornata.</string>
+    <string name="screenshot_import_start">Inizio / ora misurazione</string>
+    <string name="screenshot_import_end">Fine</string>
+    <string name="screenshot_import_confirm">Ho verificato valori, unità, date, intervallo e tipo di calorie.</string>
+    <string name="screenshot_import_permissions">Autorizza scrittura Health Connect</string>
+    <string name="screenshot_import_save">Conferma e salva</string>
+    <string name="screenshot_import_empty">Scegli un’immagine con unità o etichette esplicite. Nessun valore supportato trovato.</string>
+    <string name="screenshot_import_saved">Salvato in Health Connect. Aggiorna la schermata di OpenVitals.</string>
+    <string name="screenshot_import_close">Chiudi</string>
 </resources>

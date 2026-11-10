@@ -14,6 +14,10 @@ The repo now has one Android app module for the local app. The goal is to keep b
 
 Saved workout route cards use `features/activity/maps/ActivityMapboxMap.kt` and Mapbox cartography after an on-device Mapbox login. OAuth and encrypted token storage live in the same `features/activity/maps` package; GitHub builds contain no personal map token. Internet access is enabled for this feature. Route samples remain local and the existing preview is the fallback. See [Mapbox configuration](mapbox.md).
 
+## Screenshot import
+
+`features/imports/screenshot/` runs bundled ML Kit Latin OCR locally from Data Import settings. It suggests explicit-unit values; users edit/remove them and confirm local timestamps before writing. `healthconnect/ScreenshotRecords.kt` maps confirmed values to records; writes use `AppleHealthImportRepository` and stable IDs. No image or OCR text is uploaded or persisted. Calories mean total burned, bpm means an individual reading; averages and unsupported metrics must be removed. Existing records from other apps are not automatically deduplicated.
+
 ## Current Snapshot
 
 - App namespace: `tech.mmarca.openvitals`
