@@ -1,10 +1,10 @@
 # OpenVitals Privacy Policy
 
-Last updated: November 9, 2026
+Last updated for this personal fork: November 10, 2026
 
 OpenVitals is a local-first Android app for viewing health and fitness data from Health Connect.
 
-This policy applies to the OpenVitals Android app published under the package name `tech.mmarca.openvitals` by Mittetulundusühing Hale (MTÜ Hale), a non-profit association registered in Estonia, registry code 80677610.
+This personal fork adds Mapbox network access as described below. The upstream policy and publisher details are retained for context. The upstream policy applies to the OpenVitals Android app published under the package name `tech.mmarca.openvitals` by Mittetulundusühing Hale (MTÜ Hale), a non-profit association registered in Estonia, registry code 80677610.
 
 Privacy contact: hello@hale.ngo
 
@@ -14,13 +14,13 @@ OpenVitals is designed to keep health data on your device.
 
 - No account is required.
 - No health data is uploaded to OpenVitals servers. There are none.
-- The app has no internet permission. Android itself stops it from using the network.
+- This personal fork uses Internet access for Mapbox cartography when a public token is configured.
 - No ads are shown.
-- No analytics SDKs are included.
+- Mapbox SDK telemetry follows Mapbox policy and can be controlled through the map attribution control.
 - No health data is sold or shared with third parties.
 - OpenVitals reads Health Connect data only after you grant the relevant Android permissions.
 - OpenVitals writes to Health Connect only through something you start or switch on: saving an entry, recording an activity, running an import, adding a medical record, syncing from another phone, or the distance backfill setting.
-- Data leaves the phone only over Bluetooth, to a second phone you paired yourself, or in a file you choose to export or share.
+- Bluetooth sync and file exports are user initiated. Mapbox additionally receives map resource requests, which include viewed map areas and network metadata; the app does not send workout records to a route service.
 - On the phone, OpenVitals shares your body profile with OpenWatch and receives your watch's state and heart rate from it, if you have OpenWatch (see "OpenWatch On The Same Phone").
 
 ## Data OpenVitals Accesses

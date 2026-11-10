@@ -1,5 +1,8 @@
 package tech.mmarca.openvitals.features.activity.maps
 
+import android.annotation.SuppressLint
+import android.view.MotionEvent
+
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
@@ -14,6 +17,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.viewinterop.AndroidView
 import com.mapbox.common.MapboxOptions
 import com.mapbox.geojson.Point
@@ -51,6 +55,7 @@ internal fun ActivityMapboxMap(
     }
 }
 
+@SuppressLint("ClickableViewAccessibility")
 @Composable
 private fun MapboxRouteContent(points: List<ExerciseRoutePoint>, dark: Boolean, modifier: Modifier) {
     val context = LocalContext.current
@@ -58,11 +63,19 @@ private fun MapboxRouteContent(points: List<ExerciseRoutePoint>, dark: Boolean, 
     val coordinates = remember(points) { points.map { Point.fromLngLat(it.longitude, it.latitude) } }
     val mapView = remember {
         MapboxOptions.accessToken = BuildConfig.MAPBOX_PUBLIC_TOKEN
-        MapView(context)
+        MapView(context).apply {
+            setOnTouchListener { view, event ->
+                view.parent?.requestDisallowInterceptTouchEvent(
+                    event.actionMasked != MotionEvent.ACTION_UP && event.actionMasked != MotionEvent.ACTION_CANCEL,
+                )
+                false
+            }
+        }
     }
     DisposableEffect(mapView) {
         // Keep the local preview visible until a cartographic style has actually loaded.
         val errorSubscription = mapView.mapboxMap.subscribeMapLoadingError { ready = false }
+        val loadedSubscription = mapView.mapboxMap.subscribeMapLoaded { ready = true }
         mapView.mapboxMap.loadStyle(if (dark) Style.DARK else Style.LIGHT) {
             val lineManager = mapView.annotations.createPolylineAnnotationManager()
             if (coordinates.size > 1) {
@@ -79,18 +92,20 @@ private fun MapboxRouteContent(points: List<ExerciseRoutePoint>, dark: Boolean, 
                     coordinates, CameraOptions.Builder().build(), EdgeInsets(48.0, 48.0, 48.0, 48.0), 16.0, null,
                 ) { camera ->
                     mapView.mapboxMap.setCamera(camera)
-                    ready = true
                 }
             }
         }
         onDispose {
             errorSubscription.cancel()
+            loadedSubscription.cancel()
             mapView.onDestroy()
         }
     }
     Box(modifier) {
         // Also covers offline first launch, missing styles, revoked token and tile failures.
         RoutePreview(points = points, modifier = Modifier.fillMaxSize())
-        AndroidView(factory = { mapView }, modifier = Modifier.fillMaxSize().alpha(if (ready) 1f else 0f))
+        AndroidView(factory = { mapView }, modifier = Modifier.fillMaxSize()
+            .alpha(if (ready) 1f else 0f)
+            .then(if (ready) Modifier.testTag("mapbox-cartography") else Modifier))
     }
 }

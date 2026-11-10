@@ -19,6 +19,7 @@ import org.junit.Test
 import tech.mmarca.openvitals.BuildConfig
 import tech.mmarca.openvitals.domain.model.ExerciseRoutePoint
 import tech.mmarca.openvitals.ui.theme.OpenVitalsTheme
+import tech.mmarca.openvitals.domain.preferences.AppThemeMode
 
 class ActivityMapboxFallbackTest {
     @get:Rule val composeRule = createComposeRule()
@@ -38,6 +39,33 @@ class ActivityMapboxFallbackTest {
         val context = InstrumentationRegistry.getInstrumentation().targetContext
         File(context.getExternalFilesDir(null), "mapbox-local-fallback.png").outputStream().use {
             composeRule.onNodeWithTag("route").captureToImage().asAndroidBitmap().compress(Bitmap.CompressFormat.PNG, 100, it)
+        }
+    }
+
+    @Test
+    fun configuredTokenLoadsLightCartography() = verifyOnlineMap(AppThemeMode.LIGHT)
+
+    @Test
+    fun configuredTokenLoadsDarkCartography() = verifyOnlineMap(AppThemeMode.DARK)
+
+    private fun verifyOnlineMap(theme: AppThemeMode) {
+        assumeTrue("Online map verification requires MAPBOX_PUBLIC_TOKEN", BuildConfig.MAPBOX_PUBLIC_TOKEN.isNotBlank())
+        val points = listOf(45.13 to 10.02, 45.14 to 10.03, 45.135 to 10.04).mapIndexed { index, (lat, lon) ->
+            ExerciseRoutePoint(Instant.EPOCH.plusSeconds(index.toLong()), lat, lon, null, null, null)
+        }
+        composeRule.setContent {
+            OpenVitalsTheme(themeMode = theme, dynamicColor = false) {
+                ActivityMapboxMap(points, Modifier.size(320.dp, 260.dp))
+            }
+        }
+        composeRule.waitUntil(60_000) {
+            composeRule.onAllNodes(androidx.compose.ui.test.hasTestTag("mapbox-cartography"))
+                .fetchSemanticsNodes().isNotEmpty()
+        }
+        composeRule.onNodeWithTag("mapbox-cartography").assertIsDisplayed()
+        val instrumentation = InstrumentationRegistry.getInstrumentation()
+        File(instrumentation.targetContext.getExternalFilesDir(null), "mapbox-${theme.name}.png").outputStream().use {
+            instrumentation.uiAutomation.takeScreenshot().compress(Bitmap.CompressFormat.PNG, 100, it)
         }
     }
 
