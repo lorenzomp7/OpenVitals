@@ -139,7 +139,7 @@ fun DashboardScreen(
                     historyState = history.takeIf { it.date == selectedDate },
                     onLoadMoreWorkouts = {
                         if (history.error == tech.mmarca.openvitals.core.presentation.ScreenError.PermissionDenied) {
-                            permissionLauncher.launch(hcUx.requiredPermissions)
+                            permissionLauncher.launch(viewModel.workoutHistoryPermissions)
                         } else viewModel.loadMoreWorkouts()
                     },
                     selectedDate = selectedDate,

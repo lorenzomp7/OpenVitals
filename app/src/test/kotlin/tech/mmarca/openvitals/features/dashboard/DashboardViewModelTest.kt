@@ -84,6 +84,10 @@ class DashboardViewModelTest {
         every { it.showOpenVitalsCalculatedCalories } returns showOpenVitalsCalculatedCalories
         every { it.dailyGoalFor(any()) } answers { firstArg<MetricDailyGoalKey>().defaultValue }
         every { it.hydrationDailyGoalLiters } returns 2.0
+        every { it.dashboardWidgetSizes() } returns emptyMap()
+        every { it.dashboardPagedLayout() } returns true
+        every { it.setDashboardWidgetSizes(any()) } returns Unit
+        every { it.setDashboardPagedLayout(any()) } returns Unit
         every { it.dashboardWidgetOrder() } returns null
         every { it.dashboardSortEmptyTilesLast } returns true
         every { it.setDashboardWidgetOrder(any()) } returns Unit

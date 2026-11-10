@@ -32,8 +32,19 @@ if (-not (Test-Path $keyPath)) {
     $password = $credential.Password
 }
 function Set-RepositorySecret([string]$name, [string]$value) {
-    $value | & gh secret set $name --repo $repository
-    if ($LASTEXITCODE -ne 0) { throw "Could not configure $name. Existing local key remains available." }
+    $info = New-Object System.Diagnostics.ProcessStartInfo
+    $info.FileName = (Get-Command gh).Source
+    $info.Arguments = "secret set $name --repo $repository"
+    $info.UseShellExecute = $false
+    $info.RedirectStandardInput = $true
+    $process = [System.Diagnostics.Process]::Start($info)
+    try {
+        # Write exactly the secret, without the newline added by a PowerShell pipeline.
+        $process.StandardInput.Write($value)
+        $process.StandardInput.Close()
+        $process.WaitForExit()
+        if ($process.ExitCode -ne 0) { throw "Could not configure $name. Existing local key remains available." }
+    } finally { $process.Dispose() }
 }
 try {
     Set-RepositorySecret 'OPENVITALS_PERSONAL_KEYSTORE_BASE64' ([Convert]::ToBase64String([IO.File]::ReadAllBytes($keyPath)))

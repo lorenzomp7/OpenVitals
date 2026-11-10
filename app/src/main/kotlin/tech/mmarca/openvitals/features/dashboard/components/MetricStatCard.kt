@@ -34,11 +34,11 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import tech.mmarca.openvitals.ui.theme.Radii
 
 private val MetricStatIconCapsuleWidth = 38.dp
-private val MetricStatIconCapsuleShape = RoundedCornerShape(18.dp)
+private val MetricStatIconCapsuleShape = RoundedCornerShape(Radii.lg)
 private val MetricStatIconGlyphSize = 20.dp
 
 /** The dashboard's tile corner: rounder than the default card. */
-internal val DashboardTileShape = RoundedCornerShape(24.dp)
+internal val DashboardTileShape = RoundedCornerShape(Radii.lg)
 
 /** The tones one dashboard tile draws with, all from its metric's hue. */
 internal data class DashboardTileColors(

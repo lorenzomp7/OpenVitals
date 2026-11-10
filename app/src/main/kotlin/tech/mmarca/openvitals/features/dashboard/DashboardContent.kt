@@ -260,6 +260,7 @@ internal fun DashboardContent(
                 // The sensor-status card is absent: the top-bar battery action is the entry point.
 
                 dashboardActivitiesToday(
+                    selectedDate = data.date,
                     // The old day's workouts must not sit under the new day's date.
                     workouts = if (awaitingSelectedDay) {
                         emptyList()

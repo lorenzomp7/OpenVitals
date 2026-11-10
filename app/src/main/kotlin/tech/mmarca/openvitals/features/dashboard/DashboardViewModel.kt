@@ -198,6 +198,7 @@ class DashboardViewModel @Inject constructor(
         activityRepository?.loadWorkouts(start, end).orEmpty()
     }
     internal val workoutHistory = history.state
+    val workoutHistoryPermissions get() = repository.corePermissions + repository.additionalDataAccessPermissions.filter { it.endsWith("READ_HEALTH_DATA_HISTORY") }
     fun loadMoreWorkouts() { viewModelScope.launch { history.loadMore() } }
     private var loadGeneration = 0L
 

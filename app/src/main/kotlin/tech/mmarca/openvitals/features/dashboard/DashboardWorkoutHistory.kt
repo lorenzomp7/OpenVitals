@@ -41,7 +41,7 @@ internal class DashboardWorkoutHistory(
         if (current.isLoading || current.date == null || !current.canLoadMore) return
         if (visibleCount < all.size) {
             visibleCount = minOf(visibleCount + 10, all.size)
-            mutableState.value = current.copy(workouts = all.take(visibleCount))
+            mutableState.value = current.copy(workouts = all.take(visibleCount), error = null, isLoading = false)
             return
         }
         val end = nextEnd ?: return
@@ -55,7 +55,7 @@ internal class DashboardWorkoutHistory(
                 .sortedByDescending { it.startTime }
             visibleCount = minOf(visibleCount + 10, all.size)
             nextEnd = start.minusDays(1)
-            mutableState.value = current.copy(workouts = all.take(visibleCount))
+            mutableState.value = current.copy(workouts = all.take(visibleCount), error = null, isLoading = false)
         } catch (cancelled: CancellationException) {
             if (revision == generation) mutableState.value = current.copy(isLoading = false)
             throw cancelled
