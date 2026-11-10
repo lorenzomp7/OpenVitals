@@ -38,6 +38,7 @@ class PersonalCarouselTest {
                             }
                         },
                         isEditingDashboard = false,
+                        pagedLayout = true,
                         onMoveWidgetToTarget = { _, _ -> }, onRemoveWidget = {},
                         actionContent = {}, hiddenContent = {},
                     )

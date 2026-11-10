@@ -25,7 +25,7 @@ class PreferencesRepositoryCodecTest {
 
     private fun contextFor(prefs: SharedPreferences): Context = mockk {
         every {
-            getSharedPreferences(PreferencesRepository.PREFS_FILE, Context.MODE_PRIVATE)
+            getSharedPreferences(any(), Context.MODE_PRIVATE)
         } returns prefs
     }
 

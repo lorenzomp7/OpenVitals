@@ -53,6 +53,7 @@ fun DashboardScreen(
     // Seeded from the flow's current value: a placeholder frame on return would
     // reset the carousel page and scroll position.
     val state by viewModel.uiState.collectAsStateWithLifecycle()
+    val history by viewModel.workoutHistory.collectAsStateWithLifecycle()
     val isLoading = state.isLoading
     val error = state.error
     val display = state.display
@@ -134,6 +135,13 @@ fun DashboardScreen(
                     ErrorMessage(error?.resolve() ?: stringResource(R.string.unknown_error))
                 loadedData != null -> DashboardContent(
                     data = loadedData,
+                    earlierWorkouts = history.workouts.takeIf { history.date == loadedData.date }.orEmpty(),
+                    historyState = history.takeIf { it.date == selectedDate },
+                    onLoadMoreWorkouts = {
+                        if (history.error == tech.mmarca.openvitals.core.presentation.ScreenError.PermissionDenied) {
+                            permissionLauncher.launch(hcUx.requiredPermissions)
+                        } else viewModel.loadMoreWorkouts()
+                    },
                     selectedDate = selectedDate,
                     display = display,
                     unitFormatter = unitFormatter,
@@ -151,6 +159,10 @@ fun DashboardScreen(
                     onOpenCalendar = { showDatePicker = true },
                     onMoveWidgetToTarget = viewModel::moveDashboardWidgetToTarget,
                     onRemoveWidget = viewModel::removeDashboardWidget,
+                    widgetSizes = state.widgetSizes,
+                    pagedLayout = state.pagedLayout,
+                    onSetWidgetSize = viewModel::setWidgetSize,
+                    onSetPagedLayout = viewModel::setPagedLayout,
                     onAddWidget = viewModel::addDashboardWidget,
                     // The OpenWatch tile opens OpenWatch, not a metric screen.
                     onOpenMetric = { id ->

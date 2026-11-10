@@ -18,4 +18,4 @@ Mapbox manages its normal on-device resource cache. This is not a downloaded off
 
 ## Verification
 
-`verify` and the dashboard emulator workflow build an APK, install and launch it, and collect screenshot, UI hierarchy, activity state and logcat. A successful launch is not proof that Mapbox cartography works: this requires the public token, an activity containing GPS samples, network availability and visual inspection. APKs built without the token only verify the fallback path.
+The consolidated `verify` workflow build an APK, install and launch it, and collect screenshot, UI hierarchy, activity state and logcat. A successful launch is not proof that Mapbox cartography works: this requires the public token, an activity containing GPS samples, network availability and visual inspection. APKs built without the token only verify the fallback path.

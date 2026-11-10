@@ -283,6 +283,7 @@ class ActivityRepositoryImpl @Inject constructor(
 
     override suspend fun loadWorkouts(start: LocalDate, end: LocalDate): List<ExerciseData> {
         val granted = grantedPermissionsIfAvailable()
+        if (readExercisePermission !in granted) throw SecurityException("Exercise read permission required")
         return loadWorkouts(start, end, granted)
     }
 

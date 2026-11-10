@@ -8,6 +8,8 @@ import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.gestures.detectDragGesturesAfterLongPress
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -208,117 +210,56 @@ internal fun DashboardWidgetGrid(
     onMoveWidgetToTarget: (DashboardWidgetId, DashboardWidgetId) -> Unit,
     onRemoveWidget: (DashboardWidgetId) -> Unit,
     modifier: Modifier = Modifier,
+    /** The size each tile will have outside edit mode, shown on its size button. */
+    sizeOf: (DashboardWidgetId) -> DashboardTileSize? = { null },
+    onCycleWidgetSize: ((DashboardWidgetId) -> Unit)? = null,
     topPadding: Dp = DashboardWidgetSectionPadding,
     bottomPadding: Dp = DashboardWidgetSectionPadding,
     /** Sizes the section so a full-span widget is square, as the shipped design draws the hero rings. */
     squareRowSpan: Boolean = false,
-    widgetSizeOverrides: Map<DashboardWidgetId, Int> = emptyMap(),
-    onCycleWidgetSize: (DashboardWidgetId) -> Unit = {},
 ) {
-    val visibleSpecs = remember(ids, specsById) { ids.mapNotNull { specsById[it] } }
-    if (visibleSpecs.isEmpty()) return
-
-    val lazyGridState = rememberLazyStaggeredGridState()
-    val reorderableState = rememberReorderableLazyStaggeredGridState(lazyGridState) { from, to ->
-        val fromId = from.key as? DashboardWidgetId
-        val toId = to.key as? DashboardWidgetId
-        if (fromId != null && toId != null && fromId != toId) {
-            onMoveWidgetToTarget(fromId, toId)
-        }
-    }
-    val configuration = LocalConfiguration.current
-    val rowHeight = if (squareRowSpan) {
-        // Half the content width minus the gap's share, so a full-span widget is
-        // square. Derived from the screen so the height is stable before layout.
-        val contentWidth = configuration.screenWidthDp.dp.coerceAtMost(1080.dp) -
-            DashboardWidgetHorizontalPadding * 2
-        val columnWidth = (contentWidth - DashboardWidgetGridSpacing) / DashboardWidgetGridColumns
-        (columnWidth - DashboardWidgetGridSpacing * (rows - 1)) / rows
-    } else {
-        dashboardWidgetRowHeight()
-    }
-    val gridHeight = rowHeight * rows +
-        DashboardWidgetGridSpacing * (rows - 1).coerceAtLeast(0)
-
-    LazyVerticalStaggeredGrid(
-        columns = StaggeredGridCells.Fixed(DashboardWidgetGridColumns),
-        state = lazyGridState,
-        userScrollEnabled = false,
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(
-                start = DashboardWidgetHorizontalPadding,
-                end = DashboardWidgetHorizontalPadding,
-                top = topPadding,
-                bottom = bottomPadding,
-            )
-            .height(gridHeight)
-            .animateContentSize(),
-        horizontalArrangement = Arrangement.spacedBy(DashboardWidgetGridSpacing),
-        verticalItemSpacing = DashboardWidgetGridSpacing,
-    ) {
-        itemsIndexed(
-            items = visibleSpecs,
-            key = { _, spec -> spec.id },
-        ) { _, spec ->
-            val visibleIndex = ids.indexOf(spec.id)
-            val previousId = ids.getOrNull(visibleIndex - 1)
-            val nextId = ids.getOrNull(visibleIndex + 1)
-            val sizeInSpaces = (widgetSizeOverrides[spec.id] ?: spec.id.dashboardWidgetRowSpan() * 2).coerceIn(1, rows * 2)
-            val dragGestureDetector = remember(spec.id) {
-                DashboardDragGestureDetector { dragAmount ->
-                    onDragWidgetBy(spec.id, dragAmount)
-                }
-            }
-            ReorderableItem(
-                state = reorderableState,
-                key = spec.id,
-                enabled = isEditingDashboard,
-                // Animate reshuffles outside edit mode; the reorderable library owns editing.
-                modifier = if (isEditingDashboard) Modifier else Modifier.animateItem(),
-            ) { isDragging ->
-                Box(
-                    modifier = Modifier
-                        .height(
-                            (rowHeight + DashboardWidgetGridSpacing) * (sizeInSpaces / 2f) - DashboardWidgetGridSpacing
-                        )
-                        .onGloballyPositioned { coordinates ->
-                            val bounds = coordinates.boundsInRoot()
-                            widgetBounds[spec.id] = bounds
-                            if (isDragging) {
-                                onDraggingWidgetBoundsChanged(spec.id, bounds)
-                            }
-                        },
-                ) {
-                    DashboardWidgetTile(
-                        spec = spec,
-                        specsById = specsById,
-                        isEditingDashboard = isEditingDashboard,
-                        isDragging = isDragging,
-                        hideContent = dragOverlayWidgetId == spec.id,
-                        dragHandleModifier = Modifier.draggableHandle(
-                            enabled = isEditingDashboard,
-                            onDragStarted = { onDraggingWidgetChanged(spec.id) },
-                            onDragStopped = {
-                                onDropWidget(spec.id)
-                                onDraggingWidgetChanged(null)
-                            },
-                            dragGestureDetector = dragGestureDetector,
-                        ),
-                        onRemove = { onRemoveWidget(spec.id) },
-                        onCycleSize = { onCycleWidgetSize(spec.id) },
-                        sizeLabel = "$sizeInSpaces spaces",
-                        onMovePrevious = previousId?.let { targetId ->
-                            { onMoveWidgetToTarget(spec.id, targetId) }
-                        },
-                        onMoveNext = nextId?.let { targetId ->
-                            { onMoveWidgetToTarget(spec.id, targetId) }
-                        },
-                        modifier = Modifier.fillMaxSize(),
-                    )
-                }
-            }
-        }
+    val placements = packDashboardTiles(ids.mapNotNull { id ->
+        specsById[id]?.let { id to (sizeOf(id) ?: dashboardTileSize(it, emptyMap())) }
+    })
+    if (placements.isEmpty()) return
+    DashboardPlacedTileGrid(
+        placements = placements,
+        rowHeight = dashboardWidgetRowHeight(),
+        modifier = modifier.fillMaxWidth().padding(
+            start = DashboardWidgetHorizontalPadding, end = DashboardWidgetHorizontalPadding,
+            top = topPadding, bottom = bottomPadding,
+        ),
+    ) { placement ->
+        val spec = specsById.getValue(placement.id)
+        val index = ids.indexOf(spec.id)
+        val sizedSpec = spec.copy(content = { tileModifier ->
+            Box(tileModifier) { DashboardSizedTile(spec, placement.size) }
+        })
+        DashboardWidgetTile(
+            spec = sizedSpec,
+            specsById = specsById + (spec.id to sizedSpec),
+            isEditingDashboard = isEditingDashboard,
+            isDragging = dragOverlayWidgetId == spec.id,
+            hideContent = dragOverlayWidgetId == spec.id,
+            dragHandleModifier = Modifier.pointerInput(spec.id, isEditingDashboard) {
+                if (isEditingDashboard) detectDragGesturesAfterLongPress(
+                    onDragStart = { onDraggingWidgetChanged(spec.id) },
+                    onDragEnd = { onDropWidget(spec.id); onDraggingWidgetChanged(null) },
+                    onDragCancel = { onDraggingWidgetChanged(null) },
+                    onDrag = { change, amount -> change.consume(); onDragWidgetBy(spec.id, amount) },
+                )
+            },
+            onRemove = { onRemoveWidget(spec.id) },
+            sizeLabel = placement.size.spaces.toString(),
+            onCycleSize = onCycleWidgetSize?.let { cycle -> { cycle(spec.id) } },
+            onMovePrevious = ids.getOrNull(index - 1)?.let { target -> { onMoveWidgetToTarget(spec.id, target) } },
+            onMoveNext = ids.getOrNull(index + 1)?.let { target -> { onMoveWidgetToTarget(spec.id, target) } },
+            modifier = Modifier.fillMaxSize().onGloballyPositioned { coordinates ->
+                val bounds = coordinates.boundsInRoot()
+                widgetBounds[spec.id] = bounds
+                if (dragOverlayWidgetId == spec.id) onDraggingWidgetBoundsChanged(spec.id, bounds)
+            },
+        )
     }
 }
 
@@ -386,11 +327,12 @@ internal fun DashboardWidgetTile(
     hideContent: Boolean = false,
     dragHandleModifier: Modifier,
     onRemove: () -> Unit,
-    onCycleSize: (() -> Unit)? = null,
-    sizeLabel: String = "",
     onMovePrevious: (() -> Unit)?,
     onMoveNext: (() -> Unit)?,
     modifier: Modifier = Modifier,
+    /** The spaces this tile takes outside edit mode; tapping the button moves to the next size. */
+    sizeLabel: String? = null,
+    onCycleSize: (() -> Unit)? = null,
 ) {
     val wiggleRotation = if (isEditingDashboard && loopingMotionAllowed()) {
         val wiggleTransition = rememberInfiniteTransition(label = "DashboardWidgetWiggle")
@@ -467,18 +409,28 @@ internal fun DashboardWidgetTile(
             val displayedSpec = specsById[widgetId] ?: spec
             displayedSpec.content(Modifier.fillMaxSize())
         }
-        if (isEditingDashboard) {
-            if (onCycleSize != null) {
+        if (isEditingDashboard && sizeLabel != null && onCycleSize != null) {
+            Box(
+                contentAlignment = Alignment.Center,
+                modifier = Modifier
+                    // Beside the remove button, level with it, so neither covers the other.
+                    .align(Alignment.TopEnd)
+                    .padding(top = 13.dp, end = 58.dp)
+                    .size(34.dp)
+                    .background(color = MaterialTheme.colorScheme.primary, shape = CircleShape)
+                    .clickable(
+                        onClickLabel = stringResource(R.string.dashboard_widget_size_action),
+                        onClick = onCycleSize,
+                    ),
+            ) {
                 Text(
                     text = sizeLabel,
-                    modifier = Modifier.align(Alignment.BottomEnd)
-                        .padding(8.dp)
-                        .background(MaterialTheme.colorScheme.primaryContainer, CircleShape)
-                        .clickable(onClick = onCycleSize)
-                        .padding(horizontal = 12.dp, vertical = 8.dp),
-                    color = MaterialTheme.colorScheme.onPrimaryContainer,
+                    style = MaterialTheme.typography.labelLarge,
+                    color = MaterialTheme.colorScheme.onPrimary,
                 )
             }
+        }
+        if (isEditingDashboard) {
             Box(
                 contentAlignment = Alignment.Center,
                 modifier = Modifier

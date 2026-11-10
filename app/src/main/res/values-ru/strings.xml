@@ -3836,4 +3836,7 @@
     <string name="body_profile_openwatch_synced_updated">Синхронизируется с OpenWatch · обновлено %1$s</string>
     <string name="openwatch_profile_sync_now">Синхронизировать профиль тела</string>
     <string name="openwatch_profile_nothing_to_sync">Сначала заполните профиль тела в разделе «Настройки», «Профиль тела»</string>
+    <string name="dashboard_paged_layout_toggle">По 6 плиток на странице, листайте вбок</string>
+    <string name="dashboard_widget_size_action">Изменить размер</string>
+    <string name="dashboard_history_load_older">Загрузить предыдущие тренировки</string>
 </resources>

@@ -1,27 +1,19 @@
 package tech.mmarca.openvitals.features.dashboard
 
-import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Row
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
-import androidx.compose.material3.Surface
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.res.stringResource
+import tech.mmarca.openvitals.R
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.pager.HorizontalPager
-import androidx.compose.foundation.pager.rememberPagerState
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -35,20 +27,18 @@ import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.boundsInRoot
 import androidx.compose.ui.layout.onGloballyPositioned
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
-import kotlinx.coroutines.delay
+import tech.mmarca.openvitals.features.dashboard.components.DashboardMultiRingHero
 
-@OptIn(ExperimentalFoundationApi::class)
 /** The shipped layout's section rhythm, top to bottom. */
 private val DashboardHeroSectionTopPadding = 16.dp
 private val DashboardHeroSectionBottomPadding = 0.dp
-private val DashboardDividerTopPadding = 16.dp
-private val DashboardDividerBottomPadding = 8.dp
-private val DashboardCarouselTopPadding = 8.dp
-private val DashboardPageDotsTopPadding = 12.dp
+private val DashboardGridTopPadding = 16.dp
+private val DashboardHeroRingHeight = 200.dp
+private val DashboardHeroTopPadding = 6.dp
+private const val DashboardHeroRingCount = 3
 
 @Composable
 internal fun DashboardWidgetCarousel(
@@ -57,47 +47,39 @@ internal fun DashboardWidgetCarousel(
     isEditingDashboard: Boolean,
     onMoveWidgetToTarget: (DashboardWidgetId, DashboardWidgetId) -> Unit,
     onRemoveWidget: (DashboardWidgetId) -> Unit,
+    widgetSizes: Map<DashboardWidgetId, Int> = emptyMap(),
+    pagedLayout: Boolean = false,
+    onSetWidgetSize: (DashboardWidgetId, Int) -> Unit = { _, _ -> },
+    onSetPagedLayout: (Boolean) -> Unit = {},
     actionContent: @Composable () -> Unit,
     hiddenContent: @Composable () -> Unit,
 ) {
-    val context = LocalContext.current
-    val layoutPreferences = remember(context) {
-        context.getSharedPreferences("dashboard_widget_layout", android.content.Context.MODE_PRIVATE)
+    // Outside edit mode the first three widgets share the hero: the first is
+    // the centre ring, the next two the arcs beside it. Edit mode keeps them
+    // in the grid so they can be dragged, which is how the user picks them.
+    val heroIds = if (isEditingDashboard) {
+        emptyList()
+    } else {
+        visibleIds.take(DashboardHeroRingCount).filter { specsById[it]?.hero != null && widgetSizes[it] == null }
     }
-    var sixTileMode by remember {
-        mutableStateOf(layoutPreferences.getBoolean("six_tile_carousel", true))
+    val fixedIds = if (heroIds.isNotEmpty()) {
+        emptyList()
+    } else {
+        dashboardWidgetIdsThatFitRows(
+            widgetIds = visibleIds,
+            rows = DashboardFixedWidgetRows,
+        )
     }
-    val widgetSizeOverrides = remember {
-        mutableStateMapOf<DashboardWidgetId, Int>().apply {
-            DashboardWidgetId.entries.forEach { id ->
-                val saved = layoutPreferences.getInt("size_" + id.name, 0)
-                if (saved in listOf(1, 2, 4)) put(id, saved)
-            }
-        }
+    val sizeOf: (DashboardWidgetId) -> DashboardTileSize? = { id ->
+        specsById[id]?.let { dashboardTileSize(it, widgetSizes) }
     }
-    val cycleWidgetSize: (DashboardWidgetId) -> Unit = { id ->
-        val current = widgetSizeOverrides[id] ?: id.dashboardWidgetRowSpan() * 2
-        val next = when (current) { 1 -> 2; 2 -> 4; else -> 1 }
-        widgetSizeOverrides[id] = next
-        layoutPreferences.edit().putInt("size_" + id.name, next).apply()
+    val cycleSize: (DashboardWidgetId) -> Unit = { id ->
+        sizeOf(id)?.let { onSetWidgetSize(id, it.next().spaces) }
     }
-    val sizeFor: (DashboardWidgetId) -> Int = { id ->
-        widgetSizeOverrides[id] ?: id.dashboardWidgetRowSpan() * 2
-    }
-    val fixedIds = dashboardWidgetIdsThatFitRows(
-        widgetIds = visibleIds,
-        rows = DashboardFixedWidgetRows,
-        sizeFor = sizeFor,
-    )
     val fixedIdSet = fixedIds.toSet()
-    val carouselIds = visibleIds.filterNot { it in fixedIdSet }
-    val carouselRows = if (sixTileMode) DashboardCarouselWidgetRows else DashboardFixedWidgetRows
-    val carouselPages = dashboardWidgetIdsInGridPages(
-        widgetIds = carouselIds,
-        rows = carouselRows,
-        sizeFor = sizeFor,
-    )
-    val pagerState = rememberPagerState(pageCount = { carouselPages.size.coerceAtLeast(1) })
+    // Every other widget, in one grid that scrolls with the page.
+    val carouselIds = visibleIds.filterNot { it in fixedIdSet || it in heroIds }
+    val carouselRows = dashboardWidgetGridRows(carouselIds)
     val widgetBounds = remember { mutableStateMapOf<DashboardWidgetId, Rect>() }
     var contentBounds by remember { mutableStateOf<Rect?>(null) }
     var fixedSectionBounds by remember { mutableStateOf<Rect?>(null) }
@@ -106,8 +88,6 @@ internal fun DashboardWidgetCarousel(
     var draggingWidgetStartBounds by remember { mutableStateOf<Rect?>(null) }
     var draggingWidgetDragOffset by remember { mutableStateOf(Offset.Zero) }
     var draggingWidgetBounds by remember { mutableStateOf<Rect?>(null) }
-    val density = LocalDensity.current
-    val edgeScrollThresholdPx = with(density) { DashboardCarouselEdgeScrollThreshold.toPx() }
 
     LaunchedEffect(visibleIds) {
         val visibleSet = visibleIds.toSet()
@@ -138,35 +118,6 @@ internal fun DashboardWidgetCarousel(
         return startBounds.translateBy(draggingWidgetDragOffset)
     }
 
-    LaunchedEffect(draggingWidgetId, carouselPages.size, carouselSectionBounds, edgeScrollThresholdPx) {
-        if (draggingWidgetId == null || carouselPages.size <= 1 || carouselSectionBounds == null) {
-            return@LaunchedEffect
-        }
-
-        val carouselBounds = carouselSectionBounds ?: return@LaunchedEffect
-        while (true) {
-            val widgetId = draggingWidgetId ?: return@LaunchedEffect
-            val draggedBounds = projectedDraggingBounds(widgetId)
-            val overlapsCarouselY = draggedBounds?.let { bounds ->
-                bounds.bottom >= carouselBounds.top && bounds.top <= carouselBounds.bottom
-            } == true
-            if (draggedBounds != null && overlapsCarouselY && !pagerState.isScrollInProgress) {
-                val draggedCenter = draggedBounds.center
-                val currentPage = pagerState.currentPage
-                val targetPage = when {
-                    draggedCenter.x <= carouselBounds.left + edgeScrollThresholdPx -> currentPage - 1
-                    draggedCenter.x >= carouselBounds.right - edgeScrollThresholdPx -> currentPage + 1
-                    else -> currentPage
-                }.coerceIn(0, carouselPages.lastIndex)
-
-                if (targetPage != currentPage) {
-                    pagerState.animateScrollToPage(targetPage)
-                }
-            }
-            delay(DashboardCarouselEdgeScrollDelayMillis)
-        }
-    }
-
     fun beginDraggingWidget(widgetId: DashboardWidgetId) {
         if (draggingWidgetId != widgetId) {
             draggingWidgetStartBounds = widgetBounds[widgetId]
@@ -192,7 +143,7 @@ internal fun DashboardWidgetCarousel(
     }
 
     fun dropTargetIdsFor(draggedId: DashboardWidgetId, draggedBounds: Rect): List<DashboardWidgetId> {
-        val currentPageIds = carouselPages.getOrNull(pagerState.currentPage).orEmpty()
+        val currentPageIds = carouselIds
         val dropCenter = draggedBounds.center
         val isOverFixedSection = fixedSectionBounds?.containsPoint(dropCenter) == true
         val isOverCarouselSection = carouselSectionBounds?.containsPoint(dropCenter) == true
@@ -208,7 +159,6 @@ internal fun DashboardWidgetCarousel(
     fun dropWidget(widgetId: DashboardWidgetId) {
         val draggedBounds = projectedDraggingBounds(widgetId) ?: draggingWidgetBounds ?: widgetBounds[widgetId] ?: return
         val targetIds = dropTargetIdsFor(widgetId, draggedBounds)
-        if (widgetId in targetIds) return
 
         closestDashboardWidgetId(
             draggedId = widgetId,
@@ -234,6 +184,22 @@ internal fun DashboardWidgetCarousel(
             .onGloballyPositioned { coordinates -> contentBounds = coordinates.boundsInRoot() },
     ) {
         Column {
+            if (heroIds.isNotEmpty()) {
+                val rings = heroIds.mapNotNull { specsById[it]?.hero }
+                DashboardMultiRingHero(
+                    center = rings[0],
+                    left = rings.getOrNull(1),
+                    right = rings.getOrNull(2),
+                    modifier = Modifier
+                        .padding(
+                            start = DashboardScreenPadding,
+                            end = DashboardScreenPadding,
+                            top = DashboardHeroTopPadding,
+                        )
+                        .fillMaxWidth()
+                        .height(DashboardHeroRingHeight),
+                )
+            }
             DashboardWidgetGrid(
                 ids = fixedIds,
                 rows = DashboardFixedWidgetRows,
@@ -252,6 +218,8 @@ internal fun DashboardWidgetCarousel(
                 onDropWidget = ::dropWidget,
                 onMoveWidgetToTarget = onMoveWidgetToTarget,
                 onRemoveWidget = onRemoveWidget,
+                sizeOf = sizeOf,
+                onCycleWidgetSize = cycleSize,
                 modifier = Modifier
                     .onGloballyPositioned { coordinates -> fixedSectionBounds = coordinates.boundsInRoot() }
                     .zIndex(if (draggingWidgetId in fixedIds) 2f else 0f),
@@ -259,108 +227,73 @@ internal fun DashboardWidgetCarousel(
                 topPadding = DashboardHeroSectionTopPadding,
                 bottomPadding = DashboardHeroSectionBottomPadding,
                 squareRowSpan = true,
-                widgetSizeOverrides = widgetSizeOverrides,
-                onCycleWidgetSize = cycleWidgetSize,
             )
 
             actionContent()
 
             if (isEditingDashboard) {
                 Row(
-                    modifier = Modifier.fillMaxWidth().padding(horizontal = DashboardScreenPadding, vertical = 8.dp),
-                    horizontalArrangement = Arrangement.End,
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    Text(text = if (sixTileMode) "6 widgets per page" else "Compact pages", color = MaterialTheme.colorScheme.onSurfaceVariant)
-                    Surface(
-                        modifier = Modifier.padding(start = 12.dp).clickable {
-                            sixTileMode = !sixTileMode
-                            layoutPreferences.edit().putBoolean("six_tile_carousel", sixTileMode).apply()
-                        },
-                        shape = CircleShape,
-                        color = MaterialTheme.colorScheme.primaryContainer,
-                    ) {
-                        Text(text = "Change", modifier = Modifier.padding(horizontal = 14.dp, vertical = 8.dp), fontWeight = FontWeight.Medium)
-                    }
-                }
-            }
-
-            if (carouselPages.isNotEmpty()) {
-                HorizontalDivider(
-                    // 16dp above the rule and 4 below; the carousel adds its own 8.
-                    modifier = Modifier.padding(
-                        start = DashboardScreenPadding,
-                        end = DashboardScreenPadding,
-                        top = DashboardDividerTopPadding,
-                        bottom = DashboardDividerBottomPadding,
-                    ),
-                    color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f),
-                )
-                HorizontalPager(
-                    state = pagerState,
                     modifier = Modifier
                         .fillMaxWidth()
+                        .padding(
+                            start = DashboardScreenPadding,
+                            end = DashboardScreenPadding,
+                            top = DashboardGridTopPadding,
+                        ),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Text(
+                        text = stringResource(R.string.dashboard_paged_layout_toggle),
+                        style = MaterialTheme.typography.bodyLarge,
+                        color = MaterialTheme.colorScheme.onSurface,
+                        modifier = Modifier.weight(1f),
+                    )
+                    Switch(checked = pagedLayout, onCheckedChange = onSetPagedLayout)
+                }
+            }
+            if (carouselIds.isNotEmpty() && !isEditingDashboard) {
+                DashboardPackedTiles(
+                    ids = carouselIds,
+                    specsById = specsById,
+                    sizes = widgetSizes,
+                    paged = pagedLayout,
+                    rowHeight = dashboardWidgetRowHeight(),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(
+                            start = DashboardScreenPadding,
+                            end = DashboardScreenPadding,
+                            top = DashboardGridTopPadding,
+                            bottom = DashboardSectionSeparatorSpacing,
+                        ),
+                )
+            } else if (carouselIds.isNotEmpty()) {
+                DashboardWidgetGrid(
+                    ids = carouselIds,
+                    rows = carouselRows,
+                    specsById = specsById,
+                    isEditingDashboard = isEditingDashboard,
+                    widgetBounds = widgetBounds,
+                    dragOverlayWidgetId = draggingWidgetId,
+                    onDraggingWidgetChanged = onGridDraggingWidgetChanged,
+                    onDraggingWidgetBoundsChanged = { widgetId, bounds ->
+                        if (draggingWidgetId == widgetId && draggingWidgetStartBounds == null) {
+                            draggingWidgetStartBounds = bounds
+                            draggingWidgetBounds = bounds
+                        }
+                    },
+                    onDragWidgetBy = ::dragWidgetBy,
+                    onDropWidget = ::dropWidget,
+                    onMoveWidgetToTarget = onMoveWidgetToTarget,
+                    onRemoveWidget = onRemoveWidget,
+                    sizeOf = sizeOf,
+                    onCycleWidgetSize = cycleSize,
+                    modifier = Modifier
                         .onGloballyPositioned { coordinates -> carouselSectionBounds = coordinates.boundsInRoot() }
                         .zIndex(if (draggingWidgetId in carouselIds) 2f else 0f),
-                    pageSpacing = 12.dp,
-                    beyondViewportPageCount = if (draggingWidgetId == null) {
-                        1.coerceAtMost(carouselPages.lastIndex)
-                    } else {
-                        carouselPages.lastIndex
-                    },
-                    userScrollEnabled = draggingWidgetId == null,
-                ) { page ->
-                    val pageIds = carouselPages.getOrNull(page).orEmpty()
-                    DashboardWidgetGrid(
-                        ids = pageIds,
-                        rows = carouselRows,
-                        specsById = specsById,
-                        isEditingDashboard = isEditingDashboard,
-                        widgetBounds = widgetBounds,
-                        dragOverlayWidgetId = draggingWidgetId,
-                        onDraggingWidgetChanged = onGridDraggingWidgetChanged,
-                        onDraggingWidgetBoundsChanged = { widgetId, bounds ->
-                            if (draggingWidgetId == widgetId && draggingWidgetStartBounds == null) {
-                                draggingWidgetStartBounds = bounds
-                                draggingWidgetBounds = bounds
-                            }
-                        },
-                        onDragWidgetBy = ::dragWidgetBy,
-                        onDropWidget = ::dropWidget,
-                        onMoveWidgetToTarget = onMoveWidgetToTarget,
-                        onRemoveWidget = onRemoveWidget,
-                        topPadding = DashboardCarouselTopPadding,
-                        bottomPadding = DashboardHeroSectionBottomPadding,
-                        widgetSizeOverrides = widgetSizeOverrides,
-                        onCycleWidgetSize = cycleWidgetSize,
-                    )
-                }
-
-                if (carouselPages.size > 1) {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(
-                                top = DashboardPageDotsTopPadding,
-                                bottom = DashboardSectionSeparatorSpacing,
-                            ),
-                        horizontalArrangement = Arrangement.Center,
-                    ) {
-                        carouselPages.forEachIndexed { page, _ ->
-                            val color = if (page == pagerState.currentPage) {
-                                MaterialTheme.colorScheme.primary
-                            } else {
-                                MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.35f)
-                            }
-                            Box(
-                                modifier = Modifier
-                                    .padding(horizontal = 4.dp)
-                                    .size(8.dp)
-                                    .background(color, CircleShape)
-                            )
-                        }
-                    }
-                }
+                    topPadding = DashboardGridTopPadding,
+                    bottomPadding = DashboardSectionSeparatorSpacing,
+                )
             }
 
             hiddenContent()

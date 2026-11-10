@@ -9,13 +9,8 @@
 # the web UI; until then the clone fails and says so.
 name: wiki
 
+# Personal fork: run only on explicit request.
 on:
-  push:
-    branches: [main]
-    paths:
-      - "**.md"
-      - scripts/sync-wiki.py
-      - .github/workflows/wiki.yml
   workflow_dispatch:
 
 permissions:

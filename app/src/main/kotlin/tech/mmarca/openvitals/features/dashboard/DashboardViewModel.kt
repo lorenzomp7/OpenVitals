@@ -81,6 +81,9 @@ data class DashboardUiState(
     val placedDashboardWidgets: Set<DashboardWidgetId> = emptySet(),
     val dailyGoals: DashboardDailyGoals = DashboardDailyGoals(),
     val isEditingDashboard: Boolean = false,
+    /** The spaces (1, 2 or 4) chosen for a widget; one left out keeps its own size. */
+    val widgetSizes: Map<DashboardWidgetId, Int> = emptyMap(),
+    val pagedLayout: Boolean = false,
     val sortEmptyTilesLast: Boolean = true,
     val healthConnectSyncEnabled: Boolean = true,
     val healthConnectAvailability: HealthConnectAvailability = HealthConnectAvailability.AVAILABLE,
@@ -140,6 +143,7 @@ data class DashboardDailyGoals(
     val mindfulnessMinutes: Double = MetricDailyGoalKey.MINDFULNESS_MINUTES.defaultValue,
 )
 
+
 @HiltViewModel
 class DashboardViewModel @Inject constructor(
     private val loadDashboardDayUseCase: LoadDashboardDayUseCase,
@@ -173,6 +177,10 @@ class DashboardViewModel @Inject constructor(
                     prefs.setDashboardKnownWidgetIds(known)
                 },
             ),
+            widgetSizes = prefs.dashboardWidgetSizes().mapNotNull { (name, spaces) ->
+                DashboardWidgetId.entries.firstOrNull { it.name == name }?.let { it to spaces }
+            }.toMap(),
+            pagedLayout = prefs.dashboardPagedLayout(),
             placedDashboardWidgets = prefs.dashboardWidgetOrder()
                 ?.let { stored -> dashboardWidgetIdsFromStored(stored).toSet() }
                 .orEmpty(),
@@ -186,6 +194,11 @@ class DashboardViewModel @Inject constructor(
     private val loadCoordinator = LoadCoordinator()
     private var userPinnedPastDay = false
     private var permissionPromptDismissedForLoad = false
+    private val history = DashboardWorkoutHistory { start, end ->
+        activityRepository?.loadWorkouts(start, end).orEmpty()
+    }
+    internal val workoutHistory = history.state
+    fun loadMoreWorkouts() { viewModelScope.launch { history.loadMore() } }
     private var loadGeneration = 0L
 
     /** Serialises publishing: each merge is a read-modify-write of the shared state. */
@@ -371,6 +384,7 @@ class DashboardViewModel @Inject constructor(
             selectedDate = clampedDate,
             sortEmptyTilesLast = prefs.dashboardSortEmptyTilesLast,
         )
+        if (onlyWidgets == null) history.reset(clampedDate)
         val generation = ++loadGeneration
         inFlightLoadDate = clampedDate
         loadCoordinator.launch(viewModelScope) load@{
@@ -436,9 +450,14 @@ class DashboardViewModel @Inject constructor(
             .let { if (onlyWidgets == null) it.copy(missingPermissions = emptySet()) else it }
         publishDashboardData(
             data = seed,
-            loadingWidgets = metricWidgetIds + listOfNotNull(
-                DashboardWidgetId.BODY_ENERGY.takeIf { wantsBodyEnergy },
-            ),
+            // A reload of the day on screen keeps its numbers until the new ones land.
+            loadingWidgets = if (hadExistingData) {
+                emptySet()
+            } else {
+                metricWidgetIds + listOfNotNull(
+                    DashboardWidgetId.BODY_ENERGY.takeIf { wantsBodyEnergy },
+                )
+            },
             sleepWindow = sleepWindow,
             activityWeekMode = activityWeekMode,
             goals = dailyGoals,
@@ -456,6 +475,9 @@ class DashboardViewModel @Inject constructor(
                         generation = generation,
                     )
                 }
+            }
+            if (onlyWidgets == null) {
+                launch { history.loadMore() }
             }
             if (wantsBodyEnergy) {
                 launch {
@@ -657,6 +679,18 @@ class DashboardViewModel @Inject constructor(
     private fun unacknowledgedWidgetPermissions(missingPermissions: Set<String>): Set<String> =
         if (permissionPromptDismissedForLoad) emptySet()
         else missingPermissions - prefs.acknowledgedPermissionsFor(HealthConnectFeature.DASHBOARD)
+
+    fun setWidgetSize(widgetId: DashboardWidgetId, spaces: Int) {
+        if (spaces !in listOf(1, 2, 4)) return
+        val sizes = _uiState.value.widgetSizes + (widgetId to spaces)
+        prefs.setDashboardWidgetSizes(sizes.mapKeys { it.key.name })
+        _uiState.value = _uiState.value.copy(widgetSizes = sizes)
+    }
+
+    fun setPagedLayout(paged: Boolean) {
+        prefs.setDashboardPagedLayout(paged)
+        _uiState.value = _uiState.value.copy(pagedLayout = paged)
+    }
 
     fun toggleDashboardEdit() {
         val editing = !_uiState.value.isEditingDashboard

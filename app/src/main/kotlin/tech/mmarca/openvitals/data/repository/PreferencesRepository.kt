@@ -97,7 +97,9 @@ class PreferencesRepository @Inject constructor(
     OnboardingPreferences,
     HealthConnectPreferences {
 
-    private val prefs = context.getSharedPreferences(PREFS_FILE, Context.MODE_PRIVATE)
+    private val prefs = context.getSharedPreferences(PREFS_FILE, Context.MODE_PRIVATE).also {
+        migrateDashboardLayoutPreferences(it, context.getSharedPreferences("dashboard_widget_layout", Context.MODE_PRIVATE))
+    }
     private val _unitSystemPreference = MutableStateFlow(readUnitSystemPreference())
     private val _unitSystem = MutableStateFlow(_unitSystemPreference.value.resolve(systemUnitSystem::current))
     private val _unitOverrides = MutableStateFlow(readUnitOverrides())
@@ -874,6 +876,12 @@ class PreferencesRepository @Inject constructor(
             putString(KEY_DASHBOARD_WIDGET_ORDER, widgetIds.joinToString(KEY_VALUE_SEPARATOR))
         }
     }
+
+    private val dashboardLayout = DashboardLayoutPreferences(prefs)
+    fun dashboardWidgetSizes(): Map<String, Int> = dashboardLayout.sizes()
+    fun setDashboardWidgetSizes(sizes: Map<String, Int>) = dashboardLayout.setSizes(sizes)
+    fun dashboardPagedLayout(): Boolean = dashboardLayout.paged()
+    fun setDashboardPagedLayout(paged: Boolean) = dashboardLayout.setPaged(paged)
 
     /** Widget ids already offered, so an update's new widget differs from a removed one. */
     fun dashboardKnownWidgetIds(): Set<String>? =
