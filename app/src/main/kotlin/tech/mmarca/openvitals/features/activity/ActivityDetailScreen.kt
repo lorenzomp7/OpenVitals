@@ -324,9 +324,7 @@ internal fun ActivityDetailContent(
             item {
                 ActivitySplitsCard(
                     splits = splits,
-                    useSpeed = !workout.exerciseType.let { it == androidx.health.connect.client.records.ExerciseSessionRecord.EXERCISE_TYPE_RUNNING ||
-                        it == androidx.health.connect.client.records.ExerciseSessionRecord.EXERCISE_TYPE_WALKING ||
-                        it == androidx.health.connect.client.records.ExerciseSessionRecord.EXERCISE_TYPE_HIKING },
+                    useSpeed = workout.exerciseType !in tech.mmarca.openvitals.domain.model.prefersPaceExercises,
                     splitDistanceMeters = splitDistanceMeters,
                     slowestPaceSeconds = slowestSplitPaceSeconds,
                     fastestPaceSeconds = fastestSplitPaceSeconds,

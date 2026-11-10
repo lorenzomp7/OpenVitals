@@ -1,6 +1,7 @@
 package tech.mmarca.openvitals.features.dashboard.components
 
 import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.clickable
@@ -62,8 +63,9 @@ internal fun DashboardMultiRingHero(
     val centerColors = dashboardTileColors(center.accentColor)
     val leftColors = left?.let { dashboardTileColors(it.accentColor) }
     val rightColors = right?.let { dashboardTileColors(it.accentColor) }
-    val reveal = remember { Animatable(0f) }
-    LaunchedEffect(Unit) { reveal.animateTo(1f, tween(HeroRevealMillis)) }
+    val centerFraction by animateFloatAsState(center.fraction, tween(240), label = "centerRing")
+    val leftFraction by animateFloatAsState(left?.fraction ?: 0f, tween(240), label = "leftRing")
+    val rightFraction by animateFloatAsState(right?.fraction ?: 0f, tween(240), label = "rightRing")
 
     OpenVitalsCard(
         modifier = modifier,
@@ -92,7 +94,7 @@ internal fun DashboardMultiRingHero(
                     stroke = HeroRingStroke.toPx(),
                     startAngle = -90f,
                     sweep = 360f,
-                    fraction = center.fraction * reveal.value,
+                    fraction = centerFraction,
                     track = centerColors.ring.copy(alpha = 0.22f),
                     fill = centerColors.ring,
                 )
@@ -104,7 +106,7 @@ internal fun DashboardMultiRingHero(
                         stroke = HeroSideStroke.toPx(),
                         startAngle = 180f - HeroSideSweep / 2f,
                         sweep = HeroSideSweep,
-                        fraction = left.fraction * reveal.value,
+                        fraction = leftFraction,
                         track = leftColors.ring.copy(alpha = 0.22f),
                         fill = leftColors.ring,
                     )
@@ -116,7 +118,7 @@ internal fun DashboardMultiRingHero(
                         stroke = HeroSideStroke.toPx(),
                         startAngle = HeroSideSweep / 2f,
                         sweep = -HeroSideSweep,
-                        fraction = right.fraction * reveal.value,
+                        fraction = rightFraction,
                         track = rightColors.ring.copy(alpha = 0.22f),
                         fill = rightColors.ring,
                     )

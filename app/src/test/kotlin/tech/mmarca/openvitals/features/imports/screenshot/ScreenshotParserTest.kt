@@ -40,16 +40,16 @@ class ScreenshotParserTest {
         val lines = listOf(
             ScreenshotOcrLine("WEIGHT", 50, 50, 150, 80),
             ScreenshotOcrLine("BMI", 300, 50, 350, 80),
-            ScreenshotOcrLine("69.5 kg", 50, 110, 170, 140),
+            ScreenshotOcrLine("70.0 kg", 50, 110, 170, 140),
             ScreenshotOcrLine("23.4", 300, 110, 350, 140),
             ScreenshotOcrLine("BODY FAT %", 40, 210, 180, 240),
             ScreenshotOcrLine("BODY FAT MASS", 280, 210, 450, 240),
-            ScreenshotOcrLine("14.2 %", 50, 260, 150, 290),
-            ScreenshotOcrLine("9.8 kg", 300, 260, 400, 290),
+            ScreenshotOcrLine("18.0 %", 50, 260, 150, 290),
+            ScreenshotOcrLine("12.6 kg", 300, 260, 400, 290),
             ScreenshotOcrLine("MUSCLE MASS", 50, 350, 190, 380),
-            ScreenshotOcrLine("56.7 kg", 50, 400, 150, 430),
+            ScreenshotOcrLine("50.0 kg", 50, 400, 150, 430),
         )
-        assertEquals(setOf(ScreenshotValue("kg", "69.5"), ScreenshotValue("body_fat", "14.2")),
+        assertEquals(setOf(ScreenshotValue("kg", "70.0"), ScreenshotValue("body_fat", "18.0")),
             ScreenshotParser.parseLines(lines).toSet())
     }
 }

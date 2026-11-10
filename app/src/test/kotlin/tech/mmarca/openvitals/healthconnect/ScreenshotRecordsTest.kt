@@ -39,4 +39,10 @@ class ScreenshotRecordsTest {
             as androidx.health.connect.client.records.ExerciseSessionRecord
         assertEquals(type, record.exerciseType)
     }
+    @Test fun `body fat is stored as percentage and never as body weight`() {
+        val record = screenshotRecords(listOf("body_fat" to "18.0"),
+            "2025-01-01T10:00", "2025-01-01T10:00").single()
+        assertTrue(record is androidx.health.connect.client.records.BodyFatRecord)
+        assertEquals(18.0, (record as androidx.health.connect.client.records.BodyFatRecord).percentage.value, 0.0)
+    }
 }

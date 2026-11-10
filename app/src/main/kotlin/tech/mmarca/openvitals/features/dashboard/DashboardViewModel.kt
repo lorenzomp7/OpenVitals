@@ -380,7 +380,15 @@ class DashboardViewModel @Inject constructor(
         // Widget order is load order: first-screen tiles read first.
         val orderedMetrics = widgets.mapNotNull { it.toDashboardMetricOrNull() }.distinct()
         val groups = if (current.selectedRange == TimeRange.DAY) dashboardMetricLoadGroups(orderedMetrics)
-            else listOf(orderedMetrics.toSet()).filter { it.isNotEmpty() }
+            else {
+                val totals = setOf(DashboardMetric.STEPS, DashboardMetric.DISTANCE, DashboardMetric.ACTIVE_CALORIES,
+                    DashboardMetric.FLOORS, DashboardMetric.ELEVATION, DashboardMetric.WHEELCHAIR_PUSHES,
+                    DashboardMetric.CALORIES_OUT, DashboardMetric.HYDRATION, DashboardMetric.CALORIES_IN,
+                    DashboardMetric.PROTEIN, DashboardMetric.CARBS, DashboardMetric.FAT, DashboardMetric.CAFFEINE,
+                    DashboardMetric.AVG_HEART_RATE, DashboardMetric.RESTING_HEART_RATE)
+                listOf(orderedMetrics.toSet() intersect totals).filter { it.isNotEmpty() } +
+                    dashboardMetricLoadGroups(orderedMetrics.filterNot { it in totals })
+            }
         val metricWidgetIds = widgets.filter { it.toDashboardMetricOrNull() != null }.toSet()
         val wantsBodyEnergy = bodyEnergyRepository != null &&
             DashboardWidgetId.BODY_ENERGY in widgets

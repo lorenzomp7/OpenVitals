@@ -956,8 +956,8 @@ class DashboardViewModelTest {
 
         assertEquals(
             listOf(
-                DashboardWidgetId.DISTANCE,
                 DashboardWidgetId.CALORIES_OUT,
+                DashboardWidgetId.DISTANCE,
                 DashboardWidgetId.STEPS,
                 DashboardWidgetId.SLEEP,
             ),
@@ -1041,9 +1041,9 @@ class DashboardViewModelTest {
                 DashboardWidgetId.STEPS,
                 DashboardWidgetId.WEEKLY_CARDIO_LOAD,
                 DashboardWidgetId.HYDRATION,
-                DashboardWidgetId.DISTANCE,
                 DashboardWidgetId.CALORIES_OUT,
                 DashboardWidgetId.SLEEP,
+                DashboardWidgetId.DISTANCE,
             ),
             vm.uiState.value.dashboardWidgets,
         )
@@ -1454,4 +1454,17 @@ class DashboardViewModelTest {
             configure(repo)
         }
 
+    @Test fun `returning to a settled dashboard does not re-read Health Connect`() = runTest {
+        val loader = mockDashboardDataLoader()
+        coEvery { loader.loadDashboard(any<DashboardQuery>()) } returns DashboardData(date = today)
+        val vm = dashboardViewModel(loader, prefs())
+        advanceUntilIdle()
+        io.mockk.clearMocks(loader, answers = false)
+        vm.resumeCurrentDay()
+        advanceUntilIdle()
+        coVerify(exactly = 0) { loader.loadDashboard(any<DashboardQuery>()) }
+        vm.refresh()
+        advanceUntilIdle()
+        coVerify(atLeast = 1) { loader.loadDashboard(any<DashboardQuery>()) }
+    }
 }
