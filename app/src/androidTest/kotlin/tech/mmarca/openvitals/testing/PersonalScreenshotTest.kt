@@ -49,6 +49,16 @@ class PersonalScreenshotTest {
     fun dashboardDarkPaged() =
         photograph("personal_dashboard_dark_paged", isEditing = false, sizes = mixedSizes, paged = true)
 
+    @Test
+    fun dashboardDarkEditingSizes() =
+        photograph("personal_dashboard_dark_editing_sizes", isEditing = true, sizes = mixedSizes)
+
+    @Test
+    fun dashboardDarkSixTiles() = photograph(
+        "personal_dashboard_dark_six_tiles", isEditing = false,
+        sizes = personalWidgetIds.associateWith { 2 }, paged = true,
+    )
+
     private fun photograph(
         name: String,
         isEditing: Boolean,
