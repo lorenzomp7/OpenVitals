@@ -9,6 +9,7 @@ import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
@@ -43,7 +44,7 @@ class MapboxLoginActivity : ComponentActivity() {
         setContent {
             OpenVitalsTheme {
                 Surface(color = MaterialTheme.colorScheme.background) {
-                    Column(Modifier.padding(24.dp)) {
+                    Column(Modifier.safeDrawingPadding().padding(24.dp)) {
                         Text(stringResource(R.string.mapbox_name), style = MaterialTheme.typography.headlineSmall)
                         Spacer(Modifier.height(16.dp))
                         Text(stringResource(R.string.mapbox_login_body))
