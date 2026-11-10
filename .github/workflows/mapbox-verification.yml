@@ -18,8 +18,6 @@ jobs:
         with:
           submodules: true
       - uses: gradle/actions/setup-gradle@v5
-      - name: Resolve locks for every app variant
-        run: scripts/ci-android-gradle.sh :app:dependencies --write-locks > lock-resolution.txt
       - name: Verify APK and tests with dependency locking enabled
         run: scripts/ci-android-gradle.sh :app:assembleCi :app:assembleCiAndroidTest verifyCiUnitTest verifyCiPreflight
       - name: Enable KVM
@@ -36,12 +34,6 @@ jobs:
           profile: pixel_6
           disable-animations: true
           script: bash scripts/personal-ui-verification.sh
-      - name: Record resolved locks for review
-        if: always()
-        run: |
-          echo LOCKFILE_BEGIN
-          cat app/gradle.lockfile
-          echo LOCKFILE_END
       - uses: actions/upload-artifact@v4
         if: always()
         with:
