@@ -22,8 +22,6 @@ jobs:
   app-test:
     runs-on: ubuntu-26.04
     timeout-minutes: 40
-    env:
-      MAPBOX_PUBLIC_TOKEN: ${{ secrets.MAPBOX_PUBLIC_TOKEN }}
     steps:
       - uses: actions/checkout@v5
         with:

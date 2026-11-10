@@ -288,6 +288,12 @@
         android:theme="@style/Theme.OpenVitals">
 
         <activity
+            android:name=".features.activity.maps.MapboxLoginActivity"
+            android:exported="false"
+            android:excludeFromRecents="true"
+            android:configChanges="orientation|screenSize" />
+
+        <activity
             android:name=".MainActivity"
             android:exported="true"
             android:launchMode="singleTop"

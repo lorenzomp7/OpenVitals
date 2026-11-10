@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="mapbox_sign_in">Logi Mapboxi sisse</string>
+    <string name="mapbox_login_body">Treeningukaartide lubamiseks logi brauseris sisse. Avalik kaardipääsutõend jääb sellesse telefoni. Mapboxi lahtiühendamiseks eemalda see siin.</string>
+</resources>

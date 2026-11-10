@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="mapbox_sign_in">Bei Mapbox anmelden</string>
+    <string name="mapbox_login_body">Melde dich im Browser an, um Trainingskarten zu aktivieren. Der öffentliche Kartentoken bleibt auf diesem Telefon. Entferne ihn hier, um Mapbox zu trennen.</string>
+</resources>

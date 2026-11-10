@@ -14,7 +14,7 @@ OpenVitals is designed to keep health data on your device.
 
 - No account is required.
 - No health data is uploaded to OpenVitals servers. There are none.
-- This personal fork uses Internet access for Mapbox cartography when a public token is configured.
+- This personal fork uses Internet access for Mapbox cartography after an on-device login. Sign-in takes place in the external browser; OpenVitals requests read access to account tokens to retrieve only the default public map token. OAuth credentials are used in memory and discarded. The public map token is stored encrypted on the phone, excluded from backup, and can be removed in Settings. No personal Mapbox token is included in GitHub builds.
 - No ads are shown.
 - Mapbox SDK telemetry follows Mapbox policy and can be controlled through the map attribution control.
 - No health data is sold or shared with third parties.

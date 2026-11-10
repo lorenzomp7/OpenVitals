@@ -30,7 +30,10 @@ import com.mapbox.maps.plugin.annotation.generated.CircleAnnotationOptions
 import com.mapbox.maps.plugin.annotation.generated.PolylineAnnotationOptions
 import com.mapbox.maps.plugin.annotation.generated.createCircleAnnotationManager
 import com.mapbox.maps.plugin.annotation.generated.createPolylineAnnotationManager
-import tech.mmarca.openvitals.BuildConfig
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import tech.mmarca.openvitals.domain.model.ExerciseRoutePoint
 import tech.mmarca.openvitals.features.activity.RoutePreview
 
@@ -45,24 +48,30 @@ internal fun ActivityMapboxMap(
             it.latitude in -90.0..90.0 && it.longitude in -180.0..180.0
     }.sortedBy { it.time } }
     if (validPoints.isEmpty()) return
-    if (BuildConfig.MAPBOX_PUBLIC_TOKEN.isBlank()) {
+    val context = LocalContext.current
+    val revision by MapboxTokenStore.changes.collectAsState()
+    var token by remember { mutableStateOf("") }
+    LaunchedEffect(revision) {
+        token = withContext(Dispatchers.IO) { MapboxTokenStore.read(context) }
+    }
+    if (token.isBlank()) {
         OfflineRouteMapOrPreview(points = validPoints, modifier = modifier)
         return
     }
     val dark = MaterialTheme.colorScheme.background.luminance() < 0.5f
-    key(validPoints, dark) {
-        MapboxRouteContent(validPoints, dark, modifier)
+    key(validPoints, dark, token) {
+        MapboxRouteContent(validPoints, dark, token, modifier)
     }
 }
 
 @SuppressLint("ClickableViewAccessibility")
 @Composable
-private fun MapboxRouteContent(points: List<ExerciseRoutePoint>, dark: Boolean, modifier: Modifier) {
+private fun MapboxRouteContent(points: List<ExerciseRoutePoint>, dark: Boolean, token: String, modifier: Modifier) {
     val context = LocalContext.current
     var ready by remember { mutableStateOf(false) }
     val coordinates = remember(points) { points.map { Point.fromLngLat(it.longitude, it.latitude) } }
     val mapView = remember {
-        MapboxOptions.accessToken = BuildConfig.MAPBOX_PUBLIC_TOKEN
+        MapboxOptions.accessToken = token
         MapView(context).apply {
             setOnTouchListener { view, event ->
                 view.parent?.requestDisallowInterceptTouchEvent(

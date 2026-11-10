@@ -12,7 +12,7 @@ The repo now has one Android app module for the local app. The goal is to keep b
 
 ## Personal fork map exception
 
-Saved workout route cards use `features/activity/maps/ActivityMapboxMap.kt` and Mapbox cartography when a public runtime token is configured. Internet access is enabled for this feature. Route samples remain local and the existing preview is the fallback. See [Mapbox configuration](mapbox.md).
+Saved workout route cards use `features/activity/maps/ActivityMapboxMap.kt` and Mapbox cartography after an on-device Mapbox login. OAuth and encrypted token storage live in the same `features/activity/maps` package; GitHub builds contain no personal map token. Internet access is enabled for this feature. Route samples remain local and the existing preview is the fallback. See [Mapbox configuration](mapbox.md).
 
 ## Current Snapshot
 

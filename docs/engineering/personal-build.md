@@ -4,7 +4,7 @@
 
 ## Verification
 
-`verify` builds the CI app and instrumentation APKs once, runs unit tests and preflight, then installs those same APKs on an Android API 35 emulator. It saves launch evidence, test results, light/dark dashboard fixtures, editing and mixed-size fixtures, the six-tile layout and GPS fallback. Online map checks skip explicitly when no public token is configured. Test failures and timeouts fail the run, while evidence is uploaded even on failure.
+`verify` builds the CI app and instrumentation APKs once, runs unit tests and preflight, then installs those same APKs on an Android API 35 emulator. It saves launch evidence, test results, light/dark dashboard fixtures, editing and mixed-size fixtures, the six-tile layout and GPS fallback. Online map checks skip explicitly when no on-device Mapbox login is configured. Test failures and timeouts fail the run, while evidence is uploaded even on failure.
 
 The manual `personal-screenshots` workflow reuses `verify`; it never rewrites a public screenshot branch. Release, wiki and Weblate workflows are manual in this personal branch. Store publishing and announcements cannot start on a schedule or tag push.
 
@@ -22,7 +22,7 @@ The script generates a fresh key outside the repository, stores a password backu
 
 Then run `personal-apk` manually, or push a commit containing `[apk]` to `main_chatgpt`. The app installs under `tech.mmarca.openvitals.debug`. The new signature cannot update an installed APK signed with the exposed old key; installing it may require removing the old personal build. Preserve/export personal app data before doing so. The CI APK has a separate `.ci` package and remains available without personal signing secrets.
 
-For maps, also configure `MAPBOX_PUBLIC_TOKEN` as described in [Mapbox configuration](mapbox.md). Both the verified CI build and signed personal build read that secret.
+For maps, sign in to Mapbox on the phone as described in [Mapbox configuration](mapbox.md). Neither build receives a Mapbox secret from GitHub.
 
 ## Dashboard state and history
 
