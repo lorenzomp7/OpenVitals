@@ -21,10 +21,10 @@ on:
 permissions:
   contents: read
 
-# A pull request's newer push cancels the older run.
+# New pull-request and personal-branch pushes supersede their older verification runs.
 concurrency:
   group: verify-${{ github.ref }}
-  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' || github.ref == 'refs/heads/main_claude' }}
 
 defaults:
   run:
