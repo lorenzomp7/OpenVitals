@@ -43,8 +43,9 @@ jobs:
           profile: pixel_6_pro
           disable-animations: true
           script: |
-            scripts/ci-android-gradle.sh :app:connectedCiAndroidTest -Pandroid.testInstrumentationRunnerArguments.class=tech.mmarca.openvitals.testing.PersonalScreenshotTest -Pandroid.testInstrumentationRunnerArguments.openvitals.recordGoldens=true
-            adb pull /sdcard/Download/openvitals-goldens shots
+            timeout 900 scripts/ci-android-gradle.sh :app:connectedCiAndroidTest -Pandroid.testInstrumentationRunnerArguments.class=tech.mmarca.openvitals.testing.PersonalScreenshotTest -Pandroid.testInstrumentationRunnerArguments.openvitals.recordGoldens=true || echo "tests did not finish cleanly"
+            adb logcat -d -v time | grep -E "TestRunner|AndroidRuntime|ANR in|FATAL|Skipped [0-9]+ frames|openvitals.*Exception" | tail -150 || true
+            adb pull /sdcard/Download/openvitals-goldens shots || mkdir -p shots
       # The pictures go to their own branch, where they can be opened in a browser.
       - run: |
           mkdir out && find shots -name '*.png' -exec cp {} out/ \;
