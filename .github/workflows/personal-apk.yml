@@ -1,48 +1,45 @@
-# A debug APK of a personal branch, to install by hand. It runs on a push to
-# a claude/ branch or from the Actions tab, and publishes nothing: the APK is
-# a workflow artifact. The debug build installs beside the Play Store app
-# (its id ends in .debug). It is signed with the key in personal/, the same
-# on every run, so each build installs over the last one and keeps its Health
-# Connect permissions. It is not debuggable: a debuggable build runs slowly.
 name: personal-apk
-
 on:
   push:
-    branches: ["claude/**"]
+    branches: [claude_chatgpt_rebuilt]
   workflow_dispatch:
-
 permissions:
   contents: read
-
 concurrency:
   group: personal-apk-${{ github.ref }}
   cancel-in-progress: true
-
-defaults:
-  run:
-    shell: bash
-
 jobs:
   apk:
-    # Only a commit marked [apk] builds one: the owner asks for an APK when he wants it.
-    if: contains(github.event.head_commit.message, '[apk]')
+    if: github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[apk]')
     runs-on: ubuntu-26.04
+    timeout-minutes: 40
+    env:
+      OPENVITALS_RELEASE_KEYSTORE_BASE64: ${{ secrets.OPENVITALS_PERSONAL_KEYSTORE_BASE64 }}
+      OPENVITALS_RELEASE_STORE_PASSWORD: ${{ secrets.OPENVITALS_PERSONAL_STORE_PASSWORD }}
+      OPENVITALS_RELEASE_KEY_ALIAS: ${{ secrets.OPENVITALS_PERSONAL_KEY_ALIAS }}
     steps:
       - uses: actions/checkout@v5
         with:
-          # The OpenLink library is a submodule the app builds from.
           submodules: true
-      - run: echo "GRADLE_USER_HOME=$RUNNER_TEMP/gradle-user-home" >> "$GITHUB_ENV"
       - uses: gradle/actions/setup-gradle@v5
-      - run: scripts/ci-android-gradle.sh :app:assembleDebug
+      - name: Prepare private signing key
+        run: |
+          test -n "$OPENVITALS_RELEASE_KEYSTORE_BASE64" || { echo '::error::Configure personal signing secrets using scripts/setup-personal-signing.ps1'; exit 1; }
+          test -n "$OPENVITALS_RELEASE_STORE_PASSWORD"
+          test -n "$OPENVITALS_RELEASE_KEY_ALIAS"
+          umask 077
+          printf '%s' "$OPENVITALS_RELEASE_KEYSTORE_BASE64" | base64 -d > "$RUNNER_TEMP/openvitals-personal.p12"
+          echo "OPENVITALS_RELEASE_STORE_FILE=$RUNNER_TEMP/openvitals-personal.p12" >> "$GITHUB_ENV"
+      - name: Build signed personal APK
         env:
-          OPENVITALS_RELEASE_STORE_FILE: ${{ github.workspace }}/personal/personal.p12
-          OPENVITALS_RELEASE_STORE_PASSWORD: openvitals-personal
-          OPENVITALS_RELEASE_KEY_ALIAS: personal
-          OPENVITALS_SIGN_DEBUG_WITH_RELEASE_KEY: "true"
-          OPENVITALS_PUBLISHED_DEBUG_APK: "true"
-      - uses: actions/upload-artifact@v7
+          OPENVITALS_SIGN_DEBUG_WITH_RELEASE_KEY: 'true'
+          OPENVITALS_PUBLISHED_DEBUG_APK: 'true'
+        run: scripts/ci-android-gradle.sh :app:assembleDebug
+      - uses: actions/upload-artifact@v4
         with:
-          name: openvitals-debug-apk
+          name: openvitals-personal-apk
           path: app/build/outputs/apk/debug/*.apk
           if-no-files-found: error
+      - name: Remove temporary signing key
+        if: always()
+        run: rm -f "$RUNNER_TEMP/openvitals-personal.p12"

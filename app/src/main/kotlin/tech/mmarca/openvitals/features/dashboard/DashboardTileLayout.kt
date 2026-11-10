@@ -193,19 +193,31 @@ private fun DashboardTileSheet(
     rowHeight: Dp,
     modifier: Modifier = Modifier,
 ) {
+    DashboardPlacedTileGrid(placements, rowHeight, modifier, minimumRows = rows ?: 0) { placement ->
+        specsById[placement.id]?.let { DashboardSizedTile(it, placement.size) }
+    }
+}
+
+@Composable
+internal fun DashboardPlacedTileGrid(
+    placements: List<DashboardTilePlacement>,
+    rowHeight: Dp,
+    modifier: Modifier = Modifier,
+    minimumRows: Int = 0,
+    tile: @Composable (DashboardTilePlacement) -> Unit,
+) {
     Layout(
         modifier = modifier,
         content = {
             placements.forEach { placement ->
-                val spec = specsById[placement.id]
-                Box { if (spec != null) DashboardSizedTile(spec, placement.size) }
+                androidx.compose.runtime.key(placement.id) { Box { tile(placement) } }
             }
         },
     ) { measurables, constraints ->
         val gap = DashboardTileGap.roundToPx()
         val rowPx = rowHeight.roundToPx()
         val cell = (constraints.maxWidth - gap * (DashboardTileColumns - 1)) / DashboardTileColumns
-        val rowCount = rows ?: placements.maxOf { it.row + it.size.rows }
+        val rowCount = maxOf(minimumRows, placements.maxOf { it.row + it.size.rows })
         val height = rowCount * rowPx + (rowCount - 1).coerceAtLeast(0) * gap
         val placeables = measurables.mapIndexed { index, measurable ->
             val size = placements[index].size
@@ -227,7 +239,7 @@ private fun DashboardTileSheet(
 
 /** One widget drawn at a size: its own drawing where that fits the size, else one from its numbers. */
 @Composable
-private fun DashboardSizedTile(spec: DashboardWidgetSpec, size: DashboardTileSize) {
+internal fun DashboardSizedTile(spec: DashboardWidgetSpec, size: DashboardTileSize) {
     val ring = spec.hero
     val ownSize = if (spec.style == DashboardWidgetStyle.CIRCLE) DashboardTileSize.LARGE else DashboardTileSize.MEDIUM
     when {

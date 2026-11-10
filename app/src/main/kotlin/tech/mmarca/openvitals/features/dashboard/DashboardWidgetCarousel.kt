@@ -60,7 +60,7 @@ internal fun DashboardWidgetCarousel(
     val heroIds = if (isEditingDashboard) {
         emptyList()
     } else {
-        visibleIds.take(DashboardHeroRingCount).filter { specsById[it]?.hero != null }
+        visibleIds.take(DashboardHeroRingCount).filter { specsById[it]?.hero != null && widgetSizes[it] == null }
     }
     val fixedIds = if (heroIds.isNotEmpty()) {
         emptyList()
@@ -159,7 +159,6 @@ internal fun DashboardWidgetCarousel(
     fun dropWidget(widgetId: DashboardWidgetId) {
         val draggedBounds = projectedDraggingBounds(widgetId) ?: draggingWidgetBounds ?: widgetBounds[widgetId] ?: return
         val targetIds = dropTargetIdsFor(widgetId, draggedBounds)
-        if (widgetId in targetIds) return
 
         closestDashboardWidgetId(
             draggedId = widgetId,

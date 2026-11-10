@@ -12,12 +12,11 @@ import org.junit.Assert.assertTrue
 import org.junit.Test
 
 /**
- * The manifest deletes `INTERNET`, so a renderer that reached for a remote tile would throw
- * on the render thread. Every URL MapLibre opens comes from the style JSON, so that is pinned:
+ * The imported-pack MapLibre renderer remains local even though this personal fork permits
+ * Mapbox network access in saved workouts. Every URL MapLibre opens comes from the style JSON:
  * the template carries no URL and [expandPmtilesStyle] rebinds every source to `pmtiles://file://`.
  *
- * This does not prove no socket is opened. `LocalAppManifestPolicyTest` and `OfflineRouteMapTest`
- * hold the other two thirds of that guarantee.
+ * These tests cover the offline renderer, not Mapbox SDK network behavior.
  */
 class OfflineMapNetworkPolicyTest {
 

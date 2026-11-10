@@ -3835,4 +3835,7 @@
     <string name="body_profile_openwatch_synced_updated">Synchronizováno s OpenWatch · aktualizováno %1$s</string>
     <string name="openwatch_profile_sync_now">Synchronizovat tělesný profil</string>
     <string name="openwatch_profile_nothing_to_sync">Nejprve zadejte tělesný profil v Nastavení, Tělesný profil</string>
+    <string name="dashboard_paged_layout_toggle">Stránky po 6, přejetí do strany</string>
+    <string name="dashboard_widget_size_action">Změnit velikost</string>
+    <string name="dashboard_history_load_older">Načíst starší aktivity</string>
 </resources>

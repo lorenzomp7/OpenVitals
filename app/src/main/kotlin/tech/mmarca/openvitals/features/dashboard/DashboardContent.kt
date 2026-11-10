@@ -82,6 +82,8 @@ internal fun DashboardContent(
     display: DashboardDisplayState,
     /** The workouts of the days before [data]'s, newest first, listed under the day's own. */
     earlierWorkouts: List<ExerciseData> = emptyList(),
+    historyState: DashboardWorkoutHistoryState? = null,
+    onLoadMoreWorkouts: () -> Unit = {},
     unitFormatter: UnitFormatter,
     dateTimeFormatterProvider: DateTimeFormatterProvider,
     canGoForward: Boolean,
@@ -258,6 +260,7 @@ internal fun DashboardContent(
                 // The sensor-status card is absent: the top-bar battery action is the entry point.
 
                 dashboardActivitiesToday(
+                    selectedDate = data.date,
                     // The old day's workouts must not sit under the new day's date.
                     workouts = if (awaitingSelectedDay) {
                         emptyList()
@@ -277,6 +280,11 @@ internal fun DashboardContent(
                     onRequestDeleteActivity = { workout -> activityPendingDelete = workout },
                 )
 
+                if (historyState != null && !awaitingSelectedDay) {
+                    item(key = "activity_history_control") {
+                        DashboardWorkoutHistoryControl(historyState, onLoadMoreWorkouts)
+                    }
+                }
                 item(key = "bottom_spacer") { Spacer(Modifier.height(10.dp)) }
             }
         }

@@ -31,7 +31,7 @@ import tech.mmarca.openvitals.domain.model.ExerciseRouteStatus
 import tech.mmarca.openvitals.domain.model.ExerciseSegmentData
 import tech.mmarca.openvitals.domain.model.movingDurationMs
 import tech.mmarca.openvitals.domain.model.pausedDurationMs
-import tech.mmarca.openvitals.features.activity.maps.OfflineRouteMapOrPreview
+import tech.mmarca.openvitals.features.activity.maps.ActivityMapboxMap
 import tech.mmarca.openvitals.ui.components.AccentIconChip
 import tech.mmarca.openvitals.ui.components.DetailRow
 import tech.mmarca.openvitals.ui.components.DetailSectionCard
@@ -357,7 +357,7 @@ internal fun RouteCard(
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
                 } else {
-                    OfflineRouteMapOrPreview(
+                    ActivityMapboxMap(
                         points = route.points,
                         modifier = Modifier
                             .fillMaxWidth()

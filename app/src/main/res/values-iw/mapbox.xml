@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="mapbox_sign_in">כניסה ל־Mapbox</string>
+    <string name="mapbox_login_body">יש להיכנס דרך הדפדפן כדי להפעיל מפות אימונים. אסימון המפות הציבורי נשאר בטלפון הזה. להסרת החיבור יש למחוק אותו כאן.</string>
+</resources>

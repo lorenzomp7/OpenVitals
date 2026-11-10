@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="mapbox_sign_in">Войти в Mapbox</string>
+    <string name="mapbox_login_body">Войдите через браузер, чтобы включить карты тренировок. Публичный токен останется на этом телефоне. Удалите его здесь, чтобы отключить Mapbox.</string>
+</resources>

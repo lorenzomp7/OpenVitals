@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="mapbox_sign_in">Sign in to Mapbox</string>
+    <string name="mapbox_login_body">Sign in in your browser to enable workout maps. The public map token stays on this phone. Remove it here to disconnect.</string>
+    <string name="mapbox_name" translatable="false">Mapbox</string>
+</resources>

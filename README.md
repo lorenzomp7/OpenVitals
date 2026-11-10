@@ -15,7 +15,9 @@ OpenVitals reads from Health Connect and gives you one place to review the data 
 
 The dashboard is read-only by default. Writes to Health Connect happen only through actions you start or enable, such as saving, recording, importing or syncing data.
 
-No OpenVitals account is required, and the app has no `INTERNET` permission. OpenVitals is open source under AGPL-3.0-or-later.
+No OpenVitals account is required. This personal fork enables Internet access for Mapbox workout maps; see [token setup and offline behavior](docs/engineering/mapbox.md). OpenVitals is open source under AGPL-3.0-or-later.
+
+Personal development is consolidated on `main_chatgpt`: see [build, signing and verification](docs/engineering/personal-build.md).
 
 ## Install
 

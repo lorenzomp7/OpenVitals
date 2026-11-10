@@ -185,7 +185,7 @@ private fun HeroLabel(
             minFontSize = HeroValueFloor,
         )
         AutoResizeText(
-            text = ring.title.uppercase(),
+            text = ring.title,
             style = if (large) MaterialTheme.typography.labelLarge else MaterialTheme.typography.labelMedium,
             color = color,
             maxLines = 2,

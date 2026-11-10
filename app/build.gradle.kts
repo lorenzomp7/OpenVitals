@@ -102,6 +102,7 @@ android {
 
     defaultConfig {
         applicationId = "tech.mmarca.openvitals"
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         minSdk = 26
         targetSdk = 36
         versionCode = versionCodeOverride.orElse(baseVersionCode).get()
@@ -324,6 +325,7 @@ dependencies {
 
     // Offline maps
     implementation(libs.maplibre.android.sdk)
+    implementation("com.mapbox.maps:android-ndk27:11.34.2")
     implementation(libs.mapsforge.map.android)
     implementation(libs.mapsforge.themes)
 

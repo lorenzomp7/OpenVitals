@@ -3802,4 +3802,7 @@
     <string name="body_profile_openwatch_synced_updated">Sincronizado con OpenWatch · actualizado %1$s</string>
     <string name="openwatch_profile_sync_now">Sincronizar el perfil corporal ahora</string>
     <string name="openwatch_profile_nothing_to_sync">Primero introduce tu perfil corporal en Ajustes, Perfil corporal</string>
+    <string name="dashboard_paged_layout_toggle">Páginas de 6, desliza lateralmente</string>
+    <string name="dashboard_widget_size_action">Cambiar tamaño</string>
+    <string name="dashboard_history_load_older">Cargar actividades anteriores</string>
 </resources>

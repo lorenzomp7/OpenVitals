@@ -89,7 +89,7 @@ class HydrationSeededCatalogTest {
         val prefs = FakeSharedPreferences()
         val context = mockk<Context> {
             every {
-                getSharedPreferences(PreferencesRepository.PREFS_FILE, Context.MODE_PRIVATE)
+                getSharedPreferences(any(), Context.MODE_PRIVATE)
             } returns prefs as SharedPreferences
         }
         store = BeverageStore(InMemoryBeverageDao(), PreferencesRepository(context), mainDispatcherRule.dispatcherProvider)

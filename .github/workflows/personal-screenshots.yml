@@ -1,65 +1,10 @@
-# Photographs of a personal branch's dashboard, taken on an emulator from
-# sample data, to look at before installing anything. It runs on a push to a
-# claude/ branch whose commit message carries [shots], and publishes the
-# pictures as a workflow artifact.
+# Manual rerun of the same verified build, never a second screenshot implementation.
 name: personal-screenshots
-
 on:
-  push:
-    branches: ["claude/**"]
-
-# Write access publishes the pictures to the personal-shots branch.
+  workflow_dispatch:
 permissions:
-  contents: write
-
-concurrency:
-  group: personal-screenshots-${{ github.ref }}
-  cancel-in-progress: true
-
-defaults:
-  run:
-    shell: bash
-
+  contents: read
 jobs:
-  shots:
-    if: contains(github.event.head_commit.message, '[shots]')
-    runs-on: ubuntu-24.04
-    timeout-minutes: 60
-    steps:
-      - uses: actions/checkout@v5
-        with:
-          submodules: true
-      - run: echo "GRADLE_USER_HOME=$RUNNER_TEMP/gradle-user-home" >> "$GITHUB_ENV"
-      - uses: gradle/actions/setup-gradle@v5
-      # The emulator needs hardware acceleration, which the runner allows once asked.
-      - run: |
-          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
-          sudo udevadm control --reload-rules
-          sudo udevadm trigger --name-match=kvm
-      - uses: reactivecircus/android-emulator-runner@v2
-        with:
-          api-level: 34
-          arch: x86_64
-          profile: pixel_6_pro
-          disable-animations: true
-          script: |
-            timeout 900 scripts/ci-android-gradle.sh :app:connectedCiAndroidTest -Pandroid.testInstrumentationRunnerArguments.class=tech.mmarca.openvitals.testing.PersonalScreenshotTest -Pandroid.testInstrumentationRunnerArguments.openvitals.recordGoldens=true || echo "tests did not finish cleanly"
-            adb logcat -d -v time | grep -E "TestRunner|AndroidRuntime|ANR in|FATAL|Skipped [0-9]+ frames|openvitals.*Exception" | tail -150 || true
-            adb pull /sdcard/Download/openvitals-goldens shots || mkdir -p shots
-      # The pictures go to their own branch, where they can be opened in a browser.
-      - run: |
-          mkdir out && find shots -name '*.png' -exec cp {} out/ \;
-          cd out
-          git init -q -b personal-shots
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add . && git commit -q -m "Screenshots of ${GITHUB_SHA}"
-          git push -f "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}" personal-shots
-      - uses: actions/upload-artifact@v7
-        if: always()
-        with:
-          name: personal-screenshots
-          path: |
-            shots/**/*.png
-            app/build/reports/androidTests/**
-          if-no-files-found: warn
+  verify:
+    uses: ./.github/workflows/verify.yml
+    secrets: inherit

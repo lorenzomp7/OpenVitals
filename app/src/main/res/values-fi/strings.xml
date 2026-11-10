@@ -3769,4 +3769,7 @@
     <string name="body_profile_openwatch_synced_updated">Pidetään synkronoituna OpenWatchin kanssa · päivitetty %1$s</string>
     <string name="openwatch_profile_sync_now">Synkronoi kehoprofiili nyt</string>
     <string name="openwatch_profile_nothing_to_sync">Syötä ensin kehoprofiilisi kohdassa Asetukset, Kehoprofiili</string>
+    <string name="dashboard_paged_layout_toggle">Kuusi ruutua sivulla, pyyhkäise sivulle</string>
+    <string name="dashboard_widget_size_action">Muuta kokoa</string>
+    <string name="dashboard_history_load_older">Lataa vanhempia aktiviteetteja</string>
 </resources>

@@ -6,6 +6,14 @@ This document describes the architecture of OpenVitals as it exists today, plus 
 
 The repo now has one Android app module for the local app. The goal is to keep boundaries clear enough that new metrics can be added without copying screen scaffolding, period math, or Health Connect plumbing everywhere, while keeping code app-local until there is a concrete need for a new module.
 
+## Personal development branch
+
+`main_chatgpt` consolidates dashboard sizing, migrated layout preferences and progressive workout history. See [personal build](personal-build.md). `DashboardWorkoutHistory` owns bounded history pagination; both the editor and display use `DashboardPlacedTileGrid`.
+
+## Personal fork map exception
+
+Saved workout route cards use `features/activity/maps/ActivityMapboxMap.kt` and Mapbox cartography after an on-device Mapbox login. OAuth and encrypted token storage live in the same `features/activity/maps` package; GitHub builds contain no personal map token. Internet access is enabled for this feature. Route samples remain local and the existing preview is the fallback. See [Mapbox configuration](mapbox.md).
+
 ## Current Snapshot
 
 - App namespace: `tech.mmarca.openvitals`

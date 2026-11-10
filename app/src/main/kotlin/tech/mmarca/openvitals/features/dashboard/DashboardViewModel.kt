@@ -89,9 +89,6 @@ data class DashboardUiState(
     val healthConnectAvailability: HealthConnectAvailability = HealthConnectAvailability.AVAILABLE,
     val minimumPermissionsGranted: Boolean = true,
     val display: DashboardDisplayState = DashboardDisplayState(),
-    /** The workouts of the days before [earlierWorkoutsBefore], newest first. */
-    val earlierWorkouts: List<tech.mmarca.openvitals.domain.model.ExerciseData> = emptyList(),
-    val earlierWorkoutsBefore: LocalDate? = null,
     val loadingWidgets: Set<DashboardWidgetId> = emptySet(),
     /** Tiles whose last read Health Connect refused or the backoff skipped. Reloaded alone when it ends. */
     val degradedWidgets: Set<DashboardWidgetId> = emptySet(),
@@ -146,8 +143,6 @@ data class DashboardDailyGoals(
     val mindfulnessMinutes: Double = MetricDailyGoalKey.MINDFULNESS_MINUTES.defaultValue,
 )
 
-private const val EarlierWorkoutsLookbackDays = 30L
-private const val EarlierWorkoutsLimit = 20
 
 @HiltViewModel
 class DashboardViewModel @Inject constructor(
@@ -199,6 +194,12 @@ class DashboardViewModel @Inject constructor(
     private val loadCoordinator = LoadCoordinator()
     private var userPinnedPastDay = false
     private var permissionPromptDismissedForLoad = false
+    private val history = DashboardWorkoutHistory { start, end ->
+        activityRepository?.loadWorkouts(start, end).orEmpty()
+    }
+    internal val workoutHistory = history.state
+    val workoutHistoryPermissions get() = repository.corePermissions + repository.additionalDataAccessPermissions.filter { it.endsWith("READ_HEALTH_DATA_HISTORY") }
+    fun loadMoreWorkouts() { viewModelScope.launch { history.loadMore() } }
     private var loadGeneration = 0L
 
     /** Serialises publishing: each merge is a read-modify-write of the shared state. */
@@ -384,6 +385,7 @@ class DashboardViewModel @Inject constructor(
             selectedDate = clampedDate,
             sortEmptyTilesLast = prefs.dashboardSortEmptyTilesLast,
         )
+        if (onlyWidgets == null) history.reset(clampedDate)
         val generation = ++loadGeneration
         inFlightLoadDate = clampedDate
         loadCoordinator.launch(viewModelScope) load@{
@@ -398,22 +400,6 @@ class DashboardViewModel @Inject constructor(
                 // A superseded job must not clear the newer load's marker.
                 if (isCurrent) inFlightLoadDate = null
             }
-        }
-    }
-
-    /** The workouts of the days before [date], for the list under the day's own. */
-    private suspend fun loadEarlierWorkouts(date: LocalDate, generation: Long) {
-        val repository = activityRepository ?: return
-        val earlier = runCatching {
-            repository.loadWorkouts(date.minusDays(EarlierWorkoutsLookbackDays), date.minusDays(1))
-        }.getOrNull() ?: return
-        if (generation != loadGeneration) return
-        _uiState.update {
-            it.copy(
-                earlierWorkouts = earlier.sortedByDescending { workout -> workout.startTime }
-                    .take(EarlierWorkoutsLimit),
-                earlierWorkoutsBefore = date,
-            )
         }
     }
 
@@ -465,14 +451,10 @@ class DashboardViewModel @Inject constructor(
             .let { if (onlyWidgets == null) it.copy(missingPermissions = emptySet()) else it }
         publishDashboardData(
             data = seed,
-            // A reload of the day on screen keeps its numbers until the new ones land.
-            loadingWidgets = if (hadExistingData) {
-                emptySet()
-            } else {
-                metricWidgetIds + listOfNotNull(
-                    DashboardWidgetId.BODY_ENERGY.takeIf { wantsBodyEnergy },
-                )
-            },
+            // Keep the loading/sort contract even when a previous answer is cached.
+            loadingWidgets = metricWidgetIds + listOfNotNull(
+                DashboardWidgetId.BODY_ENERGY.takeIf { wantsBodyEnergy },
+            ),
             sleepWindow = sleepWindow,
             activityWeekMode = activityWeekMode,
             goals = dailyGoals,
@@ -492,7 +474,7 @@ class DashboardViewModel @Inject constructor(
                 }
             }
             if (onlyWidgets == null) {
-                launch { loadEarlierWorkouts(clampedDate, generation) }
+                launch { history.loadMore() }
             }
             if (wantsBodyEnergy) {
                 launch {
@@ -696,6 +678,7 @@ class DashboardViewModel @Inject constructor(
         else missingPermissions - prefs.acknowledgedPermissionsFor(HealthConnectFeature.DASHBOARD)
 
     fun setWidgetSize(widgetId: DashboardWidgetId, spaces: Int) {
+        if (spaces !in listOf(1, 2, 4)) return
         val sizes = _uiState.value.widgetSizes + (widgetId to spaces)
         prefs.setDashboardWidgetSizes(sizes.mapKeys { it.key.name })
         _uiState.value = _uiState.value.copy(widgetSizes = sizes)

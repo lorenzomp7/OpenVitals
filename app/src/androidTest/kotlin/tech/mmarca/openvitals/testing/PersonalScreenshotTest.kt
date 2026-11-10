@@ -4,6 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Modifier
@@ -33,6 +34,9 @@ class PersonalScreenshotTest {
     val composeRule = createComposeRule()
 
     @Test
+    fun dashboardLight() = photograph("personal_dashboard_light", isEditing = false, theme = AppThemeMode.LIGHT)
+
+    @Test
     fun dashboardDark() = photograph("personal_dashboard_dark", isEditing = false)
 
     @Test
@@ -45,11 +49,22 @@ class PersonalScreenshotTest {
     fun dashboardDarkPaged() =
         photograph("personal_dashboard_dark_paged", isEditing = false, sizes = mixedSizes, paged = true)
 
+    @Test
+    fun dashboardDarkEditingSizes() =
+        photograph("personal_dashboard_dark_editing_sizes", isEditing = true, sizes = mixedSizes)
+
+    @Test
+    fun dashboardDarkSixTiles() = photograph(
+        "personal_dashboard_dark_six_tiles", isEditing = false,
+        sizes = personalWidgetIds.associateWith { 2 }, paged = true,
+    )
+
     private fun photograph(
         name: String,
         isEditing: Boolean,
         sizes: Map<DashboardWidgetId, Int> = emptyMap(),
         paged: Boolean = false,
+        theme: AppThemeMode = AppThemeMode.DARK,
     ) {
         val unitFormatter = testUnitFormatter()
         val dateTimeFormatterProvider = DateTimeFormatterProvider()
@@ -62,7 +77,7 @@ class PersonalScreenshotTest {
         )
 
         composeRule.setContent {
-            PhoneSurface {
+            PhoneSurface(theme) {
                 DashboardContent(
                     data = data,
                     display = display,
@@ -123,9 +138,12 @@ private val mixedSizes = mapOf(
 
 /** A Pixel-sized dark screen, at a phone's density. */
 @Composable
-private fun PhoneSurface(content: @Composable () -> Unit) {
-    OpenVitalsTheme(themeMode = AppThemeMode.DARK, dynamicColor = false) {
-        CompositionLocalProvider(LocalDensity provides Density(density = 2.625f, fontScale = 1f)) {
+private fun PhoneSurface(theme: AppThemeMode, content: @Composable () -> Unit) {
+    OpenVitalsTheme(themeMode = theme, dynamicColor = false) {
+        CompositionLocalProvider(
+            LocalDensity provides Density(density = 2.625f, fontScale = 1f),
+            LocalContentColor provides MaterialTheme.colorScheme.onBackground,
+        ) {
             Box(
                 modifier = Modifier
                     .requiredSize(411.dp, 880.dp)

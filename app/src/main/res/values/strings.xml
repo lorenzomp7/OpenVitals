@@ -3832,4 +3832,5 @@
     <string name="openwatch_profile_nothing_to_sync">Enter your body profile in Settings, Body profile first</string>
     <string name="dashboard_paged_layout_toggle">Pages of 6, swiped sideways</string>
     <string name="dashboard_widget_size_action">Change size</string>
+    <string name="dashboard_history_load_older">Load older activities</string>
 </resources>
