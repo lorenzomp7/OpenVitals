@@ -1472,13 +1472,13 @@ class DashboardViewModelTest {
             configure(repo)
         }
 
-    @Test fun `returning to a settled dashboard does not re-read Health Connect`() = runTest {
+    @Test fun `loading the settled date reuses the cache while explicit refresh reads again`() = runTest {
         val loader = mockDashboardDataLoader()
         coEvery { loader.loadDashboard(any<DashboardQuery>()) } returns DashboardData(date = today)
         val vm = dashboardViewModel(loader, prefs())
         advanceUntilIdle()
         io.mockk.clearMocks(loader, answers = false)
-        vm.resumeCurrentDay()
+        vm.load(today)
         advanceUntilIdle()
         coVerify(exactly = 0) { loader.loadDashboard(any<DashboardQuery>()) }
         vm.refresh()
