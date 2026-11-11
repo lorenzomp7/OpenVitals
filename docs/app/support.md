@@ -1,34 +1,27 @@
 # Support
 
-OpenVitals is maintained as a privacy-first local health app.
+For this distribution, use [lorenzomp7/OpenVitals issues](https://github.com/lorenzomp7/OpenVitals/issues).
 
-## What Support Helps With
+## Report a problem
 
-Support and contributions help with:
+In Settings, choose **Report an issue**. The app prepares its diagnostic report locally. You can copy it or save it as a text file, then open a new issue in this repository. You can also open the issue page directly without exporting diagnostics.
 
-- Keeping up with Health Connect and Android platform changes.
-- Testing real-world health metric flows across devices and Health Connect providers.
-- Improving documentation, screenshots, release notes, and translations.
-- Maintaining the local app's no-account, no-cloud, no-analytics, and no-ads boundary.
+Opening GitHub does not submit an issue or upload the report. Review what you include before submitting. If you open GitHub without exporting, the saved crash report remains available on the phone.
 
-App translations are managed on Codeberg Translate. You can translate OpenVitals
-into your language here:
+The support card does not link to the original project's community or donation account. The publisher displayed under the app version is the maintainer of this repository.
 
-[translate.codeberg.org/projects/openvitals/android-app](https://translate.codeberg.org/projects/openvitals/android-app/)
-
-## Where Support Belongs
-
-User-facing support questions should usually point to:
+## Help with setup
 
 - [FAQ](faq.md)
 - [Getting started](getting-started.md)
 - [Permissions](permissions.md)
 - [Health Connect](health-connect.md)
+- [History import guides](../how-to/import-storico/README.md)
 
-Developer setup and verification notes belong in [Development](../engineering/development.md).
+Developer setup and verification notes are in [Development](../engineering/development.md).
 
-## Privacy Boundary
+## Privacy
 
-Support workflows should not require automatic health data upload. Diagnostics and crash report drafts should remain explicit user actions.
+GitHub issues are public. Do not include health values, record dates, medical records, screenshots of health data, names, export file names or device addresses. Reports mask sensitive error text, but review the report and anything you add before sharing.
 
-GitHub issues are public. The bug template asks reporters not to paste health data: values, record dates, names, medical records, screenshots of their data, export file names or device addresses. The reports the app copies hold counts and reasons only and can be pasted; a diagnostics log has addresses, identifiers and dates masked but still shows what the user did, so it is better emailed through Settings → Report an issue.
+The app does not address reports to the original maintainer's email. It sends no email automatically and opens only the new-issue page and report title in the browser.

@@ -38,6 +38,7 @@ class CrashReportEmailActivity : AppCompatActivity() {
         }.fold(
             onSuccess = {
                 Toast.makeText(this, R.string.crash_report_fallback_saved, Toast.LENGTH_SHORT).show()
+                openIssuePage(draft)
                 discardReportAndFinish()
             },
             onFailure = {
@@ -60,57 +61,40 @@ class CrashReportEmailActivity : AppCompatActivity() {
                     healthConnectCalls = HealthConnectCallCounters.summaryLines().joinToString("\n"),
                 )
             }
-            if (openEmailDraft(draft)) {
-                discardReportAndFinish()
-            }
+            showFallbackDialog(draft)
         }
     }
 
-    private fun openEmailDraft(draft: CrashReportEmailDraft): Boolean {
-        val emailIntent = Intent(Intent.ACTION_SENDTO).apply {
-            data = Uri.fromParts("mailto", CrashReportEmailRecipient, null)
-            putExtra(Intent.EXTRA_EMAIL, arrayOf(CrashReportEmailRecipient))
-            putExtra(Intent.EXTRA_SUBJECT, draft.subject)
-            putExtra(Intent.EXTRA_TEXT, draft.body)
-        }
-        if (packageManager.queryIntentActivities(emailIntent, 0).isEmpty()) {
-            showFallbackDialog(draft)
-            return false
-        }
-        return runCatching {
-            startActivity(
-                Intent.createChooser(
-                    emailIntent,
-                    getString(R.string.crash_report_email_chooser_title),
-                )
-            )
+    private fun openIssuePage(draft: CrashReportEmailDraft): Boolean =
+        runCatching {
+            // Open a draft only: the user chooses what to share and submits it on GitHub.
+            val uri = Uri.parse(OpenVitalsIssueTrackerUrl).buildUpon()
+                .appendQueryParameter("title", draft.subject)
+                .build()
+            startActivity(Intent(Intent.ACTION_VIEW, uri))
         }.fold(
             onSuccess = { true },
-            onFailure = { throwable ->
-                if (throwable is ActivityNotFoundException) {
-                    showFallbackDialog(draft)
-                    false
-                } else {
-                    throw throwable
-                }
+            onFailure = {
+                Toast.makeText(this, R.string.settings_debug_logs_share_failed, Toast.LENGTH_SHORT).show()
+                false
             },
         )
-    }
 
     private fun showFallbackDialog(draft: CrashReportEmailDraft) {
         fallbackDraft = draft
         AlertDialog.Builder(this)
-            .setTitle(R.string.crash_report_fallback_title)
-            .setMessage(getString(R.string.crash_report_fallback_body, CrashReportEmailRecipient))
+            .setTitle(R.string.settings_support_issues_action)
+            .setMessage(getString(R.string.crash_report_fallback_body, OpenVitalsIssueTrackerUrl))
             .setNegativeButton(R.string.crash_report_fallback_copy) { _, _ ->
                 copyReportToClipboard(draft)
+                openIssuePage(draft)
                 discardReportAndFinish()
             }
             .setPositiveButton(R.string.crash_report_fallback_save) { _, _ ->
                 saveReport(draft)
             }
-            .setNeutralButton(android.R.string.cancel) { _, _ ->
-                finish()
+            .setNeutralButton(R.string.settings_support_issues_action) { _, _ ->
+                if (openIssuePage(draft)) finish() else showFallbackDialog(draft)
             }
             .setOnCancelListener {
                 finish()
@@ -143,7 +127,7 @@ class CrashReportEmailActivity : AppCompatActivity() {
         }
     }
 
-    // The report went out with the email, the copy or the file; a cancel keeps it for next time.
+    // A copy or file preserves the report for the user; opening GitHub alone keeps it here.
     // Off the main thread, and not tied to this activity, which finishes at once.
     private fun discardReportAndFinish() {
         val appContext = applicationContext

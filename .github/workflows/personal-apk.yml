@@ -30,6 +30,8 @@ jobs:
           path: previous-apk
       - name: Set increasing personal version code
         run: echo "OPENVITALS_VERSION_CODE=$((1070400000 + GITHUB_RUN_NUMBER))" >> "$GITHUB_ENV"
+      - name: Verify support reports and translations
+        run: scripts/ci-android-gradle.sh verifyTranslations :app:testCiUnitTest --tests tech.mmarca.openvitals.core.diagnostics.CrashReportEmailTest
       - name: Build signed personal APK
         env:
           OPENVITALS_RELEASE_STORE_FILE: ${{ github.workspace }}/personal/personal.p12

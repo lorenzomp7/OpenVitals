@@ -103,8 +103,6 @@ private fun LazyListScope.settingsRootCards(actions: SettingsScreenActions, open
     item {
         SupportOpenVitalsCard(
             onOpenIssues = actions.onOpenIssues,
-            onOpenDiscussion = actions.onOpenDiscussion,
-            onOpenSupport = actions.onOpenSupport,
             modifier = Modifier.padding(horizontal = LayoutMetrics.screenGutter),
         )
     }

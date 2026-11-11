@@ -2900,8 +2900,6 @@ internal fun DebugDiagnosticsCard(
 @Composable
 internal fun SupportOpenVitalsCard(
     onOpenIssues: () -> Unit,
-    onOpenDiscussion: () -> Unit,
-    onOpenSupport: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     OpenVitalsCard(modifier = modifier.fillMaxWidth()) {
@@ -2924,28 +2922,12 @@ internal fun SupportOpenVitalsCard(
                         text = stringResource(R.string.settings_support_title),
                         style = MaterialTheme.typography.titleSmall,
                     )
-                    Text(
-                        text = stringResource(R.string.settings_support_body),
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        modifier = Modifier.padding(top = 4.dp),
-                    )
                 }
             }
             SupportLinkButton(
                 labelRes = R.string.settings_support_issues_action,
                 onClick = onOpenIssues,
                 modifier = Modifier.padding(top = 12.dp),
-            )
-            SupportLinkButton(
-                labelRes = R.string.settings_support_discussion_action,
-                onClick = onOpenDiscussion,
-                modifier = Modifier.padding(top = 8.dp),
-            )
-            SupportLinkButton(
-                labelRes = R.string.settings_support_action,
-                onClick = onOpenSupport,
-                modifier = Modifier.padding(top = 8.dp),
             )
         }
     }

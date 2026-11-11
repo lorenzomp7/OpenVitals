@@ -144,7 +144,7 @@ class CrashReportEmailTest {
     }
 
     @Test
-    fun `share text includes recipient subject and body`() {
+    fun `share text points to fork issue tracker and contains report details`() {
         val draft = CrashReportEmail.buildDraft(
             appInfo = testAppInfo(),
             savedCrashReport = "",
@@ -153,8 +153,10 @@ class CrashReportEmailTest {
 
         val shareText = CrashReportEmail.buildShareText(draft)
 
-        assertThat(shareText).startsWith("To: hello@hale.ngo\nSubject: OpenVitals issue report")
+        assertThat(shareText).startsWith("Report at: https://github.com/lorenzomp7/OpenVitals/issues/new\nSubject: OpenVitals issue report")
         assertThat(shareText).contains("Steps to reproduce:")
+        assertThat(shareText).doesNotContain("hello@hale.ngo")
+        assertThat(shareText).doesNotContain("Manuel")
     }
 
     private fun testAppInfo(): CrashReportAppInfo =

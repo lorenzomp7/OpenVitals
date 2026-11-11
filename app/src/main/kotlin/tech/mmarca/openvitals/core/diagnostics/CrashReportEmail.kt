@@ -4,7 +4,7 @@ import java.util.Collections
 import java.util.IdentityHashMap
 import tech.mmarca.openvitals.core.privacy.PrivacyRedactor
 
-internal const val CrashReportEmailRecipient = "hello@hale.ngo"
+internal const val OpenVitalsIssueTrackerUrl = "https://github.com/lorenzomp7/OpenVitals/issues/new"
 
 internal data class CrashReportAppInfo(
     val packageName: String,
@@ -65,12 +65,12 @@ internal object CrashReportEmail {
 
     // The draft carries the masked log; the error text below it is masked the same way.
     private const val PrivacyNote =
-        "Please don't add health data (values, dates, names, files) to this email. In the report below, " +
+        "Please don't add health data (values, dates, names, files) to this report. In the report below, " +
             "numbers, dates, addresses and identifiers in the error text are masked, and the app's log has " +
             "addresses, identifiers, file locations and dates masked and error messages masked whole."
 
     fun buildShareText(draft: CrashReportEmailDraft): String = buildString {
-        appendLine("To: $CrashReportEmailRecipient")
+        appendLine("Report at: $OpenVitalsIssueTrackerUrl")
         appendLine("Subject: ${draft.subject}")
         appendLine()
         append(draft.body)
@@ -103,7 +103,7 @@ internal object CrashReportEmail {
                 appendLine()
                 appendLine("What you expected:")
                 appendLine()
-                appendLine("Can Manuel follow up with questions? yes/no")
+                appendLine("Can the maintainer follow up with questions? yes/no")
                 appendLine()
                 appendLine(PrivacyNote)
                 appendLine()
