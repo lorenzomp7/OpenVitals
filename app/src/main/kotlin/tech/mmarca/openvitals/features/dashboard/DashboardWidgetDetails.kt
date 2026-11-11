@@ -48,7 +48,7 @@ internal fun dashboardWidgetDetails(
         DashboardWidgetId.AVG_HEART_RATE, DashboardWidgetId.RESTING_HEART_RATE, DashboardWidgetId.HRV -> listOf(DashboardWidgetId.RESTING_HEART_RATE, DashboardWidgetId.HRV, DashboardWidgetId.AVG_HEART_RATE)
         else -> emptyList()
     }
-    model.progress?.let { add(stringResource(R.string.daily_goal) + ": " + it.goalLabelValue.text) }
+    model.progress?.let { add(stringResource(dashboardGoalLabelRes(model.id, display.isPeriod)) + ": " + it.goalLabelValue.text) }
     related.filter { it != model.id }.forEach { id ->
         display.widgets[id]?.takeIf { it.hasValue && !it.isLoading }?.value?.let { value ->
             add(dashboardWidgetTitle(id) + ": " + value.text)
@@ -56,4 +56,10 @@ internal fun dashboardWidgetDetails(
     }
     model.periodLabel?.let { add(stringResource(R.string.period_selected) + ": " + it) }
     return details.distinct()
+}
+
+internal fun dashboardGoalLabelRes(id: DashboardWidgetId, isPeriod: Boolean): Int = when {
+    !isPeriod -> R.string.daily_goal
+    id == DashboardWidgetId.SLEEP -> R.string.dashboard_nightly_goal
+    else -> R.string.dashboard_period_goal
 }

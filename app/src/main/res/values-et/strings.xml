@@ -3810,4 +3810,6 @@
     <string name="dashboard_details_title">Üksikasjad</string>
     <string name="dashboard_details_help">Sisaldab põhiväärtust. Lisaväärtused kuvatakse, kui need on saadaval.</string>
     <string name="dashboard_cardio_today_points">Täna: %1$d punkti</string>
+    <string name="dashboard_period_goal">Perioodi eesmärk</string>
+    <string name="dashboard_nightly_goal">Keskmine öine eesmärk</string>
 </resources>

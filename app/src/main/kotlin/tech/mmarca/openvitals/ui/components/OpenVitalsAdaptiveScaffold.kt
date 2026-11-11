@@ -2,6 +2,8 @@ package tech.mmarca.openvitals.ui.components
 
 import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
@@ -26,6 +28,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.Dp
 import tech.mmarca.openvitals.ui.theme.isAmoledColorScheme
 
 data class OpenVitalsNavigationDestination(
@@ -68,6 +71,7 @@ fun OpenVitalsAdaptiveScaffold(
     action: MetricAction?,
     modifier: Modifier = Modifier,
     containerColor: Color? = null,
+    titleContent: (@Composable (Dp) -> Unit)? = null,
     topBarActions: @Composable RowScope.() -> Unit = {},
     content: @Composable (PaddingValues) -> Unit,
 ) {
@@ -82,37 +86,41 @@ fun OpenVitalsAdaptiveScaffold(
             contentWindowInsets = WindowInsets.navigationBars,
             topBar = {
                 if (showTopBar) {
-                    TopAppBar(
-                        // 56dp, matching the shipped app.
-                        expandedHeight = TopBarHeight,
-                        title = {
-                            Text(
-                                text = title,
-                                // titleLarge everywhere, as measured off the shipping app.
-                                style = MaterialTheme.typography.titleLarge,
-                                fontWeight = FontWeight.SemiBold,
-                                maxLines = 1,
-                            )
-                        },
-                        navigationIcon = {
-                            if (canNavigateBack) {
-                                OpenVitalsIconButton(onClick = onNavigateBack) {
-                                    Icon(
-                                        imageVector = navigationIcon,
-                                        contentDescription = navigationContentDescription,
+                    BoxWithConstraints(Modifier.fillMaxWidth()) {
+                        TopAppBar(
+                            // 56dp, matching the shipped app.
+                            expandedHeight = TopBarHeight,
+                            title = {
+                                if (titleContent != null) titleContent(maxWidth) else {
+                                    Text(
+                                        text = title,
+                                        // titleLarge everywhere, as measured off the shipping app.
+                                        style = MaterialTheme.typography.titleLarge,
+                                        fontWeight = FontWeight.SemiBold,
+                                        maxLines = 1,
                                     )
                                 }
-                            }
-                        },
-                        actions = topBarActions,
-                        colors = TopAppBarDefaults.topAppBarColors(
-                            containerColor = Color.Transparent,
-                            scrolledContainerColor = Color.Transparent,
-                            navigationIconContentColor = MaterialTheme.colorScheme.onSurface,
-                            titleContentColor = MaterialTheme.colorScheme.onSurface,
-                            actionIconContentColor = MaterialTheme.colorScheme.onSurface,
-                        ),
-                    )
+                            },
+                            navigationIcon = {
+                                if (canNavigateBack) {
+                                    OpenVitalsIconButton(onClick = onNavigateBack) {
+                                        Icon(
+                                            imageVector = navigationIcon,
+                                            contentDescription = navigationContentDescription,
+                                        )
+                                    }
+                                }
+                            },
+                            actions = topBarActions,
+                            colors = TopAppBarDefaults.topAppBarColors(
+                                containerColor = Color.Transparent,
+                                scrolledContainerColor = Color.Transparent,
+                                navigationIconContentColor = MaterialTheme.colorScheme.onSurface,
+                                titleContentColor = MaterialTheme.colorScheme.onSurface,
+                                actionIconContentColor = MaterialTheme.colorScheme.onSurface,
+                            ),
+                        )
+                    }
                 }
             },
             bottomBar = {

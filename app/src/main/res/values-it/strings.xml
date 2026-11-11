@@ -3842,4 +3842,6 @@
     <string name="dashboard_cardio_today_points">Oggi: %1$d punti</string>
     <string name="screenshot_bmi_preview">BMI: solo anteprima. OpenVitals ricava il BMI da peso e altezza.</string>
     <string name="screenshot_water_percent">La percentuale di acqua corporea viene convertita in kg usando il peso di questo screenshot.</string>
+    <string name="dashboard_period_goal">Obiettivo del periodo</string>
+    <string name="dashboard_nightly_goal">Obiettivo medio per notte</string>
 </resources>

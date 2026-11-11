@@ -132,3 +132,7 @@ is a measured count as of 2026-08-04.
    `ChartTokens`; a raw one needs a comment saying why the scheme is wrong there.
 4. **Chart semantics.** Charts are visual-only; each needs a one-line semantic
    summary for screen readers.
+
+## Ambient dashboard brand
+
+The dashboard title uses a small fluid canvas in the existing metric palette. Its capsule shares `WorkoutActionMetrics` with Start workout. The shell owns and saves the timeline, so navigation never restarts the initial fill. Frames invalidate only the canvas at 30 fps while its destination is visible and the lifecycle is started; reduced motion renders a still, filled capsule. This user-requested ambient brand is an explicit exception to the general no-decorative-loops rule.

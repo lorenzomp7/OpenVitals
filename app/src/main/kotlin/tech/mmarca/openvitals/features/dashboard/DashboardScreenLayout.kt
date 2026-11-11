@@ -2,13 +2,14 @@ package tech.mmarca.openvitals.features.dashboard
 
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.ui.unit.dp
+import tech.mmarca.openvitals.ui.theme.WorkoutActionMetrics
 
 internal const val DashboardCarouselEdgeScrollDelayMillis = 450L
 internal val DashboardCarouselEdgeScrollThreshold = 56.dp
-internal val DashboardScreenPadding = 16.dp
+internal val DashboardScreenPadding = WorkoutActionMetrics.screenGutter
 internal val DashboardSectionSeparatorSpacing = 4.dp
-internal val DashboardQuickActionHeight = 48.dp
-internal val DashboardActionsSpacing = 12.dp
+internal val DashboardQuickActionHeight = WorkoutActionMetrics.height
+internal val DashboardActionsSpacing = WorkoutActionMetrics.spacing
 internal val DashboardQuickActionIconSize = 18.dp
 
 // Tighter than the default, so "Start workout" fits on one line.

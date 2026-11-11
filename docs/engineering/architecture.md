@@ -734,3 +734,7 @@ Dashboard return-to-screen requests are absorbed for five minutes when the same 
 The first three visible widget IDs define the summary in both display and editing. Drop targets use these same IDs and root bounds. A drop swaps the saved slots, and row-major packing does not backfill earlier gaps. Custom layouts bypass automatic no-data sorting. Bounds bookkeeping is not snapshot state; scrolling does not recompose the full widget subtree on every pixel. No perpetual edit wiggle is rendered.
 
 Screenshot OCR retains per-line bounding rectangles while matching supported body labels to values in the same column. Unlabelled kg values are rejected. Body-fat percentage writes BodyFatRecord; muscle/fat mass and BMI are not mapped to weight. The import dialog has a bounded height and native date/time pickers.
+
+### Dashboard goal captions
+
+`DashboardDisplayState.isPeriod` follows the loaded `DashboardData.period`, including custom ranges. Cumulative tile details label the already-scaled target as a period goal; Day retains a daily goal. Sleep targets remain average nightly goals rather than being multiplied by the number of nights.

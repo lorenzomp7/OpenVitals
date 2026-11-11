@@ -73,7 +73,7 @@ object DashboardPresentationMapper {
             }
         }
 
-        return DashboardDisplayState(widgets = widgets, unsupportedIds = unsupportedIds)
+        return DashboardDisplayState(widgets = widgets, unsupportedIds = unsupportedIds, isPeriod = data.period != null)
     }
 
     private fun buildWidget(
