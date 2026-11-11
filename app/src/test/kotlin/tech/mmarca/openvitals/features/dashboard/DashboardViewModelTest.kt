@@ -87,6 +87,8 @@ class DashboardViewModelTest {
         every { it.dailyGoalFor(any()) } answers { firstArg<MetricDailyGoalKey>().defaultValue }
         every { it.hydrationDailyGoalLiters } returns 2.0
         every { it.dashboardWidgetSizes() } returns emptyMap()
+        every { it.dashboardDetailCounts() } returns emptyMap()
+        every { it.setDashboardDetailCounts(any()) } returns Unit
         every { it.dashboardPagedLayout() } returns true
         every { it.setDashboardWidgetSizes(any()) } returns Unit
         every { it.setDashboardPagedLayout(any()) } returns Unit
@@ -99,6 +101,22 @@ class DashboardViewModelTest {
         every { it.setDashboardKnownWidgetIds(any()) } returns Unit
         every { it.healthConnectSyncEnabled } returns true
         every { it.bodyEnergyCalibration() } returns BodyEnergyCalibration.Automatic
+    }
+
+    @Test fun `tile detail choice is restored saved and invalid counts are ignored`() = runTest {
+        val preferences = prefs()
+        every { preferences.dashboardDetailCounts() } returns mapOf("STEPS" to 3)
+        val loader = mockDashboardDataLoader()
+        loader.answersEveryPassWith(DashboardData(date = today, steps = 8_000))
+        val vm = dashboardViewModel(loader = loader, prefs = preferences)
+        advanceUntilIdle()
+        assertEquals(3, vm.uiState.value.widgetDetailCounts[DashboardWidgetId.STEPS])
+
+        vm.setWidgetDetailCount(DashboardWidgetId.STEPS, 2)
+        vm.setWidgetDetailCount(DashboardWidgetId.STEPS, 4)
+
+        assertEquals(2, vm.uiState.value.widgetDetailCounts[DashboardWidgetId.STEPS])
+        verify(exactly = 1) { preferences.setDashboardDetailCounts(mapOf("STEPS" to 2)) }
     }
 
     // Initial load.
