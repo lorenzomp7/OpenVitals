@@ -21,6 +21,7 @@ internal fun screenshotRecords(values: List<Pair<String, String>>, start: String
         val value = raw.replace(',', '.').toDouble()
         require(value.isFinite() && value > 0)
         val key = "$kind|$value|${from.toInstant()}|${to.toInstant()}" +
+            (if (kind == "body_water_percent") "|${values.firstOrNull { it.first == "kg" }?.second}" else "") +
             if (kind == "duration_min") "|${exerciseType ?: ExerciseSessionRecord.EXERCISE_TYPE_OTHER_WORKOUT}" else ""
         val digest = MessageDigest.getInstance("SHA-256").digest(key.toByteArray()).joinToString("") { "%02x".format(it) }
         val metadata = Metadata.manualEntry(clientRecordId = "screenshot_$digest", clientRecordVersion = 1)
@@ -29,6 +30,12 @@ internal fun screenshotRecords(values: List<Pair<String, String>>, start: String
         when (kind) {
             "bmr" -> BasalMetabolicRateRecord(time, offset, Power.kilocaloriesPerDay(value), metadata)
             "lean_mass" -> LeanBodyMassRecord(time, offset, Mass.kilograms(value), metadata)
+            "body_water_percent" -> {
+                require(value <= 100)
+                val weight = requireNotNull(values.firstOrNull { it.first == "kg" }?.second?.replace(',', '.')?.toDoubleOrNull())
+                require(weight.isFinite() && weight > 0)
+                BodyWaterMassRecord(time, offset, Mass.kilograms(weight * value / 100), metadata)
+            }
             "body_water" -> BodyWaterMassRecord(time, offset, Mass.kilograms(value), metadata)
             "bone_mass" -> BoneMassRecord(time, offset, Mass.kilograms(value), metadata)
             "kg" -> WeightRecord(time, offset, Mass.kilograms(value), metadata)
@@ -68,7 +75,7 @@ internal fun screenshotPermissions(kinds: List<String>): Set<String> = kinds.fil
         "duration_min" -> ExerciseSessionRecord::class
         "bmr" -> BasalMetabolicRateRecord::class
         "lean_mass" -> LeanBodyMassRecord::class
-        "body_water" -> BodyWaterMassRecord::class
+        "body_water", "body_water_percent" -> BodyWaterMassRecord::class
         "bone_mass" -> BoneMassRecord::class
         "kg" -> WeightRecord::class
         "body_fat" -> BodyFatRecord::class

@@ -253,7 +253,9 @@ class ActivitiesViewModel @Inject constructor(
             }
             val date = query.selectedDate
             _uiState.value = _uiState.value.copy(isLoading = true, error = null)
+            var cacheable = false
             runCatching {
+                tech.mmarca.openvitals.healthconnect.withHealthConnectReadOutcome {
                 coroutineScope {
                     val currentDataEnd = windows.currentDataEnd
                     val workouts = async { repository.loadWorkoutsWithMetrics(windows.current.start, currentDataEnd) }
@@ -296,11 +298,12 @@ class ActivitiesViewModel @Inject constructor(
                         crossDailyRestingHR = loadedRestingHeartRate,
                     )
                 }
+                }.let { outcome -> cacheable = !outcome.degraded; outcome.value }
             }
                 .onSuccess { result ->
                     if (!isCurrent) return@load
                     latestResult = result
-                    returnCache.put(fingerprint, result)
+                    if (cacheable) returnCache.put(fingerprint, result)
                     _uiState.value = _uiState.value
                         .copy(isLoading = false, selectedDate = date)
                         .withLoadedResult(result, _uiState.value.selectedActivityType)

@@ -26,7 +26,9 @@ class UserProfileViewModel @Inject constructor(private val repository: UserProfi
     private val _state = MutableStateFlow(UserProfileState())
     internal val state = _state.asStateFlow()
 
-    init {
+    init { refresh() }
+
+    fun refresh() {
         viewModelScope.launch {
             val profile = repository.read()
             _state.value = UserProfileState(profile.name, profile.age, repository.photo(), loading = false)

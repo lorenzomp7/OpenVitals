@@ -11,16 +11,23 @@ import javax.inject.Singleton
 class ActivitiesReturnCache @Inject constructor() {
     private var key: String? = null
     private var storedAt: Long = 0
+    private var storedRevision: Long = 0
     private var result: ActivitiesLoadResult? = null
 
     internal fun get(fingerprint: String): ActivitiesLoadResult? =
-        result.takeIf { key == fingerprint && System.nanoTime() - storedAt < 300_000_000_000L }
+        result.takeIf { key == fingerprint && storedRevision == revision && System.nanoTime() - storedAt < 300_000_000_000L }
 
     internal fun put(fingerprint: String, value: ActivitiesLoadResult) {
+        storedRevision = revision
         key = fingerprint
         result = value
         storedAt = System.nanoTime()
     }
 
     fun clear() { key = null; result = null }
+
+    companion object {
+        private var revision: Long = 0
+        fun invalidateAll() { revision++ }
+    }
 }

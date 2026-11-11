@@ -324,6 +324,7 @@ class ActivityRepositoryImpl @Inject constructor(
             end = endInstant,
             includeDistance = readDistancePermission in granted,
             includeSpeed = readSpeedPermission in granted,
+            includeHeartRate = readHeartRatePermission in granted,
         ).map { it.withPreferredDistance() }
     }
 

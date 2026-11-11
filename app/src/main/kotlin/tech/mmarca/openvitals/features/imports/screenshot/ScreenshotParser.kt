@@ -23,13 +23,14 @@ internal object ScreenshotParser {
         "bmi" to "(?:BMI|IMC)",
         "bmr" to "(?:BMR|basal metabolic rate|metabolismo basale)",
         "lean_mass" to "(?:lean (?:body )?mass|massa magra)",
+        "body_water_percent" to "(?:body water|acqua corporea)",
         "body_water" to "(?:body water(?: mass)?|acqua corporea)",
         "bone_mass" to "(?:bone mass|massa ossea)",
     )
 
     private fun extraBodyValues(text: String): List<ScreenshotValue> = extraBodyLabels.mapNotNull { (kind, label) ->
-        val unit = when (kind) { "bmi" -> ""; "bmr" -> "kcal(?:/day|/d|/giorno)?"; else -> "kg" }
-        Regex("(?i)$label\\s*[:：]?\\s*(\\d{1,4}(?:[.,]\\d+)?)\\s*$unit\\b")
+        val unit = when (kind) { "body_water_percent" -> "%"; "bmi" -> ""; "bmr" -> "kcal(?:/day|/d|/giorno)?"; else -> "kg" }
+        Regex("(?i)$label\\s*[:：]?\\s*(\\d{1,4}(?:[.,]\\d+)?)\\s*$unit(?!\\w)")
             .find(text)?.let { ScreenshotValue(kind, it.groupValues[1].replace(',', '.')) }
     }
 
@@ -48,7 +49,7 @@ internal object ScreenshotParser {
         )
         val body = labels.mapNotNull { (kind, pattern) ->
             val label = lines.firstOrNull { pattern.matches(it.text.trim()) } ?: return@mapNotNull null
-            val unit = when (kind) { "bmi" -> ""; "bmr" -> "kcal(?:/day|/d|/giorno)?"; "body_fat" -> "%"; else -> "kg" }
+            val unit = when (kind) { "body_water_percent" -> "%"; "bmi" -> ""; "bmr" -> "kcal(?:/day|/d|/giorno)?"; "body_fat" -> "%"; else -> "kg" }
             val valuePattern = Regex("""^(\d{1,4}(?:[.,]\d+)?)\s*$unit$""", RegexOption.IGNORE_CASE)
             lines.filter { it.top >= label.bottom &&
                 kotlin.math.abs(it.centerX - label.centerX) <= maxOf(label.width, it.width) * 0.75 &&
@@ -59,7 +60,7 @@ internal object ScreenshotParser {
         }
         // Body screens have no single-heart-rate reading; never treat a BPM average as an instant sample.
         val text = lines.joinToString("\n") { it.text }
-        return (parse(text).filterNot { it.kind in (extraBodyLabels.keys + setOf("kg", "body_fat")) } + body + extraBodyValues(text)).distinct()
+        return (parse(text).filterNot { it.kind in (extraBodyLabels.keys + setOf("kg", "body_fat")) } + body + lines.flatMap { extraBodyValues(it.text) }).distinct()
     }
 
     /** Require a duration label: an unlabelled clock could be the phone status bar. */

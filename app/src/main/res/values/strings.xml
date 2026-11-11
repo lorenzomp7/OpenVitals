@@ -3869,4 +3869,6 @@
     <string name="dashboard_details_title">Details</string>
     <string name="dashboard_details_help">Includes the main value. Additional values are shown when available.</string>
     <string name="dashboard_cardio_today_points">Today: %1$d points</string>
+    <string name="screenshot_bmi_preview">BMI: preview only. OpenVitals calculates BMI from weight and height.</string>
+    <string name="screenshot_water_percent">Body water percentage is converted to kg using the weight in this screenshot.</string>
 </resources>

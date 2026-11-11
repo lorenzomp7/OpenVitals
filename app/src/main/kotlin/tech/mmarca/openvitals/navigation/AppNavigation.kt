@@ -153,6 +153,7 @@ fun AppNavigation(
     val activeRouteImportRequest = settingsRouteImportRequest ?: routeImportRequest
 
     fun markDashboardDirty() {
+        tech.mmarca.openvitals.features.activity.ActivitiesReturnCache.invalidateAll()
         dashboardRefreshRequest += 1
     }
 

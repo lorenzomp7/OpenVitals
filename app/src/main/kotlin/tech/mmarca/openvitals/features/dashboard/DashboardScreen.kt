@@ -95,6 +95,7 @@ fun DashboardScreen(
     val currentOnOpenBodyProfile by rememberUpdatedState(onOpenBodyProfile)
     val profileViewModel: tech.mmarca.openvitals.features.settings.UserProfileViewModel = androidx.hilt.navigation.compose.hiltViewModel()
     val profile by profileViewModel.state.collectAsStateWithLifecycle()
+    LifecycleEventEffect(Lifecycle.Event.ON_RESUME) { profileViewModel.refresh() }
     val profilePhoto = remember(profile.photo) { profile.photo?.let { it.asImageBitmap() } }
     DeclareAppBar(
         remember(state.sensorStatus.hasDevices, profilePhoto) {

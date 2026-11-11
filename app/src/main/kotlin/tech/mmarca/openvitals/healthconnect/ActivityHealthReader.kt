@@ -354,6 +354,7 @@ internal class ActivityHealthReader(
         end: Instant,
         includeDistance: Boolean,
         includeSpeed: Boolean,
+        includeHeartRate: Boolean = false,
     ): List<ExerciseData> =
         support.withLogging("readExerciseSessionsWithMetrics[$start..$end]", emptyList()) {
             val records = support.client().readRecordsPaged(
@@ -367,6 +368,7 @@ internal class ActivityHealthReader(
                     record = record,
                     includeDistance = includeDistance,
                     includeSpeed = includeSpeed,
+                    includeHeartRate = includeHeartRate,
                 )
             }
 
@@ -515,10 +517,12 @@ internal class ActivityHealthReader(
         record: ExerciseSessionRecord,
         includeDistance: Boolean,
         includeSpeed: Boolean,
+        includeHeartRate: Boolean,
     ): ExerciseData {
         val metrics = buildSet {
             if (includeDistance) add(DistanceRecord.DISTANCE_TOTAL)
             if (includeSpeed) add(SpeedRecord.SPEED_AVG)
+            if (includeHeartRate) add(HeartRateRecord.BPM_AVG)
         }
         val aggregate = if (metrics.isEmpty()) {
             null
@@ -548,6 +552,7 @@ internal class ActivityHealthReader(
             } else {
                 null
             },
+            averageHeartRateBpm = if (includeHeartRate) aggregate?.get(HeartRateRecord.BPM_AVG)?.toLong() else null,
             appPackageName = appPackageName,
             backfillRouteMetrics = true,
         )
