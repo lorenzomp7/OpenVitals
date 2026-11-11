@@ -3,9 +3,9 @@ package tech.mmarca.openvitals.features.activity
 import javax.inject.Inject
 import javax.inject.Singleton
 
-/** Short lived, in-memory presentation results so returning from the dashboard does not reread a year.
+/** In-memory presentation results so returning from the dashboard does not reread a year.
  * No Health Connect records are held. The key includes the query, profile, timezone and current grants.
- * Pull-to-refresh bypasses this cache; deletion clears it. Only the last successful result is retained.
+ * After five minutes, a return displays the old result while revalidating. Pull-to-refresh bypasses it; deletion clears it. Only the last successful result is retained.
  */
 @Singleton
 class ActivitiesReturnCache @Inject constructor() {
@@ -15,7 +15,9 @@ class ActivitiesReturnCache @Inject constructor() {
     private var result: ActivitiesLoadResult? = null
 
     internal fun get(fingerprint: String): ActivitiesLoadResult? =
-        result.takeIf { key == fingerprint && storedRevision == revision && System.nanoTime() - storedAt < 300_000_000_000L }
+        result.takeIf { key == fingerprint && storedRevision == revision }
+
+    internal fun isFresh(): Boolean = System.nanoTime() - storedAt < 300_000_000_000L
 
     internal fun put(fingerprint: String, value: ActivitiesLoadResult) {
         storedRevision = revision

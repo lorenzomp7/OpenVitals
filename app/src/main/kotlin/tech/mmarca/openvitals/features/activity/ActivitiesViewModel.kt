@@ -245,14 +245,16 @@ class ActivitiesViewModel @Inject constructor(
             val fingerprint = listOf(query, _uiState.value.activityWeekMode,
                 bodyProfilePreferences.bodyProfile(), java.time.ZoneId.systemDefault(),
                 runCatching { healthRepository?.grantedPermissions() }.getOrNull()).toString()
+            var reusedCache = false
             if (useCache) returnCache.get(fingerprint)?.let { result ->
+                reusedCache = true
                 latestResult = result
                 _uiState.value = _uiState.value.copy(isLoading = false)
                     .withLoadedResult(result, _uiState.value.selectedActivityType)
-                return@load
+                if (returnCache.isFresh()) return@load
             }
             val date = query.selectedDate
-            _uiState.value = _uiState.value.copy(isLoading = true, error = null)
+            _uiState.value = _uiState.value.copy(isLoading = !reusedCache, error = null)
             var cacheable = false
             runCatching {
                 tech.mmarca.openvitals.healthconnect.withHealthConnectReadOutcome {
