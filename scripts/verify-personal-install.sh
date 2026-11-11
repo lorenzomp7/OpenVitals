@@ -5,10 +5,16 @@ package=tech.mmarca.openvitals.debug
 previous=$(find previous-apk -name '*.apk' -type f | head -1)
 test -n "$previous"
 signer=$(find "$ANDROID_HOME/build-tools" -name apksigner -type f | sort -V | tail -1)
-# Compare the actual earlier distributed APK with the new build, not only a reinstall.
+# Compare certificate digests independently of apksigner's version-specific signer labels.
 "$signer" verify --print-certs "$previous" > personal-apk/previous-certificate.txt
 for cert in previous-certificate signing-certificate; do
-  grep 'Signer #1 certificate SHA-256 digest:' "personal-apk/$cert.txt" > "personal-apk/$cert.sha256"
+  sed -nE 's/^Signer.*certificate SHA-256 digest: ([[:xdigit:]]+).*$/\1/p' "personal-apk/$cert.txt" |
+    tr '[:upper:]' '[:lower:]' | sort -u > "personal-apk/$cert.sha256"
+  if ! test -s "personal-apk/$cert.sha256"; then
+    echo "No signing certificate digest found in $cert" >&2
+    cat "personal-apk/$cert.txt" >&2
+    exit 1
+  fi
 done
 cmp personal-apk/previous-certificate.sha256 personal-apk/signing-certificate.sha256
 adb install "$previous" | tee personal-apk/previous-install.txt
