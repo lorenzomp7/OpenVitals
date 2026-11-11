@@ -80,6 +80,8 @@ import tech.mmarca.openvitals.features.sleep.SleepScreen
 import tech.mmarca.openvitals.features.sleep.SleepViewModel
 import tech.mmarca.openvitals.ui.components.MetricAction
 import tech.mmarca.openvitals.ui.components.OpenVitalsAdaptiveScaffold
+import tech.mmarca.openvitals.ui.components.AmbientFluidBrand
+import tech.mmarca.openvitals.ui.components.rememberFluidBrandTimeline
 import tech.mmarca.openvitals.ui.components.OpenVitalsNavigationDestination
 import tech.mmarca.openvitals.ui.components.OpenVitalsIconButton
 import tech.mmarca.openvitals.ui.components.HealthConnectNewPermissionsPrompt
@@ -115,6 +117,7 @@ fun AppNavigation(
     onExternalNavigationHandled: () -> Unit = {},
     onOnboardingComplete: () -> Unit = {},
 ) {
+    val fluidBrandTimeline = rememberFluidBrandTimeline()
     val navController = rememberNavController()
     val backDispatcher = LocalOnBackPressedDispatcherOwner.current?.onBackPressedDispatcher
     val navBackStackEntry by navController.currentBackStackEntryAsState()
@@ -266,6 +269,9 @@ fun AppNavigation(
 
     OpenVitalsAdaptiveScaffold(
         title = topBarTitle,
+        titleContent = if (currentRoute == Screen.Dashboard.route) {
+            { windowWidth -> AmbientFluidBrand(fluidBrandTimeline, windowWidth) }
+        } else null,
         navigationDestinations = topLevelDestinations,
         currentRoute = navigationSelectedRoute,
         showTopBar = showTopBar,

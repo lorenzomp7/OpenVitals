@@ -45,7 +45,7 @@ jobs:
             domain/build/reports/tests/
   emulator:
     # Verify the consolidated personal branch on a device as well as in unit tests.
-    if: github.event_name == 'workflow_dispatch' || github.head_ref == 'main_chatgpt' || contains(github.event.head_commit.message, '[shots]')
+    if: github.event_name == 'workflow_dispatch' || github.head_ref == 'main_chatgpt' || startsWith(github.head_ref, 'modifica_') || contains(github.event.head_commit.message, '[shots]')
     needs: app-test
     runs-on: ubuntu-26.04
     timeout-minutes: 20

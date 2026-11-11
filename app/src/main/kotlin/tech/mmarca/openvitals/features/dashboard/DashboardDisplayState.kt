@@ -15,6 +15,8 @@ data class DashboardDisplayState(
     val unsupportedIds: Set<DashboardWidgetId> = emptySet(),
     /** Each tile's last answer to [isDemotableEmptyTile]. A tile keeps it while it reloads. */
     val lastDemoted: Map<DashboardWidgetId, Boolean> = emptyMap(),
+    /** Distinguishes period-total targets from the daily targets; also true for custom intervals. */
+    val isPeriod: Boolean = false,
 )
 
 @Immutable

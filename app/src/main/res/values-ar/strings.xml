@@ -145,4 +145,6 @@
     <string name="dashboard_details_title">التفاصيل</string>
     <string name="dashboard_details_help">يتضمن القيمة الرئيسية. تظهر القيم الإضافية عند توفرها.</string>
     <string name="dashboard_cardio_today_points">اليوم: %1$d نقطة</string>
+    <string name="dashboard_period_goal">هدف الفترة</string>
+    <string name="dashboard_nightly_goal">متوسط الهدف الليلي</string>
 </resources>

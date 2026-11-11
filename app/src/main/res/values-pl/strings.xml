@@ -3876,4 +3876,6 @@
     <string name="dashboard_details_title">Szczegóły</string>
     <string name="dashboard_details_help">Obejmuje główną wartość. Dodatkowe wartości są wyświetlane, gdy są dostępne.</string>
     <string name="dashboard_cardio_today_points">Dzisiaj: %1$d punktów</string>
+    <string name="dashboard_period_goal">Cel dla okresu</string>
+    <string name="dashboard_nightly_goal">Średni cel na noc</string>
 </resources>

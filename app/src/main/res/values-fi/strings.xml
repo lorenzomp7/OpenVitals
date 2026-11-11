@@ -3810,4 +3810,6 @@
     <string name="dashboard_details_title">Tiedot</string>
     <string name="dashboard_details_help">Sisältää pääarvon. Muut arvot näytetään, kun ne ovat saatavilla.</string>
     <string name="dashboard_cardio_today_points">Tänään: %1$d pistettä</string>
+    <string name="dashboard_period_goal">Tavoite valitulle ajanjaksolle</string>
+    <string name="dashboard_nightly_goal">Keskimääräinen yötavoite</string>
 </resources>

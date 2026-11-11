@@ -145,4 +145,6 @@
     <string name="dashboard_details_title">פרטים</string>
     <string name="dashboard_details_help">כולל את הערך הראשי. ערכים נוספים מוצגים כאשר הם זמינים.</string>
     <string name="dashboard_cardio_today_points">היום: %1$d נקודות</string>
+    <string name="dashboard_period_goal">יעד לתקופה</string>
+    <string name="dashboard_nightly_goal">יעד ממוצע ללילה</string>
 </resources>

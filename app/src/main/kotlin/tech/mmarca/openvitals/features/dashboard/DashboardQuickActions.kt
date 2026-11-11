@@ -17,6 +17,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -24,6 +25,7 @@ import tech.mmarca.openvitals.R
 import tech.mmarca.openvitals.ui.components.OpenVitalsButton
 import tech.mmarca.openvitals.ui.components.OpenVitalsIconButton
 import tech.mmarca.openvitals.ui.components.OpenVitalsTonalButton
+import tech.mmarca.openvitals.ui.theme.WorkoutActionMetrics
 
 @Composable
 internal fun DashboardQuickActions(
@@ -42,7 +44,8 @@ internal fun DashboardQuickActions(
             onClick = onStartActivity,
             contentPadding = DashboardQuickActionContentPadding,
             modifier = Modifier
-                .weight(1.0f)
+                .weight(WorkoutActionMetrics.primaryWeight)
+                .testTag("start_workout_action")
                 .height(DashboardQuickActionHeight),
         ) {
             Icon(
@@ -62,7 +65,7 @@ internal fun DashboardQuickActions(
             onClick = onOpenLog,
             contentPadding = DashboardQuickActionContentPadding,
             modifier = Modifier
-                .weight(0.70f)
+                .weight(WorkoutActionMetrics.secondaryWeight)
                 .height(DashboardQuickActionHeight),
         ) {
             Icon(
@@ -80,7 +83,7 @@ internal fun DashboardQuickActions(
         }
         OpenVitalsIconButton(
             onClick = onToggleDashboardEdit,
-            modifier = Modifier.size(44.dp),
+            modifier = Modifier.size(WorkoutActionMetrics.editSize),
         ) {
             Icon(
                 imageVector = Icons.Outlined.Edit,

@@ -495,4 +495,6 @@
     <string name="dashboard_details_title">Λεπτομέρειες</string>
     <string name="dashboard_details_help">Περιλαμβάνει την κύρια τιμή. Οι πρόσθετες τιμές εμφανίζονται όταν είναι διαθέσιμες.</string>
     <string name="dashboard_cardio_today_points">Σήμερα: %1$d βαθμοί</string>
+    <string name="dashboard_period_goal">Στόχος περιόδου</string>
+    <string name="dashboard_nightly_goal">Μέσος στόχος ανά νύχτα</string>
 </resources>

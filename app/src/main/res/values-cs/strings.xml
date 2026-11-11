@@ -3876,4 +3876,6 @@
     <string name="dashboard_details_title">Podrobnosti</string>
     <string name="dashboard_details_help">Zahrnuje hlavní hodnotu. Další hodnoty se zobrazí, pokud jsou dostupné.</string>
     <string name="dashboard_cardio_today_points">Dnes: %1$d bodů</string>
+    <string name="dashboard_period_goal">Cíl za období</string>
+    <string name="dashboard_nightly_goal">Průměrný noční cíl</string>
 </resources>

@@ -3811,4 +3811,6 @@
     <string name="dashboard_details_title">详细信息</string>
     <string name="dashboard_details_help">包含主要数值。其他数值在可用时显示。</string>
     <string name="dashboard_cardio_today_points">今天：%1$d 分</string>
+    <string name="dashboard_period_goal">所选时段目标</string>
+    <string name="dashboard_nightly_goal">每晚平均目标</string>
 </resources>

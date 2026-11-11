@@ -3878,4 +3878,6 @@
     <string name="dashboard_details_title">詳細</string>
     <string name="dashboard_details_help">主な値を含みます。追加の値は利用可能な場合に表示されます。</string>
     <string name="dashboard_cardio_today_points">今日：%1$d ポイント</string>
+    <string name="dashboard_period_goal">期間の目標</string>
+    <string name="dashboard_nightly_goal">1晩あたりの平均目標</string>
 </resources>
