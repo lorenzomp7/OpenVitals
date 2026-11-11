@@ -42,7 +42,7 @@ import tech.mmarca.openvitals.features.activity.RoutePreview
 
 /** Saved workouts only. No location provider and no upload of workout samples. */
 @Composable
-internal fun ActivityMapboxMap(
+internal fun ActivityRouteMapContent(
     points: List<ExerciseRoutePoint>,
     modifier: Modifier = Modifier,
 ) {

@@ -46,6 +46,7 @@ fun ChartZoom(
     vararg keys: Any?,
     enabled: Boolean = true,
     modifier: Modifier = Modifier,
+    initialViewport: ChartViewport = ChartViewport.Full,
     content: @Composable (ChartZoomState) -> Unit,
 ) {
     if (!enabled) {
@@ -54,7 +55,7 @@ fun ChartZoom(
         return
     }
 
-    var viewport by remember(*keys) { mutableStateOf(ChartViewport.Full) }
+    var viewport by remember(*keys, initialViewport) { mutableStateOf(initialViewport) }
     var multiTouch by remember { mutableStateOf(false) }
 
     // A pinch is touch-only. These give a screen reader the same three moves.

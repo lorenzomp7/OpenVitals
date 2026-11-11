@@ -294,9 +294,10 @@ class DashboardViewModel @Inject constructor(
 
     fun resumeCurrentDay() {
         refreshPreferences()
-        // A short navigation round trip reuses the settled period; explicit refresh and writes bypass it.
-        if (!userPinnedPastDay) {
-            load(LocalDate.now())
+        // A returning scale app may have just written a new measurement. Keep the
+        // initial in-flight coalescing, but never reuse a settled current day.
+        if (!userPinnedPastDay && inFlightLoadDate != LocalDate.now()) {
+            forceLoad(LocalDate.now(), RefreshMode.NORMAL)
         }
     }
 

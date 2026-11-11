@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.asAndroidBitmap
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.captureToImage
 import androidx.compose.ui.test.junit4.v2.createComposeRule
@@ -39,6 +40,22 @@ class ActivityMapboxFallbackTest {
         File(context.getExternalFilesDir(null), "mapbox-local-fallback.png").outputStream().use {
             composeRule.onNodeWithTag("route").captureToImage().asAndroidBitmap().compress(Bitmap.CompressFormat.PNG, 100, it)
         }
+    }
+
+    @Test
+    fun fullscreenOpensClosesAndRestoresTheRouteCard() {
+        val points = listOf(45.13 to 10.02, 45.14 to 10.03).mapIndexed { i, (lat, lon) ->
+            ExerciseRoutePoint(Instant.EPOCH.plusSeconds(i.toLong()), lat, lon, null, null, null)
+        }
+        composeRule.setContent {
+            OpenVitalsTheme { ActivityMapboxMap(points, Modifier.size(320.dp, 260.dp)) }
+        }
+        composeRule.onNodeWithTag("map-fullscreen-open").performClick()
+        composeRule.onNodeWithTag("map-fullscreen").assertIsDisplayed()
+        composeRule.onNodeWithTag("map-fullscreen-close").performClick()
+        composeRule.onNodeWithTag("map-fullscreen").assertDoesNotExist()
+        composeRule.onNodeWithTag("map-fullscreen-open").assertIsDisplayed().performClick()
+        composeRule.onNodeWithTag("map-fullscreen").assertIsDisplayed()
     }
 
     @Test

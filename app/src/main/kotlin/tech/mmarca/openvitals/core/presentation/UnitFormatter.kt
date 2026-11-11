@@ -142,6 +142,8 @@ class UnitFormatter(
 
     fun cadence(value: Double): DisplayValue = DisplayValue(decimal(value, 1), "rpm")
 
+    fun stepsCadence(value: Double): DisplayValue = DisplayValue(decimal(value, 1), "spm")
+
     fun averagePace(distanceMeters: Double, durationMs: Long): DisplayValue? {
         if (distanceMeters <= 0.0 || durationMs <= 0L) return null
         val system = unitSystem(UnitQuantity.DISTANCE)

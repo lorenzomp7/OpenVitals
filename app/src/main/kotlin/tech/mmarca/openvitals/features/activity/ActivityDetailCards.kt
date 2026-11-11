@@ -188,7 +188,7 @@ internal fun MetricsCard(
         )
         MetricRow(
             label = stringResource(R.string.metric_steps_cadence),
-            value = workout.averageStepsCadenceRate?.let { unitFormatter.cadence(it).text },
+            value = workout.averageStepsCadenceRate?.let { unitFormatter.stepsCadence(it).text },
             metric = ActivityDetailMetric.STEPS_CADENCE,
             exerciseType = exerciseType,
         )

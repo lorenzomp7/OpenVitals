@@ -392,7 +392,6 @@ internal class ActivityHealthReader(
         support.withNullableLogging("readExerciseSession[$id]") {
             val record = support.client().readRecord(ExerciseSessionRecord::class, id).record
             val metrics = buildSet {
-                if (includeSteps) add(StepsRecord.COUNT_TOTAL)
                 if (includeDistance) add(DistanceRecord.DISTANCE_TOTAL)
                 if (includeTotalCalories) add(TotalCaloriesBurnedRecord.ENERGY_TOTAL)
                 if (includeActiveCalories || includeTotalCaloriesEstimate) add(ActiveCaloriesBurnedRecord.ACTIVE_CALORIES_TOTAL)
@@ -452,7 +451,9 @@ internal class ActivityHealthReader(
             }
 
             record.toExerciseData(
-                steps = if (includeSteps && aggregate != null) aggregate[StepsRecord.COUNT_TOTAL] ?: 0L else null,
+                steps = if (includeSteps) {
+                    readSessionSteps(record)
+                } else null,
                 totalDistanceMeters = if (includeDistance && aggregate != null) {
                     aggregate[DistanceRecord.DISTANCE_TOTAL]?.inMeters ?: 0.0
                 } else {
@@ -552,6 +553,21 @@ internal class ActivityHealthReader(
         )
     }
 
+    /** Session steps must come from its writer, not the phone priority total. */
+    private suspend fun readSessionSteps(record: ExerciseSessionRecord): Long? =
+        runCatching {
+            support.client().aggregate(
+                AggregateRequest(
+                    metrics = setOf(StepsRecord.COUNT_TOTAL),
+                    timeRangeFilter = TimeRangeFilter.between(record.startTime, record.endTime),
+                    dataOriginFilter = setOf(record.metadata.dataOrigin),
+                ),
+            )[StepsRecord.COUNT_TOTAL]
+        }.onFailure {
+            if (HealthConnectRateLimitBackoff.isRateLimitFailure(it)) throw it
+            Log.e(TAG, "Failed readSessionSteps ${support.diagnosticsSummary()}", it)
+        }.getOrNull()
+
     suspend fun readSpeedSamples(start: Instant, end: Instant): List<SpeedSample> =
         support.withLogging("readSpeedSamples[$start..$end]", emptyList()) {
             support.client().readSeriesSamples(SpeedRecord::class, start, end) { record ->
@@ -569,9 +585,14 @@ internal class ActivityHealthReader(
             }
         }
 
-    suspend fun readActivityCadenceSamples(start: Instant, end: Instant): List<ActivityCadenceSample> =
-        support.withLogging("readActivityCadenceSamples[$start..$end]", emptyList()) {
-            val cyclingSamples = support.client()
+    suspend fun readActivityCadenceSamples(
+        start: Instant,
+        end: Instant,
+        includeSteps: Boolean = true,
+        includeCycling: Boolean = true,
+    ): List<ActivityCadenceSample> {
+            val cyclingSamples = if (!includeCycling) emptyList() else
+                support.withLogging("readCyclingCadenceSamples", emptyList()) { support.client()
                 .readSeriesSamples(CyclingPedalingCadenceRecord::class, start, end) { record ->
                     val source = SyncedSourceOverlay.displaySource(record.metadata)
                     record.samples.map { sample ->
@@ -586,7 +607,9 @@ internal class ActivityHealthReader(
                         )
                     }
                 }
-            val stepsSamples = support.client()
+            }
+            val stepsSamples = if (!includeSteps) emptyList() else
+                support.withLogging("readStepsCadenceSamples", emptyList()) { support.client()
                 .readSeriesSamples(StepsCadenceRecord::class, start, end) { record ->
                     val source = SyncedSourceOverlay.displaySource(record.metadata)
                     record.samples.map { sample ->
@@ -601,7 +624,8 @@ internal class ActivityHealthReader(
                         )
                     }
                 }
-            (cyclingSamples + stepsSamples).sortedBy { it.time }
+            }
+            return (cyclingSamples + stepsSamples).sortedBy { it.time }
         }
 
     suspend fun readPlannedExerciseSessions(start: Instant, end: Instant): List<PlannedExerciseData> =

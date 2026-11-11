@@ -679,7 +679,7 @@ internal fun BodyMetricScreen(
     val chartDaySelection = rememberChartDaySelection(state.selectedRange, state.selectedDate, metric)
 
     LifecycleEventEffect(Lifecycle.Event.ON_RESUME) {
-        viewModel.resumeCurrentPeriod()
+        viewModel.resumeCurrentPeriod(refreshCurrent = true)
     }
 
     WithHealthConnectFeatureScreen(

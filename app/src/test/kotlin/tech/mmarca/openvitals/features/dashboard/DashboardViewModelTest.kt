@@ -725,7 +725,7 @@ class DashboardViewModelTest {
         assertNull(vm.uiState.value.error)
     }
 
-    @Test fun `a resume after the open load settles reuses the recent day`() = runTest {
+    @Test fun `a resume after the open load settles reads new current-day measurements`() = runTest {
         val loader = mockDashboardDataLoader()
         var loads = 0
         coEvery { loader.loadDashboard(any<DashboardQuery>()) } coAnswers {
@@ -737,11 +737,11 @@ class DashboardViewModelTest {
         advanceUntilIdle()
         assertEquals(1, loads)
 
-        // A short navigation round trip keeps the settled result.
+        // The scale may have written to Health Connect while this screen was backgrounded.
         vm.resumeCurrentDay()
         advanceUntilIdle()
 
-        assertEquals(1, loads)
+        assertEquals(2, loads)
     }
 
     @Test fun `force refresh is not absorbed by an in-flight load`() = runTest {

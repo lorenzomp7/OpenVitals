@@ -44,7 +44,7 @@ fun BodyScreen(
     )
 
     LifecycleEventEffect(Lifecycle.Event.ON_RESUME) {
-        viewModel.resumeCurrentPeriod()
+        viewModel.resumeCurrentPeriod(refreshCurrent = true)
     }
 
     WithHealthConnectFeatureScreen(

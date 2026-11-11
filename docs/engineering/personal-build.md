@@ -27,3 +27,18 @@ Older workouts are requested in 30-day windows, revealed ten at a time and loade
 ## Dashboard periods
 
 The selector at the top left offers Day, Week, Month and Year, remembers the choice, and reuses the shared period navigation and week preference. Future dates are capped at today. Activity, nutrition, hydration and mindfulness are totals over the selected period; sleep is the mean of recorded nights and heart rate is the Health Connect aggregate average and HRV is the mean of recorded days. Goals for cumulative metrics scale to the elapsed period length. Other measurement tiles retain their latest-value semantics; training tiles retain their explicitly weekly window at the period end. The dashboard states these distinctions. Older-workout pagination is available in Day only; other ranges show the workouts inside the chosen period. Range reads use Health Connect aggregates rather than loading one dashboard per day.
+
+## Workout and weight fixes
+
+Saved route maps have a fullscreen button, a close button and Android Back dismissal,
+including the local fallback without Mapbox login. Only one native map is mounted.
+Returning from a scale app refreshes body screens and the settled current dashboard;
+the initial in-flight dashboard load remains coalesced. Weight still requires a record
+written to Health Connect by the scale provider.
+
+Workout steps are aggregated from the session writer rather than the phone priority
+source. An absent writer total stays missing. Steps cadence uses spm; cycling uses rpm.
+A missing cycling permission no longer prevents reading granted steps cadence.
+Speed and cadence charts initially focus a short recorded sample interval while their
+axis retains the true elapsed session times. Pinch/pan and double-tap full-session reset
+remain available; no samples are invented for unrecorded intervals.

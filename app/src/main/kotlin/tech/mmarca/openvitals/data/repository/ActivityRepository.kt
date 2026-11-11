@@ -402,7 +402,11 @@ class ActivityRepositoryImpl @Inject constructor(
             Log.w(TAG, "Skipping loadActivityCadenceSamples missingCount=1")
             return emptyList()
         }
-        return hc.readActivityCadenceSamples(start, end).filter { sample ->
+        return hc.readActivityCadenceSamples(
+            start, end,
+            includeSteps = readStepsCadencePermission in granted,
+            includeCycling = readCyclingCadencePermission in granted,
+        ).filter { sample ->
             when (sample.kind) {
                 ActivityCadenceKind.CYCLING -> readCyclingCadencePermission in granted
                 ActivityCadenceKind.STEPS -> readStepsCadencePermission in granted

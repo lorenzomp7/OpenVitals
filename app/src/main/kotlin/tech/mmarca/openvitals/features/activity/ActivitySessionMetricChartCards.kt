@@ -173,7 +173,12 @@ internal fun ActivityCadenceChartCard(
         sessionEnd = sessionEnd,
         unitFormatter = unitFormatter,
         accentColor = accentColor,
-        valueFormatter = { unitFormatter.cadence(it).text },
+        valueFormatter = {
+            when (kind) {
+                ActivityCadenceKind.STEPS -> unitFormatter.stepsCadence(it).text
+                ActivityCadenceKind.CYCLING -> unitFormatter.cadence(it).text
+            }
+        },
         modifier = modifier,
         pauses = pauses,
     )
@@ -256,7 +261,12 @@ private fun ActivitySessionMetricChartCard(
                 )
             }
             // Plot and elapsed row share the one viewport.
-            ChartZoom(sessionStart, sessionEnd, sortedValues) { zoom ->
+            ChartZoom(
+                sessionStart, sessionEnd, sortedValues,
+                initialViewport = remember(sortedValues, axis) {
+                    activitySampleViewport(sortedValues.map { axis.fractionOf(it.first) })
+                },
+            ) { zoom ->
                 Column {
                     MetricLinePlot(
                         points = chartPoints,

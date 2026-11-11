@@ -3854,4 +3854,5 @@
     <string name="mapbox_error_public_token">Signed in, but the public map token could not be retrieved. Check the default public token in your Mapbox account.</string>
     <string name="action_show_more">Show all</string>
     <string name="action_show_less">Show less</string>
+    <string name="activity_map_fullscreen">Full screen map</string>
 </resources>
