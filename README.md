@@ -127,8 +127,6 @@ cd OpenVitals
 ./gradlew verifyCi
 ```
 
-## Progetto originale e licenza
-
-Questa versione deriva da [OpenVitals di Hale-MTU](https://github.com/Hale-MTU/OpenVitals). La documentazione e le distribuzioni del progetto originale possono differire dalle funzioni e dagli APK di questa repository.
+## Licenza
 
 OpenVitals è distribuito con licenza [GNU AGPL v3.0 o successiva](LICENSE). Crediti e componenti di terze parti sono elencati in [THANKS.md](THANKS.md) e [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
