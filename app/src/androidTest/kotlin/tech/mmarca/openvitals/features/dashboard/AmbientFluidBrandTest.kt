@@ -39,8 +39,8 @@ class AmbientFluidBrandTest {
         }
         val brand = compose.onNodeWithTag("ambient_fluid_brand").getUnclippedBoundsInRoot()
         val action = compose.onNodeWithTag("start_workout_action").getUnclippedBoundsInRoot()
-        assertEquals(action.width.value, brand.width.value, 0.5f)
-        assertEquals(action.height.value, brand.height.value, 0.5f)
+        assertEquals((action.right - action.left).value, (brand.right - brand.left).value, 0.5f)
+        assertEquals((action.bottom - action.top).value, (brand.bottom - brand.top).value, 0.5f)
         val image = compose.onNodeWithTag("ambient_fluid_brand").captureToImage().asAndroidBitmap()
         val directory = checkNotNull(InstrumentationRegistry.getInstrumentation().targetContext.getExternalFilesDir(null))
         File(directory, "ambient-fluid-brand.png").outputStream().use {
