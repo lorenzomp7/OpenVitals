@@ -171,7 +171,7 @@ internal fun DashboardSwipeToDeleteActivityCard(
                         .fillMaxSize()
                         .clip(shape)
                         .background(MaterialTheme.colorScheme.errorContainer, shape)
-                        .padding(horizontal = 2Spacing.xs),
+                        .padding(horizontal = Spacing.xxl),
                     contentAlignment = Alignment.CenterEnd,
                 ) {
                     Icon(

@@ -90,7 +90,7 @@ private fun UserProfileFields(
                 val photo = state.photo
                 if (photo != null) Image(photo.asImageBitmap(), null,
                     Modifier.size(80.dp).clip(CircleShape).align(Alignment.CenterHorizontally), contentScale = ContentScale.Crop)
-                else Icon(Icons.Outlined.AccountCircle, null, Modifier.size(6Spacing.xs).align(Alignment.CenterHorizontally))
+                else Icon(Icons.Outlined.AccountCircle, null, Modifier.size(Spacing.xxxl * 2).align(Alignment.CenterHorizontally))
                 TextButton(onClick = { photoPicker.launch("image/*") }) { Text(stringResource(R.string.user_profile_photo)) }
                 if (photo != null) TextButton(onClick = { viewModel.setPhoto(null) }) {
                     Text(stringResource(R.string.user_profile_remove_photo))
