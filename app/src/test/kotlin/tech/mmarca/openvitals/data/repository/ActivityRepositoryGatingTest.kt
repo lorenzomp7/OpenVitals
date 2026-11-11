@@ -402,6 +402,7 @@ class ActivityRepositoryGatingTest {
                 end = any(),
                 includeDistance = any(),
                 includeSpeed = any(),
+                includeHeartRate = any(),
             )
         } answers {
             withMetricsCalls++

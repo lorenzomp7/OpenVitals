@@ -137,6 +137,7 @@ The current app does not need:
 
 Two Room caches exist, and each has a reason: the vitals daily cache, because seven vitals types have no Health Connect aggregate, and `heart_rate_days`, because the day view's average needs every sample.
 The first is invalidated by a permission-and-zone fingerprint, the second by a per-day signature of the hourly aggregates.
+Activities also retains one successful presentation result in memory to avoid repeating a year of session aggregates on every dashboard return. Its fingerprint includes the period query, week mode, body profile, timezone and current grants. Reads marked degraded are never cached; app edits invalidate it. Within five minutes a return reuses it; after that it remains visible during revalidation. Pull-to-refresh bypasses it. It stores domain presentation data, never raw Health Connect records.
 Everything else reads Health Connect on every load, through one reader function per metric and shape. A new cache needs a fingerprint and a reason as strong as these.
 
 ### 7. Keep module boundaries proportional
