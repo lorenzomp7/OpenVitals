@@ -259,7 +259,7 @@ internal fun DashboardWidgetCarousel(
                     specsById = specsById,
                     sizes = widgetSizes,
                     paged = pagedLayout,
-                    rowHeight = dashboardWidgetRowHeight(),
+                    rowHeight = dashboardWidgetRowHeight() + if (specsById.values.any { it.detailCount == 3 }) 12.dp else 0.dp,
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(

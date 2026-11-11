@@ -20,10 +20,12 @@ class SettingsBackupCodecTest {
             "body_profile_weight_kg" to 73.5f,
             "hydration_container_volume_milliliters" to setOf("250", "500"),
             "dashboard_widget_sizes" to "STEPS=4,SLEEP=2",
+            "dashboard_widget_details" to "STEPS=3,SLEEP=2",
             "activity_recording_dashboard_layout_cycling" to "distance=2|time=1",
         )
         val cycle = mapOf("pill_updated_at_millis" to 1_730_000_000_123L)
-        val snapshot = mapOf(main to values, "openvitals_cycle_preferences" to cycle)
+        val snapshot = mapOf(main to values, "openvitals_cycle_preferences" to cycle,
+            "openvitals_user_profile" to mapOf("name" to "Lori", "age" to 30))
         assertEquals(snapshot, SettingsBackupCodec.decode(SettingsBackupCodec.encode(snapshot)))
     }
 

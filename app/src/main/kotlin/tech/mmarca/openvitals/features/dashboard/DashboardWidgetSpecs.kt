@@ -180,7 +180,13 @@ internal fun dashboardWidgetSpecs(
             accentColor = dashboardWidgetMeta(spec.id).accentColor,
             icon = dashboardWidgetMeta(spec.id).icon,
             onClick = if (isEditingDashboard) null else ({ onOpenMetric(spec.id) }),
-        ),
+        )?.let { ring ->
+            when {
+                model?.cycle != null -> ring.copy(value = model.cycle.toDisplayValue(unitFormatter).text)
+                spec.id == DashboardWidgetId.MEDICAL_RECORDS -> ring.copy(value = stringResource(R.string.medical_records_tile_browse))
+                else -> ring
+            }
+        },
     )
 }
 

@@ -224,7 +224,8 @@ internal fun DashboardWidgetGrid(
     if (placements.isEmpty()) return
     DashboardPlacedTileGrid(
         placements = placements,
-        rowHeight = dashboardWidgetRowHeight() + if (isEditingDashboard) 48.dp else 0.dp,
+        rowHeight = dashboardWidgetRowHeight() + (if (isEditingDashboard) 48.dp else 0.dp) +
+            (if (specsById.values.any { it.detailCount == 3 }) 12.dp else 0.dp),
         modifier = modifier.fillMaxWidth().padding(
             start = DashboardWidgetHorizontalPadding, end = DashboardWidgetHorizontalPadding,
             top = topPadding, bottom = bottomPadding,
