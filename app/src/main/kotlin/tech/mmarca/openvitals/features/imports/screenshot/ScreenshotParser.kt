@@ -60,7 +60,12 @@ internal object ScreenshotParser {
         }
         // Body screens have no single-heart-rate reading; never treat a BPM average as an instant sample.
         val text = lines.joinToString("\n") { it.text }
-        return (parse(text).filterNot { it.kind in (extraBodyLabels.keys + setOf("kg", "body_fat")) } + body + lines.flatMap { extraBodyValues(it.text) }).distinct()
+        val resolvedBody = (body + lines.flatMap { extraBodyValues(it.text) }).distinct()
+        val basalValues = resolvedBody.filter { it.kind == "bmr" }.map { it.value }.toSet()
+        return (parse(text).filterNot {
+            it.kind in (extraBodyLabels.keys + setOf("kg", "body_fat")) ||
+                (it.kind == "kcal" && it.value in basalValues)
+        } + resolvedBody).distinct()
     }
 
     /** Require a duration label: an unlabelled clock could be the phone status bar. */

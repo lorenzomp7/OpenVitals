@@ -58,4 +58,14 @@ class ScreenshotParserTest {
         assertEquals("1700", values.single { it.kind == "bmr" }.value)
     }
 
+    @Test fun `column matched BMR does not become workout calories`() {
+        val values = ScreenshotParser.parseLines(listOf(
+            ScreenshotOcrLine("BMR", 0, 0, 100, 30),
+            ScreenshotOcrLine("LEAN MASS", 300, 0, 450, 30),
+            ScreenshotOcrLine("1700 kcal", 0, 40, 100, 70),
+            ScreenshotOcrLine("55.2 kg", 300, 40, 450, 70),
+        ))
+        assertEquals(setOf(ScreenshotValue("bmr", "1700"), ScreenshotValue("lean_mass", "55.2")), values.toSet())
+    }
+
 }
