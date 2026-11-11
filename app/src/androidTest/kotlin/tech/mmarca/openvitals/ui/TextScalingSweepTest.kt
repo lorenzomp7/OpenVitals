@@ -370,8 +370,6 @@ class TextScalingSweepTest {
                 }
                 SupportOpenVitalsCard(
                     onOpenIssues = {},
-                    onOpenDiscussion = {},
-                    onOpenSupport = {},
                 )
                 SettingsVersionText()
             }

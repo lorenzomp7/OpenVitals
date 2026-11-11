@@ -25,10 +25,7 @@ import tech.mmarca.openvitals.core.period.PeriodRangePreferenceKey
 import tech.mmarca.openvitals.core.period.TimeRange
 import tech.mmarca.openvitals.core.period.WeekPeriodMode
 import tech.mmarca.openvitals.domain.preferences.ActivityWeekMode
-import tech.mmarca.openvitals.domain.preferences.ActivityRecordingDashboardField
-import tech.mmarca.openvitals.domain.preferences.ActivityRecordingDashboardItemSize
 import tech.mmarca.openvitals.domain.preferences.ActivityRecordingDashboardLayout
-import tech.mmarca.openvitals.domain.preferences.ActivityRecordingDashboardTemplate
 import tech.mmarca.openvitals.domain.preferences.ActivityRecordingPreferences
 import tech.mmarca.openvitals.domain.preferences.ActivitySplitDistance
 import tech.mmarca.openvitals.domain.preferences.AppLanguage
@@ -97,7 +94,9 @@ class PreferencesRepository @Inject constructor(
     OnboardingPreferences,
     HealthConnectPreferences {
 
-    private val prefs = context.getSharedPreferences(PREFS_FILE, Context.MODE_PRIVATE)
+    private val prefs = context.getSharedPreferences(PREFS_FILE, Context.MODE_PRIVATE).also {
+        migrateDashboardLayoutPreferences(it, context.getSharedPreferences("dashboard_widget_layout", Context.MODE_PRIVATE))
+    }
     private val _unitSystemPreference = MutableStateFlow(readUnitSystemPreference())
     private val _unitSystem = MutableStateFlow(_unitSystemPreference.value.resolve(systemUnitSystem::current))
     private val _unitOverrides = MutableStateFlow(readUnitOverrides())
@@ -139,6 +138,28 @@ class PreferencesRepository @Inject constructor(
     override val bodyEnergyCalibrationFlow: StateFlow<BodyEnergyCalibration> = _bodyEnergyCalibration.asStateFlow()
     override val caffeinePreferencesFlow: StateFlow<CaffeinePreferences> = _caffeinePreferences.asStateFlow()
     override val bodyProfileFlow: StateFlow<BodyProfile> = _bodyProfile.asStateFlow()
+
+    /** Re-emits stored values after importing a validated settings backup. */
+    fun reloadFromSettingsBackup() {
+        _unitSystemPreference.value = readUnitSystemPreference()
+        _unitSystem.value = _unitSystemPreference.value.resolve(systemUnitSystem::current)
+        _unitOverrides.value = readUnitOverrides()
+        _appLanguage.value = readAppLanguage()
+        _appThemeMode.value = readAppThemeMode()
+        _dynamicColor.value = readDynamicColor()
+        _chartAggregationMode.value = readChartAggregationMode()
+        _bloodPressureGuideline.value = readBloodPressureGuideline()
+        _homeWidgetRefreshInterval.value = readHomeWidgetRefreshInterval()
+        _sleepWindow.value = readSleepWindow()
+        _activityWeekMode.value = readActivityWeekMode()
+        _activitySplitDistanceMeters.value = readActivitySplitDistanceMeters()
+        _showOpenVitalsCalculatedCalories.value = readShowOpenVitalsCalculatedCalories()
+        _nutritionAverageBasis.value = readNutritionAverageBasis()
+        _healthConnectSyncEnabled.value = readHealthConnectSyncEnabled()
+        _bodyEnergyCalibration.value = readBodyEnergyCalibration()
+        _caffeinePreferences.value = readCaffeinePreferences()
+        _bodyProfile.value = readBodyProfile()
+    }
 
     override var onboardingDone: Boolean
         get() = prefs.getBoolean(KEY_ONBOARDING_DONE, false)
@@ -669,7 +690,7 @@ class PreferencesRepository @Inject constructor(
 
     fun activityRecordingDashboardLayout(activityTypeId: String): ActivityRecordingDashboardLayout =
         prefs.getString(activityRecordingDashboardLayoutKey(activityTypeId), null)
-            ?.toActivityRecordingDashboardLayout()
+            ?.decodeRecordingDashboardLayout()
             ?: ActivityRecordingDashboardLayout()
 
     fun setActivityRecordingDashboardLayout(
@@ -680,7 +701,7 @@ class PreferencesRepository @Inject constructor(
         prefs.edit {
             putString(
                 activityRecordingDashboardLayoutKey(activityTypeId),
-                layout.normalized().toPreferenceString(),
+                layout.normalized().encodeRecordingDashboardLayout(),
             )
         }
     }
@@ -874,6 +895,14 @@ class PreferencesRepository @Inject constructor(
             putString(KEY_DASHBOARD_WIDGET_ORDER, widgetIds.joinToString(KEY_VALUE_SEPARATOR))
         }
     }
+
+    private val dashboardLayout = DashboardLayoutPreferences(prefs)
+    fun dashboardWidgetSizes(): Map<String, Int> = dashboardLayout.sizes()
+    fun setDashboardWidgetSizes(sizes: Map<String, Int>) = dashboardLayout.setSizes(sizes)
+    fun dashboardDetailCounts(): Map<String, Int> = dashboardLayout.detailCounts()
+    fun setDashboardDetailCounts(counts: Map<String, Int>) = dashboardLayout.setDetailCounts(counts)
+    fun dashboardPagedLayout(): Boolean = dashboardLayout.paged()
+    fun setDashboardPagedLayout(paged: Boolean) = dashboardLayout.setPaged(paged)
 
     /** Widget ids already offered, so an update's new widget differs from a removed one. */
     fun dashboardKnownWidgetIds(): Set<String>? =
@@ -1246,43 +1275,6 @@ class PreferencesRepository @Inject constructor(
     private fun activityRecordingDashboardLayoutKey(activityTypeId: String): String =
         "$KEY_ACTIVITY_RECORDING_DASHBOARD_LAYOUT_PREFIX$activityTypeId"
 
-    private fun ActivityRecordingDashboardLayout.toPreferenceString(): String {
-        val normalized = normalized()
-        return normalized.template.name + KEY_LAYOUT_SECTION_SEPARATOR +
-            normalized.items.joinToString(KEY_VALUE_SEPARATOR) { item ->
-                item.field.name + KEY_VALUE_PAIR_SEPARATOR + item.size.toPreferenceString()
-            }
-    }
-
-    private fun String.toActivityRecordingDashboardLayout(): ActivityRecordingDashboardLayout? {
-        val sections = split(KEY_LAYOUT_SECTION_SEPARATOR, limit = 2)
-        val template = sections.firstOrNull()
-            ?.let { value ->
-                runCatching { ActivityRecordingDashboardTemplate.valueOf(value) }.getOrNull()
-            }
-            ?: return null
-        val items = sections.getOrNull(1)
-            ?.split(KEY_VALUE_SEPARATOR)
-            ?.mapNotNull { value ->
-                val itemSections = value.split(KEY_VALUE_PAIR_SEPARATOR, limit = 2)
-                val field = itemSections.firstOrNull()
-                    ?.let { fieldName ->
-                        runCatching { ActivityRecordingDashboardField.valueOf(fieldName) }.getOrNull()
-                    }
-                    ?: return@mapNotNull null
-                val size = itemSections.getOrNull(1)
-                    ?.let { sizeName ->
-                        ActivityRecordingDashboardItemSize.fromPreferenceString(sizeName)
-                    }
-                field to size
-            }
-            .orEmpty()
-        return ActivityRecordingDashboardLayout(
-            template = template,
-            fields = items.map { it.first },
-            sizes = items.mapNotNull { (field, size) -> size?.let { field to it } }.toMap(),
-        ).normalized()
-    }
 
     companion object {
         const val PREFS_FILE = "openvitals_prefs"
@@ -1335,7 +1327,7 @@ class PreferencesRepository @Inject constructor(
          * The "Last updated" date of PRIVACY.md. A user who accepted another value is asked
          * again. Change both together; PrivacyPolicyVersionTest fails when they differ.
          */
-        const val CURRENT_PRIVACY_POLICY_VERSION = "2026-11-09"
+        const val CURRENT_PRIVACY_POLICY_VERSION = "2026-11-10"
         private const val KEY_LAST_ACTIVITY_EXERCISE_TYPE = "last_activity_exercise_type"
         private const val KEY_FAVORITE_ACTIVITY_EXERCISE_TYPE = "favorite_activity_exercise_type"
         private const val KEY_DASHBOARD_WIDGET_ORDER = "dashboard_widget_order"

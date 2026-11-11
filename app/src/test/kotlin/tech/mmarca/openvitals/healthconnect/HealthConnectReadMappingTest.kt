@@ -9,6 +9,7 @@ import androidx.health.connect.client.records.ExerciseSessionRecord
 import androidx.health.connect.client.records.HydrationRecord
 import androidx.health.connect.client.records.NutritionRecord
 import androidx.health.connect.client.records.PowerRecord
+import androidx.health.connect.client.records.StepsRecord
 import androidx.health.connect.client.records.Record
 import androidx.health.connect.client.records.SleepSessionRecord
 import androidx.health.connect.client.records.SpeedRecord
@@ -167,6 +168,31 @@ class HealthConnectReadMappingTest {
         assertThat(read!!.averagePowerWatts).isWithin(1e-6).of(214.5)
         // A metric that was not asked for stays null rather than reading zero.
         assertThat(read.averageSpeedMetersPerSecond).isNull()
+    }
+
+    @Test fun `workout steps come from its writer instead of the phone`() = runTest {
+        val client = FakeHealthConnectClient()
+        client.setPackageName(WATCH_PACKAGE)
+        val id = client.insertRecords(listOf(session())).recordIdsList.single()
+        client.insertRecords(listOf(StepsRecord(
+            startTime = sessionStart, startZoneOffset = ZoneOffset.UTC,
+            endTime = sessionEnd, endZoneOffset = ZoneOffset.UTC,
+            count = 1700L, metadata = Metadata.autoRecorded(watch),
+        )))
+        client.setPackageName(OTHER_PACKAGE)
+        client.insertRecords(listOf(StepsRecord(
+            startTime = sessionStart, startZoneOffset = ZoneOffset.UTC,
+            endTime = sessionEnd, endZoneOffset = ZoneOffset.UTC,
+            count = 549L, metadata = Metadata.autoRecorded(watch),
+        )))
+        val read = activity(AggregatingFakeHealthConnectClient(client)).readExerciseSession(
+            id = id, includeSteps = true, includeDistance = false,
+            includeTotalCalories = false, includeActiveCalories = false,
+            includeWheelchairPushes = false, includeFloors = false,
+            includeElevation = false, includeSpeed = false, includePower = false,
+            includeStepsCadence = false, includeCyclingCadence = false,
+        )
+        assertThat(read!!.steps).isEqualTo(1700L)
     }
 
     // Vitals.
@@ -484,6 +510,24 @@ class HealthConnectReadMappingTest {
 
             assertThat(failure).isInstanceOf(IllegalArgumentException::class.java)
         }
+
+    @Test fun `year dashboard headline totals use the actual combined aggregate reader`() = runTest {
+        val client = seeded(
+            androidx.health.connect.client.records.StepsRecord(sessionStart, ZoneOffset.UTC, sessionEnd, ZoneOffset.UTC,
+                2400L, Metadata.manualEntry()),
+            DistanceRecord(sessionStart, ZoneOffset.UTC, sessionEnd, ZoneOffset.UTC,
+                Length.meters(1800.0), Metadata.manualEntry()),
+        )
+        val date = java.time.LocalDate.of(2026, 1, 2)
+        val query = tech.mmarca.openvitals.domain.model.DashboardQuery(date = date,
+            period = tech.mmarca.openvitals.core.period.DatePeriod(date.withDayOfYear(1), date.withMonth(12).withDayOfMonth(31)),
+            visibleMetrics = setOf(tech.mmarca.openvitals.domain.model.DashboardMetric.STEPS,
+                tech.mmarca.openvitals.domain.model.DashboardMetric.DISTANCE))
+        val result = DashboardRangeHealthReader(support(client)).read(query,
+            tech.mmarca.openvitals.domain.model.DashboardData(date = date))
+        assertThat(result.steps).isEqualTo(2400L)
+        assertThat(result.distanceMeters).isWithin(1e-6).of(1800.0)
+    }
 
     // Harness.
 

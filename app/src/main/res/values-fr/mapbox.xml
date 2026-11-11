@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="mapbox_sign_in">Se connecter à Mapbox</string>
+    <string name="mapbox_login_body">Connectez-vous dans le navigateur pour activer les cartes des entraînements. Le jeton public reste sur ce téléphone. Supprimez-le ici pour déconnecter Mapbox.</string>
+</resources>

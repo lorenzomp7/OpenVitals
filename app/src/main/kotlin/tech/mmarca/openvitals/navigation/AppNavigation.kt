@@ -1,5 +1,8 @@
 package tech.mmarca.openvitals.navigation
 
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
@@ -11,6 +14,8 @@ import androidx.compose.material.icons.outlined.SelfImprovement
 import androidx.compose.material.icons.outlined.WorkspacePremium
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.ui.draw.clip
+import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -18,6 +23,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -81,6 +87,7 @@ import tech.mmarca.openvitals.ui.components.LocalAppBarState
 import tech.mmarca.openvitals.ui.components.OpenWatchMoveNoticePrompt
 import tech.mmarca.openvitals.ui.components.PrivacyReconsentPrompt
 
+private const val NavFadeMillis = 140
 internal const val CardioLoadDetailRoute = "activity/cardio_load"
 internal const val SleepEfficiencyDetailRoute = "recovery/sleep_efficiency"
 internal const val SleepScoreDetailRoute = "recovery/sleep_score"
@@ -298,12 +305,22 @@ fun AppNavigation(
             // does not know which screen sent it.
             screenAppBar?.actions?.forEach { action ->
                 OpenVitalsIconButton(onClick = action.onClick) {
-                    Icon(
-                        imageVector = action.icon,
-                        contentDescription = stringResource(action.contentDescription),
-                        tint = action.tint
-                            ?: androidx.compose.material3.MaterialTheme.colorScheme.onSurfaceVariant,
-                    )
+                    val photo = action.image
+                    if (photo != null) {
+                        androidx.compose.foundation.Image(
+                            bitmap = photo,
+                            contentDescription = stringResource(action.contentDescription),
+                            contentScale = androidx.compose.ui.layout.ContentScale.Crop,
+                            modifier = Modifier.size(28.dp).clip(androidx.compose.foundation.shape.CircleShape),
+                        )
+                    } else {
+                        Icon(
+                            imageVector = action.icon,
+                            contentDescription = stringResource(action.contentDescription),
+                            tint = action.tint
+                                ?: androidx.compose.material3.MaterialTheme.colorScheme.onSurfaceVariant,
+                        )
+                    }
                 }
             }
             if (currentRoute == Screen.Dashboard.route) {
@@ -338,6 +355,16 @@ fun AppNavigation(
             navController = navController,
             startDestination = startDestination,
             modifier = Modifier.padding(innerPadding),
+            // One screen fades over the other, which stays whole underneath:
+            // the default scales the leaving screen down over the one behind it.
+            enterTransition = { fadeIn(tween(NavFadeMillis)) },
+            exitTransition = { fadeOut(tween(NavFadeMillis)) },
+            popEnterTransition = { fadeIn(tween(1)) },
+            popExitTransition = { fadeOut(tween(NavFadeMillis)) },
+            // The back gesture has its own pair, and its default shrinks the
+            // leaving screen to 70% over the one behind.
+            predictivePopEnterTransition = { _ -> fadeIn(tween(1)) },
+            predictivePopExitTransition = { _ -> fadeOut(tween(NavFadeMillis)) },
         ) {
             composable(Screen.Onboarding.route) {
                 val onboardingViewModel = hiltViewModel<OnboardingViewModel>()
@@ -368,7 +395,10 @@ fun AppNavigation(
                         )
                     },
                     onOpenActivities = {
-                        navController.navigate(Screen.Activity.route)
+                        val selected = dashboardViewModel.uiState.value
+                        navController.navigate(Screen.Activity.route.withSelectedDay(selected.selectedDate) +
+                            (if (selected.selectedDate == java.time.LocalDate.now()) "?" else "&") +
+                            "range=${selected.selectedRange.name}")
                     },
                     onOpenActivity = { activityId ->
                         navController.navigate(Screen.ActivityDetail.createRoute(activityId))
@@ -650,8 +680,9 @@ fun AppNavigation(
             }
 
             composable(
-                route = Screen.Activity.route + SELECTED_DAY_QUERY_PATTERN,
-                arguments = listOf(navArgument(SELECTED_DAY_ARG) { type = NavType.StringType; nullable = true; defaultValue = null }),
+                route = Screen.Activity.route + SELECTED_DAY_QUERY_PATTERN + "&range={range}",
+                arguments = listOf(navArgument(SELECTED_DAY_ARG) { type = NavType.StringType; nullable = true; defaultValue = null },
+                    navArgument("range") { type = NavType.StringType; nullable = true; defaultValue = null }),
             ) {
                 val activitiesViewModel = hiltViewModel<ActivitiesViewModel>()
                 ActivitiesScreen(

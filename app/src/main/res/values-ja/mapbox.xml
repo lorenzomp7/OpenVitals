@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="mapbox_sign_in">Mapbox にログイン</string>
+    <string name="mapbox_login_body">ブラウザでログインしてワークアウトの地図を有効にします。公開トークンはこの端末に保存されます。ここで削除すると接続を解除できます。</string>
+</resources>

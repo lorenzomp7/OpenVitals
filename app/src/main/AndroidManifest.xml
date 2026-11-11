@@ -137,8 +137,7 @@
         BLUETOOTH_ADVERTISE (API 31+) for ACTION_REQUEST_DISCOVERABLE, so the
         other phone can find this one. RFCOMM (Bluetooth Classic) is used
         deliberately over Wi-Fi: any TCP/UDP socket on Android requires the
-        INTERNET permission, which this app never declares (see the offline-only
-        block below). Bluetooth keeps the transfer peer-to-peer with no network.
+        INTERNET permission, now enabled for Mapbox cartography. Bluetooth keeps the transfer peer-to-peer with no network.
     -->
     <uses-permission
         android:name="android.permission.BLUETOOTH_ADVERTISE"
@@ -178,13 +177,11 @@
     <uses-permission android:name="app.comaps.google.permission.READ_NAVIGATION_DATA" />
     <uses-permission android:name="app.comaps.huawei.permission.READ_NAVIGATION_DATA" />
 
-    <!-- OpenVitals is offline-only. Do not inherit network permissions from dependencies. -->
+    <!-- Personal fork: network access for Mapbox cartography; no Wi-Fi access required. -->
     <uses-permission
-        android:name="android.permission.INTERNET"
-        tools:node="remove" />
+        android:name="android.permission.INTERNET" />
     <uses-permission
-        android:name="android.permission.ACCESS_NETWORK_STATE"
-        tools:node="remove" />
+        android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission
         android:name="android.permission.ACCESS_WIFI_STATE"
         tools:node="remove" />
@@ -291,10 +288,21 @@
         android:theme="@style/Theme.OpenVitals">
 
         <activity
+            android:name=".features.activity.maps.MapboxLoginActivity"
+            android:exported="false"
+            android:excludeFromRecents="true"
+            android:configChanges="orientation|screenSize" />
+
+        <activity
             android:name=".MainActivity"
             android:exported="true"
             android:launchMode="singleTop"
             android:theme="@style/Theme.OpenVitals">
+            <intent-filter>
+                <action android:name="android.intent.action.SEND" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:mimeType="image/*" />
+            </intent-filter>
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />

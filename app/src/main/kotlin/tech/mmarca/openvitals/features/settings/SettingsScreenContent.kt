@@ -71,6 +71,7 @@ internal fun LazyListScope.settingsScreenContent(
         SettingsSection.BODY_PROFILE,
         SettingsSection.RECOVERY,
         SettingsSection.CYCLE,
+        SettingsSection.SETTINGS_BACKUP,
         SettingsSection.DATA_IMPORT,
         SettingsSection.DEVICE_SYNC,
         SettingsSection.OPENWATCH,
@@ -92,13 +93,17 @@ private fun LazyListScope.settingsRootCards(actions: SettingsScreenActions, open
             }
         }
 
+    item {
+        tech.mmarca.openvitals.features.activity.maps.MapboxAccountCard(
+            modifier = Modifier.padding(horizontal = LayoutMetrics.screenGutter),
+        )
+    }
+
     item { SectionHeader(stringResource(R.string.section_support)) }
 
     item {
         SupportOpenVitalsCard(
             onOpenIssues = actions.onOpenIssues,
-            onOpenDiscussion = actions.onOpenDiscussion,
-            onOpenSupport = actions.onOpenSupport,
             modifier = Modifier.padding(horizontal = LayoutMetrics.screenGutter),
         )
     }

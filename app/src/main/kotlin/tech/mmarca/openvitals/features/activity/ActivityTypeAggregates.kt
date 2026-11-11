@@ -13,6 +13,10 @@ data class ActivityTypeAggregate(
     val totalMovingDurationMs: Long,
     val averageMovingSpeedMetersPerSecond: Double?,
     val bestSpeedMetersPerSecond: Double?,
+    val totalCaloriesKcal: Double? = null,
+    val averageHeartRateBpm: Long? = null,
+    val repetitions: Int? = null,
+
 )
 
 internal fun List<ExerciseData>.activityTypeAggregates(): List<ActivityTypeAggregate> =
@@ -43,6 +47,11 @@ internal fun List<ExerciseData>.activityTypeAggregates(): List<ActivityTypeAggre
             ActivityTypeAggregate(
                 exerciseType = exerciseType,
                 count = count,
+                totalCaloriesKcal = workouts.mapNotNull { it.activeCaloriesKcal }
+                    .takeIf { it.isNotEmpty() }?.sum(),
+                averageHeartRateBpm = workouts.mapNotNull { it.averageHeartRateBpm }
+                    .takeIf { it.isNotEmpty() }?.map { it.toDouble() }?.average()?.toLong(),
+                repetitions = workouts.sumOf { w -> w.segments.sumOf { it.repetitions } }.takeIf { it > 0 },
                 totalDistanceMeters = totalDistanceMeters,
                 totalDurationMs = totalDurationMs,
                 totalMovingDurationMs = totalMovingDurationMs,
@@ -63,3 +72,6 @@ private fun ExerciseData.averageMovingSpeedMetersPerSecond(): Double? {
         ?: return null
     return (distanceMeters / durationSeconds).takeIf { it.isFinite() && it > 0.0 }
 }
+
+/** Only sports where translating through space is meaningful get speed/distance headlines. */
+internal fun activityUsesDistance(type: Int): Boolean = type in tech.mmarca.openvitals.domain.model.distanceBasedExercises

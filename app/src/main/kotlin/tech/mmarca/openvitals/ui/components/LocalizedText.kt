@@ -42,7 +42,7 @@ fun localizedPeriodTitle(
     weekPeriodMode: WeekPeriodMode = LocalPeriodWeekMode.current,
 ): String {
     val locale = LocalLocale.current.platformLocale
-    val dateFormatter = DateTimeFormatter.ofPattern("EEE d MMM", locale)
+    val dateFormatter = DateTimeFormatter.ofPattern("EEE d MMM yyyy", locale)
     val monthFormatter = DateTimeFormatter.ofPattern("LLLL yyyy", locale)
     val yearFormatter = DateTimeFormatter.ofPattern("yyyy", locale)
 
@@ -87,7 +87,7 @@ fun localizedPeriodTitle(
 }
 
 fun localizedPeriodSubtitle(range: TimeRange, period: DatePeriod): String {
-    val dateFormatter = DateTimeFormatter.ofPattern("EEE d MMM", Locale.getDefault())
+    val dateFormatter = DateTimeFormatter.ofPattern("d MMM yyyy", Locale.getDefault())
     return when (range) {
         TimeRange.DAY -> dateFormatter.format(period.start)
         TimeRange.WEEK,

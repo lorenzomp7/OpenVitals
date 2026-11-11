@@ -49,8 +49,6 @@ fun SettingsScreen(
     val debugLogsSaveFailed = stringResource(R.string.settings_debug_logs_save_failed)
     val debugLogsShareFailed = stringResource(R.string.settings_debug_logs_share_failed)
     val privacyPolicyUrl = stringResource(R.string.settings_privacy_policy_url)
-    val discussionUrl = stringResource(R.string.settings_support_discussion_url)
-    val supportUrl = stringResource(R.string.settings_support_url)
     val openManualPermissionSettings = {
         if (!openHealthConnectPermissionSettings(context)) {
             Toast.makeText(
@@ -113,12 +111,6 @@ fun SettingsScreen(
         },
         onOpenIssues = {
             context.startActivity(CrashReportEmailActivity.createIssueReportIntent(context))
-        },
-        onOpenDiscussion = {
-            openExternalUrl(discussionUrl)
-        },
-        onOpenSupport = {
-            openExternalUrl(supportUrl)
         },
         onSaveDebugLogs = {
             debugLogSaver.launch("openvitals-diagnostics-logs.txt")

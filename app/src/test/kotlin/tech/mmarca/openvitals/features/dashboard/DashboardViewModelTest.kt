@@ -79,11 +79,19 @@ class DashboardViewModelTest {
     ) = mockk<PreferencesRepository>().also {
         every { it.acknowledgedPermissionsFor(any()) } returns emptySet()
         every { it.acknowledgePermissionsFor(any(), any()) } returns Unit
+        every { it.timeRangeFor(any()) } returns tech.mmarca.openvitals.core.period.TimeRange.DAY
+        every { it.setTimeRangeFor(any(), any()) } returns Unit
         every { it.sleepWindow } returns sleepWindow
         every { it.activityWeekMode } returns activityWeekMode
         every { it.showOpenVitalsCalculatedCalories } returns showOpenVitalsCalculatedCalories
         every { it.dailyGoalFor(any()) } answers { firstArg<MetricDailyGoalKey>().defaultValue }
         every { it.hydrationDailyGoalLiters } returns 2.0
+        every { it.dashboardWidgetSizes() } returns emptyMap()
+        every { it.dashboardDetailCounts() } returns emptyMap()
+        every { it.setDashboardDetailCounts(any()) } returns Unit
+        every { it.dashboardPagedLayout() } returns true
+        every { it.setDashboardWidgetSizes(any()) } returns Unit
+        every { it.setDashboardPagedLayout(any()) } returns Unit
         every { it.dashboardWidgetOrder() } returns null
         every { it.dashboardSortEmptyTilesLast } returns true
         every { it.setDashboardWidgetOrder(any()) } returns Unit
@@ -93,6 +101,22 @@ class DashboardViewModelTest {
         every { it.setDashboardKnownWidgetIds(any()) } returns Unit
         every { it.healthConnectSyncEnabled } returns true
         every { it.bodyEnergyCalibration() } returns BodyEnergyCalibration.Automatic
+    }
+
+    @Test fun `tile detail choice is restored saved and invalid counts are ignored`() = runTest {
+        val preferences = prefs()
+        every { preferences.dashboardDetailCounts() } returns mapOf("STEPS" to 3)
+        val loader = mockDashboardDataLoader()
+        loader.answersEveryPassWith(DashboardData(date = today, steps = 8_000))
+        val vm = dashboardViewModel(loader = loader, prefs = preferences)
+        advanceUntilIdle()
+        assertEquals(3, vm.uiState.value.widgetDetailCounts[DashboardWidgetId.STEPS])
+
+        vm.setWidgetDetailCount(DashboardWidgetId.STEPS, 2)
+        vm.setWidgetDetailCount(DashboardWidgetId.STEPS, 4)
+
+        assertEquals(2, vm.uiState.value.widgetDetailCounts[DashboardWidgetId.STEPS])
+        verify(exactly = 1) { preferences.setDashboardDetailCounts(mapOf("STEPS" to 2)) }
     }
 
     // Initial load.
@@ -719,7 +743,7 @@ class DashboardViewModelTest {
         assertNull(vm.uiState.value.error)
     }
 
-    @Test fun `a resume after the open load settles still reloads the day`() = runTest {
+    @Test fun `a resume after the open load settles reads new current-day measurements`() = runTest {
         val loader = mockDashboardDataLoader()
         var loads = 0
         coEvery { loader.loadDashboard(any<DashboardQuery>()) } coAnswers {
@@ -731,7 +755,7 @@ class DashboardViewModelTest {
         advanceUntilIdle()
         assertEquals(1, loads)
 
-        // Returning from the background must genuinely reload.
+        // The scale may have written to Health Connect while this screen was backgrounded.
         vm.resumeCurrentDay()
         advanceUntilIdle()
 
@@ -950,8 +974,8 @@ class DashboardViewModelTest {
 
         assertEquals(
             listOf(
-                DashboardWidgetId.DISTANCE,
                 DashboardWidgetId.CALORIES_OUT,
+                DashboardWidgetId.DISTANCE,
                 DashboardWidgetId.STEPS,
                 DashboardWidgetId.SLEEP,
             ),
@@ -1035,9 +1059,9 @@ class DashboardViewModelTest {
                 DashboardWidgetId.STEPS,
                 DashboardWidgetId.WEEKLY_CARDIO_LOAD,
                 DashboardWidgetId.HYDRATION,
-                DashboardWidgetId.DISTANCE,
                 DashboardWidgetId.CALORIES_OUT,
                 DashboardWidgetId.SLEEP,
+                DashboardWidgetId.DISTANCE,
             ),
             vm.uiState.value.dashboardWidgets,
         )
@@ -1448,4 +1472,17 @@ class DashboardViewModelTest {
             configure(repo)
         }
 
+    @Test fun `loading the settled date reuses the cache while explicit refresh reads again`() = runTest {
+        val loader = mockDashboardDataLoader()
+        coEvery { loader.loadDashboard(any<DashboardQuery>()) } returns DashboardData(date = today)
+        val vm = dashboardViewModel(loader, prefs())
+        advanceUntilIdle()
+        io.mockk.clearMocks(loader, answers = false)
+        vm.load(today)
+        advanceUntilIdle()
+        coVerify(exactly = 0) { loader.loadDashboard(any<DashboardQuery>()) }
+        vm.refresh()
+        advanceUntilIdle()
+        coVerify(atLeast = 1) { loader.loadDashboard(any<DashboardQuery>()) }
+    }
 }

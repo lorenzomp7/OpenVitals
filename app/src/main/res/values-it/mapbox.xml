@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="mapbox_sign_in">Accedi a Mapbox</string>
+    <string name="mapbox_login_body">Accedi dal browser per attivare le mappe degli allenamenti. Il token pubblico rimane su questo telefono. Rimuovilo qui per scollegare Mapbox.</string>
+</resources>

@@ -5,6 +5,9 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.size
+import androidx.compose.ui.text.style.TextOverflow
+import tech.mmarca.openvitals.ui.components.AutoResizeText
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.CalendarMonth
 import androidx.compose.material.icons.outlined.ChevronLeft
@@ -36,8 +39,9 @@ fun PeriodNavigator(
     modifier: Modifier = Modifier,
     weekPeriodMode: WeekPeriodMode = WeekPeriodMode.MONDAY_TO_SUNDAY,
 ) {
+    Column(modifier = modifier.fillMaxWidth()) {
     Row(
-        modifier = modifier.fillMaxWidth(),
+        modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.spacedBy(12.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
@@ -51,7 +55,8 @@ fun PeriodNavigator(
                 )
                 .clickable(onClick = onOpenCalendar),
         ) {
-            Text(
+            AutoResizeText(
+                maxLines = 1,
                 text = title ?: localizedPeriodTitle(selectedRange, period, weekPeriodMode = weekPeriodMode),
                 style = MaterialTheme.typography.titleLarge,
                 textAlign = TextAlign.Start,
@@ -65,15 +70,19 @@ fun PeriodNavigator(
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     textAlign = TextAlign.Start,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
                 )
             }
         }
 
+    }
         Row(
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            modifier = Modifier.align(Alignment.End),
+            horizontalArrangement = Arrangement.spacedBy(4.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            OpenVitalsIconSurfaceButton(onClick = onPreviousPeriod) {
+            OpenVitalsIconSurfaceButton(onClick = onPreviousPeriod, modifier = Modifier.size(40.dp)) {
                 Icon(
                     imageVector = Icons.Outlined.ChevronLeft,
                     contentDescription = stringResource(R.string.cd_previous_period),
@@ -83,6 +92,7 @@ fun PeriodNavigator(
             OpenVitalsIconSurfaceButton(
                 onClick = onNextPeriod,
                 enabled = canGoForward,
+                modifier = Modifier.size(40.dp),
             ) {
                 Icon(
                     imageVector = Icons.Outlined.ChevronRight,
@@ -90,7 +100,7 @@ fun PeriodNavigator(
                 )
             }
 
-            OpenVitalsIconSurfaceButton(onClick = onOpenCalendar) {
+            OpenVitalsIconSurfaceButton(onClick = onOpenCalendar, modifier = Modifier.size(40.dp)) {
                 Icon(
                     imageVector = Icons.Outlined.CalendarMonth,
                     contentDescription = stringResource(R.string.cd_open_calendar),

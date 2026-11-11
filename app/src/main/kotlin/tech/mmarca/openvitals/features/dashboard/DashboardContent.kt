@@ -45,6 +45,7 @@ internal fun dashboardVisibleWidgetIds(
         .filter { it in specIds }
         // While editing, an unsupported metric the user never placed goes to the tray.
         .filterNot { isEditingDashboard && it in display.unsupportedIds && it !in placedWidgetIds }
+    if (placedWidgetIds.isNotEmpty()) return ordered
     if (isEditingDashboard || !sortEmptyTilesLast) return ordered
     val fixed = dashboardWidgetIdsThatFitRows(ordered, DashboardFixedWidgetRows).toSet()
     val rest = ordered.filterNot { it in fixed }
@@ -70,7 +71,7 @@ internal fun dashboardTrayWidgetIds(
 internal fun dashboardActivitiesForDay(data: DashboardData): List<ExerciseData> =
     data.workouts.ifEmpty { data.workout?.let(::listOf).orEmpty() }
 
-private val DashboardScrollTopPadding = 4.dp
+private val DashboardScrollTopPadding = 0.dp
 private val DashboardScrollBottomPadding = 24.dp
 private val DashboardQuickActionsTopPadding = 14.dp
 
@@ -80,6 +81,12 @@ internal fun DashboardContent(
     /** The day the user asked for, ahead of [data] while a switch loads. */
     selectedDate: LocalDate = data.date,
     display: DashboardDisplayState,
+    /** The workouts of the days before [data]'s, newest first, listed under the day's own. */
+    earlierWorkouts: List<ExerciseData> = emptyList(),
+    historyState: DashboardWorkoutHistoryState? = null,
+    periodState: DashboardUiState? = null,
+    onSelectRange: (tech.mmarca.openvitals.core.period.TimeRange) -> Unit = {},
+    onLoadMoreWorkouts: () -> Unit = {},
     unitFormatter: UnitFormatter,
     dateTimeFormatterProvider: DateTimeFormatterProvider,
     canGoForward: Boolean,
@@ -95,6 +102,12 @@ internal fun DashboardContent(
     onOpenCalendar: () -> Unit,
     onMoveWidgetToTarget: (DashboardWidgetId, DashboardWidgetId) -> Unit,
     onRemoveWidget: (DashboardWidgetId) -> Unit,
+    widgetSizes: Map<DashboardWidgetId, Int> = emptyMap(),
+    widgetDetailCounts: Map<DashboardWidgetId, Int> = emptyMap(),
+    onSetWidgetDetailCount: (DashboardWidgetId, Int) -> Unit = { _, _ -> },
+    pagedLayout: Boolean = false,
+    onSetWidgetSize: (DashboardWidgetId, Int) -> Unit = { _, _ -> },
+    onSetPagedLayout: (Boolean) -> Unit = {},
     onAddWidget: (DashboardWidgetId) -> Unit,
     onOpenMetric: (DashboardWidgetId) -> Unit,
     onSyncWatch: () -> Unit = {},
@@ -118,7 +131,10 @@ internal fun DashboardContent(
     }
     // While a switch loads, the tiles read "loading" rather than the old day's numbers.
     // Ordering keeps the old day's partition until the new day lands.
-    val awaitingSelectedDay = data.date != selectedDate
+    val awaitingSelectedDay = data.date != selectedDate ||
+        (periodState != null && data.period != periodState.dashboardPeriod().takeIf {
+            periodState.selectedRange != tech.mmarca.openvitals.core.period.TimeRange.DAY
+        })
     val widgetDisplay = remember(display, awaitingSelectedDay) {
         if (awaitingSelectedDay) {
             display.copy(
@@ -129,6 +145,7 @@ internal fun DashboardContent(
         }
     }
     val specs = dashboardWidgetSpecs(
+        detailCounts = widgetDetailCounts,
         display = widgetDisplay,
         unitFormatter = unitFormatter,
         widgetIds = specWidgetIds,
@@ -197,7 +214,14 @@ internal fun DashboardContent(
             ) {
                 // Explicit keys, or a change above re-creates every sibling below.
                 item(key = "day_navigator") {
-                    DayNavigator(
+                    if (periodState != null) DashboardPeriodSelector(
+                        state = periodState,
+                        onSelectRange = onSelectRange,
+                        onPrevious = onPreviousDay,
+                        onNext = onNextDay,
+                        onOpenCalendar = onOpenCalendar,
+                        modifier = Modifier.padding(horizontal = DashboardScreenPadding),
+                    ) else DayNavigator(
                         date = selectedDate,
                         canGoForward = canGoForward,
                         onPreviousDay = onPreviousDay,
@@ -219,6 +243,11 @@ internal fun DashboardContent(
                             isEditingDashboard = isEditingDashboard,
                             onMoveWidgetToTarget = onMoveWidgetToTarget,
                             onRemoveWidget = onRemoveWidget,
+                            widgetSizes = widgetSizes,
+                            onSetWidgetDetailCount = onSetWidgetDetailCount,
+                            pagedLayout = pagedLayout,
+                            onSetWidgetSize = onSetWidgetSize,
+                            onSetPagedLayout = onSetPagedLayout,
                             actionContent = {
                                 DashboardQuickActions(
                                     isEditingDashboard = isEditingDashboard,
@@ -248,8 +277,16 @@ internal fun DashboardContent(
                 // The sensor-status card is absent: the top-bar battery action is the entry point.
 
                 dashboardActivitiesToday(
+                    selectedDate = data.date,
                     // The old day's workouts must not sit under the new day's date.
-                    workouts = if (awaitingSelectedDay) emptyList() else dashboardActivitiesForDay(data),
+                    workouts = if (awaitingSelectedDay) {
+                        emptyList()
+                    } else {
+                        // The selected day first, then back through the days before it.
+                        val ofDay = dashboardActivitiesForDay(data)
+                        val shown = ofDay.map { it.id }.toSet()
+                        ofDay + earlierWorkouts.filterNot { it.id in shown }
+                    },
                     isLoading = awaitingSelectedDay,
                     zone = zone,
                     unitFormatter = unitFormatter,
@@ -260,6 +297,11 @@ internal fun DashboardContent(
                     onRequestDeleteActivity = { workout -> activityPendingDelete = workout },
                 )
 
+                if (historyState != null && !awaitingSelectedDay) {
+                    item(key = "activity_history_control") {
+                        DashboardWorkoutHistoryControl(historyState, onLoadMoreWorkouts)
+                    }
+                }
                 item(key = "bottom_spacer") { Spacer(Modifier.height(10.dp)) }
             }
         }

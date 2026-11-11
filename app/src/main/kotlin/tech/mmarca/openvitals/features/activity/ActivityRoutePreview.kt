@@ -1,6 +1,8 @@
 package tech.mmarca.openvitals.features.activity
 
-import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.layout.Box
+import androidx.compose.ui.draw.drawWithCache
+import androidx.compose.ui.graphics.Path
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -21,56 +23,41 @@ internal fun RoutePreview(
     val routeGeometry = remember(points, routeBreakIndexes) {
         points.toRoutePreviewGeometry(routeBreakIndexes)
     }
-    val routeColor = WorkoutColor
-    val startColor = androidx.compose.material3.MaterialTheme.colorScheme.primary
-    val endColor = androidx.compose.material3.MaterialTheme.colorScheme.tertiary
+    val routeColor = androidx.compose.ui.graphics.Color(0xFF29B6F6)
+    val startColor = androidx.compose.ui.graphics.Color(0xFF22C55E)
+    val endColor = androidx.compose.ui.graphics.Color(0xFFEF4444)
     val backgroundColor = androidx.compose.material3.MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.35f)
     val borderColor = androidx.compose.material3.MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.7f)
 
-    Canvas(modifier = modifier) {
-        val corner = 10.dp.toPx()
-        drawRoundRect(
-            color = backgroundColor,
-            cornerRadius = CornerRadius(corner, corner),
-        )
-
+    Box(modifier = modifier.drawWithCache {
         val padding = 18.dp.toPx()
         val drawWidth = size.width - padding * 2
         val drawHeight = size.height - padding * 2
-        if (drawWidth <= 0f || drawHeight <= 0f || routeGeometry.points.isEmpty()) return@Canvas
-
-        fun project(point: ExerciseRoutePoint): Offset {
-            val x = padding + (((point.longitude - routeGeometry.minLongitude) / routeGeometry.longitudeSpan).toFloat() * drawWidth)
-            val y = padding + (((routeGeometry.maxLatitude - point.latitude) / routeGeometry.latitudeSpan).toFloat() * drawHeight)
-            return Offset(x, y)
+        if (drawWidth <= 0f || drawHeight <= 0f || routeGeometry.points.isEmpty()) {
+            return@drawWithCache onDrawBehind { }
         }
-
-        val projectedSegments = routeGeometry.segments.map { segment -> segment.map(::project) }
-        projectedSegments.forEach { projected ->
-            projected.zipWithNext().forEach { (start, end) ->
-                drawLine(
-                    color = routeColor,
-                    start = start,
-                    end = end,
-                    strokeWidth = 4.dp.toPx(),
-                    cap = StrokeCap.Round,
-                )
-            }
-        }
-
-        val markerRadius = 6.dp.toPx()
-        projectedSegments.firstOrNull()?.firstOrNull()?.let { start ->
-            drawCircle(color = startColor, radius = markerRadius, center = start)
-        }
-        projectedSegments.lastOrNull()?.lastOrNull()?.let { end ->
-            drawCircle(color = endColor, radius = markerRadius, center = end)
-        }
-        drawRoundRect(
-            color = borderColor,
-            style = Stroke(width = 1.dp.toPx()),
-            cornerRadius = CornerRadius(corner, corner),
+        fun project(point: ExerciseRoutePoint): Offset = Offset(
+            padding + ((point.longitude - routeGeometry.minLongitude) / routeGeometry.longitudeSpan).toFloat() * drawWidth,
+            padding + ((routeGeometry.maxLatitude - point.latitude) / routeGeometry.latitudeSpan).toFloat() * drawHeight,
         )
-    }
+        val projected = routeGeometry.segments.map { segment -> segment.map(::project) }
+        val paths = projected.map { segment -> Path().apply {
+            segment.forEachIndexed { index, point ->
+                if (index == 0) moveTo(point.x, point.y) else lineTo(point.x, point.y)
+            }
+        } }
+        val corner = CornerRadius(10.dp.toPx(), 10.dp.toPx())
+        val lineStyle = Stroke(width = 4.dp.toPx(), cap = StrokeCap.Round)
+        val borderStyle = Stroke(width = 1.dp.toPx())
+        val markerRadius = 6.dp.toPx()
+        onDrawBehind {
+            drawRoundRect(color = backgroundColor, cornerRadius = corner)
+            paths.forEach { drawPath(it, routeColor, style = lineStyle) }
+            projected.firstOrNull()?.firstOrNull()?.let { drawCircle(startColor, markerRadius, it) }
+            projected.lastOrNull()?.lastOrNull()?.let { drawCircle(endColor, markerRadius, it) }
+            drawRoundRect(color = borderColor, style = borderStyle, cornerRadius = corner)
+        }
+    })
 }
 
 private data class RoutePreviewGeometry(

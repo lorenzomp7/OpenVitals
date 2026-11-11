@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="mapbox_sign_in">Přihlásit se k Mapbox</string>
+    <string name="mapbox_login_body">Přihlaste se v prohlížeči a aktivujte mapy tréninků. Veřejný token zůstane v tomto telefonu. Odebráním tokenu zde Mapbox odpojíte.</string>
+</resources>

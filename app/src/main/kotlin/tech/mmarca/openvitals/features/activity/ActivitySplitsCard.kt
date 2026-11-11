@@ -19,6 +19,11 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.material3.TextButton
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -51,7 +56,9 @@ internal fun ActivitySplitsCard(
     fastestPaceSeconds: Double?,
     unitFormatter: UnitFormatter,
     modifier: Modifier = Modifier,
+    useSpeed: Boolean = false,
 ) {
+    var expanded by rememberSaveable { mutableStateOf(false) }
     val rows = splits.splits
     if (rows.isEmpty()) return
 
@@ -105,17 +112,21 @@ internal fun ActivitySplitsCard(
                 )
             }
             Spacer(Modifier.height(12.dp))
-            rows.forEach { split ->
+            rows.take(if (expanded) rows.size else 3).forEach { split ->
                 SplitRow(
                     split = split,
+                    useSpeed = useSpeed,
                     unitFormatter = unitFormatter,
                     unitMeters = unitMeters,
                     slowestPaceSeconds = slowestPaceSeconds,
                     fastestPaceSeconds = fastestPaceSeconds,
                     // The estimated source gives every split the same pace; no bar.
-                    showBar = splits.source != SplitSource.ESTIMATED,
+                    showBar = splits.source != SplitSource.ESTIMATED && !useSpeed,
                 )
                 Spacer(Modifier.height(10.dp))
+            }
+            if (rows.size > 3) TextButton(onClick = { expanded = !expanded }) {
+                Text(if (expanded) stringResource(R.string.action_show_less) else stringResource(R.string.action_show_more))
             }
         }
     }
@@ -124,6 +135,7 @@ internal fun ActivitySplitsCard(
 @Composable
 private fun SplitRow(
     split: ActivitySplit,
+    useSpeed: Boolean,
     unitFormatter: UnitFormatter,
     unitMeters: Double,
     slowestPaceSeconds: Double?,
@@ -133,7 +145,8 @@ private fun SplitRow(
     val muted = MaterialTheme.typography.bodySmall
     val mutedColor = MaterialTheme.colorScheme.onSurfaceVariant
 
-    val pace = unitFormatter.averagePace(split.distanceMeters, split.elapsedMs)
+    val pace = if (useSpeed) unitFormatter.speed(split.distanceMeters / (split.elapsedMs / 1000.0).coerceAtLeast(0.001))
+        else unitFormatter.averagePace(split.distanceMeters, split.elapsedMs)
     val delta = split.paceDeltaSecondsPerUnit(unitMeters)
 
     // A partial split is short on purpose; say so.
@@ -184,7 +197,7 @@ private fun SplitRow(
         }
         Spacer(Modifier.height(4.dp))
         Text(
-            text = splitDetailLine(split, delta, unitFormatter),
+            text = splitDetailLine(split, delta.takeUnless { useSpeed }, unitFormatter),
             style = muted,
             color = mutedColor,
             modifier = Modifier.padding(start = 24.dp),

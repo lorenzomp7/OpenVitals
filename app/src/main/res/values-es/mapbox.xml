@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="mapbox_sign_in">Iniciar sesión en Mapbox</string>
+    <string name="mapbox_login_body">Inicia sesión en el navegador para activar los mapas de entrenamientos. El token público permanece en este teléfono. Elimínalo aquí para desconectar Mapbox.</string>
+</resources>

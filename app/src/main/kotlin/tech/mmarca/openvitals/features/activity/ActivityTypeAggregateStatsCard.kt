@@ -116,6 +116,21 @@ private fun ActivityTypeAggregateRow(
                 )
             }
         }
+        if (!activityUsesDistance(aggregate.exerciseType)) {
+            val values = listOfNotNull(
+                stringResource(R.string.stat_time) to DisplayValue(unitFormatter.duration(aggregate.totalDurationMs), ""),
+                stringResource(R.string.stat_average_duration) to DisplayValue(unitFormatter.duration(aggregate.totalDurationMs / aggregate.count.coerceAtLeast(1)), ""),
+                aggregate.totalCaloriesKcal?.let { stringResource(R.string.metric_active_calories) to unitFormatter.energy(it) },
+                aggregate.averageHeartRateBpm?.let { stringResource(R.string.metric_avg_heart_rate) to DisplayValue(it.toString(), "bpm") },
+                aggregate.repetitions?.let { stringResource(R.string.detail_repetitions) to DisplayValue(it.toString(), "") },
+            )
+            values.chunked(2).forEach { pair ->
+                Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+                    pair.forEach { (label, value) -> AggregateMetric(label, value, Modifier.weight(1f)) }
+                    if (pair.size == 1) Spacer(Modifier.weight(1f))
+                }
+            }
+        } else {
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(16.dp),
@@ -172,6 +187,7 @@ private fun ActivityTypeAggregateRow(
                 },
                 modifier = Modifier.weight(1f),
             )
+        }
         }
     }
 }

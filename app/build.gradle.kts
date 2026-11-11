@@ -38,6 +38,10 @@ val hasReleaseSigning = listOf(
 ).all { !it.isNullOrBlank() }
 
 val signDebugWithReleaseKey = System.getenv("OPENVITALS_SIGN_DEBUG_WITH_RELEASE_KEY") == "true"
+require(!signDebugWithReleaseKey || hasReleaseSigning) {
+    "An explicitly signed debug APK requires a complete persistent signing configuration."
+}
+
 // The release pipeline publishes a debug APK: not debuggable, since it is
 // public, but not run through R8 either. It was until 2026-10, to match the
 // release build's size and shape; that second R8 pass was six minutes of
@@ -102,6 +106,7 @@ android {
 
     defaultConfig {
         applicationId = "tech.mmarca.openvitals"
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         minSdk = 26
         targetSdk = 36
         versionCode = versionCodeOverride.orElse(baseVersionCode).get()
@@ -303,6 +308,8 @@ dependencies {
     implementation(libs.kotlinx.serialization.json)
     // Reads the QR code of a SMART Health Card from an image or a PDF page.
     implementation(libs.zxing.core)
+    // Bundled Latin OCR: no model download or screenshot upload.
+    implementation("com.google.mlkit:text-recognition:16.0.1")
     // The live preview and frames for scanning a SMART Health Card with the camera.
     implementation(libs.androidx.camera.camera2)
     implementation(libs.androidx.camera.lifecycle)
@@ -324,6 +331,7 @@ dependencies {
 
     // Offline maps
     implementation(libs.maplibre.android.sdk)
+    implementation("com.mapbox.maps:android-ndk27:11.34.2")
     implementation(libs.mapsforge.map.android)
     implementation(libs.mapsforge.themes)
 

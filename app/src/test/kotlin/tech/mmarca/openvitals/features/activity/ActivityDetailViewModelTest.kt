@@ -217,7 +217,9 @@ class ActivityDetailViewModelTest {
         val vm = activityDetailViewModel(repo, "activity-1")
 
         // The cadence read used to wait for the speed read to finish.
-        assertTrue(vm.uiState.value.isLoading)
+        // The session is usable while its optional chart reads are still in flight.
+        assertFalse(vm.uiState.value.isLoading)
+        assertEquals("activity-1", vm.uiState.value.workout?.id)
         coVerify(exactly = 1) { repo.loadActivityCadenceSamples(any(), any()) }
 
         speedRead.complete(emptyList())

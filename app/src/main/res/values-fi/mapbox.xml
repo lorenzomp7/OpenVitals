@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="mapbox_sign_in">Kirjaudu Mapboxiin</string>
+    <string name="mapbox_login_body">Ota harjoituskartat käyttöön kirjautumalla selaimessa. Julkinen karttatunniste säilyy tässä puhelimessa. Poista se tässä katkaistaksesi yhteyden.</string>
+</resources>

@@ -7,9 +7,10 @@
 # GITHUB_TOKEN would open the PR too, but PRs it creates do not trigger the
 # pull_request CI workflows.
 name: Weblate pull request
+# Personal fork: run only on explicit request.
 on:
-  push:
-    branches: [weblate-translations]
+  workflow_dispatch:
+
 permissions:
   contents: read
   pull-requests: write

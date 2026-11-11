@@ -1,6 +1,7 @@
 package tech.mmarca.openvitals.features.dashboard
 
 import android.widget.Toast
+import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -11,6 +12,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.BatteryChargingFull
+import androidx.compose.material.icons.outlined.AccountCircle
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -53,6 +55,7 @@ fun DashboardScreen(
     // Seeded from the flow's current value: a placeholder frame on return would
     // reset the carousel page and scroll position.
     val state by viewModel.uiState.collectAsStateWithLifecycle()
+    val history by viewModel.workoutHistory.collectAsStateWithLifecycle()
     val isLoading = state.isLoading
     val error = state.error
     val display = state.display
@@ -76,9 +79,7 @@ fun DashboardScreen(
         viewModel.resumeCurrentDay()
     }
     androidx.compose.runtime.LaunchedEffect(refreshRequest) {
-        if (refreshRequest > 0) {
-            viewModel.refresh()
-        }
+        viewModel.onRefreshRequest(refreshRequest)
     }
     val context = LocalContext.current
     val errorMessage = error?.resolve()
@@ -90,23 +91,29 @@ fun DashboardScreen(
         }
     }
     val currentOnOpenDeviceStatus by rememberUpdatedState(onOpenDeviceStatus)
+    var showUserProfile by remember { mutableStateOf(false) }
+    val profileViewModel: tech.mmarca.openvitals.features.settings.UserProfileViewModel = androidx.hilt.navigation.compose.hiltViewModel()
+    val profile by profileViewModel.state.collectAsStateWithLifecycle()
+    val profilePhoto = remember(profile.photo) { profile.photo?.let { it.asImageBitmap() } }
     DeclareAppBar(
-        remember(state.sensorStatus.hasDevices) {
-            if (!state.sensorStatus.hasDevices) {
-                ScreenAppBar()
-            } else {
+        remember(state.sensorStatus.hasDevices, profilePhoto) {
                 ScreenAppBar(
-                    actions = listOf(
+                    actions = buildList {
+                        if (state.sensorStatus.hasDevices) add(
                         AppBarAction(
                             icon = Icons.Outlined.BatteryChargingFull,
                             contentDescription = R.string.cd_sensor_battery_status,
                             onClick = { currentOnOpenDeviceStatus() },
-                        ),
-                    ),
+                        ))
+                        add(AppBarAction(Icons.Outlined.AccountCircle, R.string.user_profile_title, image = profilePhoto) { showUserProfile = true })
+                    },
                 )
-            }
         },
     )
+
+    if (showUserProfile) {
+        tech.mmarca.openvitals.features.settings.UserProfileDialog(onDismiss = { showUserProfile = false }, viewModel = profileViewModel)
+    }
 
     WithHealthConnectFeatureScreen(
         feature = HealthConnectFeature.DASHBOARD,
@@ -134,11 +141,20 @@ fun DashboardScreen(
                     ErrorMessage(error?.resolve() ?: stringResource(R.string.unknown_error))
                 loadedData != null -> DashboardContent(
                     data = loadedData,
+                    earlierWorkouts = history.workouts.takeIf { history.date == loadedData.date && state.selectedRange == tech.mmarca.openvitals.core.period.TimeRange.DAY }.orEmpty(),
+                    historyState = history.takeIf { it.date == selectedDate && state.selectedRange == tech.mmarca.openvitals.core.period.TimeRange.DAY },
+                    periodState = state,
+                    onSelectRange = viewModel::selectRange,
+                    onLoadMoreWorkouts = {
+                        if (history.error == tech.mmarca.openvitals.core.presentation.ScreenError.PermissionDenied) {
+                            permissionLauncher.launch(viewModel.workoutHistoryPermissions)
+                        } else viewModel.loadMoreWorkouts()
+                    },
                     selectedDate = selectedDate,
                     display = display,
                     unitFormatter = unitFormatter,
                     dateTimeFormatterProvider = dateTimeFormatterProvider,
-                    canGoForward = selectedDate.isBefore(LocalDate.now()),
+                    canGoForward = state.canAdvancePeriod(),
                     isRefreshing = state.isRefreshing && !pullRefreshRequested,
                     syncPaused = hcUx.syncPaused,
                     // Rate-limited is not "no data": the banner counts down to the retry.
@@ -151,6 +167,12 @@ fun DashboardScreen(
                     onOpenCalendar = { showDatePicker = true },
                     onMoveWidgetToTarget = viewModel::moveDashboardWidgetToTarget,
                     onRemoveWidget = viewModel::removeDashboardWidget,
+                    widgetSizes = state.widgetSizes,
+                    widgetDetailCounts = state.widgetDetailCounts,
+                    onSetWidgetDetailCount = viewModel::setWidgetDetailCount,
+                    pagedLayout = state.pagedLayout,
+                    onSetWidgetSize = viewModel::setWidgetSize,
+                    onSetPagedLayout = viewModel::setPagedLayout,
                     onAddWidget = viewModel::addDashboardWidget,
                     // The OpenWatch tile opens OpenWatch, not a metric screen.
                     onOpenMetric = { id ->

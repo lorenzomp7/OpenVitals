@@ -158,6 +158,46 @@ internal fun dashboardWidgetSpecs(
     isEditingDashboard: Boolean,
     onOpenMetric: (DashboardWidgetId) -> Unit,
     onSyncWatch: () -> Unit = {},
+    detailCounts: Map<DashboardWidgetId, Int> = emptyMap(),
+): List<DashboardWidgetSpec> = dashboardWidgetSpecsWithoutHero(
+    display = display,
+    unitFormatter = unitFormatter,
+    widgetIds = widgetIds,
+    isEditingDashboard = isEditingDashboard,
+    onOpenMetric = onOpenMetric,
+    onSyncWatch = onSyncWatch,
+).map { spec ->
+    val model = display.widgets[spec.id]
+    val details = model?.let { dashboardWidgetDetails(it, display, unitFormatter) }.orEmpty()
+    spec.copy(
+        details = details,
+        detailCount = detailCounts[spec.id] ?: 2,
+        trailing = model?.openWatch?.takeIf { it.deviceId != null }?.let { watch ->
+            { WatchSyncButton(watch.isSyncing, if (isEditingDashboard) null else onSyncWatch) }
+        },
+        hero = display.widgets[spec.id]?.toHeroRing(
+            title = spec.title,
+            accentColor = dashboardWidgetMeta(spec.id).accentColor,
+            icon = dashboardWidgetMeta(spec.id).icon,
+            onClick = if (isEditingDashboard) null else ({ onOpenMetric(spec.id) }),
+        )?.let { ring ->
+            when {
+                model?.cycle != null -> ring.copy(value = model.cycle.toDisplayValue(unitFormatter).text)
+                spec.id == DashboardWidgetId.MEDICAL_RECORDS -> ring.copy(value = stringResource(R.string.medical_records_tile_browse))
+                else -> ring
+            }
+        },
+    )
+}
+
+@Composable
+private fun dashboardWidgetSpecsWithoutHero(
+    display: DashboardDisplayState,
+    unitFormatter: UnitFormatter,
+    widgetIds: Collection<DashboardWidgetId>,
+    isEditingDashboard: Boolean,
+    onOpenMetric: (DashboardWidgetId) -> Unit,
+    onSyncWatch: () -> Unit = {},
 ): List<DashboardWidgetSpec> = buildList {
     val loadingMessage = stringResource(R.string.loading)
     val openMetric: (DashboardWidgetId) -> (() -> Unit)? = { widgetId ->
@@ -375,7 +415,7 @@ private fun CycleWidgetDisplay.toDisplayValue(unitFormatter: UnitFormatter): Dis
     }
 
 @Composable
-private fun dashboardWidgetTitle(widgetId: DashboardWidgetId): String =
+internal fun dashboardWidgetTitle(widgetId: DashboardWidgetId): String =
     stringResource(
         when (widgetId) {
             DashboardWidgetId.STEPS -> R.string.metric_steps
@@ -583,18 +623,6 @@ internal fun MutableList<DashboardWidgetSpec>.addOptionalMetric(
         }
     )
 }
-
-enum class DashboardWidgetStyle {
-    PILL,
-    CIRCLE,
-}
-
-internal data class DashboardWidgetSpec(
-    val id: DashboardWidgetId,
-    val title: String,
-    val style: DashboardWidgetStyle = DashboardWidgetStyle.PILL,
-    val content: @Composable (Modifier) -> Unit,
-)
 
 internal data class DashboardWidgetProgress(
     val fraction: Float,

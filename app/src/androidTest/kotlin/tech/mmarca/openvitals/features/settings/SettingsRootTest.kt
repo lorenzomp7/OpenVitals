@@ -48,18 +48,13 @@ class SettingsRootTest {
     }
 
     @Test
-    fun theSupportCardOffersItsThreeRoutesOut() {
-        // Each button must reach its own handler. An earlier version never read these counters.
+    fun theSupportCardOpensThePersonalIssueTracker() {
         var issues = 0
-        var discussion = 0
-        var support = 0
         composeRule.setContent {
             OpenVitalsTheme {
                 Column(Modifier.verticalScroll(rememberScrollState())) {
                     SupportOpenVitalsCard(
                         onOpenIssues = { issues++ },
-                        onOpenDiscussion = { discussion++ },
-                        onOpenSupport = { support++ },
                     )
                 }
             }
@@ -69,15 +64,8 @@ class SettingsRootTest {
 
         composeRule.onNodeWithText(string(R.string.settings_support_issues_action))
             .performScrollTo().performClick()
-        composeRule.onNodeWithText(string(R.string.settings_support_discussion_action))
-            .performScrollTo().performClick()
-        composeRule.onNodeWithText(string(R.string.settings_support_action))
-            .performScrollTo().performClick()
 
-        // Each handler exactly once, so two buttons wired to one lambda fail.
         assertEquals(1, issues)
-        assertEquals(1, discussion)
-        assertEquals(1, support)
     }
 
     @Test

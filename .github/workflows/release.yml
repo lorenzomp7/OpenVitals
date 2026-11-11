@@ -29,15 +29,12 @@
 # hand to each other as the release-context artifact.
 name: release
 
+# Personal fork: automatic store publishing and announcements are disabled.
 on:
-  schedule:
-    - cron: "0 0 * * *"
-  push:
-    tags: ["v*", "V*"]
   workflow_dispatch:
     inputs:
       target:
-        description: "nightly publishes a nightly build; production ships the vX.Y.Z tag this run is started from, from its prerelease's AAB"
+        description: 'Manual release target; requires release and publishing secrets'
         type: choice
         options: [nightly, production]
         default: nightly

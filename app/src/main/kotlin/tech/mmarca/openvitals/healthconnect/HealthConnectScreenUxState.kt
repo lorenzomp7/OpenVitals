@@ -34,7 +34,9 @@ fun buildHealthConnectScreenUxState(
     rateLimitDeadlineEpochMillis: Long? = null,
 ): HealthConnectScreenUxState {
     val required = feature.requiredReadPermissions(manager)
-    val missing = required - grantedPermissions
+    // A read screen never needs a write grant: the planned-exercise write
+    // permission rides in the activity set and would keep the prompt up forever.
+    val missing = (required - grantedPermissions).filterNot { ".WRITE_" in it }.toSet()
     val gateRequired = when {
         feature == HealthConnectFeature.DASHBOARD -> emptySet()
         feature == HealthConnectFeature.DATA_IMPORT -> required

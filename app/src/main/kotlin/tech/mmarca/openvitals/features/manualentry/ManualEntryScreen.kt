@@ -1,6 +1,8 @@
 package tech.mmarca.openvitals.features.manualentry
 
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.lazy.LazyColumn
@@ -132,7 +134,12 @@ fun ManualEntryScreen(
     }
 
     LazyColumn(contentPadding = PaddingValues(vertical = 8.dp)) {
-        item {
+        item(key = "screenshot_import") {
+                tech.mmarca.openvitals.features.imports.screenshot.ScreenshotImportCard(
+                    modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+                )
+            }
+            item {
             ManualEntryWidgetGrid(
                 visibleIds = visibleIds,
                 specsById = specsById,

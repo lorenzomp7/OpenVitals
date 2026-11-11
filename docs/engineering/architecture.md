@@ -6,6 +6,18 @@ This document describes the architecture of OpenVitals as it exists today, plus 
 
 The repo now has one Android app module for the local app. The goal is to keep boundaries clear enough that new metrics can be added without copying screen scaffolding, period math, or Health Connect plumbing everywhere, while keeping code app-local until there is a concrete need for a new module.
 
+## Personal development branch
+
+`main_chatgpt` consolidates dashboard sizing, migrated layout preferences and progressive workout history. See [personal build](personal-build.md). `DashboardWorkoutHistory` owns bounded history pagination; both the editor and display use `DashboardPlacedTileGrid`.
+
+## Personal fork map exception
+
+Saved workout route cards use `features/activity/maps/ActivityMapboxMap.kt` and Mapbox cartography after an on-device Mapbox login. OAuth and encrypted token storage live in the same `features/activity/maps` package; GitHub builds contain no personal map token. Internet access is enabled for this feature. Route samples remain local and the existing preview is the fallback. See [Mapbox configuration](mapbox.md).
+
+## Screenshot import
+
+`features/imports/screenshot/` runs bundled ML Kit Latin OCR locally from Data Import settings. It suggests explicit-unit values and labelled workout durations; users edit/remove them and confirm local timestamps before writing. Filename timestamps prefill capture time (not guaranteed measurement time); a duration suggests a start time before capture. Missing or invalid filenames leave times blank. MainActivity accepts single image ACTION_SEND shares and opens the same review dialog inside AppLockGate, preserving a pending URI across recreation. A confirmed duration writes an ExerciseSessionRecord and must match the confirmed interval. Workout labels are recognized using existing Italian, English and current-locale exercise names; the review provides a type selector, and an unrecognized type requires a selection before saving. `healthconnect/ScreenshotRecords.kt` maps confirmed values to records; writes use `AppleHealthImportRepository` and stable IDs. No image or OCR text is uploaded or persisted. Calories mean total burned, bpm means an individual reading; averages and unsupported metrics must be removed. Existing records from other apps are not automatically deduplicated.
+
 ## Current Snapshot
 
 - App namespace: `tech.mmarca.openvitals`
@@ -296,6 +308,7 @@ Current feature packages:
 - [`features/readiness`](../../app/src/main/kotlin/tech/mmarca/openvitals/features/readiness)
 - [`features/recovery`](../../app/src/main/kotlin/tech/mmarca/openvitals/features/recovery)
 - [`features/settings`](../../app/src/main/kotlin/tech/mmarca/openvitals/features/settings)
+  - Settings backup uses a versioned typed JSON document through Android document pickers. `SettingsBackupRepository` validates the complete file before replacing allowlisted preference groups, rolls back failed commits, and refreshes cached preferences and reminder/widget schedules. It includes display, dashboard and recording layouts, per-tile detail counts, goals, profile name/age/photo, cycle, sensor and import defaults; credentials, permission state, ongoing recordings, health records and offline map files remain device-local.
 - [`features/workoutplans`](../../app/src/main/kotlin/tech/mmarca/openvitals/features/workoutplans) — plan list/builder; `WorkoutPlanStepMapping.kt` is the one seam between Health Connect plans and the activity form's step rows
 
 Two of these are not metric features and follow their own shape: `features/devicesync` is a phone-to-phone sync wizard, and `features/imports/*` are import workflows.
@@ -706,3 +719,17 @@ The architecture is working well when:
 - shared extraction happens for scaffolding, not for semantics
 - device protocol code stays transport-free and testable without a radio
 - a new device integration adds a port implementation, not a second radio-arbitration scheme
+
+### Personal dashboard periods
+
+`DashboardPeriodLoader` in `data/repository/dashboard` reuses `HealthConnectManager` readers for bounded range aggregation. `DashboardPeriodSelector` and `DashboardPeriod` reuse the shared period model and navigator; `PeriodRangePreferenceKey.DASHBOARD` persists the chosen range. No additional pacer, retry loop or background read is introduced.
+
+### Personal dashboard fixes
+
+`healthconnect/DashboardRangeHealthReader` returns range headline totals/heart averages through one `AggregateRequest`, permission-filtered by `DashboardPeriodLoader`. Sleep uses recorded-night averages; HRV uses daily recorded values. Range heart headlines use Health Connect aggregate averages, rather than downloading every raw sample. Calculated calories retain the explicit opt-in fallback. End-day snapshot reads exclude range metrics and historical baselines.
+
+Dashboard return-to-screen requests are absorbed for five minutes when the same date/range has a settled, non-degraded result. Pull refresh, write notifications, preference changes and permission callbacks bypass that reuse. The in-memory state contains derived domain data, no additional persisted Health Connect record cache. A write notification is consumed once by the retained ViewModel. Activities no longer refreshes unconditionally on every resume, and raw overview heart samples are read over merged workout intervals for Week/Month, not over every minute of the whole period. Day retains the full day read; Year retains its existing no-raw-sample behavior. Cardio load still uses the recorded workout heart samples and body profile.
+
+The first three visible widget IDs define the summary in both display and editing. Drop targets use these same IDs and root bounds. A drop swaps the saved slots, and row-major packing does not backfill earlier gaps. Custom layouts bypass automatic no-data sorting. Bounds bookkeeping is not snapshot state; scrolling does not recompose the full widget subtree on every pixel. No perpetual edit wiggle is rendered.
+
+Screenshot OCR retains per-line bounding rectangles while matching supported body labels to values in the same column. Unlabelled kg values are rejected. Body-fat percentage writes BodyFatRecord; muscle/fat mass and BMI are not mapped to weight. The import dialog has a bounded height and native date/time pickers.

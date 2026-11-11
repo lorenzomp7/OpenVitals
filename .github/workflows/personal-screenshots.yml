@@ -1,0 +1,10 @@
+# Manual rerun of the same verified build, never a second screenshot implementation.
+name: personal-screenshots
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  verify:
+    uses: ./.github/workflows/verify.yml
+    secrets: inherit

@@ -15,6 +15,17 @@ import java.time.ZoneId
 import kotlin.math.roundToInt
 import kotlin.math.roundToLong
 
+/**
+ * Dashboard distance tiles always show kilometres for metric users, including
+ * values below one kilometre. Imperial preferences retain their native units.
+ */
+internal fun dashboardDistanceValue(meters: Double, formatter: UnitFormatter): DisplayValue =
+    if (formatter.distance(1000.0).unit == "km") {
+        DisplayValue(formatter.decimal(meters / 1000.0, 1), "km")
+    } else {
+        formatter.distance(meters)
+    }
+
 object DashboardPresentationMapper {
 
     /**
@@ -58,7 +69,7 @@ object DashboardPresentationMapper {
                     openWatch = openWatch,
                 ) ?: return@forEach
                 if (!isSupported) unsupportedIds += widgetId
-                put(widgetId, if (widgetId in degradedWidgets) widget.copy(degraded = true) else widget)
+                put(widgetId, widget.copy(degraded = widgetId in degradedWidgets, periodLabel = data.period?.let { "${it.start} – ${it.end}" } ?: data.date.format(dateTimeFormatterProvider.mediumDate())))
             }
         }
 
@@ -105,11 +116,11 @@ object DashboardPresentationMapper {
         )
         DashboardWidgetId.DISTANCE -> metricWidget(
             id = widgetId,
-            value = unitFormatter.distance(data.distanceMeters),
+            value = dashboardDistanceValue(data.distanceMeters, unitFormatter),
             progress = goalProgressModel(
                 current = data.distanceMeters,
                 target = dailyGoals.distanceMeters,
-                goalLabelValue = unitFormatter.distance(dailyGoals.distanceMeters),
+                goalLabelValue = dashboardDistanceValue(dailyGoals.distanceMeters, unitFormatter),
             ),
             isLoading = isLoading,
         )

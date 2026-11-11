@@ -230,6 +230,11 @@ class HealthConnectManager @Inject constructor(
     fun permissionContract() =
         permissionService.permissionContract()
 
+    internal suspend fun readDashboardRangeTotals(
+        query: tech.mmarca.openvitals.domain.model.DashboardQuery,
+        base: tech.mmarca.openvitals.domain.model.DashboardData,
+    ): tech.mmarca.openvitals.domain.model.DashboardData = DashboardRangeHealthReader(readerSupport).read(query, base)
+
     suspend fun readSteps(date: LocalDate): Long =
         activityReader.readSteps(date)
 
@@ -362,8 +367,13 @@ class HealthConnectManager @Inject constructor(
     suspend fun readSpeedSamples(start: Instant, end: Instant): List<SpeedSample> =
         activityReader.readSpeedSamples(start, end)
 
-    suspend fun readActivityCadenceSamples(start: Instant, end: Instant): List<ActivityCadenceSample> =
-        activityReader.readActivityCadenceSamples(start, end)
+    suspend fun readActivityCadenceSamples(
+        start: Instant,
+        end: Instant,
+        includeSteps: Boolean = true,
+        includeCycling: Boolean = true,
+    ): List<ActivityCadenceSample> =
+        activityReader.readActivityCadenceSamples(start, end, includeSteps, includeCycling)
 
     suspend fun readPlannedExerciseSessions(start: Instant, end: Instant): List<PlannedExerciseData> =
         activityReader.readPlannedExerciseSessions(start, end)

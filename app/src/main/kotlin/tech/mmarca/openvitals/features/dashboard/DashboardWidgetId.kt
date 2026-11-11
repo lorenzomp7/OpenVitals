@@ -182,12 +182,13 @@ fun dashboardWidgetIdsThatFitRows(
     widgetIds: List<DashboardWidgetId>,
     rows: Int,
     columns: Int = DashboardWidgetGridColumns,
+    sizeFor: (DashboardWidgetId) -> Int = { it.dashboardWidgetRowSpan() * 2 },
 ): List<DashboardWidgetId> {
     val usedRows = IntArray(columns)
     return buildList {
         widgetIds.forEach { widgetId ->
-            val rowSpan = widgetId.dashboardWidgetRowSpan().coerceIn(1, rows)
-            val column = usedRows.indices.firstOrNull { usedRows[it] + rowSpan <= rows }
+            val rowSpan = sizeFor(widgetId).coerceIn(1, rows * 2)
+            val column = usedRows.indices.firstOrNull { usedRows[it] + rowSpan <= rows * 2 }
             if (column != null) {
                 usedRows[column] += rowSpan
                 add(widgetId)
@@ -200,6 +201,7 @@ fun dashboardWidgetIdsInGridPages(
     widgetIds: List<DashboardWidgetId>,
     rows: Int,
     columns: Int = DashboardWidgetGridColumns,
+    sizeFor: (DashboardWidgetId) -> Int = { it.dashboardWidgetRowSpan() * 2 },
 ): List<List<DashboardWidgetId>> {
     val pages = mutableListOf<List<DashboardWidgetId>>()
     var remaining = widgetIds
@@ -208,12 +210,29 @@ fun dashboardWidgetIdsInGridPages(
             widgetIds = remaining,
             rows = rows,
             columns = columns,
+            sizeFor = sizeFor,
         ).ifEmpty { listOf(remaining.first()) }
         pages += page
         val pageIds = page.toSet()
         remaining = remaining.filterNot { it in pageIds }
     }
     return pages
+}
+
+/**
+ * The rows one scrolling grid needs for [widgetIds]: each widget goes to the
+ * shortest column, first on a tie, as the staggered grid places it.
+ */
+fun dashboardWidgetGridRows(
+    widgetIds: List<DashboardWidgetId>,
+    columns: Int = DashboardWidgetGridColumns,
+): Int {
+    val usedRows = IntArray(columns)
+    widgetIds.forEach { widgetId ->
+        val column = usedRows.indices.minByOrNull { usedRows[it] } ?: return 0
+        usedRows[column] += widgetId.dashboardWidgetRowSpan()
+    }
+    return usedRows.maxOrNull() ?: 0
 }
 
 /**

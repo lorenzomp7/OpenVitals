@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="mapbox_sign_in">Zaloguj się do Mapbox</string>
+    <string name="mapbox_login_body">Zaloguj się w przeglądarce, aby włączyć mapy treningów. Publiczny token pozostaje na tym telefonie. Usuń go tutaj, aby odłączyć Mapbox.</string>
+</resources>

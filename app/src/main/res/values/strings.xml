@@ -2159,7 +2159,7 @@
     <string name="settings_debug_logs_saved">Debug logs saved</string>
     <string name="settings_debug_logs_save_failed">Could not save diagnostics logs</string>
     <string name="settings_privacy_policy_link">View privacy policy</string>
-    <string name="settings_privacy_policy_url" translatable="false">https://github.com/Hale-MTU/OpenVitals/blob/main/PRIVACY.md</string>
+    <string name="settings_privacy_policy_url" translatable="false">https://github.com/lorenzomp7/OpenVitals/blob/main_chatgpt/PRIVACY.md</string>
     <string name="settings_app_lock_title">App lock</string>
     <string name="settings_app_lock_body">Require device unlock to open OpenVitals.</string>
     <string name="app_lock_locked_title">OpenVitals is locked</string>
@@ -2634,7 +2634,7 @@
     <string name="settings_offline_maps_import_notification_text_with_percent">%1$s • %2$d%%.</string>
     <string name="settings_offline_maps_help_prompt">Do you want to learn how to add offline maps? Go to:</string>
     <string name="settings_offline_maps_help_link">Open offline maps guide</string>
-    <string name="settings_offline_maps_help_url" translatable="false">https://docs.hale.ngo/openvitals/how-to/offline-maps/</string>
+    <string name="settings_offline_maps_help_url" translatable="false">https://github.com/lorenzomp7/OpenVitals/blob/main_chatgpt/docs/how-to/offline-maps.md</string>
     <string name="settings_elevation_title">Elevation correction</string>
     <string name="settings_elevation_body">Replace the altitude in imported GPX, TCX, KML and FIT files, in watch activities, and in activities recorded on this phone with values from elevation tiles stored here.</string>
     <string name="settings_elevation_toggle_title">Correct altitude from tiles</string>
@@ -2649,15 +2649,13 @@
     <string name="settings_elevation_tile_import_error">Tile import failed: %1$s</string>
     <string name="settings_elevation_help_prompt">Do you want to learn where to get elevation tiles? Go to:</string>
     <string name="settings_elevation_help_link">Open elevation tiles guide</string>
-    <string name="settings_elevation_help_url" translatable="false">https://docs.hale.ngo/openvitals/how-to/elevation-tiles/</string>
+    <string name="settings_elevation_help_url" translatable="false">https://github.com/lorenzomp7/OpenVitals/blob/main_chatgpt/docs/how-to/elevation-tiles.md</string>
     <string name="section_support">Support</string>
     <string name="settings_support_title">Support OpenVitals</string>
     <string name="settings_support_body">Report bugs, join community support discussions, or help fund ongoing development.</string>
     <string name="settings_support_issues_action">Report an issue</string>
     <string name="settings_support_discussion_action">Join Zulip discussions</string>
     <string name="settings_support_action">Open Liberapay</string>
-    <string name="settings_support_discussion_url" translatable="false">https://openvitals.zulipchat.com/</string>
-    <string name="settings_support_url" translatable="false">https://liberapay.com/hale.mtu/donate</string>
     <string name="crash_report_email_chooser_title">Email OpenVitals report</string>
     <string name="crash_report_fallback_title">No email app found</string>
     <string name="crash_report_fallback_body">Copy the report or save it as a text file, then send it to %1$s later.</string>
@@ -2676,7 +2674,7 @@
     <string name="settings_privacy_read_only">Read-only except entries you explicitly log</string>
     <string name="settings_app_version">Version %1$s (%2$d)</string>
     <!-- The publisher under the version line; a name and an address, the same in every language. -->
-    <string name="settings_app_publisher" translatable="false">Hale · hale.ngo</string>
+    <string name="settings_app_publisher" translatable="false">lorenzomp7 · github.com/lorenzomp7</string>
 
     <string name="detail_metrics">Metrics</string>
     <string name="detail_session_details">Session details</string>
@@ -3830,4 +3828,45 @@
     <string name="body_profile_openwatch_synced_updated">Kept in sync with OpenWatch · updated %1$s</string>
     <string name="openwatch_profile_sync_now">Sync body profile now</string>
     <string name="openwatch_profile_nothing_to_sync">Enter your body profile in Settings, Body profile first</string>
+    <string name="dashboard_paged_layout_toggle">Pages of 6, swiped sideways</string>
+    <string name="dashboard_widget_size_action">Change size</string>
+    <string name="dashboard_history_load_older">Load older activities</string>
+    <string name="dashboard_period_summary">Period totals; average sleep and heart metrics. Other measurements: latest value. Training: final week.</string>
+    <string name="screenshot_import_title">Import screenshot</string>
+    <string name="screenshot_import_body">Recognized on this phone. Review values before saving to Health Connect.</string>
+    <string name="screenshot_import_pick">Choose screenshot</string>
+    <string name="screenshot_import_total_kcal">Total calories burned (kcal)</string>
+    <string name="screenshot_import_time_help">Time comes from the filename. For workouts: end = screenshot, start = end minus duration. Correct if needed.</string>
+    <string name="screenshot_import_start">Start / measurement time</string>
+    <string name="screenshot_import_end">End</string>
+    <string name="screenshot_import_confirm">I checked values, units, dates, interval and calorie type.</string>
+    <string name="screenshot_import_permissions">Allow Health Connect writes</string>
+    <string name="screenshot_import_save">Confirm and save</string>
+    <string name="screenshot_import_empty">Choose an image with explicit units or labels. No supported values found yet.</string>
+    <string name="screenshot_import_saved">Saved in Health Connect. Refresh the relevant OpenVitals screen.</string>
+    <string name="screenshot_import_close">Close</string>
+    <string name="screenshot_import_duration">Workout duration (minutes)</string>
+    <string name="mapbox_error_connection">Cannot connect to Mapbox. Check your connection and try again.</string>
+    <string name="mapbox_error_exchange">Mapbox did not complete authorization. Start sign-in again.</string>
+    <string name="mapbox_error_account">Mapbox did not return an account name. Start sign-in again.</string>
+    <string name="mapbox_error_public_token">Signed in, but the public map token could not be retrieved. Check the default public token in your Mapbox account.</string>
+    <string name="action_show_more">Show all</string>
+    <string name="action_show_less">Show less</string>
+    <string name="activity_map_fullscreen">Full screen map</string>
+    <string name="user_profile_title">Profile</string>
+    <string name="user_profile_age">Age</string>
+    <string name="user_profile_photo">Choose profile picture</string>
+    <string name="user_profile_remove_photo">Remove profile picture</string>
+    <string name="settings_backup_title">Settings backup</string>
+    <string name="settings_backup_summary">Export or restore app settings</string>
+    <string name="settings_backup_body">Includes layout, display, goals, profile, reminders and sensors. Health records, permissions, offline map files and account credentials are excluded. The file contains personal settings.</string>
+    <string name="settings_backup_export">Export settings</string>
+    <string name="settings_backup_import">Import settings</string>
+    <string name="settings_backup_confirm">Restore %1$d saved settings? Settings in the imported groups will be replaced, including defaults.</string>
+    <string name="settings_backup_saved">Settings exported.</string>
+    <string name="settings_backup_restored">Settings restored.</string>
+    <string name="settings_backup_failed">Could not transfer settings. Check the file and try again.</string>
+    <string name="dashboard_details_title">Details</string>
+    <string name="dashboard_details_help">Includes the main value. Additional values are shown when available.</string>
+    <string name="dashboard_cardio_today_points">Today: %1$d points</string>
 </resources>

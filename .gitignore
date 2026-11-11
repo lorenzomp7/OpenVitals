@@ -60,3 +60,6 @@ __pycache__/
 testData/
 # Local scratch files (sample CSVs, notes) that never ship
 local/
+
+# Personal signing material is never source code.
+/personal/

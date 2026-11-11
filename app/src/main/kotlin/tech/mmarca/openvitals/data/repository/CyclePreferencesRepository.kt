@@ -32,6 +32,8 @@ class CyclePreferencesRepository @Inject constructor(
     private val prefs = context.getSharedPreferences(PREFS_FILE, Context.MODE_PRIVATE)
     private val profile = MutableStateFlow(readProfile())
 
+    fun reloadFromSettingsBackup() { profile.value = readProfile() }
+
     override fun cycleTrackingProfile(): CycleTrackingProfile = profile.value
 
     override val cycleTrackingProfileFlow: Flow<CycleTrackingProfile> = profile.asStateFlow()

@@ -193,7 +193,9 @@ private fun writeBitmapToDeviceDownloads(bitmap: Bitmap, outputPath: String) {
     }
 
     val writeResult = writeShellCommand(
-        command = "tee $outputPath",
+        // Not tee: it echoes the picture to a stdout nobody reads, and a large
+        // one fills the pipe and stops the write for good.
+        command = "dd of=$outputPath status=none",
         stdin = pngBytes,
         collectStdout = false,
     )

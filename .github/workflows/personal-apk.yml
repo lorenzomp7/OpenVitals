@@ -1,0 +1,73 @@
+name: personal-apk
+on:
+  push:
+    branches: [main_chatgpt]
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: personal-apk-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  apk:
+    if: github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[apk]')
+    runs-on: ubuntu-26.04
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          submodules: true
+      - uses: gradle/actions/setup-gradle@v5
+        with:
+          cache-read-only: false
+      - name: Verify existing personal signing key
+        run: keytool -list -keystore personal/personal.p12 -storepass openvitals-personal -alias personal > /dev/null
+      - name: Download previous Claude APK for real update verification
+        uses: actions/download-artifact@v4
+        with:
+          name: openvitals-debug-apk
+          run-id: 42711097393
+          github-token: ${{ github.token }}
+          path: previous-apk
+      - name: Set increasing personal version code
+        run: echo "OPENVITALS_VERSION_CODE=$((1070400000 + GITHUB_RUN_NUMBER))" >> "$GITHUB_ENV"
+      - name: Verify support reports and translations
+        run: scripts/ci-android-gradle.sh verifyTranslations :app:compileCiAndroidTestKotlin :app:testCiUnitTest --tests '*SettingsBackup*' --tests '*Dashboard*' --tests '*ScreenTitleTest' --tests '*ArchitectureDocTest' --tests '*CrashReportEmailTest'
+      - name: Build signed personal APK
+        env:
+          OPENVITALS_RELEASE_STORE_FILE: ${{ github.workspace }}/personal/personal.p12
+          OPENVITALS_RELEASE_STORE_PASSWORD: openvitals-personal
+          OPENVITALS_RELEASE_KEY_ALIAS: personal
+          OPENVITALS_SIGN_DEBUG_WITH_RELEASE_KEY: 'true'
+          OPENVITALS_PUBLISHED_DEBUG_APK: 'true'
+        run: scripts/ci-android-gradle.sh :app:assembleDebug
+      - name: Verify signed package and prepare installable APK
+        run: |
+          APK=app/build/outputs/apk/debug/app-debug.apk
+          AAPT=$(find "$ANDROID_HOME/build-tools" -name aapt -type f | sort -V | tail -1)
+          SIGNER=$(find "$ANDROID_HOME/build-tools" -name apksigner -type f | sort -V | tail -1)
+          "$AAPT" dump badging "$APK" > "$RUNNER_TEMP/personal-badging.txt"
+          grep -q "package: name='tech.mmarca.openvitals.debug'" "$RUNNER_TEMP/personal-badging.txt"
+          mkdir -p personal-apk
+          "$SIGNER" verify --verbose --print-certs "$APK" > personal-apk/signing-certificate.txt
+          cp "$APK" personal-apk/OpenVitals-personal.apk
+      - name: Enable KVM
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+      - name: Check installation and update without uninstall
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 35
+          target: google_apis
+          arch: x86_64
+          profile: pixel_6
+          disable-animations: true
+          script: bash scripts/verify-personal-install.sh
+      - uses: actions/upload-artifact@v4
+        with:
+          name: openvitals-personal-apk
+          path: personal-apk/
+          if-no-files-found: error
