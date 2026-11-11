@@ -147,7 +147,7 @@ internal fun MetricsCard(
         )
         MetricRow(
             label = stringResource(R.string.metric_distance),
-            value = workout.totalDistanceMeters?.let { unitFormatter.distance(it).text },
+            value = workout.totalDistanceMeters?.takeIf { it.isFinite() && it > 0 }?.let { unitFormatter.distance(it).text },
             metric = ActivityDetailMetric.DISTANCE,
             exerciseType = exerciseType,
         )
@@ -170,7 +170,7 @@ internal fun MetricsCard(
         )
         MetricRow(
             label = stringResource(R.string.metric_recorded_speed),
-            value = workout.averageSpeedMetersPerSecond?.let { unitFormatter.speed(it).text },
+            value = workout.averageSpeedMetersPerSecond?.takeIf { it.isFinite() && it > 0 }?.let { unitFormatter.speed(it).text },
             metric = ActivityDetailMetric.RECORDED_SPEED,
             exerciseType = exerciseType,
         )

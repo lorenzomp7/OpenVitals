@@ -33,6 +33,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import tech.mmarca.openvitals.ui.theme.Spacing
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import tech.mmarca.openvitals.R
@@ -68,7 +69,7 @@ internal fun UserProfileSettingsCard(viewModel: UserProfileViewModel = hiltViewM
     var age by rememberSaveable(state.age) { mutableStateOf(state.age?.toString().orEmpty()) }
     val validAge = age.isBlank() || age.toIntOrNull()?.let { it in 0..130 } == true
     tech.mmarca.openvitals.ui.components.OpenVitalsCard {
-        Column(Modifier.fillMaxWidth().padding(16.dp)) {
+        Column(Modifier.fillMaxWidth().padding(Spacing.lg)) {
             UserProfileFields(state, name, { name = it }, age, { age = it }, validAge, viewModel)
             TextButton(enabled = validAge, onClick = { viewModel.save(name, age.toIntOrNull()) {} }) {
                 Text(stringResource(R.string.action_save))
@@ -85,11 +86,11 @@ private fun UserProfileFields(
     val photoPicker = rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri ->
         if (uri != null) viewModel.setPhoto(uri)
     }
-            Column(Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+            Column(Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(Spacing.md)) {
                 val photo = state.photo
                 if (photo != null) Image(photo.asImageBitmap(), null,
                     Modifier.size(80.dp).clip(CircleShape).align(Alignment.CenterHorizontally), contentScale = ContentScale.Crop)
-                else Icon(Icons.Outlined.AccountCircle, null, Modifier.size(64.dp).align(Alignment.CenterHorizontally))
+                else Icon(Icons.Outlined.AccountCircle, null, Modifier.size(6Spacing.xs).align(Alignment.CenterHorizontally))
                 TextButton(onClick = { photoPicker.launch("image/*") }) { Text(stringResource(R.string.user_profile_photo)) }
                 if (photo != null) TextButton(onClick = { viewModel.setPhoto(null) }) {
                     Text(stringResource(R.string.user_profile_remove_photo))

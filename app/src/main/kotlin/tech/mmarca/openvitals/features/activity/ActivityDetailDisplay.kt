@@ -115,3 +115,12 @@ internal fun elevationProfile(route: ExerciseRouteData): List<ActivityElevationS
     // One height is a fact, not a profile.
     return if (samples.size > 1) samples else emptyList()
 }
+
+/** Indoor machines do not travel along a GPS route; keep measured machine distance and speed. */
+internal fun activityDetailWorkout(workout: tech.mmarca.openvitals.domain.model.ExerciseData): tech.mmarca.openvitals.domain.model.ExerciseData =
+    if (workout.exerciseType in tech.mmarca.openvitals.domain.model.indoorExercises) workout.copy(
+        route = ExerciseRouteData(),
+        elevationGainedMeters = null,
+        totalDistanceMeters = workout.totalDistanceMeters?.takeIf { it.isFinite() && it > 0 },
+        averageSpeedMetersPerSecond = workout.averageSpeedMetersPerSecond?.takeIf { it.isFinite() && it > 0 },
+    ) else workout

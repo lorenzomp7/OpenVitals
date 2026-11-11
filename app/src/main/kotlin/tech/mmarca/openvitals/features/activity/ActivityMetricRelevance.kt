@@ -37,7 +37,21 @@ internal fun showsMetricRow(
     hasValue: Boolean,
     metric: ActivityDetailMetric,
     exerciseType: Int,
-): Boolean = hasValue || isMetricRelevant(metric, exerciseType)
+ ): Boolean {
+    if (exerciseType == ExerciseSessionRecord.EXERCISE_TYPE_RUNNING_TREADMILL ||
+        exerciseType == ExerciseSessionRecord.EXERCISE_TYPE_BIKING_STATIONARY) {
+        if (metric in setOf(ActivityDetailMetric.RECORDED_SPEED, ActivityDetailMetric.ELEVATION_GAINED, ActivityDetailMetric.FLOORS_CLIMBED,
+                ActivityDetailMetric.WHEELCHAIR_PUSHES)) return false
+        if (exerciseType == ExerciseSessionRecord.EXERCISE_TYPE_BIKING_STATIONARY &&
+            metric in setOf(ActivityDetailMetric.STEPS, ActivityDetailMetric.STEPS_CADENCE,
+                ActivityDetailMetric.AVERAGE_PACE)) return false
+        if (exerciseType == ExerciseSessionRecord.EXERCISE_TYPE_RUNNING_TREADMILL &&
+            metric == ActivityDetailMetric.CYCLING_CADENCE) return false
+        // Sensor-dependent machine metrics only appear when actually recorded or derived from samples.
+        return hasValue || metric in setOf(ActivityDetailMetric.DURATION, ActivityDetailMetric.MOVING_TIME)
+    }
+    return hasValue || isMetricRelevant(metric, exerciseType)
+}
 
 /** Whether the absence of [metric] is worth reporting for [exerciseType]. */
 internal fun isMetricRelevant(metric: ActivityDetailMetric, exerciseType: Int): Boolean =

@@ -113,12 +113,12 @@ AGP 9 built-in Kotlin currently requires `android.disallowKotlinSourceSets=false
 
 ## Docs and the Wiki
 
-The [wiki](https://github.com/Hale-MTU/OpenVitals/wiki) is a mirror of the repository's Markdown, rebuilt by `.github/workflows/wiki.yml` on every push to `main` that touches a `.md` file: `README.md` is Home, every other root Markdown file and every file under `docs/` is one page, named after its first heading, with a sidebar by `docs/` folder (each folder's `README.md` first, release notes newest first). Edit the files here, never the wiki: the next run overwrites it. The published site at docs.hale.ngo is separate and unchanged.
+The [wiki](https://github.com/lorenzomp7/OpenVitals/wiki) is a mirror of the repository's Markdown, rebuilt by `.github/workflows/wiki.yml` on every push to `main` that touches a `.md` file: `README.md` is Home, every other root Markdown file and every file under `docs/` is one page, named after its first heading, with a sidebar by `docs/` folder (each folder's `README.md` first, release notes newest first). Edit the files here, never the wiki: the next run overwrites it. The repository documentation is the maintained reference for this personal version.
 
 `scripts/sync-wiki.py` rewrites each relative link to the page it points at, or to the file on GitHub for anything that is not a page. Its `--check` mode is the verify gate's `docs-links` job and fails on a relative link to a file that does not exist. To see the pages locally:
 
 ```bash
-python3 scripts/sync-wiki.py --repo Hale-MTU/OpenVitals --out /tmp/openvitals-wiki
+python3 scripts/sync-wiki.py --repo lorenzomp7/OpenVitals --out /tmp/openvitals-wiki
 ```
 
 Two Markdown files with the same first heading would become one page; the script stops and names both. The same script runs in OpenWatch, OpenLink and OpenBridge.

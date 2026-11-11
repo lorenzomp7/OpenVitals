@@ -135,9 +135,10 @@ internal class ActivityDetailViewModel @Inject constructor(
     /** The session first. The reads that hang on it then run together. */
     private suspend fun loadDetail(): ActivityDetailUiState {
         val splitDistanceMeters = currentSplitDistanceMeters()
-        val workout = repository.loadWorkout(activityId)
+        val loadedWorkout = repository.loadWorkout(activityId)
             ?: return ActivityDetailUiState(isLoading = false, error = ScreenError.NotFound)
                 .withSplitsCutAt(splitDistanceMeters)
+        val workout = activityDetailWorkout(loadedWorkout)
         _uiState.value = ActivityDetailUiState(isLoading = false, workout = workout)
             .withSplitsCutAt(splitDistanceMeters)
         return coroutineScope {

@@ -6,6 +6,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import tech.mmarca.openvitals.ui.theme.Spacing
 import tech.mmarca.openvitals.R
 import tech.mmarca.openvitals.core.period.TimeRange
 import tech.mmarca.openvitals.ui.components.HealthDatePickerDialog
@@ -28,17 +29,17 @@ internal fun DashboardPeriodDialog(
         onDismissRequest = onDismiss,
         title = { Text(stringResource(R.string.cd_open_calendar)) },
         text = {
-            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+            Column(verticalArrangement = Arrangement.spacedBy(Spacing.sm)) {
                 TimeRange.entries.forEach { range ->
                     TextButton(onClick = { custom = false; onRange(range) }, modifier = Modifier.fillMaxWidth()) {
                         RadioButton(selected = !custom && state.selectedRange == range, onClick = null)
-                        Spacer(Modifier.width(8.dp))
+                        Spacer(Modifier.width(Spacing.sm))
                         Text(timeRangeLabel(range))
                     }
                 }
                 TextButton(onClick = { custom = true }, modifier = Modifier.fillMaxWidth()) {
                     RadioButton(selected = custom, onClick = null)
-                    Spacer(Modifier.width(8.dp))
+                    Spacer(Modifier.width(Spacing.sm))
                     Text(stringResource(R.string.report_lookback_custom))
                 }
                 if (custom) {

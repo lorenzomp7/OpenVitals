@@ -319,19 +319,11 @@ class HealthConnectManager @Inject constructor(
         activityReader.readExerciseSessions(start, end)
 
     suspend fun readExerciseSessionsWithMetrics(
-        start: Instant,
-        end: Instant,
-        includeDistance: Boolean,
-        includeSpeed: Boolean,
-        includeHeartRate: Boolean = false,
-    ): List<ExerciseData> =
-        activityReader.readExerciseSessionsWithMetrics(
-            start = start,
-            end = end,
-            includeDistance = includeDistance,
-            includeSpeed = includeSpeed,
-            includeHeartRate = includeHeartRate,
-        )
+        start: Instant, end: Instant, includeDistance: Boolean,
+        includeSpeed: Boolean, includeHeartRate: Boolean = false,
+    ): List<ExerciseData> = activityReader.readExerciseSessionsWithMetrics(
+        start, end, includeDistance, includeSpeed, includeHeartRate,
+    )
 
     suspend fun readExerciseSession(
         id: String,
