@@ -3862,4 +3862,8 @@
     <string name="action_show_more">Show all</string>
     <string name="action_show_less">Show less</string>
     <string name="activity_map_fullscreen">地図を全画面表示</string>
+    <string name="user_profile_title">プロフィール</string>
+    <string name="user_profile_age">年齢</string>
+    <string name="user_profile_photo">プロフィール画像を選択</string>
+    <string name="user_profile_remove_photo">プロフィール画像を削除</string>
 </resources>

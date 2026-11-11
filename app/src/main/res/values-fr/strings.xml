@@ -3827,4 +3827,8 @@
     <string name="action_show_more">Show all</string>
     <string name="action_show_less">Show less</string>
     <string name="activity_map_fullscreen">Carte en plein écran</string>
+    <string name="user_profile_title">Profil</string>
+    <string name="user_profile_age">Âge</string>
+    <string name="user_profile_photo">Choisir une photo de profil</string>
+    <string name="user_profile_remove_photo">Supprimer la photo de profil</string>
 </resources>

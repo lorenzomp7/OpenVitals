@@ -3794,4 +3794,8 @@
     <string name="action_show_more">Show all</string>
     <string name="action_show_less">Show less</string>
     <string name="activity_map_fullscreen">Täisekraani kaart</string>
+    <string name="user_profile_title">Profiil</string>
+    <string name="user_profile_age">Vanus</string>
+    <string name="user_profile_photo">Vali profiilipilt</string>
+    <string name="user_profile_remove_photo">Eemalda profiilipilt</string>
 </resources>

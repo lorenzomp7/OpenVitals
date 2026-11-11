@@ -3795,4 +3795,8 @@
     <string name="action_show_more">Show all</string>
     <string name="action_show_less">Show less</string>
     <string name="activity_map_fullscreen">全屏地图</string>
+    <string name="user_profile_title">个人资料</string>
+    <string name="user_profile_age">年龄</string>
+    <string name="user_profile_photo">选择头像</string>
+    <string name="user_profile_remove_photo">移除头像</string>
 </resources>

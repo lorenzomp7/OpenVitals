@@ -3860,4 +3860,8 @@
     <string name="action_show_more">Show all</string>
     <string name="action_show_less">Show less</string>
     <string name="activity_map_fullscreen">Mapa na celou obrazovku</string>
+    <string name="user_profile_title">Profil</string>
+    <string name="user_profile_age">Věk</string>
+    <string name="user_profile_photo">Vybrat profilový obrázek</string>
+    <string name="user_profile_remove_photo">Odebrat profilový obrázek</string>
 </resources>

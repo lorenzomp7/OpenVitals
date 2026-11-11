@@ -3853,4 +3853,8 @@
     <string name="action_show_more">Show all</string>
     <string name="action_show_less">Show less</string>
     <string name="activity_map_fullscreen">Full screen map</string>
+    <string name="user_profile_title">Profile</string>
+    <string name="user_profile_age">Age</string>
+    <string name="user_profile_photo">Choose profile picture</string>
+    <string name="user_profile_remove_photo">Remove profile picture</string>
 </resources>

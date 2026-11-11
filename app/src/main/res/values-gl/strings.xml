@@ -3865,4 +3865,8 @@ Se Acceder a rutas de exercicio non aparece no diálogo de acceso, abre os axust
     <string name="action_show_more">Show all</string>
     <string name="action_show_less">Show less</string>
     <string name="activity_map_fullscreen">Mapa a pantalla completa</string>
+    <string name="user_profile_title">Perfil</string>
+    <string name="user_profile_age">Idade</string>
+    <string name="user_profile_photo">Escoller imaxe de perfil</string>
+    <string name="user_profile_remove_photo">Eliminar imaxe de perfil</string>
 </resources>

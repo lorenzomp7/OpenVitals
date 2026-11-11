@@ -3861,4 +3861,8 @@
     <string name="action_show_more">Show all</string>
     <string name="action_show_less">Show less</string>
     <string name="activity_map_fullscreen">Карта на весь экран</string>
+    <string name="user_profile_title">Профиль</string>
+    <string name="user_profile_age">Возраст</string>
+    <string name="user_profile_photo">Выбрать фото профиля</string>
+    <string name="user_profile_remove_photo">Удалить фото профиля</string>
 </resources>

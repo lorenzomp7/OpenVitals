@@ -129,4 +129,8 @@
     <string name="action_show_more">Show all</string>
     <string name="action_show_less">Show less</string>
     <string name="activity_map_fullscreen">מפה במסך מלא</string>
+    <string name="user_profile_title">פרופיל</string>
+    <string name="user_profile_age">גיל</string>
+    <string name="user_profile_photo">בחירת תמונת פרופיל</string>
+    <string name="user_profile_remove_photo">הסרת תמונת פרופיל</string>
 </resources>

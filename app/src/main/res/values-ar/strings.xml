@@ -129,4 +129,8 @@
     <string name="action_show_more">Show all</string>
     <string name="action_show_less">Show less</string>
     <string name="activity_map_fullscreen">خريطة بملء الشاشة</string>
+    <string name="user_profile_title">الملف الشخصي</string>
+    <string name="user_profile_age">العمر</string>
+    <string name="user_profile_photo">اختيار صورة الملف الشخصي</string>
+    <string name="user_profile_remove_photo">إزالة صورة الملف الشخصي</string>
 </resources>

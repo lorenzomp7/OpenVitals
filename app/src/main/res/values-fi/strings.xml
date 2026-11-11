@@ -3794,4 +3794,8 @@
     <string name="action_show_more">Show all</string>
     <string name="action_show_less">Show less</string>
     <string name="activity_map_fullscreen">Koko näytön kartta</string>
+    <string name="user_profile_title">Profiili</string>
+    <string name="user_profile_age">Ikä</string>
+    <string name="user_profile_photo">Valitse profiilikuva</string>
+    <string name="user_profile_remove_photo">Poista profiilikuva</string>
 </resources>

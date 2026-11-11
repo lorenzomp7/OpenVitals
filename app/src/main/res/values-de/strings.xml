@@ -3794,4 +3794,8 @@
     <string name="action_show_more">Show all</string>
     <string name="action_show_less">Show less</string>
     <string name="activity_map_fullscreen">Karte im Vollbild</string>
+    <string name="user_profile_title">Profil</string>
+    <string name="user_profile_age">Alter</string>
+    <string name="user_profile_photo">Profilbild auswählen</string>
+    <string name="user_profile_remove_photo">Profilbild entfernen</string>
 </resources>

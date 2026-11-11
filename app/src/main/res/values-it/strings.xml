@@ -3824,4 +3824,8 @@
     <string name="action_show_more">Mostra tutti</string>
     <string name="action_show_less">Mostra meno</string>
     <string name="activity_map_fullscreen">Mappa a schermo intero</string>
+    <string name="user_profile_title">Profilo</string>
+    <string name="user_profile_age">Età</string>
+    <string name="user_profile_photo">Scegli immagine del profilo</string>
+    <string name="user_profile_remove_photo">Rimuovi immagine del profilo</string>
 </resources>

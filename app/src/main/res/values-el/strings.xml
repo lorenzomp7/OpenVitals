@@ -479,4 +479,8 @@
     <string name="action_show_more">Show all</string>
     <string name="action_show_less">Show less</string>
     <string name="activity_map_fullscreen">Χάρτης πλήρους οθόνης</string>
+    <string name="user_profile_title">Προφίλ</string>
+    <string name="user_profile_age">Ηλικία</string>
+    <string name="user_profile_photo">Επιλογή εικόνας προφίλ</string>
+    <string name="user_profile_remove_photo">Αφαίρεση εικόνας προφίλ</string>
 </resources>

@@ -11,6 +11,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.BatteryChargingFull
+import androidx.compose.material.icons.outlined.AccountCircle
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -89,23 +90,26 @@ fun DashboardScreen(
         }
     }
     val currentOnOpenDeviceStatus by rememberUpdatedState(onOpenDeviceStatus)
+    var showUserProfile by remember { mutableStateOf(false) }
     DeclareAppBar(
         remember(state.sensorStatus.hasDevices) {
-            if (!state.sensorStatus.hasDevices) {
-                ScreenAppBar()
-            } else {
                 ScreenAppBar(
-                    actions = listOf(
+                    actions = buildList {
+                        if (state.sensorStatus.hasDevices) add(
                         AppBarAction(
                             icon = Icons.Outlined.BatteryChargingFull,
                             contentDescription = R.string.cd_sensor_battery_status,
                             onClick = { currentOnOpenDeviceStatus() },
-                        ),
-                    ),
+                        ))
+                        add(AppBarAction(Icons.Outlined.AccountCircle, R.string.user_profile_title) { showUserProfile = true })
+                    },
                 )
-            }
         },
     )
+
+    if (showUserProfile) {
+        tech.mmarca.openvitals.features.settings.UserProfileDialog(onDismiss = { showUserProfile = false })
+    }
 
     WithHealthConnectFeatureScreen(
         feature = HealthConnectFeature.DASHBOARD,
