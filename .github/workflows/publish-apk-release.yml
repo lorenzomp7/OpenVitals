@@ -81,6 +81,15 @@ jobs:
           BUILD_NUMBER: ${{ steps.build.outputs.number }}
         run: |
           set -euo pipefail
+          # Delayed queued builds must never replace a newer published personal APK.
+          LATEST_TAG=$(gh release view --json tagName --jq .tagName)
+          if [[ "$LATEST_TAG" =~ ^personal-build-([0-9]+)$ ]]; then
+            LATEST_NUMBER="${BASH_REMATCH[1]}"
+            if (( 10#$LATEST_NUMBER >= BUILD_NUMBER )); then
+              echo "An equal or newer personal build is already published; keeping latest unchanged."
+              exit 0
+            fi
+          fi
           TAG="personal-build-$BUILD_NUMBER"
           cat > release-notes.md <<EOF
           ## Download / Scarica
