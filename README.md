@@ -1,300 +1,95 @@
 <p align="center">
-    <img width="160" alt="OpenVitals logo" src="docs/images/readme-logo.png">
+  <img src="docs/images/readme-logo.png" width="120" alt="Logo OpenVitals">
 </p>
 
 # OpenVitals
 
-<p align="center">
-    <a href="https://liberapay.com/hale.mtu/donate"><img alt="Liberapay receiving" src="https://img.shields.io/liberapay/receives/hale.mtu.svg?logo=liberapay"></a>
-    <a href="https://liberapay.com/hale.mtu/donate"><img alt="Liberapay patrons" src="https://img.shields.io/liberapay/patrons/hale.mtu.svg?logo=liberapay"></a>
-</p>
+**La tua dashboard Android per salute, allenamenti e recupero, con i dati di Health Connect.**
 
-Privacy-first Health Connect dashboard, activity tracker, and manual entry app for Android.
+Questa repository distribuisce la versione personalizzata di OpenVitals: dashboard configurabile, periodi giorno/settimana/mese/anno, dettagli degli allenamenti, mappe dei percorsi e importazione da screenshot sul telefono.
 
-OpenVitals reads from Health Connect and gives you one place to review the data already there, add your own records, record activities, import existing data, and work with recovery and readiness metrics locally.
+## Scarica l’app
 
-The dashboard is read-only by default. Writes to Health Connect happen only through actions you start or enable, such as saving, recording, importing or syncing data.
+[![Scarica APK](https://img.shields.io/badge/Scarica_APK-Android-3DDC84?style=for-the-badge&logo=android&logoColor=white)](https://github.com/lorenzomp7/OpenVitals/releases/latest/download/OpenVitals-personal.apk)
+[![Tutte le release](https://img.shields.io/badge/Versioni-e_note_di_rilascio-181717?style=for-the-badge&logo=github)](https://github.com/lorenzomp7/OpenVitals/releases)
 
-No OpenVitals account is required. This personal fork enables Internet access for Mapbox workout maps; see [token setup and offline behavior](docs/engineering/mapbox.md). OpenVitals is open source under AGPL-3.0-or-later.
+### [⬇ Scarica OpenVitals-personal.apk](https://github.com/lorenzomp7/OpenVitals/releases/latest/download/OpenVitals-personal.apk)
 
-Personal development is consolidated on `main_chatgpt`: see [build, signing and verification](docs/engineering/personal-build.md).
+**Download the Android APK directly using the link above.** Non servono un computer, Android Studio o l’accesso a GitHub Actions.
 
-## This personal version
+Ogni release contiene l’APK installabile, il checksum SHA-256 e i collegamenti al codice sorgente e alla compilazione verificata. Le release sono build di sviluppo personali: consulta le note della versione che stai scaricando. Le modifiche presenti nel branch possono essere più recenti dell’ultima release.
 
-The development branch is [`main_chatgpt`](https://github.com/lorenzomp7/OpenVitals/tree/main_chatgpt), based on Claude's `ce318725` and the consolidated personal changes. Upstream OpenVitals is maintained by [Hale-MTU](https://github.com/Hale-MTU/OpenVitals).
+## Installazione e aggiornamenti
 
-- Dashboard with Day / Week / Month / Year, remembered selection, and the same period passed to Activities.
-- Three widget sizes (1, 2 and 4 spaces), richer information at larger sizes, editable top summary, and optional sideways pages of six medium widgets. Custom order is preserved in display and editing.
-- Period totals use a combined Health Connect aggregate. Returning from another screen keeps a recently loaded dashboard; pull to refresh or a saved entry requests fresh data.
-- Workout summaries choose metrics by sport. Detailed splits are compact and expandable, and cycling uses speed instead of running pace.
-- Saved GPS workouts use Mapbox after browser sign-in on the phone, with encrypted local token storage. The GPS-only preview remains available without cartography. No token is included in the source or APK.
-- Import screenshots from **Settings → Data import** or Android's **Share → OpenVitals**. OCR runs on the phone. Body weight and body-fat percentage are identified by their labels/positions; muscle mass and fat mass are not silently imported as weight. Review the suggested values, workout type, date and time before saving to Health Connect. Screenshot capture time is not necessarily measurement time.
+1. Apri il link **Scarica APK** dal telefono Android.
+2. Scarica e apri **OpenVitals-personal.apk**.
+3. Se Android lo richiede, autorizza l’installazione da questa sorgente per il browser o il gestore file utilizzato.
+4. Avvia OpenVitals e concedi in Health Connect i permessi per le categorie che vuoi visualizzare.
 
-## Install this version
+Per aggiornare, scarica il nuovo APK dallo stesso link e installalo sopra la versione personale compatibile. La firma e l’identificativo dell’app sono mantenuti per consentire gli aggiornamenti senza disinstallazione.
 
-For phone installation, download **OpenVitals-personal.apk** from a successful **personal-apk** run. It uses the same persistent development signature and `.debug` application ID as Claude's personal APK, so it updates that app without uninstalling. No PC setup or new signing secrets are needed. **app-ci.apk** from **verify** is a separate test app with a temporary runner signature; the `androidTest` APK is the test runner, not the application. See [personal builds](docs/engineering/personal-build.md) for update verification and CI migration details.
+| File o distribuzione | A cosa serve |
+| --- | --- |
+| **OpenVitals-personal.apk** nelle Releases | L’app da installare sul telefono; identificativo `tech.mmarca.openvitals.debug`. |
+| `app-ci.apk` negli artefatti di verifica | Una diversa installazione per i test, con firma temporanea. |
+| APK `androidTest` | Il programma che esegue i test; non è l’app per l’utente. |
+| Versioni upstream Play Store / F-Droid | Distribuzioni del progetto originale, separate da questa versione personalizzata. |
 
-This fork's changes are not included in the upstream Play Store / F-Droid builds.
+Se Android rifiuta un aggiornamento, controlla di aver scaricato l’APK personale e di avere una versione con firma compatibile. [Dettagli su firma e verifica degli aggiornamenti](https://github.com/lorenzomp7/OpenVitals/blob/main_chatgpt/docs/engineering/personal-build.md).
 
-Device validation is still necessary for your Mapbox account, the provider's speed on a large personal Health Connect history, and OCR layouts not covered by tests. CI does not log into a personal Mapbox account or access personal health records.
+## Cosa offre questa versione
 
-## What you can do with OpenVitals
+| Area | Funzioni |
+| --- | --- |
+| **Dashboard personalizzabile** | Riquadri ridimensionabili e riordinabili, riepilogo modificabile e pagine laterali con sei riquadri medi. |
+| **Periodi e storico** | Selezione giorno, settimana, mese e anno; totali, medie e grafici secondo il tipo di metrica. |
+| **Allenamenti** | Cronologia, riepiloghi specifici per sport, passi, frequenza cardiaca, velocità, cadenza e split quando disponibili. |
+| **Percorsi e mappe** | Percorsi GPS salvati, cartografia Mapbox configurabile sul telefono e anteprima locale del tracciato. |
+| **Corpo e parametri vitali** | Peso, composizione corporea, pressione, SpO₂, HRV e altri dati supportati da Health Connect. |
+| **Sonno e recupero** | Sessioni e fasi del sonno, viste Daily Readiness, Body Energy e Training Readiness in base ai dati disponibili. |
+| **Importazione screenshot** | Selezione da impostazioni o condivisione Android; riconoscimento OCR sul telefono e anteprima da correggere prima del salvataggio. |
+| **Altri strumenti** | Registrazione attività, inserimento manuale, importazione di file, report PDF, nutrizione, idratazione, ciclo e sincronizzazione Bluetooth tra telefoni. |
 
-- Review most metrics by day, week, month or year, with charts, history, source information and period statistics. Charts also expose summaries and navigation to screen readers.
-- Log by hand: drinks and hydration, food and nutrition, activities of every Health Connect exercise type, mindfulness, cycle records, a body analysis scale's whole weigh-in (weight, body fat, lean mass, body water, bone mass and BMR) in one form, height, blood pressure with the pulse the monitor shows, SpO2, respiratory rate, body temperature, HRV, blood glucose, VO2 max, and every kind of medical record Health Connect holds. Records with a matching Health Connect type are written there; some cycle-journal data stays local because Health Connect has no record type for it.
-- Record activities with GPS, offline maps and Bluetooth sensors. Routes and workouts can also be imported, and guided workout plans can be run from the phone.
-- Read recovery views derived on the phone: Daily Readiness, Body Energy and Training Readiness, together with HRV status, physiological stress, adaptive goals and explanation screens based on the data available.
-- Bring in Apple Health exports, CSV files of measurements, blood pressure readings, meals or the app's own workout exports, a cycle history exported by drip, route and workout files, and medical records as FHIR files, alone or in a zip, the older DSTU2 format included.
-- Generate PDF health reports fully on-device, with charts, statistics and sections for supported health data.
-- Track your cycle with a local day journal, estimates that count from a recorded LH test, temperature rise or mucus peak, reminders, pill tracking, a declared hormonal method, backup and a home-screen widget alongside the records kept in Health Connect. The night skin temperature and the overnight pulse, HRV and breathing a watch or ring records are drawn by cycle day, with the studies behind them, as information only.
-- Put widgets on the home screen for readiness, Body Energy, vitals, selected metrics and quick beverage logging.
-- Choose metric or imperial units, and pick the app language from fourteen translations or follow the system.
+I dati dipendono dai permessi e da ciò che le app dei tuoi dispositivi scrivono effettivamente in Health Connect. OpenVitals non può mostrare una misurazione rimasta soltanto nell’app del produttore.
 
-For the detailed feature inventory, see the [feature guide](https://docs.hale.ngo/openvitals/app/features/).
+Le note di ciascuna [release](https://github.com/lorenzomp7/OpenVitals/releases) identificano il codice incluso nell’APK. Il [branch di sviluppo `main_chatgpt`](https://github.com/lorenzomp7/OpenVitals/tree/main_chatgpt) contiene anche le correzioni più recenti, fra cui mappe a schermo intero, aggiornamento del peso al ritorno nell’app e lettura dei passi e della cadenza degli allenamenti.
 
-## Screenshots
+## Health Connect e mappe
 
-<div>
-    <img width="23%" alt="OpenVitals dashboard" src="docs/images/readme-dashboard.png">
-    <img width="23%" alt="OpenVitals onboarding" src="docs/images/onboarding.png">
-    <img width="23%" alt="OpenVitals settings" src="docs/images/settings.png">
-    <img width="23%" alt="Daily Readiness detail" src="docs/images/dailyReadiness.png">
-    <img width="23%" alt="Body Energy detail" src="docs/images/bodyEnergy.png">
-    <img width="23%" alt="Activity detail" src="docs/images/activityDetail.png">
-    <img width="23%" alt="Activity recording" src="docs/images/activityRecording.png">
-    <img width="23%" alt="Beverage entry" src="docs/images/beverageEntry.png">
-</div>
+- **Health Connect:** deve essere disponibile sul telefono. Su Android 14 e successivi è integrato nel sistema; sulle versioni precedenti compatibili si installa separatamente.
+- **Permessi:** puoi scegliere le categorie da leggere e autorizzare la scrittura quando usi inserimento manuale o importazioni.
+- **Mapbox:** la configurazione avviene sul telefono. Nessun token Mapbox è incluso nel sorgente o nell’APK. [Configurazione mappe e comportamento offline](https://github.com/lorenzomp7/OpenVitals/blob/main_chatgpt/docs/engineering/mapbox.md).
+- **Senza cartografia:** resta disponibile l’anteprima locale del percorso GPS salvato.
 
-## Devices and integrations
+## Dati e privacy
 
-Watch and scale support (Garmin and Wear OS watches, the Xiaomi S400 scale) lives in the separate [OpenWatch](https://github.com/Hale-MTU/OpenWatch) app, which writes what those devices record to Health Connect for OpenVitals to read.
+Non è richiesto un account OpenVitals. I dati sanitari sono letti da Health Connect ed elaborati sul dispositivo; le scritture avvengono tramite le azioni di salvataggio, importazione o sincronizzazione avviate o abilitate dall’utente.
 
-### Bluetooth sensors
+Questa versione utilizza Internet per la cartografia e l’accesso Mapbox. Le richieste delle mappe comunicano con il fornitore della cartografia; non viene introdotto un server OpenVitals a cui caricare i dati sanitari. Le credenziali Mapbox sono conservate localmente in forma cifrata.
 
-Activity recording can use [Bluetooth LE sensors](https://docs.hale.ngo/openvitals/features/ble-sensors/) for heart rate, cycling power, speed and cadence. Wheel-sensor distance can be used on rides without GPS.
+OCR e generazione dei report vengono eseguiti sul telefono. Le valutazioni di recupero sono informazioni derivate dai dati disponibili e non diagnosi mediche.
 
-A connected heart-rate sensor can also be used during strength training and for the [heart-rate recovery test](https://docs.hale.ngo/openvitals/features/heart-rate-recovery/).
+## Release e sviluppo
 
-### CoMaps
+L’APK personale viene compilato dal branch `main_chatgpt`. La pubblicazione automatica nelle Releases riutilizza soltanto una compilazione **personal-apk** terminata con successo, inclusi i controlli di firma e di installazione/aggiornamento sull’emulatore.
 
-While [CoMaps](https://docs.hale.ngo/openvitals/features/comaps-navigation-context/) is navigating, OpenVitals can show its turn guidance on the offline activity map during a recording, and optionally save the guidance with the activity on-device.
+- [APK, versioni precedenti e note](https://github.com/lorenzomp7/OpenVitals/releases)
+- [Codice della versione personalizzata](https://github.com/lorenzomp7/OpenVitals/tree/main_chatgpt)
+- [Compilazioni e verifiche](https://github.com/lorenzomp7/OpenVitals/actions)
+- [Segnala un problema in questa repository](https://github.com/lorenzomp7/OpenVitals/issues)
+- [Guida tecnica delle build personali](https://github.com/lorenzomp7/OpenVitals/blob/main_chatgpt/docs/engineering/personal-build.md)
 
-### Sync with another phone
-
-OpenVitals can [copy selected Health Connect records](https://docs.hale.ngo/openvitals/features/device-sync/) between two nearby phones over Bluetooth. If the cycle category is selected, its local journal, excluded cycles and declared cycle context are carried with it too.
-
-Both phones show the same six-digit code before anything is transferred. The records are then encrypted for that sync session.
-
-You choose the time range and data categories to copy. Medical records are an exception: when selected, they sync in full regardless of the chosen range.
-
-Re-running a sync does not create duplicate records. An Overwrite existing records option writes the other phone's records again under OpenVitals, for records Health Connect lists but leaves out of its totals, as after a backup restore or a phone transfer.
-
-## Current coverage
-
-OpenVitals currently has screens or data handling for:
-
-- Activity and workouts
-- Sleep and recovery
-- Heart and vitals
-- Body measurements
-- Nutrition, hydration and caffeine
-- Mindfulness
-- Cycle tracking
-- Goals
-- Achievements
-- Medical records
-
-<details>
-<summary>What is covered in each area</summary>
-
-- **Activity and workouts:** steps, distance, active and total calories, floors, elevation, wheelchair pushes, exercise sessions, routes, cardio load, speed, power and cadence where available.
-- **Sleep and recovery:** sleep sessions and stages, sleep score, sleep efficiency, OpenVitals-derived Daily Readiness, Body Energy and Training Readiness, HRV status, intensity minutes and physiological stress.
-- **Heart and vitals:** heart rate, resting heart rate, HRV, blood pressure, SpO2, respiratory rate, body temperature, skin temperature as a variation from the device's baseline, blood glucose and VO2 max. Some of these are view-only in the manual-entry UI.
-- **Body:** weight, height, BMI, body fat, lean body mass, BMR, bone mass, body water and Fat-Free Mass Index (FFMI) where the required measurements are available.
-- **Nutrition, hydration and caffeine:** drinks, hydration, meals, calories, macros, caffeine and the additional Health Connect nutrients present in the data.
-- **Mindfulness:** session history, totals, goals and timer/manual logging where the installed Health Connect provider supports mindfulness records.
-- **Cycle tracking:** periods and flow, ovulation tests, cervical mucus, basal body temperature, intermenstrual bleeding and sexual activity. The local journal also keeps data that Health Connect has no record type for, such as pain, mood, energy, desire, the cervix, symptoms and notes.
-- **Goals:** configurable daily goals for supported activity metrics, workout minutes, hydration, sleep, nutrition and mindfulness.
-- **Achievements:** badges and progress for daily steps, lifetime distance, floors and other supported achievement categories.
-- **Medical records (beta):** the Health Connect medical-record categories available on Android 14 and newer with a recent Health Connect module. Records can be imported, typed in by hand and exported. They are shown as stored; OpenVitals does not interpret their clinical meaning. The area is still in development, so review what you import.
-
-</details>
-
-A fuller breakdown of what can be viewed, entered, edited, imported or exported is in the [feature guide](https://docs.hale.ngo/openvitals/app/features/).
-
-## Privacy
-
-- No account and no OpenVitals server receiving health data.
-- No ads or analytics SDKs.
-- The shipping app has no Android `INTERNET` permission.
-- No Google Play Services dependency is required for app functionality.
-- OpenVitals opts out of Android cloud backup.
-- Health Connect remains the source of truth wherever it has a record type.
-- The dashboard is read-only by default; writes happen only through actions you explicitly start or enable.
-- Bluetooth is used for sensors and phone-to-phone sync. Data sent over Bluetooth goes only to devices or phones you pair or use with those features.
-- Files are exported or shared only when you choose to do so.
-
-Health Connect access is split into categories rather than requested as one block:
-
-- **Activity & sleep:** used by the dashboard.
-- **Heart & recovery, Body, Activity extras, Nutrition & hydration, Mindfulness, and Vitals:** optional categories.
-- **Cycle tracking:** separate sensitive access that can be granted or skipped explicitly.
-- **Medical records:** kept separate from the other Health Connect permissions and requested only when you enter the Medical records area.
-- **Manual-entry write access:** available during one-tap setup or requested when an entry flow needs it.
-
-Permissions can be changed later in Settings.
-
-OpenVitals does keep some app-only data locally where Health Connect cannot represent it, as well as caches and files used by features you enable.
-
-<details>
-<summary>Local data</summary>
-
-This includes things such as:
-
-- derived summary caches and Body Energy history;
-- food and drink catalogues;
-- the parts of the cycle journal that Health Connect cannot store, along with cycle exclusions and pill intakes;
-- metadata used by device sync;
-- recordings not yet saved, staged Apple Health imports, imported offline maps and elevation tiles;
-- medical documents you explicitly choose to keep;
-- the last phone-to-phone sync report, the last Apple Health import report and the last crash report, each holding counts, types and reasons rather than your values.
-
-These are stored in app-private storage on the device. Some local data can leave that storage only through an action you explicitly start; for example, cycle-journal data can be copied to another phone when the cycle category is selected in phone-to-phone sync.
-
-</details>
-
-See the [privacy policy](https://docs.hale.ngo/openvitals/app/privacy/) for the full text.
-
-## Platform requirements
-
-- Android only
-- `minSdk 26`
-- `compileSdk 37`
-- `targetSdk 36`
-- JDK 17 / Java 17 toolchain
-- Health Connect required
-
-Health Connect platform notes:
-
-- On Android 14 and newer, Health Connect is part of the system
-- On Android 13 and older, the Health Connect app must be installed separately
-- Health Connect is not supported in work profiles
-- Mindfulness sessions require a Health Connect provider version that supports `FEATURE_MINDFULNESS_SESSION`
-- The app uses `androidx.health.connect:connect-client` 1.2.0-alpha06 so AndroidX maps newer activity, mindfulness, and aggregation APIs to the current platform permissions
-
-## Documentation
-
-The user documentation lives at [docs.hale.ngo](https://docs.hale.ngo/):
-
-- [Install](https://docs.hale.ngo/openvitals/app/install/), [getting started](https://docs.hale.ngo/openvitals/app/getting-started/), [Health Connect setup](https://docs.hale.ngo/openvitals/app/health-connect/), [permissions](https://docs.hale.ngo/openvitals/app/permissions/), [privacy](https://docs.hale.ngo/openvitals/app/privacy/) and [FAQ](https://docs.hale.ngo/openvitals/app/faq/)
-- [Feature guide](https://docs.hale.ngo/openvitals/features/): one page per feature, grouped by what you do with the app
-- [Feature map](https://docs.hale.ngo/openvitals/features/feature-map/): map from features to routes, widgets, and packages
-- [How-to guides](https://docs.hale.ngo/openvitals/how-to/): step-by-step workflows such as offline maps and elevation tiles
-- [Build from source](https://docs.hale.ngo/openvitals/developers/build/) and [contributing](https://docs.hale.ngo/openvitals/developers/contributing/)
-- [Support](https://docs.hale.ngo/openvitals/support/)
-
-Engineering docs stay in this repository:
-
-- [`docs/engineering/architecture.md`](docs/engineering/architecture.md): current architecture and target direction
-- [`docs/engineering/development.md`](docs/engineering/development.md): local build, verification, CI, and Windows cleanup notes
-- [`docs/engineering/feature-playbook.md`](docs/engineering/feature-playbook.md): checklist for adding a new metric feature
-- [`AGENTS.md`](AGENTS.md): implementation guidance for future coding agents
-
-## Help Improve It
-
-OpenVitals is still early. Useful feedback is specific: device model, Android version, Health Connect provider version, which permissions were granted, and what screen or workflow failed.
-
-- Try the latest beta from Google Play or GitHub releases
-- Report bugs and feature requests on [GitHub issues](https://github.com/Hale-MTU/OpenVitals/issues)
-- Translate OpenVitals in your language on [Codeberg Translate](https://translate.codeberg.org/projects/openvitals/android-app/)
-- Ask questions and discuss support on [OpenVitals Zulip](http://openvitals.zulipchat.com/)
-- Star or follow the project on [GitHub](https://github.com/Hale-MTU/OpenVitals)
-- Share screenshots or notes from real Health Connect setups, especially route recording and manual entry flows
-- Support ongoing development on [Liberapay](https://liberapay.com/hale.mtu/donate)
-
-## Build from source
-
-1. Install a recent Android Studio with Android SDK 37.0 and JDK 17 support.
-2. Clone this repository.
-3. Open the project in Android Studio, or build from the command line.
-
-In a complete checkout:
+Per compilare la versione personalizzata: clona questa repository con i sottomoduli, seleziona `main_chatgpt` e usa Android SDK 37 e JDK 17.
 
 ```bash
+git clone --recurse-submodules --branch main_chatgpt https://github.com/lorenzomp7/OpenVitals.git
+cd OpenVitals
 ./gradlew :app:assembleDebug
-```
-
-To run the same basic checks used by CI:
-
-```bash
 ./gradlew verifyCi
-git diff --check
 ```
 
-To install on a connected device or emulator:
+## Progetto originale e licenza
 
-```bash
-./gradlew :app:installDebug
-```
+Questa versione deriva da [OpenVitals di Hale-MTU](https://github.com/Hale-MTU/OpenVitals). La documentazione e le distribuzioni del progetto originale possono differire dalle funzioni e dagli APK di questa repository.
 
-<details>
-<summary>Windows: cleaning fails with a locked lint cache</summary>
-
-On Windows, Gradle or Android Studio can occasionally keep lint cache jars open under `app/build`. If cleaning fails with a locked `lint-cache` jar, stop Gradle daemons first:
-
-```powershell
-.\gradlew.bat --stop
-Get-CimInstance Win32_Process |
-  Where-Object { $_.CommandLine -like '*org.gradle.launcher.daemon.bootstrap.GradleDaemon*' } |
-  ForEach-Object { Stop-Process -Id $_.ProcessId -Force }
-Remove-Item -LiteralPath app/build -Recurse -Force
-```
-
-</details>
-
-More local development notes are in [`docs/engineering/development.md`](docs/engineering/development.md).
-
-After launching the app:
-
-1. Complete onboarding
-2. Use one-tap setup to grant all requestable Health Connect permissions, or grant Activity & sleep first and then choose individual categories
-3. Grant Cycle tracking only if you want period, ovulation, cervical mucus, and basal temperature data shown
-4. Use Dashboard for read-only summaries and Add entry for explicit Health Connect logging
-
-## Architecture at a glance
-
-The repository has two Gradle modules: `:app` is the phone app and `:domain` holds its pure Kotlin models and calculations.
-
-The phone app uses:
-
-- Jetpack Compose, Material 3 and Navigation Compose for the UI;
-- `ViewModel`, coroutines and `StateFlow` for screen state;
-- Hilt for dependency injection;
-- the AndroidX Health Connect client behind `HealthConnectManager` and feature-specific repositories;
-- Room for derived caches and data Health Connect cannot represent. Health Connect remains the source of truth for record types it supports;
-- WorkManager for Apple Health imports and offline-map imports.
-
-Watch and scale support is not in this repository: it lives in [OpenWatch](https://github.com/Hale-MTU/OpenWatch), a separate app that writes to Health Connect.
-
-Live Bluetooth LE sensor streaming during activity recording is separate under `sensors/ble/`.
-
-Phone-to-phone Health Connect sync lives under `features/devicesync/` and uses Bluetooth Classic RFCOMM. The CoMaps provider lives under `comaps/` and reads guidance through Android's `ContentResolver`.
-
-See the [architecture documentation](docs/engineering/architecture.md) for the current structure and development direction.
-
-## Project layout
-
-- [`app/`](app): Android phone app module
-- [`domain/`](domain): pure Kotlin module with the app-local models, period math and insight calculations
-- [`app/src/main/kotlin/tech/mmarca/openvitals/features/`](app/src/main/kotlin/tech/mmarca/openvitals/features): feature screens, state, and ViewModels
-- [`app/src/main/kotlin/tech/mmarca/openvitals/data/repository/`](app/src/main/kotlin/tech/mmarca/openvitals/data/repository): repositories over Health Connect reads and preferences
-- [`app/src/main/kotlin/tech/mmarca/openvitals/healthconnect/`](app/src/main/kotlin/tech/mmarca/openvitals/healthconnect): Health Connect readers, writers and the permission shell
-- [`app/src/main/kotlin/tech/mmarca/openvitals/core/`](app/src/main/kotlin/tech/mmarca/openvitals/core): app-local period, performance, and presentation primitives
-- [`app/src/main/kotlin/tech/mmarca/openvitals/domain/`](app/src/main/kotlin/tech/mmarca/openvitals/domain): app-local models, insight calculations, and preference enums
-- [`app/src/main/kotlin/tech/mmarca/openvitals/ui/components/`](app/src/main/kotlin/tech/mmarca/openvitals/ui/components): shared UI scaffolding and navigation components
-- [`docs/`](docs): app guide, feature guide, engineering docs, how-to guides, proposals, reference material, and release notes
-
-## License
-
-OpenVitals is licensed under the [`GNU Affero General Public License v3.0 or later`](LICENSE).
-Project thanks are listed in [`THANKS.md`](THANKS.md), and third-party asset notices are listed in [`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md).
+OpenVitals è distribuito con licenza [GNU AGPL v3.0 o successiva](LICENSE). Crediti e componenti di terze parti sono elencati in [THANKS.md](THANKS.md) e [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
