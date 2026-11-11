@@ -2,6 +2,10 @@ package tech.mmarca.openvitals.features.dashboard
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.width
+import tech.mmarca.openvitals.ui.components.OpenVitalsButton
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -29,6 +33,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import tech.mmarca.openvitals.ui.theme.Spacing
 import kotlinx.coroutines.launch
 import tech.mmarca.openvitals.R
 import tech.mmarca.openvitals.core.presentation.DateTimeFormatterProvider
@@ -166,7 +171,7 @@ internal fun DashboardSwipeToDeleteActivityCard(
                         .fillMaxSize()
                         .clip(shape)
                         .background(MaterialTheme.colorScheme.errorContainer, shape)
-                        .padding(horizontal = 24.dp),
+                        .padding(horizontal = Spacing.xxl),
                     contentAlignment = Alignment.CenterEnd,
                 ) {
                     Icon(
@@ -186,27 +191,14 @@ internal fun DashboardSwipeToDeleteActivityCard(
 private fun DashboardActivitiesSectionHeader(
     onClick: () -> Unit,
 ) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable(onClick = onClick)
-            .padding(
-                horizontal = DashboardScreenPadding,
-                vertical = 6.dp,
-            ),
-        verticalAlignment = Alignment.CenterVertically,
+    OpenVitalsButton(
+        onClick = onClick,
+        contentPadding = DashboardQuickActionContentPadding,
+        modifier = Modifier.padding(horizontal = DashboardScreenPadding, vertical = Spacing.md)
+            .fillMaxWidth().height(DashboardQuickActionHeight),
     ) {
-        Text(
-            text = stringResource(R.string.dashboard_activities_today),
-            style = MaterialTheme.typography.titleSmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-            modifier = Modifier.weight(1f),
-        )
-        Icon(
-            imageVector = Icons.Outlined.ChevronRight,
-            contentDescription = null,
-            tint = MaterialTheme.colorScheme.onSurfaceVariant,
-            modifier = Modifier.size(20.dp),
-        )
+        Icon(Icons.AutoMirrored.Outlined.DirectionsRun, null, Modifier.size(DashboardQuickActionIconSize))
+        Spacer(Modifier.width(6.dp))
+        Text(stringResource(R.string.dashboard_activities_today))
     }
 }

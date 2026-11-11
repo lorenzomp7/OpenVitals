@@ -5,6 +5,7 @@ import tech.mmarca.openvitals.core.geo.haversineMeters
 import tech.mmarca.openvitals.domain.insights.RouteElevation
 
 fun ExerciseData.withRouteBackfilledMetrics(): ExerciseData {
+    if (exerciseType in indoorExercises) return this
     val metrics = route.takeIf { it.status == ExerciseRouteStatus.DATA }
         ?.points
         .orEmpty()
@@ -25,6 +26,7 @@ fun ExerciseData.withRouteBackfilledMetrics(): ExerciseData {
  * next to a GPS route. Without a readable route, the workout is unchanged.
  */
 fun ExerciseData.withRouteDistance(): ExerciseData {
+    if (exerciseType in indoorExercises) return this
     val points = route.takeIf { it.status == ExerciseRouteStatus.DATA }?.points.orEmpty()
     val routeMeters = points.sortedBy { it.time }
         .zipWithNext { start, end -> start.distanceMetersTo(end) }

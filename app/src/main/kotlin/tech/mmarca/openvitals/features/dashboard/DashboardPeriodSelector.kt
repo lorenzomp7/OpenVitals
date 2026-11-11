@@ -31,34 +31,16 @@ internal fun DashboardPeriodSelector(
     onOpenCalendar: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    var expanded by remember { mutableStateOf(false) }
-    Column(modifier) {
-        Box {
-            TextButton(
-                onClick = { expanded = true },
-                modifier = Modifier.height(36.dp),
-                contentPadding = PaddingValues(horizontal = 8.dp),
-            ) {
-                Text(timeRangeLabel(state.selectedRange))
-                Icon(Icons.Outlined.ArrowDropDown, contentDescription = null)
-            }
-            DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
-                TimeRange.entries.forEach { range ->
-                    DropdownMenuItem(
-                        text = { Text(timeRangeLabel(range)) },
-                        onClick = { expanded = false; onSelectRange(range) },
-                    )
-                }
-            }
-        }
-        PeriodNavigator(
-            selectedRange = state.selectedRange,
-            period = state.dashboardPeriod(),
-            canGoForward = state.canAdvancePeriod(),
-            onPreviousPeriod = onPrevious,
-            onNextPeriod = onNext,
-            onOpenCalendar = onOpenCalendar,
-            weekPeriodMode = state.activityWeekMode.toWeekPeriodMode(),
-        )
-    }
+    PeriodNavigator(
+        selectedRange = state.selectedRange,
+        period = state.dashboardPeriod(),
+        title = state.customPeriod?.let { "${it.start} – ${it.end}" },
+        subtitle = state.customPeriod?.let { stringResource(R.string.report_lookback_custom) },
+        canGoForward = state.canAdvancePeriod(),
+        onPreviousPeriod = onPrevious,
+        onNextPeriod = onNext,
+        onOpenCalendar = onOpenCalendar,
+        weekPeriodMode = state.activityWeekMode.toWeekPeriodMode(),
+        modifier = modifier,
+    )
 }

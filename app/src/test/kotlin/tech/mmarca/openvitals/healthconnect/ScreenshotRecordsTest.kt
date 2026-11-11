@@ -45,4 +45,12 @@ class ScreenshotRecordsTest {
         assertTrue(record is androidx.health.connect.client.records.BodyFatRecord)
         assertEquals(18.0, (record as androidx.health.connect.client.records.BodyFatRecord).percentage.value, 0.0)
     }
+    @org.junit.Test fun `body water percentage uses the screenshot weight and BMI is preview only`() {
+        val records = screenshotRecords(listOf("kg" to "80", "body_water_percent" to "50", "bmi" to "24"),
+            "2025-01-01T10:00", "2025-01-01T10:00")
+        org.junit.Assert.assertEquals(2, records.size)
+        val water = records.filterIsInstance<androidx.health.connect.client.records.BodyWaterMassRecord>().single()
+        org.junit.Assert.assertEquals(40.0, water.mass.inKilograms, 0.001)
+    }
+
 }

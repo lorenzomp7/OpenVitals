@@ -7,9 +7,10 @@ import tech.mmarca.openvitals.core.period.periodFor
 import tech.mmarca.openvitals.domain.preferences.toWeekPeriodMode
 
 internal fun DashboardUiState.dashboardPeriod(): DatePeriod =
-    periodFor(selectedRange, selectedDate, weekPeriodMode = activityWeekMode.toWeekPeriodMode())
+    customPeriod ?: periodFor(selectedRange, selectedDate, weekPeriodMode = activityWeekMode.toWeekPeriodMode())
 
 internal fun DashboardUiState.canAdvancePeriod(): Boolean {
+    customPeriod?.let { return it.end.isBefore(java.time.LocalDate.now()) }
     val selection = PeriodSelection(selectedRange, selectedDate)
     return selection.nextPeriod(weekPeriodMode = activityWeekMode.toWeekPeriodMode()) != selection
 }

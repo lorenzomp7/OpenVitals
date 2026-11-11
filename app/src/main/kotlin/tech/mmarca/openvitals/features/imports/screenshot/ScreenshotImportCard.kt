@@ -60,11 +60,20 @@ internal fun ScreenshotImportDialog(onDismiss: () -> Unit, initialUri: android.n
                 state.values.forEachIndexed { index, item ->
                     Row {
                         OutlinedTextField(value = item.value, onValueChange = { confirmed = false; viewModel.edit(index, it) },
-                            label = { Text(when (item.kind) { "kg" -> stringResource(R.string.metric_weight); "body_fat" -> stringResource(R.string.metric_body_fat); "kcal" -> stringResource(R.string.screenshot_import_total_kcal); "duration_min" -> stringResource(R.string.screenshot_import_duration); else -> item.kind }) },
+                            label = { Text(when (item.kind) { "kg" -> stringResource(R.string.metric_weight); "body_fat" -> stringResource(R.string.metric_body_fat); "kcal" -> stringResource(R.string.screenshot_import_total_kcal); "duration_min" -> stringResource(R.string.screenshot_import_duration)
+                                "bmi" -> stringResource(R.string.metric_bmi)
+                                "bmr" -> stringResource(R.string.metric_bmr)
+                                "lean_mass" -> stringResource(R.string.metric_lean_mass)
+                                "body_water_percent" -> stringResource(R.string.metric_body_water) + " (%)"
+                                "body_water" -> stringResource(R.string.metric_body_water_mass)
+                                "bone_mass" -> stringResource(R.string.metric_bone_mass)
+                                else -> item.kind }) },
                             enabled = !state.busy && !state.saved, modifier = Modifier.weight(1f))
                         TextButton(onClick = { confirmed = false; viewModel.remove(index) }, enabled = !state.busy && !state.saved) { Text("×") }
                     }
                 }
+                if (state.values.any { it.kind == "bmi" }) Text(stringResource(R.string.screenshot_bmi_preview))
+                if (state.values.any { it.kind == "body_water_percent" }) Text(stringResource(R.string.screenshot_water_percent))
                 if (state.values.isNotEmpty()) {
                     if (state.values.any { it.kind == "duration_min" }) {
                         Box {
@@ -90,7 +99,7 @@ internal fun ScreenshotImportDialog(onDismiss: () -> Unit, initialUri: android.n
                     TextButton(onClick = { permissions.launch(screenshotPermissions(state.values.map { it.kind })) }, enabled = !state.busy) {
                         Text(stringResource(R.string.screenshot_import_permissions))
                     }
-                    Button(onClick = { viewModel.save(start, end) }, enabled = (state.values.none { it.kind == "duration_min" } || state.exerciseType != null) && confirmed && !state.busy && !state.saved && start.isNotBlank() && end.isNotBlank()) {
+                    Button(onClick = { viewModel.save(start, end) }, enabled = state.values.any { it.kind != "bmi" } && (state.values.none { it.kind == "body_water_percent" } || state.values.any { it.kind == "kg" }) && (state.values.none { it.kind == "duration_min" } || state.exerciseType != null) && confirmed && !state.busy && !state.saved && start.isNotBlank() && end.isNotBlank()) {
                         Text(stringResource(R.string.screenshot_import_save))
                     }
                 } else if (!state.busy && !state.saved) Text(stringResource(R.string.screenshot_import_empty))

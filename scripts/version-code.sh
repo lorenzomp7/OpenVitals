@@ -238,7 +238,7 @@ shift || true
 floor="${OPENVITALS_VERSION_CODE_FLOOR:-$DEFAULT_FLOOR}"
 server_url="${GITHUB_SERVER_URL:-https://github.com}"
 api_url="${GITHUB_API_URL:-https://api.github.com}"
-repo="${GITHUB_REPOSITORY:-Hale-MTU/OpenVitals}"
+repo="${GITHUB_REPOSITORY:-lorenzomp7/OpenVitals}"
 tag=""
 
 case "$mode" in

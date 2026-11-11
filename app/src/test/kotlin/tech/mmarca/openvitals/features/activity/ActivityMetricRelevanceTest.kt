@@ -191,4 +191,22 @@ class ActivityMetricRelevanceTest {
         assertTrue(isMetricRelevant(ActivityDetailMetric.CALORIES_BURNED, type))
         assertTrue(isMetricRelevant(ActivityDetailMetric.DURATION, type))
     }
+    @Test fun `stationary cycling hides unrelated recorded step and elevation values`() {
+        val bike = ExerciseSessionRecord.EXERCISE_TYPE_BIKING_STATIONARY
+        listOf(ActivityDetailMetric.STEPS, ActivityDetailMetric.STEPS_CADENCE,
+            ActivityDetailMetric.AVERAGE_PACE, ActivityDetailMetric.ELEVATION_GAINED).forEach {
+            assertFalse(showsMetricRow(true, it, bike))
+        }
+        assertTrue(showsMetricRow(true, ActivityDetailMetric.CYCLING_CADENCE, bike))
+        assertTrue(showsMetricRow(true, ActivityDetailMetric.AVERAGE_POWER, bike))
+        assertFalse(showsMetricRow(false, ActivityDetailMetric.DISTANCE, bike))
+    }
+    @Test fun `treadmill shows recorded running metrics and hides cycling cadence`() {
+        val treadmill = ExerciseSessionRecord.EXERCISE_TYPE_RUNNING_TREADMILL
+        assertTrue(showsMetricRow(true, ActivityDetailMetric.STEPS_CADENCE, treadmill))
+        assertTrue(showsMetricRow(true, ActivityDetailMetric.AVERAGE_PACE, treadmill))
+        assertFalse(showsMetricRow(true, ActivityDetailMetric.CYCLING_CADENCE, treadmill))
+        assertFalse(showsMetricRow(true, ActivityDetailMetric.ELEVATION_GAINED, treadmill))
+    }
+
 }

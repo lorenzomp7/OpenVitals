@@ -404,7 +404,7 @@ internal fun ActivityDetailContent(
                 )
             }
         }
-        activityCadenceKinds(cadenceSamples).forEach { cadenceKind ->
+        activityCadenceKinds(cadenceSamples, workout.exerciseType).forEach { cadenceKind ->
             item(key = "cadence-$cadenceKind") {
                 ActivityCadenceChartCard(
                     samples = cadenceSamples,

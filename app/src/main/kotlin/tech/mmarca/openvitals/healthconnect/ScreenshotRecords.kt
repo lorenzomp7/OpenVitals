@@ -5,6 +5,7 @@ import androidx.health.connect.client.records.metadata.Metadata
 import androidx.health.connect.client.units.Energy
 import androidx.health.connect.client.units.Length
 import androidx.health.connect.client.units.Mass
+import androidx.health.connect.client.units.Power
 import androidx.health.connect.client.units.Percentage
 import java.security.MessageDigest
 import java.time.LocalDateTime
@@ -16,16 +17,27 @@ internal fun screenshotRecords(values: List<Pair<String, String>>, start: String
     val from = LocalDateTime.parse(start).atZone(zone)
     val to = LocalDateTime.parse(end).atZone(zone)
     require(!to.isBefore(from) && !to.toInstant().isAfter(java.time.Instant.now()))
-    return values.map { (kind, raw) ->
+    return values.filterNot { it.first == "bmi" }.map { (kind, raw) ->
         val value = raw.replace(',', '.').toDouble()
         require(value.isFinite() && value > 0)
         val key = "$kind|$value|${from.toInstant()}|${to.toInstant()}" +
+            (if (kind == "body_water_percent") "|${values.firstOrNull { it.first == "kg" }?.second}" else "") +
             if (kind == "duration_min") "|${exerciseType ?: ExerciseSessionRecord.EXERCISE_TYPE_OTHER_WORKOUT}" else ""
         val digest = MessageDigest.getInstance("SHA-256").digest(key.toByteArray()).joinToString("") { "%02x".format(it) }
         val metadata = Metadata.manualEntry(clientRecordId = "screenshot_$digest", clientRecordVersion = 1)
         val time = from.toInstant()
         val offset = from.offset
         when (kind) {
+            "bmr" -> BasalMetabolicRateRecord(time, offset, Power.kilocaloriesPerDay(value), metadata)
+            "lean_mass" -> LeanBodyMassRecord(time, offset, Mass.kilograms(value), metadata)
+            "body_water_percent" -> {
+                require(value <= 100)
+                val weight = requireNotNull(values.firstOrNull { it.first == "kg" }?.second?.replace(',', '.')?.toDoubleOrNull())
+                require(weight.isFinite() && weight > 0)
+                BodyWaterMassRecord(time, offset, Mass.kilograms(weight * value / 100), metadata)
+            }
+            "body_water" -> BodyWaterMassRecord(time, offset, Mass.kilograms(value), metadata)
+            "bone_mass" -> BoneMassRecord(time, offset, Mass.kilograms(value), metadata)
             "kg" -> WeightRecord(time, offset, Mass.kilograms(value), metadata)
             "body_fat" -> { require(value <= 100); BodyFatRecord(time, offset, Percentage(value), metadata) }
             "duration_min" -> {
@@ -58,9 +70,13 @@ internal fun screenshotRecords(values: List<Pair<String, String>>, start: String
     }
 }
 
-internal fun screenshotPermissions(kinds: List<String>): Set<String> = kinds.map { kind ->
+internal fun screenshotPermissions(kinds: List<String>): Set<String> = kinds.filterNot { it == "bmi" }.map { kind ->
     androidx.health.connect.client.permission.HealthPermission.getWritePermission(when (kind) {
         "duration_min" -> ExerciseSessionRecord::class
+        "bmr" -> BasalMetabolicRateRecord::class
+        "lean_mass" -> LeanBodyMassRecord::class
+        "body_water", "body_water_percent" -> BodyWaterMassRecord::class
+        "bone_mass" -> BoneMassRecord::class
         "kg" -> WeightRecord::class
         "body_fat" -> BodyFatRecord::class
         "steps" -> StepsRecord::class

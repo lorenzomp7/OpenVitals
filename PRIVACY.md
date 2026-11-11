@@ -4,9 +4,9 @@ Last updated: November 10, 2026
 
 OpenVitals is a local-first Android app for viewing health and fitness data from Health Connect.
 
-This personal fork adds Mapbox network access as described below. The upstream policy and publisher details are retained for context. The upstream policy applies to the OpenVitals Android app published under the package name `tech.mmarca.openvitals` by Mittetulundusühing Hale (MTÜ Hale), a non-profit association registered in Estonia, registry code 80677610.
+This personal version of OpenVitals is maintained at https://github.com/lorenzomp7/OpenVitals and adds Mapbox network access as described below.
 
-Privacy contact: hello@hale.ngo
+Privacy contact: https://github.com/lorenzomp7/OpenVitals/issues
 
 ## Summary
 
@@ -158,4 +158,4 @@ This privacy policy may be updated when OpenVitals changes how it accesses, uses
 
 For privacy questions, contact:
 
-hello@hale.ngo
+https://github.com/lorenzomp7/OpenVitals/issues

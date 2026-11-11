@@ -78,6 +78,8 @@ class ActivitiesViewModel @Inject constructor(
     private val bodyProfilePreferences: BodyProfilePreferences,
     private val dispatchers: DispatcherProvider = DefaultDispatcherProvider,
     savedStateHandle: androidx.lifecycle.SavedStateHandle,
+    private val returnCache: ActivitiesReturnCache = ActivitiesReturnCache(),
+    private val healthRepository: tech.mmarca.openvitals.data.repository.contract.HealthRepository? = null,
 ) : ViewModel() {
 
     private val goalKey = MetricDailyGoalKey.WORKOUT_MINUTES
@@ -107,7 +109,7 @@ class ActivitiesViewModel @Inject constructor(
 
     init {
         observeActivityWeekMode()
-        load()
+        loadInternal(useCache = true)
     }
 
     /** Read workout intervals for range cardio load, never an entire week/month of raw pulse data. */
@@ -216,6 +218,7 @@ class ActivitiesViewModel @Inject constructor(
                 error = null,
             )
             runCatching {
+                returnCache.clear()
                 repository.deleteActivityEntry(entryId)
             }.onSuccess {
                 load()
@@ -226,7 +229,9 @@ class ActivitiesViewModel @Inject constructor(
         }
     }
 
-    fun load() {
+    fun load() = loadInternal(useCache = false)
+
+    private fun loadInternal(useCache: Boolean) {
         loadCoordinator.launch(viewModelScope) load@{
             val query = PeriodLoadQuery(
                 range = periodDriver.selection.selectedRange,
@@ -237,9 +242,22 @@ class ActivitiesViewModel @Inject constructor(
                 query = query,
                 activityWeekMode = _uiState.value.activityWeekMode,
             )
+            val fingerprint = listOf(query, _uiState.value.activityWeekMode,
+                bodyProfilePreferences.bodyProfile(), java.time.ZoneId.systemDefault(),
+                runCatching { healthRepository?.grantedPermissions() }.getOrNull()).toString()
+            var reusedCache = false
+            if (useCache) returnCache.get(fingerprint)?.let { result ->
+                reusedCache = true
+                latestResult = result
+                _uiState.value = _uiState.value.copy(isLoading = false)
+                    .withLoadedResult(result, _uiState.value.selectedActivityType)
+                if (returnCache.isFresh()) return@load
+            }
             val date = query.selectedDate
-            _uiState.value = _uiState.value.copy(isLoading = true, error = null)
+            _uiState.value = _uiState.value.copy(isLoading = !reusedCache, error = null)
+            var cacheable = false
             runCatching {
+                tech.mmarca.openvitals.healthconnect.withHealthConnectReadOutcome {
                 coroutineScope {
                     val currentDataEnd = windows.currentDataEnd
                     val workouts = async { repository.loadWorkoutsWithMetrics(windows.current.start, currentDataEnd) }
@@ -282,10 +300,12 @@ class ActivitiesViewModel @Inject constructor(
                         crossDailyRestingHR = loadedRestingHeartRate,
                     )
                 }
+                }.let { outcome -> cacheable = !outcome.degraded; outcome.value }
             }
                 .onSuccess { result ->
                     if (!isCurrent) return@load
                     latestResult = result
+                    if (cacheable) returnCache.put(fingerprint, result)
                     _uiState.value = _uiState.value
                         .copy(isLoading = false, selectedDate = date)
                         .withLoadedResult(result, _uiState.value.selectedActivityType)
@@ -329,7 +349,7 @@ class ActivitiesViewModel @Inject constructor(
     }
 }
 
-private data class ActivitiesLoadResult(
+internal data class ActivitiesLoadResult(
     val workouts: List<ExerciseData>,
     val plannedWorkouts: List<PlannedExerciseData>,
     val previousWorkouts: List<ExerciseData>,

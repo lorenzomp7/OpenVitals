@@ -108,7 +108,11 @@ class AggregatingFakeHealthConnectClient(
 
     override suspend fun aggregate(request: AggregateRequest): AggregationResult {
         val (start, end) = bounds(request.internalTimeRange())
-        return compute(request.internalMetrics(), start, end)
+        @Suppress("UNCHECKED_CAST")
+        val origins = request.internal("getDataOriginFilter\$connect_client") as Set<DataOrigin>
+        return compute(request.internalMetrics(), start, end, recordsOf = { type ->
+            readAll(type).filter { origins.isEmpty() || it.metadata.dataOrigin in origins }
+        })
     }
 
     /** Bounds of every aggregateGroupByDuration request, in call order. */

@@ -95,7 +95,7 @@ internal class ScreenshotImportViewModel @Inject constructor(
         mutable.value = mutable.value.copy(exerciseType = type, saved = false)
     }
     fun save(start: String, end: String) {
-        if (mutable.value.busy || mutable.value.values.isEmpty() || mutable.value.saved) return
+        if (mutable.value.busy || mutable.value.values.none { it.kind != "bmi" } || mutable.value.saved) return
         val values = mutable.value.values
         mutable.value = mutable.value.copy(busy = true, error = null)
         viewModelScope.launch {

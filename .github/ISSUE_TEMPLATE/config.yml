@@ -4,5 +4,5 @@ contact_links:
     url: https://openvitals.zulipchat.com/
     about: Ask how something works, or talk an idea through, on Zulip.
   - name: Support and privacy
-    url: https://docs.hale.ngo/openvitals/app/support/
+    url: https://github.com/lorenzomp7/OpenVitals/issues
     about: What to include in a report, and how to send one privately by email from the app.

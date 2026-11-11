@@ -51,6 +51,7 @@ fun DashboardScreen(
     onOpenLog: () -> Unit,
     onStartActivity: () -> Unit,
     onOpenDeviceStatus: () -> Unit,
+    onOpenBodyProfile: () -> Unit = {},
 ) {
     // Seeded from the flow's current value: a placeholder frame on return would
     // reset the carousel page and scroll position.
@@ -91,9 +92,10 @@ fun DashboardScreen(
         }
     }
     val currentOnOpenDeviceStatus by rememberUpdatedState(onOpenDeviceStatus)
-    var showUserProfile by remember { mutableStateOf(false) }
+    val currentOnOpenBodyProfile by rememberUpdatedState(onOpenBodyProfile)
     val profileViewModel: tech.mmarca.openvitals.features.settings.UserProfileViewModel = androidx.hilt.navigation.compose.hiltViewModel()
     val profile by profileViewModel.state.collectAsStateWithLifecycle()
+    LifecycleEventEffect(Lifecycle.Event.ON_RESUME) { profileViewModel.refresh() }
     val profilePhoto = remember(profile.photo) { profile.photo?.let { it.asImageBitmap() } }
     DeclareAppBar(
         remember(state.sensorStatus.hasDevices, profilePhoto) {
@@ -105,15 +107,11 @@ fun DashboardScreen(
                             contentDescription = R.string.cd_sensor_battery_status,
                             onClick = { currentOnOpenDeviceStatus() },
                         ))
-                        add(AppBarAction(Icons.Outlined.AccountCircle, R.string.user_profile_title, image = profilePhoto) { showUserProfile = true })
+                        add(AppBarAction(Icons.Outlined.AccountCircle, R.string.user_profile_title, image = profilePhoto) { currentOnOpenBodyProfile() })
                     },
                 )
         },
     )
-
-    if (showUserProfile) {
-        tech.mmarca.openvitals.features.settings.UserProfileDialog(onDismiss = { showUserProfile = false }, viewModel = profileViewModel)
-    }
 
     WithHealthConnectFeatureScreen(
         feature = HealthConnectFeature.DASHBOARD,
@@ -194,13 +192,12 @@ fun DashboardScreen(
     }
 
     if (showDatePicker) {
-        HealthDatePickerDialog(
-            selectedDate = selectedDate,
+        DashboardPeriodDialog(
+            state = state,
             onDismiss = { showDatePicker = false },
-            onConfirm = { date ->
-                showDatePicker = false
-                viewModel.selectDate(date)
-            },
+            onRange = viewModel::selectRange,
+            onDate = { date -> showDatePicker = false; viewModel.selectDate(date) },
+            onCustom = { start, end -> showDatePicker = false; viewModel.selectCustomPeriod(start, end) },
         )
     }
 }

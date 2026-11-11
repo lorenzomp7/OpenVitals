@@ -49,7 +49,7 @@ class ActivityMetricsTest {
 
         assertEquals(
             listOf(ActivityCadenceKind.CYCLING),
-            activityCadenceKinds(listOf(cycling)),
+            activityCadenceKinds(listOf(cycling, cycling.copy(time = Instant.EPOCH.plusSeconds(1)))),
         )
         assertEquals(emptyList<ActivityCadenceKind>(), activityCadenceKinds(emptyList()))
     }
