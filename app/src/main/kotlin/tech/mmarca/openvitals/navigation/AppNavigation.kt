@@ -359,11 +359,11 @@ fun AppNavigation(
             // the default scales the leaving screen down over the one behind it.
             enterTransition = { fadeIn(tween(NavFadeMillis)) },
             exitTransition = { fadeOut(tween(NavFadeMillis)) },
-            popEnterTransition = { fadeIn(tween(1)) },
+            popEnterTransition = { fadeIn(tween(NavFadeMillis)) },
             popExitTransition = { fadeOut(tween(NavFadeMillis)) },
             // The back gesture has its own pair, and its default shrinks the
             // leaving screen to 70% over the one behind.
-            predictivePopEnterTransition = { _ -> fadeIn(tween(1)) },
+            predictivePopEnterTransition = { _ -> fadeIn(tween(NavFadeMillis)) },
             predictivePopExitTransition = { _ -> fadeOut(tween(NavFadeMillis)) },
         ) {
             composable(Screen.Onboarding.route) {
@@ -383,6 +383,7 @@ fun AppNavigation(
             composable(Screen.Dashboard.route) {
                 val dashboardViewModel = hiltViewModel<DashboardViewModel>()
                 DashboardScreen(
+                    onOpenBodyProfile = { navController.navigate(Screen.SettingsBodyProfile.route) },
                     viewModel = dashboardViewModel,
                     unitFormatter = unitFormatter,
                     dateTimeFormatterProvider = dateTimeFormatterProvider,

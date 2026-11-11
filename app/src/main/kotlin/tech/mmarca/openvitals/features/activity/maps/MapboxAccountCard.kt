@@ -1,6 +1,7 @@
 package tech.mmarca.openvitals.features.activity.maps
 
 import android.content.Intent
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
@@ -45,7 +46,7 @@ internal fun MapboxAccountCard(modifier: Modifier = Modifier) {
             if (ready && !connected) Button(onClick = {
                 context.startActivity(Intent(context, MapboxLoginActivity::class.java))
             }) { Text(stringResource(R.string.mapbox_sign_in)) }
-            if (connected) TextButton(onClick = {
+            if (connected) TextButton(contentPadding = PaddingValues(0.dp), onClick = {
                 scope.launch {
                     try {
                         withContext(Dispatchers.IO) { MapboxTokenStore.clear(context) }

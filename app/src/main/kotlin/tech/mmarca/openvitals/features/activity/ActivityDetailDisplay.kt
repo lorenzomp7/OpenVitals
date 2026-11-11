@@ -42,8 +42,15 @@ internal data class ActivitySplitSpeedTrace(
 /** The cadence kinds that recorded something, in enum order. An empty chart is worse than none. */
 internal fun activityCadenceKinds(
     samples: List<ActivityCadenceSample>,
+    exerciseType: Int? = null,
 ): List<ActivityCadenceKind> =
-    ActivityCadenceKind.entries.filter { kind -> samples.any { it.kind == kind } }
+    ActivityCadenceKind.entries.filter { kind ->
+        val relevant = exerciseType == null || when (kind) {
+            ActivityCadenceKind.CYCLING -> exerciseType in tech.mmarca.openvitals.domain.model.cyclingExercises
+            ActivityCadenceKind.STEPS -> exerciseType in tech.mmarca.openvitals.domain.model.stepBasedExercises
+        }
+        relevant && samples.count { it.kind == kind && it.rate.isFinite() && it.rate > 0 } >= 2
+    }
 
 /** Pace bars are scaled per kilometre, whatever the units: the scale is a ratio. */
 private const val PaceScaleUnitMeters = 1000.0

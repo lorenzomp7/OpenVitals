@@ -15,6 +15,7 @@ import tech.mmarca.openvitals.domain.preferences.SleepWindow
 data class DashboardUiState(
     val selectedDate: LocalDate = LocalDate.now(),
     val selectedRange: TimeRange = TimeRange.DAY,
+    val customPeriod: tech.mmarca.openvitals.core.period.DatePeriod? = null,
     val data: DashboardData? = null,
     val isLoading: Boolean = true,
     val isRefreshing: Boolean = false,

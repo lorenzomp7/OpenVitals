@@ -6,6 +6,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
@@ -44,30 +45,11 @@ internal fun UserProfileDialog(onDismiss: () -> Unit, viewModel: UserProfileView
     var name by rememberSaveable { mutableStateOf(state.name) }
     var age by rememberSaveable { mutableStateOf(state.age?.toString().orEmpty()) }
     val validAge = age.isBlank() || age.toIntOrNull()?.let { it in 0..130 } == true
-    val photoPicker = rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri ->
-        if (uri != null) viewModel.setPhoto(uri)
-    }
     AlertDialog(
         onDismissRequest = onDismiss,
         title = { Text(stringResource(R.string.user_profile_title)) },
         text = {
-            Column(Modifier.verticalScroll(rememberScrollState()), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                val photo = state.photo
-                if (photo != null) Image(photo.asImageBitmap(), null,
-                    Modifier.size(80.dp).clip(CircleShape).align(Alignment.CenterHorizontally), contentScale = ContentScale.Crop)
-                else Icon(Icons.Outlined.AccountCircle, null, Modifier.size(64.dp).align(Alignment.CenterHorizontally))
-                TextButton(onClick = { photoPicker.launch("image/*") }) { Text(stringResource(R.string.user_profile_photo)) }
-                if (photo != null) TextButton(onClick = { viewModel.setPhoto(null) }) {
-                    Text(stringResource(R.string.user_profile_remove_photo))
-                }
-                OutlinedTextField(name, { name = it.take(100) }, label = { Text(stringResource(R.string.food_name)) },
-                    singleLine = true, modifier = Modifier.fillMaxWidth())
-                OutlinedTextField(age, { age = it.take(3) }, label = { Text(stringResource(R.string.user_profile_age)) },
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number), singleLine = true,
-                    isError = !validAge, modifier = Modifier.fillMaxWidth())
-                if (!validAge) Text(stringResource(R.string.body_entry_invalid_value), color = MaterialTheme.colorScheme.error)
-                state.error?.resolve()?.let { Text(it, color = MaterialTheme.colorScheme.error) }
-            }
+            UserProfileFields(state, name, { name = it }, age, { age = it }, validAge, viewModel)
         },
         confirmButton = {
             TextButton(enabled = validAge, onClick = { viewModel.save(name, age.toIntOrNull(), onDismiss) }) {
@@ -76,4 +58,48 @@ internal fun UserProfileDialog(onDismiss: () -> Unit, viewModel: UserProfileView
         },
         dismissButton = { TextButton(onClick = onDismiss) { Text(stringResource(R.string.action_cancel)) } },
     )
+}
+
+@Composable
+internal fun UserProfileSettingsCard(viewModel: UserProfileViewModel = hiltViewModel()) {
+    val state by viewModel.state.collectAsStateWithLifecycle()
+    if (state.loading) return
+    var name by rememberSaveable(state.name) { mutableStateOf(state.name) }
+    var age by rememberSaveable(state.age) { mutableStateOf(state.age?.toString().orEmpty()) }
+    val validAge = age.isBlank() || age.toIntOrNull()?.let { it in 0..130 } == true
+    tech.mmarca.openvitals.ui.components.OpenVitalsCard {
+        Column(Modifier.fillMaxWidth().padding(16.dp)) {
+            UserProfileFields(state, name, { name = it }, age, { age = it }, validAge, viewModel)
+            TextButton(enabled = validAge, onClick = { viewModel.save(name, age.toIntOrNull()) {} }) {
+                Text(stringResource(R.string.action_save))
+            }
+        }
+    }
+}
+
+@Composable
+private fun UserProfileFields(
+    state: UserProfileState, name: String, onName: (String) -> Unit,
+    age: String, onAge: (String) -> Unit, validAge: Boolean, viewModel: UserProfileViewModel,
+) {
+    val photoPicker = rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri ->
+        if (uri != null) viewModel.setPhoto(uri)
+    }
+            Column(Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                val photo = state.photo
+                if (photo != null) Image(photo.asImageBitmap(), null,
+                    Modifier.size(80.dp).clip(CircleShape).align(Alignment.CenterHorizontally), contentScale = ContentScale.Crop)
+                else Icon(Icons.Outlined.AccountCircle, null, Modifier.size(64.dp).align(Alignment.CenterHorizontally))
+                TextButton(onClick = { photoPicker.launch("image/*") }) { Text(stringResource(R.string.user_profile_photo)) }
+                if (photo != null) TextButton(onClick = { viewModel.setPhoto(null) }) {
+                    Text(stringResource(R.string.user_profile_remove_photo))
+                }
+                OutlinedTextField(name, { onName(it.take(100)) }, label = { Text(stringResource(R.string.food_name)) },
+                    singleLine = true, modifier = Modifier.fillMaxWidth())
+                OutlinedTextField(age, { onAge(it.take(3)) }, label = { Text(stringResource(R.string.user_profile_age)) },
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number), singleLine = true,
+                    isError = !validAge, modifier = Modifier.fillMaxWidth())
+                if (!validAge) Text(stringResource(R.string.body_entry_invalid_value), color = MaterialTheme.colorScheme.error)
+                state.error?.resolve()?.let { Text(it, color = MaterialTheme.colorScheme.error) }
+            }
 }

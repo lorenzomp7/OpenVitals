@@ -604,20 +604,40 @@ class DashboardViewModel @Inject constructor(
     }
 
     fun selectRange(range: TimeRange) {
-        if (range == _uiState.value.selectedRange) return
+        if (range == _uiState.value.selectedRange && _uiState.value.customPeriod == null) return
         periodDriver.selectRange(range)
-        _uiState.update { it.copy(selectedRange = range) }
+        _uiState.update { it.copy(selectedRange = range, customPeriod = null) }
         userPinnedPastDay = _uiState.value.dashboardPeriod().end.isBefore(LocalDate.now())
         forceLoad(_uiState.value.selectedDate, RefreshMode.NORMAL)
     }
 
-    fun previousDay() = selectDate(periodDriver.previousPeriod().selectedDate)
+    fun selectCustomPeriod(start: LocalDate, end: LocalDate) {
+        require(!end.isBefore(start) && !end.isAfter(LocalDate.now()))
+        periodDriver.selectRange(TimeRange.MONTH)
+        _uiState.update { it.copy(selectedRange = TimeRange.MONTH, customPeriod = DatePeriod(start, end)) }
+        userPinnedPastDay = end.isBefore(LocalDate.now())
+        forceLoad(end, RefreshMode.NORMAL)
+    }
+
+    private fun shiftCustomPeriod(forward: Boolean): Boolean {
+        val period = _uiState.value.customPeriod ?: return false
+        val days = java.time.temporal.ChronoUnit.DAYS.between(period.start, period.end) + 1
+        val end = period.end.plusDays(if (forward) days else -days).coerceAtMost(LocalDate.now())
+        selectCustomPeriod(end.minusDays(days - 1), end)
+        return true
+    }
+
+    fun previousDay() {
+        if (!shiftCustomPeriod(false)) selectDate(periodDriver.previousPeriod().selectedDate)
+    }
 
     fun nextDay() {
+        if (shiftCustomPeriod(true)) return
         periodDriver.nextPeriod()?.let { selectDate(it.selectedDate) }
     }
 
     fun selectDate(date: LocalDate) {
+        _uiState.update { it.copy(customPeriod = null) }
         val clampedDate = periodDriver.selectDate(date).selectedDate
         userPinnedPastDay = tech.mmarca.openvitals.core.period.periodFor(
             _uiState.value.selectedRange, clampedDate, weekPeriodMode = prefs.activityWeekMode.toWeekPeriodMode(),

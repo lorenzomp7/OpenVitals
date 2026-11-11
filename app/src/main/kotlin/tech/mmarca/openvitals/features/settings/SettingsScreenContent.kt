@@ -99,20 +99,10 @@ private fun LazyListScope.settingsRootCards(actions: SettingsScreenActions, open
         )
     }
 
-    item { SectionHeader(stringResource(R.string.section_support)) }
-
-    item {
-        SupportOpenVitalsCard(
-            onOpenIssues = actions.onOpenIssues,
-            modifier = Modifier.padding(horizontal = LayoutMetrics.screenGutter),
-        )
-    }
-
     item { SectionHeader(stringResource(R.string.section_privacy)) }
 
     item {
         PrivacyInfoCard(
-            onOpenPrivacyPolicy = actions.onOpenPrivacyPolicy,
             modifier = Modifier.padding(horizontal = LayoutMetrics.screenGutter),
         )
     }

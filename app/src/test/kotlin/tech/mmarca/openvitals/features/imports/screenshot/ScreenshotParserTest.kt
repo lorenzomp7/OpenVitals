@@ -49,7 +49,13 @@ class ScreenshotParserTest {
             ScreenshotOcrLine("MUSCLE MASS", 50, 350, 190, 380),
             ScreenshotOcrLine("50.0 kg", 50, 400, 150, 430),
         )
-        assertEquals(setOf(ScreenshotValue("kg", "70.0"), ScreenshotValue("body_fat", "18.0")),
+        assertEquals(setOf(ScreenshotValue("kg", "70.0"), ScreenshotValue("body_fat", "18.0"), ScreenshotValue("bmi", "23.4")),
             ScreenshotParser.parseLines(lines).toSet())
     }
+    @Test fun `body composition labels do not become weight or workout calories`() {
+        val values = ScreenshotParser.parse("BMI 23.4 BMR 1700 kcal Lean mass 55.2 kg Body water 40.1 kg Bone mass 3.1 kg")
+        assertEquals(setOf("bmi", "bmr", "lean_mass", "body_water", "bone_mass"), values.map { it.kind }.toSet())
+        assertEquals("1700", values.single { it.kind == "bmr" }.value)
+    }
+
 }

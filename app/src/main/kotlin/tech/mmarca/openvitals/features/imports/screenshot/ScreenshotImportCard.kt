@@ -60,7 +60,13 @@ internal fun ScreenshotImportDialog(onDismiss: () -> Unit, initialUri: android.n
                 state.values.forEachIndexed { index, item ->
                     Row {
                         OutlinedTextField(value = item.value, onValueChange = { confirmed = false; viewModel.edit(index, it) },
-                            label = { Text(when (item.kind) { "kg" -> stringResource(R.string.metric_weight); "body_fat" -> stringResource(R.string.metric_body_fat); "kcal" -> stringResource(R.string.screenshot_import_total_kcal); "duration_min" -> stringResource(R.string.screenshot_import_duration); else -> item.kind }) },
+                            label = { Text(when (item.kind) { "kg" -> stringResource(R.string.metric_weight); "body_fat" -> stringResource(R.string.metric_body_fat); "kcal" -> stringResource(R.string.screenshot_import_total_kcal); "duration_min" -> stringResource(R.string.screenshot_import_duration)
+                                "bmi" -> stringResource(R.string.metric_bmi)
+                                "bmr" -> stringResource(R.string.metric_bmr)
+                                "lean_mass" -> stringResource(R.string.metric_lean_mass)
+                                "body_water" -> stringResource(R.string.metric_body_water_mass)
+                                "bone_mass" -> stringResource(R.string.metric_bone_mass)
+                                else -> item.kind }) },
                             enabled = !state.busy && !state.saved, modifier = Modifier.weight(1f))
                         TextButton(onClick = { confirmed = false; viewModel.remove(index) }, enabled = !state.busy && !state.saved) { Text("×") }
                     }

@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.ui.text.style.TextOverflow
 import tech.mmarca.openvitals.ui.components.AutoResizeText
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.CalendarMonth
 import androidx.compose.material.icons.outlined.ChevronLeft
 import androidx.compose.material.icons.outlined.ChevronRight
 import androidx.compose.material3.Icon
@@ -76,9 +75,7 @@ fun PeriodNavigator(
             }
         }
 
-    }
         Row(
-            modifier = Modifier.align(Alignment.End),
             horizontalArrangement = Arrangement.spacedBy(4.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
@@ -100,12 +97,8 @@ fun PeriodNavigator(
                 )
             }
 
-            OpenVitalsIconSurfaceButton(onClick = onOpenCalendar, modifier = Modifier.size(40.dp)) {
-                Icon(
-                    imageVector = Icons.Outlined.CalendarMonth,
-                    contentDescription = stringResource(R.string.cd_open_calendar),
-                )
-            }
+
         }
+    }
     }
 }
