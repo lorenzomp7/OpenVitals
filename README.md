@@ -56,10 +56,10 @@ Le note di ciascuna [release](https://github.com/lorenzomp7/OpenVitals/releases)
 
 ## Prima configurazione di Health Connect
 
-Health Connect (in italiano **Connessione Salute**) è l’archivio sul telefono che permette alle app di scambiarsi dati con il tuo consenso. Il percorso è: **orologio → app del produttore → Health Connect → OpenVitals**. Installare OpenVitals da solo non trasferisce i dati dell’orologio.
+Health Connect è il servizio Android che raccoglie sul dispositivo i dati condivisi dalle app compatibili e ti permette di decidere quali app possono leggerli o scriverli. I dati possono provenire da smartwatch, telefono, bilance e altri dispositivi, oppure da inserimenti manuali e importazioni. OpenVitals legge i dati presenti in Health Connect e, con i permessi necessari, può salvarvi nuovi dati. Per visualizzare quelli di un’altra app, abilita la sua condivisione con Health Connect e autorizza OpenVitals a leggerli.
 
 1. **Apri Health Connect.** Su Android 14 o successivi cerca “Connessione Salute” nelle Impostazioni; su Android 13 o precedenti compatibili installa [l’app ufficiale dal Play Store](https://play.google.com/store/apps/details?id=com.google.android.apps.healthdata). Completa l’avvio iniziale.
-2. **Sincronizza l’orologio** nell’app del produttore e abilita lì il collegamento a Health Connect (vedi sotto).
+2. **Apri l’app che contiene i tuoi dati**, sincronizza gli eventuali dispositivi e abilita il collegamento a Health Connect.
 3. **Controlla le autorizzazioni app** in Health Connect: consenti all’app del produttore di **scrivere** le categorie desiderate.
 4. **Apri OpenVitals** e concedi la **lettura** delle stesse categorie. Abilita la scrittura se vuoi salvare inserimenti o importazioni; autorizza anche l’accesso allo storico, quando disponibile e richiesto.
 5. **Verifica un dato recente** in Health Connect, nella sezione dati, prima di cercarlo in OpenVitals. Poi riapri o aggiorna la dashboard.
