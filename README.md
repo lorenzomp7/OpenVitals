@@ -66,34 +66,9 @@ Health Connect è il servizio Android che raccoglie sul dispositivo i dati condi
 
 I nomi dei menu possono cambiare con telefono, lingua e versione dell’app.
 
-### Collegare Samsung Health e Zepp
+### Importare lo storico da altre app
 
-| App | Configurazione |
-| --- | --- |
-| **Samsung Health** | Apri **Impostazioni → Health Connect → Autorizzazioni app → Samsung Health** e abilita la scrittura. Riapri Samsung Health; nelle impostazioni dell’account Samsung usa **Sincronizza ora** per aggiornare i dati disponibili sul telefono. |
-| **Zepp (Amazfit)** | Nel **Profilo** cerca **Account di terze parti / Collega account → Health Connect**, attiva la sincronizzazione e autorizza le categorie da scrivere. Sincronizza l’orologio in Zepp e verifica i record in Health Connect. Il percorso può variare tra versioni. Zepp e Zepp Life sono app diverse. |
-| **Altre app** | Cerca **Health Connect / Connessione Salute** nelle impostazioni di condivisione o integrazione. Se manca, serve un’esportazione o un intermediario compatibile. |
-
-**Un’autorizzazione non prova che ci siano dati:** vedere “HRV: scrittura consentita” non significa che l’app abbia registrato HRV. Controlla le singole voci e l’app di origine in Health Connect.
-
-### Posso recuperare lo storico precedente?
-
-**Sì, quando la sorgente e il metodo di trasferimento lo consentono; non è garantita l’importazione automatica di tutto lo storico.** Ci sono due passaggi distinti:
-
-- **Trasferire i vecchi record in Health Connect.** Samsung Health e Zepp decidono quali dati e periodi esportare. La sincronizzazione dell’account recupera i dati nell’app del produttore, ma non garantisce che anni di storico vengano riscritti in Health Connect. Per Zepp non diamo per garantito un recupero completo tramite il solo collegamento.
-- **Leggere i record già trasferiti.** Senza il permesso aggiuntivo per lo storico, la lettura è normalmente limitata ai 30 giorni precedenti la prima autorizzazione e ai dati successivi. OpenVitals richiede l’accesso allo storico sui dispositivi che lo supportano: concedilo quando proposto. Questo permesso non recupera dati rimasti nella sorgente.
-
-Per provare il recupero:
-
-1. Nell’app di origine verifica che esista una misurazione di una data passata.
-2. Attiva il collegamento, sincronizza e cerca **la stessa data e categoria in Health Connect**.
-3. Se manca, per **Samsung Health** puoi valutare [Health Sync](https://healthsync.app/about/): supporta Samsung Health come sorgente, Health Connect come destinazione e la sincronizzazione storica. Controlla categorie, intervallo disponibile e licenza; prova prima pochi giorni ed evita due trasferimenti paralleli degli stessi dati.
-4. Per **Zepp o altre sorgenti**, verifica le opzioni di esportazione e un importatore che supporti esplicitamente quel formato. Un file CSV/ZIP del produttore non è automaticamente importabile in OpenVitals o Health Connect. Per pochi dati visibili puoi usare l’importazione screenshot di OpenVitals e confermare l’anteprima; non ricostruisce campioni assenti dall’immagine.
-5. Quando i record sono presenti in Health Connect, riapri OpenVitals e seleziona il periodo corrispondente.
-
-Se la dashboard resta vuota, controlla prima scrittura della sorgente, record presenti e lettura di OpenVitals per la stessa categoria. Verifica anche le impostazioni di eliminazione automatica di Health Connect se vuoi conservare lo storico.
-
-Riferimenti: [guida Google alla configurazione](https://support.google.com/android/answer/12201227?hl=it), [Samsung Health e Health Connect](https://developer.samsung.com/health/health-connect-faq.html), [permesso di lettura dello storico](https://developer.android.com/health-and-fitness/health-connect/read-data#read-older-data), [collegamento Zepp](https://support.heiaheia.com/connecting-amazfit-zepp-with-heiaheia).
+Per recuperare i dati precedenti segui le [guide all’importazione dello storico](docs/how-to/import-storico/README.md), con una pagina dedicata a ciascuna app e le indicazioni su permessi, formati e verifica dei risultati.
 
 ## Mappe
 
