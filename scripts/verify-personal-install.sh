@@ -8,7 +8,7 @@ signer=$(find "$ANDROID_HOME/build-tools" -name apksigner -type f | sort -V | ta
 # Compare certificate digests independently of apksigner's version-specific signer labels.
 "$signer" verify --print-certs "$previous" > personal-apk/previous-certificate.txt
 for cert in previous-certificate signing-certificate; do
-  sed -nE 's/^Signer.*certificate SHA-256 digest: ([[:xdigit:]]+).*$/\1/p' "personal-apk/$cert.txt" |
+  sed -nE 's/^.*Signer.*certificate SHA-256 digest: ([[:xdigit:]]+).*$/\1/p' "personal-apk/$cert.txt" |
     tr '[:upper:]' '[:lower:]' | sort -u > "personal-apk/$cert.sha256"
   if ! test -s "personal-apk/$cert.sha256"; then
     echo "No signing certificate digest found in $cert" >&2
