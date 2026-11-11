@@ -66,7 +66,7 @@ internal fun UserProfileDialog(onDismiss: () -> Unit, viewModel: UserProfileView
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number), singleLine = true,
                     isError = !validAge, modifier = Modifier.fillMaxWidth())
                 if (!validAge) Text(stringResource(R.string.body_entry_invalid_value), color = MaterialTheme.colorScheme.error)
-                state.error?.let { Text(it.resolve(), color = MaterialTheme.colorScheme.error) }
+                state.error?.resolve()?.let { Text(it, color = MaterialTheme.colorScheme.error) }
             }
         },
         confirmButton = {
