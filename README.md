@@ -10,10 +10,10 @@ Questa repository distribuisce la versione personalizzata di OpenVitals: dashboa
 
 ## Scarica l’app
 
-[![Scarica APK](https://img.shields.io/badge/Scarica_APK-Android-3DDC84?style=for-the-badge&logo=android&logoColor=white)](https://github.com/lorenzomp7/OpenVitals/releases/latest/download/OpenVitals-personal.apk)
+[![Scarica APK](https://img.shields.io/badge/Scarica_APK-Android-3DDC84?style=for-the-badge&logo=android&logoColor=white)](https://github.com/lorenzomp7/OpenVitals/releases/latest/download/OpenVitals.apk)
 [![Tutte le release](https://img.shields.io/badge/Versioni-e_note_di_rilascio-181717?style=for-the-badge&logo=github)](https://github.com/lorenzomp7/OpenVitals/releases)
 
-### [⬇ Scarica OpenVitals-personal.apk](https://github.com/lorenzomp7/OpenVitals/releases/latest/download/OpenVitals-personal.apk)
+### [⬇ Scarica OpenVitals.apk](https://github.com/lorenzomp7/OpenVitals/releases/latest/download/OpenVitals.apk)
 
 **Download the Android APK directly using the link above.** Non servono un computer, Android Studio o l’accesso a GitHub Actions.
 
@@ -22,7 +22,7 @@ Ogni release contiene l’APK installabile, il checksum SHA-256 e i collegamenti
 ## Installazione e aggiornamenti
 
 1. Apri il link **Scarica APK** dal telefono Android.
-2. Scarica e apri **OpenVitals-personal.apk**.
+2. Scarica e apri **OpenVitals.apk**.
 3. Se Android lo richiede, autorizza l’installazione da questa sorgente per il browser o il gestore file utilizzato.
 4. Avvia OpenVitals e concedi in Health Connect i permessi per le categorie che vuoi visualizzare.
 
@@ -30,7 +30,7 @@ Per aggiornare, scarica il nuovo APK dallo stesso link e installalo sopra la ver
 
 | File o distribuzione | A cosa serve |
 | --- | --- |
-| **OpenVitals-personal.apk** nelle Releases | L’app da installare sul telefono; identificativo `tech.mmarca.openvitals.debug`. |
+| **OpenVitals.apk** nelle Releases | L’app da installare sul telefono; identificativo `tech.mmarca.openvitals.debug`. |
 | `app-ci.apk` negli artefatti di verifica | Una diversa installazione per i test, con firma temporanea. |
 | APK `androidTest` | Il programma che esegue i test; non è l’app per l’utente. |
 | Versioni upstream Play Store / F-Droid | Distribuzioni del progetto originale, separate da questa versione personalizzata. |
