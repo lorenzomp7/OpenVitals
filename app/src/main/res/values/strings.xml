@@ -3857,4 +3857,16 @@
     <string name="user_profile_age">Age</string>
     <string name="user_profile_photo">Choose profile picture</string>
     <string name="user_profile_remove_photo">Remove profile picture</string>
+    <string name="settings_backup_title">Settings backup</string>
+    <string name="settings_backup_summary">Export or restore app settings</string>
+    <string name="settings_backup_body">Includes layout, display, goals, profile, reminders and sensors. Health records, permissions, offline map files and account credentials are excluded. The file contains personal settings.</string>
+    <string name="settings_backup_export">Export settings</string>
+    <string name="settings_backup_import">Import settings</string>
+    <string name="settings_backup_confirm">Restore %1$d saved settings? Settings in the imported groups will be replaced, including defaults.</string>
+    <string name="settings_backup_saved">Settings exported.</string>
+    <string name="settings_backup_restored">Settings restored.</string>
+    <string name="settings_backup_failed">Could not transfer settings. Check the file and try again.</string>
+    <string name="dashboard_details_title">Details</string>
+    <string name="dashboard_details_help">Includes the main value. Additional values are shown when available.</string>
+    <string name="dashboard_cardio_today_points">Today: %1$d points</string>
 </resources>

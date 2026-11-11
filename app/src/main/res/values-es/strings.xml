@@ -3831,4 +3831,16 @@
     <string name="user_profile_age">Edad</string>
     <string name="user_profile_photo">Elegir imagen de perfil</string>
     <string name="user_profile_remove_photo">Eliminar imagen de perfil</string>
+    <string name="settings_backup_title">Copia de ajustes</string>
+    <string name="settings_backup_summary">Exportar o restaurar ajustes</string>
+    <string name="settings_backup_body">Incluye diseño, visualización, objetivos, perfil, recordatorios y sensores. Excluye datos de salud, permisos, archivos de mapas sin conexión y credenciales. El archivo contiene ajustes personales.</string>
+    <string name="settings_backup_export">Exportar ajustes</string>
+    <string name="settings_backup_import">Importar ajustes</string>
+    <string name="settings_backup_confirm">¿Restaurar %1$d ajustes guardados? Se reemplazarán los ajustes de los grupos importados, incluidos los valores predeterminados.</string>
+    <string name="settings_backup_saved">Ajustes exportados.</string>
+    <string name="settings_backup_restored">Ajustes restaurados.</string>
+    <string name="settings_backup_failed">No se pudieron transferir los ajustes. Comprueba el archivo e inténtalo de nuevo.</string>
+    <string name="dashboard_details_title">Detalles</string>
+    <string name="dashboard_details_help">Incluye el valor principal. Los demás valores se muestran si están disponibles.</string>
+    <string name="dashboard_cardio_today_points">Hoy: %1$d puntos</string>
 </resources>

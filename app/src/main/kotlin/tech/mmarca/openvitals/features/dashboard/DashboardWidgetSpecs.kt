@@ -158,6 +158,7 @@ internal fun dashboardWidgetSpecs(
     isEditingDashboard: Boolean,
     onOpenMetric: (DashboardWidgetId) -> Unit,
     onSyncWatch: () -> Unit = {},
+    detailCounts: Map<DashboardWidgetId, Int> = emptyMap(),
 ): List<DashboardWidgetSpec> = dashboardWidgetSpecsWithoutHero(
     display = display,
     unitFormatter = unitFormatter,
@@ -167,15 +168,13 @@ internal fun dashboardWidgetSpecs(
     onSyncWatch = onSyncWatch,
 ).map { spec ->
     val model = display.widgets[spec.id]
-    val details = listOfNotNull(
-        model?.measurementSubtitle,
-        model?.progress?.let { stringResource(R.string.daily_goal) + ": " + it.goalLabelValue.text },
-        model?.progress?.let { "${(it.fraction * 100).toInt()}%" },
-        model?.sleepScore?.let { model.value?.text },
-        model?.weeklyCardioLoad?.let { model.value?.text },
-    ).filter { it.isNotBlank() }.distinct()
+    val details = model?.let { dashboardWidgetDetails(it, display, unitFormatter) }.orEmpty()
     spec.copy(
         details = details,
+        detailCount = detailCounts[spec.id] ?: 2,
+        trailing = model?.openWatch?.takeIf { it.deviceId != null }?.let { watch ->
+            { WatchSyncButton(watch.isSyncing, if (isEditingDashboard) null else onSyncWatch) }
+        },
         hero = display.widgets[spec.id]?.toHeroRing(
             title = spec.title,
             accentColor = dashboardWidgetMeta(spec.id).accentColor,
@@ -410,7 +409,7 @@ private fun CycleWidgetDisplay.toDisplayValue(unitFormatter: UnitFormatter): Dis
     }
 
 @Composable
-private fun dashboardWidgetTitle(widgetId: DashboardWidgetId): String =
+internal fun dashboardWidgetTitle(widgetId: DashboardWidgetId): String =
     stringResource(
         when (widgetId) {
             DashboardWidgetId.STEPS -> R.string.metric_steps

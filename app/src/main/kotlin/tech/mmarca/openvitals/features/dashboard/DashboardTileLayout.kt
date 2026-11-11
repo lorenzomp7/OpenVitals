@@ -252,9 +252,10 @@ internal fun DashboardSizedTile(spec: DashboardWidgetSpec, size: DashboardTileSi
         DashboardTileSize.MEDIUM -> MetricStatCard(
             title = ring.title, value = DisplayValue(ring.value, ""), icon = ring.icon,
             accentColor = ring.accentColor, modifier = Modifier.fillMaxSize(),
-            subtitle = spec.details.firstOrNull(), onClick = ring.onClick,
+            trailing = spec.trailing,
+            subtitle = spec.details.take(dashboardDetailCount(size, spec.detailCount) - 1).joinToString("\n").ifBlank { null }, onClick = ring.onClick,
         )
-        DashboardTileSize.LARGE -> DashboardLargeTile(ring, spec.details.take(2))
+        DashboardTileSize.LARGE -> DashboardLargeTile(ring, spec.details.take(dashboardDetailCount(size, spec.detailCount) - 1))
     }
 }
 

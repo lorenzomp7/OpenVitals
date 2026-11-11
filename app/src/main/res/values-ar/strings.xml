@@ -133,4 +133,16 @@
     <string name="user_profile_age">العمر</string>
     <string name="user_profile_photo">اختيار صورة الملف الشخصي</string>
     <string name="user_profile_remove_photo">إزالة صورة الملف الشخصي</string>
+    <string name="settings_backup_title">نسخ الإعدادات احتياطياً</string>
+    <string name="settings_backup_summary">تصدير إعدادات التطبيق أو استعادتها</string>
+    <string name="settings_backup_body">يشمل التخطيط والعرض والأهداف والملف الشخصي والتذكيرات والمستشعرات. لا يشمل السجلات الصحية والأذونات وملفات الخرائط غير المتصلة وبيانات تسجيل الدخول. يحتوي الملف على إعدادات شخصية.</string>
+    <string name="settings_backup_export">تصدير الإعدادات</string>
+    <string name="settings_backup_import">استيراد الإعدادات</string>
+    <string name="settings_backup_confirm">هل تريد استعادة %1$d من الإعدادات المحفوظة؟ ستُستبدل إعدادات المجموعات المستوردة بما فيها القيم الافتراضية.</string>
+    <string name="settings_backup_saved">تم تصدير الإعدادات.</string>
+    <string name="settings_backup_restored">تمت استعادة الإعدادات.</string>
+    <string name="settings_backup_failed">تعذر نقل الإعدادات. تحقق من الملف وحاول مجدداً.</string>
+    <string name="dashboard_details_title">التفاصيل</string>
+    <string name="dashboard_details_help">يتضمن القيمة الرئيسية. تظهر القيم الإضافية عند توفرها.</string>
+    <string name="dashboard_cardio_today_points">اليوم: %1$d نقطة</string>
 </resources>

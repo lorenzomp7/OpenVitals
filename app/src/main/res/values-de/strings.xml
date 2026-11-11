@@ -3798,4 +3798,16 @@
     <string name="user_profile_age">Alter</string>
     <string name="user_profile_photo">Profilbild auswählen</string>
     <string name="user_profile_remove_photo">Profilbild entfernen</string>
+    <string name="settings_backup_title">Einstellungssicherung</string>
+    <string name="settings_backup_summary">App-Einstellungen exportieren oder wiederherstellen</string>
+    <string name="settings_backup_body">Enthält Layout, Anzeige, Ziele, Profil, Erinnerungen und Sensoren. Gesundheitsdaten, Berechtigungen, Offline-Kartendateien und Zugangsdaten sind ausgeschlossen. Die Datei enthält persönliche Einstellungen.</string>
+    <string name="settings_backup_export">Einstellungen exportieren</string>
+    <string name="settings_backup_import">Einstellungen importieren</string>
+    <string name="settings_backup_confirm">%1$d gespeicherte Einstellungen wiederherstellen? Einstellungen der importierten Gruppen werden einschließlich Standardwerten ersetzt.</string>
+    <string name="settings_backup_saved">Einstellungen exportiert.</string>
+    <string name="settings_backup_restored">Einstellungen wiederhergestellt.</string>
+    <string name="settings_backup_failed">Übertragung fehlgeschlagen. Datei prüfen und erneut versuchen.</string>
+    <string name="dashboard_details_title">Details</string>
+    <string name="dashboard_details_help">Enthält den Hauptwert. Weitere Werte erscheinen, wenn verfügbar.</string>
+    <string name="dashboard_cardio_today_points">Heute: %1$d Punkte</string>
 </resources>

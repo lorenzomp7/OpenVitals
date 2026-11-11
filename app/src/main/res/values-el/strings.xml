@@ -483,4 +483,16 @@
     <string name="user_profile_age">Ηλικία</string>
     <string name="user_profile_photo">Επιλογή εικόνας προφίλ</string>
     <string name="user_profile_remove_photo">Αφαίρεση εικόνας προφίλ</string>
+    <string name="settings_backup_title">Αντίγραφο ρυθμίσεων</string>
+    <string name="settings_backup_summary">Εξαγωγή ή επαναφορά ρυθμίσεων</string>
+    <string name="settings_backup_body">Περιλαμβάνει διάταξη, εμφάνιση, στόχους, προφίλ, υπενθυμίσεις και αισθητήρες. Εξαιρούνται δεδομένα υγείας, άδειες, αρχεία χαρτών εκτός σύνδεσης και διαπιστευτήρια. Το αρχείο περιέχει προσωπικές ρυθμίσεις.</string>
+    <string name="settings_backup_export">Εξαγωγή ρυθμίσεων</string>
+    <string name="settings_backup_import">Εισαγωγή ρυθμίσεων</string>
+    <string name="settings_backup_confirm">Επαναφορά %1$d αποθηκευμένων ρυθμίσεων; Οι ρυθμίσεις των εισαγόμενων ομάδων θα αντικατασταθούν μαζί με τις προεπιλογές.</string>
+    <string name="settings_backup_saved">Οι ρυθμίσεις εξήχθησαν.</string>
+    <string name="settings_backup_restored">Οι ρυθμίσεις επαναφέρθηκαν.</string>
+    <string name="settings_backup_failed">Η μεταφορά απέτυχε. Ελέγξτε το αρχείο και δοκιμάστε ξανά.</string>
+    <string name="dashboard_details_title">Λεπτομέρειες</string>
+    <string name="dashboard_details_help">Περιλαμβάνει την κύρια τιμή. Οι πρόσθετες τιμές εμφανίζονται όταν είναι διαθέσιμες.</string>
+    <string name="dashboard_cardio_today_points">Σήμερα: %1$d βαθμοί</string>
 </resources>

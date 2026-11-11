@@ -3828,4 +3828,16 @@
     <string name="user_profile_age">Età</string>
     <string name="user_profile_photo">Scegli immagine del profilo</string>
     <string name="user_profile_remove_photo">Rimuovi immagine del profilo</string>
+    <string name="settings_backup_title">Backup impostazioni</string>
+    <string name="settings_backup_summary">Esporta o ripristina le impostazioni</string>
+    <string name="settings_backup_body">Include layout, visualizzazione, obiettivi, profilo, promemoria e sensori. Sono esclusi dati sanitari, permessi, file delle mappe offline e credenziali degli account. Il file contiene impostazioni personali.</string>
+    <string name="settings_backup_export">Esporta impostazioni</string>
+    <string name="settings_backup_import">Importa impostazioni</string>
+    <string name="settings_backup_confirm">Ripristinare %1$d impostazioni salvate? Le impostazioni dei gruppi importati verranno sostituite, inclusi i valori predefiniti.</string>
+    <string name="settings_backup_saved">Impostazioni esportate.</string>
+    <string name="settings_backup_restored">Impostazioni ripristinate.</string>
+    <string name="settings_backup_failed">Trasferimento non riuscito. Controlla il file e riprova.</string>
+    <string name="dashboard_details_title">Dettagli</string>
+    <string name="dashboard_details_help">Include il valore principale. Gli altri valori vengono mostrati quando disponibili.</string>
+    <string name="dashboard_cardio_today_points">Oggi: %1$d punti</string>
 </resources>

@@ -210,6 +210,7 @@ sealed class Screen(
     data object SettingsCycle : Screen("settings/cycle", R.string.settings_cycle_group_title)
     data object SettingsSleep : Screen("settings/sleep", R.string.settings_recovery_group_title)
     data object SettingsBodyEnergy : Screen("settings/body_energy", R.string.settings_recovery_group_title)
+    data object SettingsBackup : Screen("settings/backup", R.string.settings_backup_title)
     data object SettingsDataImport : Screen("settings/data_import", R.string.settings_data_transfer_group_title)
     data object SettingsCsvImport : Screen("settings/data_import/csv", R.string.settings_csv_import_screen_title)
     data object SettingsMedicalImport : Screen("settings/data_import/medical", R.string.medical_import_title) {
@@ -299,6 +300,7 @@ sealed class Screen(
                 SettingsCycle,
                 SettingsSleep,
                 SettingsBodyEnergy,
+                SettingsBackup,
                 SettingsDataImport,
                 SettingsCsvImport,
                 SettingsReportExport,

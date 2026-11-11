@@ -3864,4 +3864,16 @@
     <string name="user_profile_age">Věk</string>
     <string name="user_profile_photo">Vybrat profilový obrázek</string>
     <string name="user_profile_remove_photo">Odebrat profilový obrázek</string>
+    <string name="settings_backup_title">Záloha nastavení</string>
+    <string name="settings_backup_summary">Export nebo obnovení nastavení</string>
+    <string name="settings_backup_body">Zahrnuje rozložení, zobrazení, cíle, profil, připomenutí a senzory. Nezahrnuje zdravotní záznamy, oprávnění, soubory offline map ani přihlašovací údaje. Soubor obsahuje osobní nastavení.</string>
+    <string name="settings_backup_export">Exportovat nastavení</string>
+    <string name="settings_backup_import">Importovat nastavení</string>
+    <string name="settings_backup_confirm">Obnovit %1$d uložených nastavení? Nastavení importovaných skupin se nahradí včetně výchozích hodnot.</string>
+    <string name="settings_backup_saved">Nastavení exportováno.</string>
+    <string name="settings_backup_restored">Nastavení obnoveno.</string>
+    <string name="settings_backup_failed">Přenos se nezdařil. Zkontrolujte soubor a zkuste to znovu.</string>
+    <string name="dashboard_details_title">Podrobnosti</string>
+    <string name="dashboard_details_help">Zahrnuje hlavní hodnotu. Další hodnoty se zobrazí, pokud jsou dostupné.</string>
+    <string name="dashboard_cardio_today_points">Dnes: %1$d bodů</string>
 </resources>

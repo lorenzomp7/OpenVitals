@@ -3798,4 +3798,16 @@
     <string name="user_profile_age">Vanus</string>
     <string name="user_profile_photo">Vali profiilipilt</string>
     <string name="user_profile_remove_photo">Eemalda profiilipilt</string>
+    <string name="settings_backup_title">Seadete varukoopia</string>
+    <string name="settings_backup_summary">Ekspordi või taasta rakenduse seaded</string>
+    <string name="settings_backup_body">Sisaldab paigutust, kuva, eesmärke, profiili, meeldetuletusi ja andureid. Ei sisalda terviseandmeid, õigusi, võrguühenduseta kaardifaile ega sisselogimisandmeid. Fail sisaldab isiklikke seadeid.</string>
+    <string name="settings_backup_export">Ekspordi seaded</string>
+    <string name="settings_backup_import">Impordi seaded</string>
+    <string name="settings_backup_confirm">Kas taastada %1$d salvestatud seadet? Imporditud rühmade seaded asendatakse koos vaikeväärtustega.</string>
+    <string name="settings_backup_saved">Seaded eksporditud.</string>
+    <string name="settings_backup_restored">Seaded taastatud.</string>
+    <string name="settings_backup_failed">Seadete edastamine ebaõnnestus. Kontrolli faili ja proovi uuesti.</string>
+    <string name="dashboard_details_title">Üksikasjad</string>
+    <string name="dashboard_details_help">Sisaldab põhiväärtust. Lisaväärtused kuvatakse, kui need on saadaval.</string>
+    <string name="dashboard_cardio_today_points">Täna: %1$d punkti</string>
 </resources>

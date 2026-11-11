@@ -35,7 +35,7 @@ import tech.mmarca.openvitals.features.dashboard.components.DashboardMultiRingHe
 /** The shipped layout's section rhythm, top to bottom. */
 private val DashboardHeroSectionTopPadding = 16.dp
 private val DashboardHeroSectionBottomPadding = 0.dp
-private val DashboardGridTopPadding = 16.dp
+private val DashboardGridTopPadding = 32.dp
 private val DashboardHeroRingHeight = 200.dp
 private val DashboardHeroTopPadding = 6.dp
 private const val DashboardHeroRingCount = 3
@@ -49,6 +49,7 @@ internal fun DashboardWidgetCarousel(
     onRemoveWidget: (DashboardWidgetId) -> Unit,
     widgetSizes: Map<DashboardWidgetId, Int> = emptyMap(),
     pagedLayout: Boolean = false,
+    onSetWidgetDetailCount: (DashboardWidgetId, Int) -> Unit = { _, _ -> },
     onSetWidgetSize: (DashboardWidgetId, Int) -> Unit = { _, _ -> },
     onSetPagedLayout: (Boolean) -> Unit = {},
     actionContent: @Composable () -> Unit,
@@ -63,8 +64,19 @@ internal fun DashboardWidgetCarousel(
     val sizeOf: (DashboardWidgetId) -> DashboardTileSize? = { id ->
         specsById[id]?.let { dashboardTileSize(it, widgetSizes) }
     }
-    val cycleSize: (DashboardWidgetId) -> Unit = { id ->
-        sizeOf(id)?.let { onSetWidgetSize(id, it.next().spaces) }
+    var configuringId by remember { mutableStateOf<DashboardWidgetId?>(null) }
+    val cycleSize: (DashboardWidgetId) -> Unit = { configuringId = it }
+    configuringId?.let { id ->
+        specsById[id]?.let { spec ->
+            DashboardTileOptionsDialog(
+                title = spec.title,
+                size = sizeOf(id) ?: DashboardTileSize.MEDIUM,
+                count = spec.detailCount,
+                onSize = { onSetWidgetSize(id, it.spaces) },
+                onCount = { onSetWidgetDetailCount(id, it) },
+                onDismiss = { configuringId = null },
+            )
+        }
     }
     val fixedIdSet = fixedIds.toSet()
     // Every other widget, in one grid that scrolls with the page.

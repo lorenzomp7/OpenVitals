@@ -99,6 +99,9 @@ class DashboardViewModel @Inject constructor(
             widgetSizes = prefs.dashboardWidgetSizes().mapNotNull { (name, spaces) ->
                 DashboardWidgetId.entries.firstOrNull { it.name == name }?.let { it to spaces }
             }.toMap(),
+            widgetDetailCounts = prefs.dashboardDetailCounts().mapNotNull { (name, count) ->
+                DashboardWidgetId.entries.firstOrNull { it.name == name }?.let { it to count }
+            }.toMap(),
             pagedLayout = prefs.dashboardPagedLayout(),
             placedDashboardWidgets = prefs.dashboardWidgetOrder()
                 ?.let { stored -> dashboardWidgetIdsFromStored(stored).toSet() }
@@ -639,6 +642,13 @@ class DashboardViewModel @Inject constructor(
         val sizes = _uiState.value.widgetSizes + (widgetId to spaces)
         prefs.setDashboardWidgetSizes(sizes.mapKeys { it.key.name })
         _uiState.value = _uiState.value.copy(widgetSizes = sizes)
+    }
+
+    fun setWidgetDetailCount(id: DashboardWidgetId, count: Int) {
+        if (count !in 1..3) return
+        val counts = _uiState.value.widgetDetailCounts + (id to count)
+        prefs.setDashboardDetailCounts(counts.mapKeys { it.key.name })
+        _uiState.value = _uiState.value.copy(widgetDetailCounts = counts)
     }
 
     fun setPagedLayout(paged: Boolean) {

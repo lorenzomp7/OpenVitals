@@ -3865,4 +3865,16 @@
     <string name="user_profile_age">Возраст</string>
     <string name="user_profile_photo">Выбрать фото профиля</string>
     <string name="user_profile_remove_photo">Удалить фото профиля</string>
+    <string name="settings_backup_title">Резервная копия настроек</string>
+    <string name="settings_backup_summary">Экспорт или восстановление настроек</string>
+    <string name="settings_backup_body">Включает макет, отображение, цели, профиль, напоминания и датчики. Не включает медицинские записи, разрешения, файлы офлайн-карт и учетные данные. Файл содержит личные настройки.</string>
+    <string name="settings_backup_export">Экспорт настроек</string>
+    <string name="settings_backup_import">Импорт настроек</string>
+    <string name="settings_backup_confirm">Восстановить %1$d сохраненных настроек? Настройки импортируемых групп будут заменены, включая значения по умолчанию.</string>
+    <string name="settings_backup_saved">Настройки экспортированы.</string>
+    <string name="settings_backup_restored">Настройки восстановлены.</string>
+    <string name="settings_backup_failed">Не удалось перенести настройки. Проверьте файл и повторите попытку.</string>
+    <string name="dashboard_details_title">Подробности</string>
+    <string name="dashboard_details_help">Включает основное значение. Дополнительные значения показаны при наличии.</string>
+    <string name="dashboard_cardio_today_points">Сегодня: %1$d баллов</string>
 </resources>

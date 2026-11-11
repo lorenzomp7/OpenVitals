@@ -308,6 +308,7 @@ Current feature packages:
 - [`features/readiness`](../../app/src/main/kotlin/tech/mmarca/openvitals/features/readiness)
 - [`features/recovery`](../../app/src/main/kotlin/tech/mmarca/openvitals/features/recovery)
 - [`features/settings`](../../app/src/main/kotlin/tech/mmarca/openvitals/features/settings)
+  - Settings backup uses a versioned typed JSON document through Android document pickers. `SettingsBackupRepository` validates the complete file before replacing allowlisted preference groups, rolls back failed commits, and refreshes cached preferences and reminder/widget schedules. It includes display, dashboard and recording layouts, per-tile detail counts, goals, profile name/age/photo, cycle, sensor and import defaults; credentials, permission state, ongoing recordings, health records and offline map files remain device-local.
 - [`features/workoutplans`](../../app/src/main/kotlin/tech/mmarca/openvitals/features/workoutplans) — plan list/builder; `WorkoutPlanStepMapping.kt` is the one seam between Health Connect plans and the activity form's step rows
 
 Two of these are not metric features and follow their own shape: `features/devicesync` is a phone-to-phone sync wizard, and `features/imports/*` are import workflows.

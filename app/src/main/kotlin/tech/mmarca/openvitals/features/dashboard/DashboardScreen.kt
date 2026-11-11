@@ -1,6 +1,7 @@
 package tech.mmarca.openvitals.features.dashboard
 
 import android.widget.Toast
+import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -91,8 +92,11 @@ fun DashboardScreen(
     }
     val currentOnOpenDeviceStatus by rememberUpdatedState(onOpenDeviceStatus)
     var showUserProfile by remember { mutableStateOf(false) }
+    val profileViewModel: tech.mmarca.openvitals.features.settings.UserProfileViewModel = androidx.hilt.navigation.compose.hiltViewModel()
+    val profile by profileViewModel.state.collectAsStateWithLifecycle()
+    val profilePhoto = remember(profile.photo) { profile.photo?.let { it.asImageBitmap() } }
     DeclareAppBar(
-        remember(state.sensorStatus.hasDevices) {
+        remember(state.sensorStatus.hasDevices, profilePhoto) {
                 ScreenAppBar(
                     actions = buildList {
                         if (state.sensorStatus.hasDevices) add(
@@ -101,14 +105,14 @@ fun DashboardScreen(
                             contentDescription = R.string.cd_sensor_battery_status,
                             onClick = { currentOnOpenDeviceStatus() },
                         ))
-                        add(AppBarAction(Icons.Outlined.AccountCircle, R.string.user_profile_title) { showUserProfile = true })
+                        add(AppBarAction(Icons.Outlined.AccountCircle, R.string.user_profile_title, image = profilePhoto) { showUserProfile = true })
                     },
                 )
         },
     )
 
     if (showUserProfile) {
-        tech.mmarca.openvitals.features.settings.UserProfileDialog(onDismiss = { showUserProfile = false })
+        tech.mmarca.openvitals.features.settings.UserProfileDialog(onDismiss = { showUserProfile = false }, viewModel = profileViewModel)
     }
 
     WithHealthConnectFeatureScreen(
@@ -164,6 +168,8 @@ fun DashboardScreen(
                     onMoveWidgetToTarget = viewModel::moveDashboardWidgetToTarget,
                     onRemoveWidget = viewModel::removeDashboardWidget,
                     widgetSizes = state.widgetSizes,
+                    widgetDetailCounts = state.widgetDetailCounts,
+                    onSetWidgetDetailCount = viewModel::setWidgetDetailCount,
                     pagedLayout = state.pagedLayout,
                     onSetWidgetSize = viewModel::setWidgetSize,
                     onSetPagedLayout = viewModel::setPagedLayout,

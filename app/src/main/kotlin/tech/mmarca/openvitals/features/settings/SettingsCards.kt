@@ -220,6 +220,7 @@ internal val SettingsSection.icon: ImageVector
         SettingsSection.VITALS -> Icons.Outlined.MonitorHeart
         SettingsSection.RECOVERY -> Icons.Outlined.FavoriteBorder
         SettingsSection.CYCLE -> Icons.Outlined.CalendarMonth
+        SettingsSection.SETTINGS_BACKUP -> Icons.Outlined.Settings
         SettingsSection.DATA_IMPORT -> Icons.Outlined.FolderOpen
         SettingsSection.OPENWATCH -> Icons.Outlined.Watch
         SettingsSection.DEVICE_SYNC -> Icons.Outlined.Devices

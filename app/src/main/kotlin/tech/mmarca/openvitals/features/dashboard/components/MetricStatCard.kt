@@ -173,7 +173,7 @@ internal fun MetricStatCard(
                             text = subtitle,
                             style = MaterialTheme.typography.labelSmall,
                             color = subtitleColor,
-                            maxLines = 1,
+                            maxLines = 2,
                         )
                     }
                 }

@@ -3869,4 +3869,16 @@ Se Acceder a rutas de exercicio non aparece no diálogo de acceso, abre os axust
     <string name="user_profile_age">Idade</string>
     <string name="user_profile_photo">Escoller imaxe de perfil</string>
     <string name="user_profile_remove_photo">Eliminar imaxe de perfil</string>
+    <string name="settings_backup_title">Copia dos axustes</string>
+    <string name="settings_backup_summary">Exportar ou restaurar axustes</string>
+    <string name="settings_backup_body">Inclúe deseño, visualización, obxectivos, perfil, recordatorios e sensores. Exclúe datos de saúde, permisos, ficheiros de mapas sen conexión e credenciais. O ficheiro contén axustes persoais.</string>
+    <string name="settings_backup_export">Exportar axustes</string>
+    <string name="settings_backup_import">Importar axustes</string>
+    <string name="settings_backup_confirm">Restaurar %1$d axustes gardados? Substituiranse os axustes dos grupos importados, incluídos os valores predeterminados.</string>
+    <string name="settings_backup_saved">Axustes exportados.</string>
+    <string name="settings_backup_restored">Axustes restaurados.</string>
+    <string name="settings_backup_failed">Non se puideron transferir os axustes. Comproba o ficheiro e téntao de novo.</string>
+    <string name="dashboard_details_title">Detalles</string>
+    <string name="dashboard_details_help">Inclúe o valor principal. Os demais valores amósanse cando están dispoñibles.</string>
+    <string name="dashboard_cardio_today_points">Hoxe: %1$d puntos</string>
 </resources>

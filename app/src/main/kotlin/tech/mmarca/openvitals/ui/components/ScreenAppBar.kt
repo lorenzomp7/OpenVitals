@@ -21,6 +21,8 @@ data class AppBarAction(
     @param:StringRes val contentDescription: Int,
     /** For a toggle that is on. Null takes the ordinary app bar tint. */
     val tint: Color? = null,
+    /** Optional photo rendered inside the same accessible icon button. */
+    val image: androidx.compose.ui.graphics.ImageBitmap? = null,
     val onClick: () -> Unit,
 )
 

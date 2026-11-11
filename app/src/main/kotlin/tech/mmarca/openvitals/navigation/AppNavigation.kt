@@ -14,6 +14,8 @@ import androidx.compose.material.icons.outlined.SelfImprovement
 import androidx.compose.material.icons.outlined.WorkspacePremium
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.ui.draw.clip
+import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -302,12 +304,22 @@ fun AppNavigation(
             // does not know which screen sent it.
             screenAppBar?.actions?.forEach { action ->
                 OpenVitalsIconButton(onClick = action.onClick) {
-                    Icon(
-                        imageVector = action.icon,
-                        contentDescription = stringResource(action.contentDescription),
-                        tint = action.tint
-                            ?: androidx.compose.material3.MaterialTheme.colorScheme.onSurfaceVariant,
-                    )
+                    val photo = action.image
+                    if (photo != null) {
+                        androidx.compose.foundation.Image(
+                            bitmap = photo,
+                            contentDescription = stringResource(action.contentDescription),
+                            contentScale = androidx.compose.ui.layout.ContentScale.Crop,
+                            modifier = Modifier.size(28.dp).clip(androidx.compose.foundation.shape.CircleShape),
+                        )
+                    } else {
+                        Icon(
+                            imageVector = action.icon,
+                            contentDescription = stringResource(action.contentDescription),
+                            tint = action.tint
+                                ?: androidx.compose.material3.MaterialTheme.colorScheme.onSurfaceVariant,
+                        )
+                    }
                 }
             }
             if (currentRoute == Screen.Dashboard.route) {

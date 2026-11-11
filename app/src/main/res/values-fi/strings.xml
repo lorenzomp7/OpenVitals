@@ -3798,4 +3798,16 @@
     <string name="user_profile_age">Ikä</string>
     <string name="user_profile_photo">Valitse profiilikuva</string>
     <string name="user_profile_remove_photo">Poista profiilikuva</string>
+    <string name="settings_backup_title">Asetusten varmuuskopio</string>
+    <string name="settings_backup_summary">Vie tai palauta sovelluksen asetukset</string>
+    <string name="settings_backup_body">Sisältää asettelun, näytön, tavoitteet, profiilin, muistutukset ja anturit. Ei sisällä terveystietoja, käyttöoikeuksia, offline-karttatiedostoja eikä tunnistetietoja. Tiedosto sisältää henkilökohtaisia asetuksia.</string>
+    <string name="settings_backup_export">Vie asetukset</string>
+    <string name="settings_backup_import">Tuo asetukset</string>
+    <string name="settings_backup_confirm">Palautetaanko %1$d tallennettua asetusta? Tuotujen ryhmien asetukset korvataan oletusarvoineen.</string>
+    <string name="settings_backup_saved">Asetukset viety.</string>
+    <string name="settings_backup_restored">Asetukset palautettu.</string>
+    <string name="settings_backup_failed">Siirto epäonnistui. Tarkista tiedosto ja yritä uudelleen.</string>
+    <string name="dashboard_details_title">Tiedot</string>
+    <string name="dashboard_details_help">Sisältää pääarvon. Muut arvot näytetään, kun ne ovat saatavilla.</string>
+    <string name="dashboard_cardio_today_points">Tänään: %1$d pistettä</string>
 </resources>

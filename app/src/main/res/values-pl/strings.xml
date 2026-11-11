@@ -3864,4 +3864,16 @@
     <string name="user_profile_age">Wiek</string>
     <string name="user_profile_photo">Wybierz zdjęcie profilowe</string>
     <string name="user_profile_remove_photo">Usuń zdjęcie profilowe</string>
+    <string name="settings_backup_title">Kopia ustawień</string>
+    <string name="settings_backup_summary">Eksportuj lub przywróć ustawienia</string>
+    <string name="settings_backup_body">Obejmuje układ, wyświetlanie, cele, profil, przypomnienia i czujniki. Nie obejmuje danych zdrowotnych, uprawnień, plików map offline ani danych logowania. Plik zawiera ustawienia osobiste.</string>
+    <string name="settings_backup_export">Eksportuj ustawienia</string>
+    <string name="settings_backup_import">Importuj ustawienia</string>
+    <string name="settings_backup_confirm">Przywrócić %1$d zapisanych ustawień? Ustawienia importowanych grup zostaną zastąpione wraz z wartościami domyślnymi.</string>
+    <string name="settings_backup_saved">Wyeksportowano ustawienia.</string>
+    <string name="settings_backup_restored">Przywrócono ustawienia.</string>
+    <string name="settings_backup_failed">Nie udało się przenieść ustawień. Sprawdź plik i spróbuj ponownie.</string>
+    <string name="dashboard_details_title">Szczegóły</string>
+    <string name="dashboard_details_help">Obejmuje główną wartość. Dodatkowe wartości są wyświetlane, gdy są dostępne.</string>
+    <string name="dashboard_cardio_today_points">Dzisiaj: %1$d punktów</string>
 </resources>

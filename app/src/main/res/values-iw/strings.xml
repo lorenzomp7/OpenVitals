@@ -133,4 +133,16 @@
     <string name="user_profile_age">גיל</string>
     <string name="user_profile_photo">בחירת תמונת פרופיל</string>
     <string name="user_profile_remove_photo">הסרת תמונת פרופיל</string>
+    <string name="settings_backup_title">גיבוי הגדרות</string>
+    <string name="settings_backup_summary">ייצוא או שחזור הגדרות האפליקציה</string>
+    <string name="settings_backup_body">כולל פריסה, תצוגה, יעדים, פרופיל, תזכורות וחיישנים. לא כולל רשומות בריאות, הרשאות, קובצי מפות לא מקוונות ופרטי כניסה. הקובץ מכיל הגדרות אישיות.</string>
+    <string name="settings_backup_export">ייצוא הגדרות</string>
+    <string name="settings_backup_import">ייבוא הגדרות</string>
+    <string name="settings_backup_confirm">לשחזר %1$d הגדרות שמורות? הגדרות הקבוצות המיובאות יוחלפו, כולל ברירות המחדל.</string>
+    <string name="settings_backup_saved">ההגדרות יוצאו.</string>
+    <string name="settings_backup_restored">ההגדרות שוחזרו.</string>
+    <string name="settings_backup_failed">העברת ההגדרות נכשלה. יש לבדוק את הקובץ ולנסות שוב.</string>
+    <string name="dashboard_details_title">פרטים</string>
+    <string name="dashboard_details_help">כולל את הערך הראשי. ערכים נוספים מוצגים כאשר הם זמינים.</string>
+    <string name="dashboard_cardio_today_points">היום: %1$d נקודות</string>
 </resources>

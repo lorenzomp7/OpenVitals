@@ -3825,4 +3825,16 @@
     <string name="user_profile_age">Idade</string>
     <string name="user_profile_photo">Escolher imagem de perfil</string>
     <string name="user_profile_remove_photo">Remover imagem de perfil</string>
+    <string name="settings_backup_title">Cópia das definições</string>
+    <string name="settings_backup_summary">Exportar ou restaurar definições</string>
+    <string name="settings_backup_body">Inclui disposição, visualização, objetivos, perfil, lembretes e sensores. Exclui dados de saúde, permissões, ficheiros de mapas offline e credenciais. O ficheiro contém definições pessoais.</string>
+    <string name="settings_backup_export">Exportar definições</string>
+    <string name="settings_backup_import">Importar definições</string>
+    <string name="settings_backup_confirm">Restaurar %1$d definições guardadas? As definições dos grupos importados serão substituídas, incluindo os valores predefinidos.</string>
+    <string name="settings_backup_saved">Definições exportadas.</string>
+    <string name="settings_backup_restored">Definições restauradas.</string>
+    <string name="settings_backup_failed">Não foi possível transferir. Verifique o ficheiro e tente novamente.</string>
+    <string name="dashboard_details_title">Detalhes</string>
+    <string name="dashboard_details_help">Inclui o valor principal. Outros valores aparecem quando disponíveis.</string>
+    <string name="dashboard_cardio_today_points">Hoje: %1$d pontos</string>
 </resources>

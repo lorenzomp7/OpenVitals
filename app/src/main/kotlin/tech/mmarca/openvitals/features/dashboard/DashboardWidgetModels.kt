@@ -17,6 +17,9 @@ internal data class DashboardWidgetSpec(
     /** What the widget shows as one ring of the multi-ring hero. */
     val hero: DashboardHeroRing? = null,
     val details: List<String> = emptyList(),
+    /** Total displayed values, including the main reading. */
+    val detailCount: Int = 2,
+    val trailing: (@Composable () -> Unit)? = null,
     val content: @Composable (Modifier) -> Unit,
 )
 
@@ -39,12 +42,12 @@ internal fun DashboardWidgetDisplayModel.toHeroRing(
     val cardio = weeklyCardioLoad
     val sleep = sleepScore
     return when {
-        cardio != null -> DashboardHeroRing(title, "${cardio.progressPercent}%", cardio.progressFraction, accentColor, icon, onClick)
+        cardio != null -> DashboardHeroRing(title, cardio.currentScore.toString(), cardio.progressFraction, accentColor, icon, onClick)
         sleep != null -> DashboardHeroRing(title, sleep.score.toString(), sleep.score / 100f, accentColor, icon, onClick)
         else -> DashboardHeroRing(
             title = title,
             // With its unit: "6.4" alone does not say kilometres.
-            value = value?.takeIf { hasValue && !isLoading }?.text?.takeIf { it.isNotBlank() } ?: "–",
+            value = openWatch?.name ?: value?.takeIf { hasValue && !isLoading }?.text?.takeIf { it.isNotBlank() } ?: "–",
             fraction = progress?.fraction ?: 0f,
             accentColor = accentColor,
             icon = icon,

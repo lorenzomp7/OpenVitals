@@ -3799,4 +3799,16 @@
     <string name="user_profile_age">年龄</string>
     <string name="user_profile_photo">选择头像</string>
     <string name="user_profile_remove_photo">移除头像</string>
+    <string name="settings_backup_title">设置备份</string>
+    <string name="settings_backup_summary">导出或恢复应用设置</string>
+    <string name="settings_backup_body">包括布局、显示、目标、个人资料、提醒和传感器。不包括健康记录、权限、离线地图文件和账户凭据。文件包含个人设置。</string>
+    <string name="settings_backup_export">导出设置</string>
+    <string name="settings_backup_import">导入设置</string>
+    <string name="settings_backup_confirm">恢复 %1$d 项已保存的设置？导入分组的设置将被替换，包括默认值。</string>
+    <string name="settings_backup_saved">设置已导出。</string>
+    <string name="settings_backup_restored">设置已恢复。</string>
+    <string name="settings_backup_failed">无法传输设置。请检查文件后重试。</string>
+    <string name="dashboard_details_title">详细信息</string>
+    <string name="dashboard_details_help">包含主要数值。其他数值在可用时显示。</string>
+    <string name="dashboard_cardio_today_points">今天：%1$d 分</string>
 </resources>

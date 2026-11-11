@@ -103,6 +103,8 @@ internal fun DashboardContent(
     onMoveWidgetToTarget: (DashboardWidgetId, DashboardWidgetId) -> Unit,
     onRemoveWidget: (DashboardWidgetId) -> Unit,
     widgetSizes: Map<DashboardWidgetId, Int> = emptyMap(),
+    widgetDetailCounts: Map<DashboardWidgetId, Int> = emptyMap(),
+    onSetWidgetDetailCount: (DashboardWidgetId, Int) -> Unit = { _, _ -> },
     pagedLayout: Boolean = false,
     onSetWidgetSize: (DashboardWidgetId, Int) -> Unit = { _, _ -> },
     onSetPagedLayout: (Boolean) -> Unit = {},
@@ -143,6 +145,7 @@ internal fun DashboardContent(
         }
     }
     val specs = dashboardWidgetSpecs(
+        detailCounts = widgetDetailCounts,
         display = widgetDisplay,
         unitFormatter = unitFormatter,
         widgetIds = specWidgetIds,
@@ -241,6 +244,7 @@ internal fun DashboardContent(
                             onMoveWidgetToTarget = onMoveWidgetToTarget,
                             onRemoveWidget = onRemoveWidget,
                             widgetSizes = widgetSizes,
+                            onSetWidgetDetailCount = onSetWidgetDetailCount,
                             pagedLayout = pagedLayout,
                             onSetWidgetSize = onSetWidgetSize,
                             onSetPagedLayout = onSetPagedLayout,

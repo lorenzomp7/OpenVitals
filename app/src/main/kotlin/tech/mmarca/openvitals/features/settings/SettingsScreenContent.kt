@@ -71,6 +71,7 @@ internal fun LazyListScope.settingsScreenContent(
         SettingsSection.BODY_PROFILE,
         SettingsSection.RECOVERY,
         SettingsSection.CYCLE,
+        SettingsSection.SETTINGS_BACKUP,
         SettingsSection.DATA_IMPORT,
         SettingsSection.DEVICE_SYNC,
         SettingsSection.OPENWATCH,

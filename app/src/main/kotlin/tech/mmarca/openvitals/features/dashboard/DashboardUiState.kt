@@ -33,6 +33,7 @@ data class DashboardUiState(
     val isEditingDashboard: Boolean = false,
     /** The spaces (1, 2 or 4) chosen for a widget; one left out keeps its own size. */
     val widgetSizes: Map<DashboardWidgetId, Int> = emptyMap(),
+    val widgetDetailCounts: Map<DashboardWidgetId, Int> = emptyMap(),
     val pagedLayout: Boolean = false,
     val sortEmptyTilesLast: Boolean = true,
     val healthConnectSyncEnabled: Boolean = true,

@@ -69,7 +69,7 @@ object DashboardPresentationMapper {
                     openWatch = openWatch,
                 ) ?: return@forEach
                 if (!isSupported) unsupportedIds += widgetId
-                put(widgetId, if (widgetId in degradedWidgets) widget.copy(degraded = true) else widget)
+                put(widgetId, widget.copy(degraded = widgetId in degradedWidgets, periodLabel = data.period?.let { "${it.start} – ${it.end}" } ?: data.date.format(dateTimeFormatterProvider.mediumDate())))
             }
         }
 
