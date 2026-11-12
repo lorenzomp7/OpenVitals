@@ -32,6 +32,8 @@ internal fun MetabolismCard(
     preferences: CaffeinePreferences,
     onSave: (CaffeinePreferences) -> Unit,
     modifier: Modifier = Modifier,
+    onDraftChange: ((CaffeinePreferences) -> Unit)? = null,
+    showSaveButton: Boolean = true,
 ) {
     var draft by remember(preferences) { mutableStateOf(preferences) }
     OpenVitalsCard(
@@ -59,10 +61,10 @@ internal fun MetabolismCard(
             )
             MetabolismEditor(
                 preferences = draft,
-                onChange = { draft = it },
+                onChange = { draft = it; onDraftChange?.invoke(it) },
                 modifier = Modifier.padding(top = 8.dp),
             )
-            Row(
+            if (showSaveButton) Row(
                 horizontalArrangement = Arrangement.End,
                 modifier = Modifier
                     .fillMaxWidth()

@@ -44,8 +44,11 @@ internal fun BodyProfileCard(
     modifier: Modifier = Modifier,
     weightMeasured: Boolean = false,
     heightMeasured: Boolean = false,
+    onDraftChange: ((BodyProfile) -> Unit)? = null,
+    showSaveButton: Boolean = true,
 ) {
     var draft by remember(profile) { mutableStateOf(profile) }
+    val updateDraft: (BodyProfile) -> Unit = { draft = it; onDraftChange?.invoke(it) }
     OpenVitalsCard(modifier = modifier.fillMaxWidth()) {
         Column(modifier = Modifier.padding(16.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
@@ -70,7 +73,7 @@ internal fun BodyProfileCard(
             BodyProfileBirthDateField(
                 birthDate = draft.birthDate,
                 birthYear = draft.birthYear,
-                onValue = { draft = draft.copy(birthDate = it, birthYear = it?.year) },
+                onValue = { updateDraft(draft.copy(birthDate = it, birthYear = it?.year)) },
             )
             BodyProfileDecimalField(
                 label = bodyMetricLabel(
@@ -79,7 +82,7 @@ internal fun BodyProfileCard(
                 ),
                 value = displayWeightForUnitSystem(draft.weightKg, unitSystem),
                 suffix = weightSuffix(unitSystem),
-                onValue = { draft = draft.copy(weightKg = storedWeightKgForUnitSystem(it, unitSystem)) },
+                onValue = { updateDraft(draft.copy(weightKg = storedWeightKgForUnitSystem(it, unitSystem))) },
             )
             BodyProfileDecimalField(
                 label = bodyMetricLabel(
@@ -88,25 +91,25 @@ internal fun BodyProfileCard(
                 ),
                 value = draft.heightCm,
                 suffix = "cm",
-                onValue = { draft = draft.copy(heightCm = it) },
+                onValue = { updateDraft(draft.copy(heightCm = it)) },
             )
             BodyProfileNumberField(
                 label = stringResource(R.string.body_energy_calibration_resting_hr),
                 value = draft.restingHeartRateBpm,
                 suffix = stringResource(R.string.unit_bpm),
-                onValue = { draft = draft.copy(restingHeartRateBpm = it) },
+                onValue = { updateDraft(draft.copy(restingHeartRateBpm = it)) },
             )
             BodyProfileNumberField(
                 label = stringResource(R.string.body_energy_calibration_max_hr),
                 value = draft.maxHeartRateBpm,
                 suffix = stringResource(R.string.unit_bpm),
-                onValue = { draft = draft.copy(maxHeartRateBpm = it) },
+                onValue = { updateDraft(draft.copy(maxHeartRateBpm = it)) },
             )
             BodyProfileSexField(
                 selected = draft.sex,
-                onSelect = { draft = draft.copy(sex = it) },
+                onSelect = { updateDraft(draft.copy(sex = it)) },
             )
-            Row(
+            if (showSaveButton) Row(
                 horizontalArrangement = Arrangement.End,
                 modifier = Modifier
                     .fillMaxWidth()

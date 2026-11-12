@@ -35,6 +35,21 @@ class UserProfileRepository @Inject constructor(@ApplicationContext private val 
             check(!photoFile.exists() || photoFile.delete())
             return@withContext
         }
+        val bitmap = previewPhoto(uri) ?: error("Image unavailable")
+        val atomic = AtomicFile(photoFile)
+        val output = atomic.startWrite()
+        try {
+            check(bitmap.compress(Bitmap.CompressFormat.JPEG, 90, output))
+            atomic.finishWrite(output)
+        } catch (error: Exception) {
+            atomic.failWrite(output)
+            throw error
+        } finally {
+            bitmap.recycle()
+        }
+    }
+    suspend fun previewPhoto(uri: Uri?): Bitmap? = withContext(Dispatchers.IO) {
+        if (uri == null) return@withContext null
         val bounds = BitmapFactory.Options().apply { inJustDecodeBounds = true }
         context.contentResolver.openInputStream(uri)?.use { BitmapFactory.decodeStream(it, null, bounds) }
         require(bounds.outWidth > 0 && bounds.outHeight > 0)
@@ -47,17 +62,8 @@ class UserProfileRepository @Inject constructor(@ApplicationContext private val 
         val scale = minOf(1f, 512f / maxOf(decoded.width, decoded.height))
         val bitmap = Bitmap.createScaledBitmap(decoded, (decoded.width * scale).toInt().coerceAtLeast(1),
             (decoded.height * scale).toInt().coerceAtLeast(1), true)
-        val atomic = AtomicFile(photoFile)
-        val output = atomic.startWrite()
-        try {
-            check(bitmap.compress(Bitmap.CompressFormat.JPEG, 90, output))
-            atomic.finishWrite(output)
-        } catch (error: Exception) {
-            atomic.failWrite(output)
-            throw error
-        } finally {
-            if (bitmap !== decoded) bitmap.recycle()
-            decoded.recycle()
-        }
+        if (bitmap !== decoded) decoded.recycle()
+        bitmap
     }
+
 }

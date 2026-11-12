@@ -8,13 +8,9 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.AccountCircle
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextFieldDefaults
@@ -23,16 +19,12 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import tech.mmarca.openvitals.ui.theme.Spacing
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -41,40 +33,17 @@ import tech.mmarca.openvitals.R
 import tech.mmarca.openvitals.core.presentation.resolve
 
 @Composable
-internal fun UserProfileDialog(onDismiss: () -> Unit, viewModel: UserProfileViewModel = hiltViewModel()) {
+internal fun UserProfileSettingsCard(
+    name: String,
+    onName: (String) -> Unit,
+    calculatedAge: Int?,
+    viewModel: UserProfileViewModel,
+) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     if (state.loading) return
-    var name by rememberSaveable { mutableStateOf(state.name) }
-    var age by rememberSaveable { mutableStateOf(state.age?.toString().orEmpty()) }
-    val validAge = age.isBlank() || age.toIntOrNull()?.let { it in 0..130 } == true
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        title = { Text(stringResource(R.string.user_profile_title)) },
-        text = {
-            UserProfileFields(state, name, { name = it }, age, { age = it }, validAge, viewModel)
-        },
-        confirmButton = {
-            TextButton(enabled = validAge, onClick = { viewModel.save(name, age.toIntOrNull(), onDismiss) }) {
-                Text(stringResource(R.string.action_save))
-            }
-        },
-        dismissButton = { TextButton(onClick = onDismiss) { Text(stringResource(R.string.action_cancel)) } },
-    )
-}
-
-@Composable
-internal fun UserProfileSettingsCard(calculatedAge: Int? = null, viewModel: UserProfileViewModel = hiltViewModel()) {
-    val state by viewModel.state.collectAsStateWithLifecycle()
-    if (state.loading) return
-    var name by rememberSaveable(state.name) { mutableStateOf(state.name) }
-    val age = calculatedAge?.toString().orEmpty()
-    val validAge = age.isBlank() || age.toIntOrNull()?.let { it in 0..130 } == true
-    tech.mmarca.openvitals.ui.components.OpenVitalsCard {
+    tech.mmarca.openvitals.ui.components.OpenVitalsCard(Modifier.padding(horizontal = tech.mmarca.openvitals.ui.theme.LayoutMetrics.screenGutter)) {
         Column(Modifier.fillMaxWidth().padding(Spacing.lg)) {
-            UserProfileFields(state, name, { name = it }, age, {}, validAge, viewModel)
-            TextButton(enabled = validAge, onClick = { viewModel.save(name, age.toIntOrNull()) {} }) {
-                Text(stringResource(R.string.action_save))
-            }
+            UserProfileFields(state, name, onName, calculatedAge?.toString().orEmpty(), viewModel)
         }
     }
 }
@@ -82,7 +51,7 @@ internal fun UserProfileSettingsCard(calculatedAge: Int? = null, viewModel: User
 @Composable
 private fun UserProfileFields(
     state: UserProfileState, name: String, onName: (String) -> Unit,
-    age: String, onAge: (String) -> Unit, validAge: Boolean, viewModel: UserProfileViewModel,
+    age: String, viewModel: UserProfileViewModel,
 ) {
     val photoPicker = rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri ->
         if (uri != null) viewModel.setPhoto(uri)
@@ -104,14 +73,13 @@ private fun UserProfileFields(
         ),
         singleLine = true, modifier = Modifier.fillMaxWidth())
                 OutlinedTextField(age, {}, readOnly = true, label = { Text(stringResource(R.string.user_profile_age)) },
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number), shape = MaterialTheme.shapes.medium,
+                    shape = MaterialTheme.shapes.medium,
         colors = OutlinedTextFieldDefaults.colors(
             focusedContainerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
             unfocusedContainerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
         ),
         singleLine = true,
-                    isError = !validAge, modifier = Modifier.fillMaxWidth())
-                if (!validAge) Text(stringResource(R.string.body_entry_invalid_value), color = MaterialTheme.colorScheme.error)
+                    modifier = Modifier.fillMaxWidth())
                 state.error?.resolve()?.let { Text(it, color = MaterialTheme.colorScheme.error) }
             }
 }

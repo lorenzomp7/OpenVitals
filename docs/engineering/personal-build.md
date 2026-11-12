@@ -42,3 +42,7 @@ A missing cycling permission no longer prevents reading granted steps cadence.
 Speed and cadence charts initially focus a short recorded sample interval while their
 axis retains the true elapsed session times. Pinch/pan and double-tap full-session reset
 remain available; no samples are invented for unrecorded intervals.
+
+## Profile and header refinements
+
+The dashboard header scrolls away with the content. The launcher symbol uses blue, red, yellow and green over transparency. Body profile displays age from the complete birth date, keeps that date in settings backups, and stages the name, photo, body metrics, BMR option and caffeine factors until the single Save button is pressed.
