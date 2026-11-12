@@ -78,6 +78,7 @@ private val DashboardQuickActionsTopPadding = 14.dp
 @Composable
 internal fun DashboardContent(
     data: DashboardData,
+    header: @Composable () -> Unit = {},
     /** The day the user asked for, ahead of [data] while a switch loads. */
     selectedDate: LocalDate = data.date,
     display: DashboardDisplayState,
@@ -212,6 +213,7 @@ internal fun DashboardContent(
                     bottom = DashboardScrollBottomPadding,
                 ),
             ) {
+                item(key = "dashboard_header") { header() }
                 // Explicit keys, or a change above re-creates every sibling below.
                 item(key = "day_navigator") {
                     if (periodState != null) DashboardPeriodSelector(

@@ -269,13 +269,12 @@ fun AppNavigation(
 
     OpenVitalsAdaptiveScaffold(
         title = topBarTitle,
-        scrollTopBar = currentRoute == Screen.Dashboard.route,
         titleContent = if (currentRoute == Screen.Dashboard.route) {
             { windowWidth -> AmbientFluidBrand(fluidBrandTimeline, windowWidth) }
         } else null,
         navigationDestinations = topLevelDestinations,
         currentRoute = navigationSelectedRoute,
-        showTopBar = showTopBar,
+        showTopBar = showTopBar && currentRoute != Screen.Dashboard.route,
         showNavigation = showNavigation,
         canNavigateBack = canNavigateBack,
         // The arrow is Back. Through the dispatcher a screen's BackHandler guards it too: it
@@ -391,6 +390,9 @@ fun AppNavigation(
             composable(Screen.Dashboard.route) {
                 val dashboardViewModel = hiltViewModel<DashboardViewModel>()
                 DashboardScreen(
+                    brandTimeline = fluidBrandTimeline,
+                    onOpenAchievements = { navController.navigate(Screen.Achievements.route) { launchSingleTop = true } },
+                    onOpenSettings = { navController.navigate(Screen.Settings.route) { launchSingleTop = true } },
                     onOpenBodyProfile = { navController.navigate(Screen.SettingsBodyProfile.route) },
                     viewModel = dashboardViewModel,
                     unitFormatter = unitFormatter,

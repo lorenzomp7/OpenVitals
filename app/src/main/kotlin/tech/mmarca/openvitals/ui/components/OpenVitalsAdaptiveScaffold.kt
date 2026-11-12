@@ -22,7 +22,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -57,7 +56,6 @@ data class ChartSemanticsSummary(
 /** 56dp, matching the shipped app; Compose's 64dp default sat content 8dp low. */
 private val TopBarHeight = 56.dp
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun OpenVitalsAdaptiveScaffold(
     title: String,
@@ -74,16 +72,12 @@ fun OpenVitalsAdaptiveScaffold(
     modifier: Modifier = Modifier,
     containerColor: Color? = null,
     titleContent: (@Composable (Dp) -> Unit)? = null,
-    scrollTopBar: Boolean = false,
     topBarActions: @Composable RowScope.() -> Unit = {},
     content: @Composable (PaddingValues) -> Unit,
 ) {
-    val scrollBehavior = if (scrollTopBar) TopAppBarDefaults.exitUntilCollapsedScrollBehavior() else null
     val scaffoldContent: @Composable () -> Unit = {
         Scaffold(
-            modifier = modifier.fillMaxSize().then(
-                if (scrollBehavior != null) Modifier.nestedScroll(scrollBehavior.nestedScrollConnection) else Modifier,
-            ),
+            modifier = modifier.fillMaxSize(),
             // The scaffold's ground shows through the top bar and the bottom inset,
             // so a screen with its own background must say what surrounds it.
             containerColor = containerColor ?: MaterialTheme.colorScheme.background,
@@ -96,7 +90,6 @@ fun OpenVitalsAdaptiveScaffold(
                         TopAppBar(
                             // 56dp, matching the shipped app.
                             expandedHeight = TopBarHeight,
-                            scrollBehavior = scrollBehavior,
                             title = {
                                 if (titleContent != null) titleContent(maxWidth) else {
                                     Text(

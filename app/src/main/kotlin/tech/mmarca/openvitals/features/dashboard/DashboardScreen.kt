@@ -10,10 +10,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.BatteryChargingFull
-import androidx.compose.material.icons.outlined.AccountCircle
-import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -33,9 +30,6 @@ import tech.mmarca.openvitals.ui.components.WithHealthConnectFeatureScreen
 import tech.mmarca.openvitals.ui.components.rememberHealthConnectPermissionLauncher
 import tech.mmarca.openvitals.ui.components.shouldShowDashboardHealthConnectPromo
 import java.time.LocalDate
-import tech.mmarca.openvitals.ui.components.AppBarAction
-import tech.mmarca.openvitals.ui.components.DeclareAppBar
-import tech.mmarca.openvitals.ui.components.ScreenAppBar
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -52,6 +46,9 @@ fun DashboardScreen(
     onStartActivity: () -> Unit,
     onOpenDeviceStatus: () -> Unit,
     onOpenBodyProfile: () -> Unit = {},
+    onOpenAchievements: () -> Unit = {},
+    onOpenSettings: () -> Unit = {},
+    brandTimeline: tech.mmarca.openvitals.ui.components.FluidBrandTimeline? = null,
 ) {
     // Seeded from the flow's current value: a placeholder frame on return would
     // reset the carousel page and scroll position.
@@ -91,27 +88,15 @@ fun DashboardScreen(
             viewModel.clearError()
         }
     }
-    val currentOnOpenDeviceStatus by rememberUpdatedState(onOpenDeviceStatus)
-    val currentOnOpenBodyProfile by rememberUpdatedState(onOpenBodyProfile)
     val profileViewModel: tech.mmarca.openvitals.features.settings.UserProfileViewModel = androidx.hilt.navigation.compose.hiltViewModel()
     val profile by profileViewModel.state.collectAsStateWithLifecycle()
     LifecycleEventEffect(Lifecycle.Event.ON_RESUME) { profileViewModel.refresh() }
     val profilePhoto = remember(profile.photo) { profile.photo?.let { it.asImageBitmap() } }
-    DeclareAppBar(
-        remember(state.sensorStatus.hasDevices, profilePhoto) {
-                ScreenAppBar(
-                    actions = buildList {
-                        if (state.sensorStatus.hasDevices) add(
-                        AppBarAction(
-                            icon = Icons.Outlined.BatteryChargingFull,
-                            contentDescription = R.string.cd_sensor_battery_status,
-                            onClick = { currentOnOpenDeviceStatus() },
-                        ))
-                        add(AppBarAction(Icons.Outlined.AccountCircle, R.string.user_profile_title, image = profilePhoto) { currentOnOpenBodyProfile() })
-                    },
-                )
-        },
-    )
+    val timeline = brandTimeline ?: tech.mmarca.openvitals.ui.components.rememberFluidBrandTimeline()
+    val header: @Composable () -> Unit = {
+        DashboardHeader(timeline, profilePhoto, state.sensorStatus.hasDevices,
+            onOpenBodyProfile, onOpenDeviceStatus, onOpenAchievements, onOpenSettings)
+    }
 
     WithHealthConnectFeatureScreen(
         feature = HealthConnectFeature.DASHBOARD,
@@ -131,14 +116,15 @@ fun DashboardScreen(
                 pullRefreshRequested = true
                 viewModel.refresh()
             },
-            modifier = Modifier.fillMaxSize(),
+            modifier = Modifier.fillMaxSize().statusBarsPadding(),
         ) {
             when {
-                isLoading && loadedData == null -> FullScreenLoading()
+                isLoading && loadedData == null -> DashboardPlaceholder(header) { FullScreenLoading() }
                 error != null && loadedData == null ->
-                    ErrorMessage(error?.resolve() ?: stringResource(R.string.unknown_error))
+                    DashboardPlaceholder(header) { ErrorMessage(error?.resolve() ?: stringResource(R.string.unknown_error)) }
                 loadedData != null -> DashboardContent(
                     data = loadedData,
+                    header = header,
                     earlierWorkouts = history.workouts.takeIf { history.date == loadedData.date && state.selectedRange == tech.mmarca.openvitals.core.period.TimeRange.DAY }.orEmpty(),
                     historyState = history.takeIf { it.date == selectedDate && state.selectedRange == tech.mmarca.openvitals.core.period.TimeRange.DAY },
                     periodState = state,
@@ -186,7 +172,7 @@ fun DashboardScreen(
                     onToggleDashboardEdit = viewModel::toggleDashboardEdit,
                     placedWidgetIds = state.placedDashboardWidgets,
                 )
-                else -> ErrorMessage(stringResource(R.string.message_no_dashboard_data))
+                else -> DashboardPlaceholder(header) { ErrorMessage(stringResource(R.string.message_no_dashboard_data)) }
             }
         }
     }
