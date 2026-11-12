@@ -269,6 +269,7 @@ fun AppNavigation(
 
     OpenVitalsAdaptiveScaffold(
         title = topBarTitle,
+        scrollTopBar = currentRoute == Screen.Dashboard.route,
         titleContent = if (currentRoute == Screen.Dashboard.route) {
             { windowWidth -> AmbientFluidBrand(fluidBrandTimeline, windowWidth) }
         } else null,
