@@ -139,6 +139,7 @@ class DashboardViewModel @Inject constructor(
     private var inFlightLoadDate: LocalDate? = null
     private var lastSettledKey: Pair<LocalDate, TimeRange>? = null
     private var lastSettledAt = 0L
+    private var lastForegroundEpoch = foregroundGate?.foregroundEpoch ?: 0
 
 
     init {
@@ -295,12 +296,18 @@ class DashboardViewModel @Inject constructor(
         }
     }
 
-    fun resumeCurrentDay() {
+    fun resumeCurrentDay(foregroundEpoch: Int = foregroundGate?.foregroundEpoch ?: 0) {
+        val returnedToApp = foregroundEpoch != lastForegroundEpoch
+        lastForegroundEpoch = foregroundEpoch
         refreshPreferences()
-        // A returning scale app may have just written a new measurement. Keep the
-        // initial in-flight coalescing, but never reuse a settled current day.
-        if (!userPinnedPastDay && inFlightLoadDate != LocalDate.now()) {
-            forceLoad(LocalDate.now(), RefreshMode.NORMAL)
+        val today = LocalDate.now()
+        // Navigating back from a detail is not an app foreground event. Keep the
+        // loaded tiles and list geometry intact; external apps may have written
+        // new records, so those returns still read Health Connect immediately.
+        if (!userPinnedPastDay && inFlightLoadDate != today &&
+            (returnedToApp || _uiState.value.selectedDate != today)
+        ) {
+            forceLoad(today, RefreshMode.NORMAL)
         }
     }
 

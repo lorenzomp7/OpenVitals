@@ -337,7 +337,7 @@ class DashboardViewModelTest {
         vm.selectDate(today)
         vm.resumeCurrentDay()
 
-        // Selecting today cleared the pin, so the next resume re-reads today.
+        // Selecting today cleared the pin; internal navigation keeps its loaded data.
         assertEquals(today, vm.uiState.value.selectedDate)
         coVerify(atLeast = 2) { loader.loadDashboard(match<DashboardQuery> { it.date == today }) }
     }
@@ -369,8 +369,7 @@ class DashboardViewModelTest {
 
         vm.resumeCurrentDay()
 
-        // The pin was recomputed by nextDay, so the resume re-reads today rather
-        // than sitting on a day the user already left.
+        // The pin was recomputed by nextDay; the resume keeps today selected.
         assertEquals(today, vm.uiState.value.selectedDate)
         coVerify(atLeast = 2) { loader.loadDashboard(match<DashboardQuery> { it.date == today }) }
     }
@@ -743,7 +742,7 @@ class DashboardViewModelTest {
         assertNull(vm.uiState.value.error)
     }
 
-    @Test fun `a resume after the open load settles reads new current-day measurements`() = runTest {
+    @Test fun `an external app return reads new current-day measurements`() = runTest {
         val loader = mockDashboardDataLoader()
         var loads = 0
         coEvery { loader.loadDashboard(any<DashboardQuery>()) } coAnswers {
@@ -755,11 +754,37 @@ class DashboardViewModelTest {
         advanceUntilIdle()
         assertEquals(1, loads)
 
-        // The scale may have written to Health Connect while this screen was backgrounded.
-        vm.resumeCurrentDay()
+        // The scale may have written to Health Connect while the app was backgrounded.
+        vm.resumeCurrentDay(foregroundEpoch = 1)
         advanceUntilIdle()
 
         assertEquals(2, loads)
+    }
+
+    @Test fun `returning from a detail keeps the settled dashboard without another read`() = runTest {
+        val loader = mockDashboardDataLoader()
+        var loads = 0
+        coEvery { loader.loadDashboard(any<DashboardQuery>()) } coAnswers {
+            loads += 1
+            val query = firstArg<DashboardQuery>()
+            DashboardData(date = today, steps = 8_000, loadedMetrics = query.visibleMetrics)
+        }
+        val vm = dashboardViewModel(loader, prefs())
+        advanceUntilIdle()
+        val count = loads
+        val display = vm.uiState.value.display
+
+        repeat(3) {
+            vm.resumeCurrentDay()
+            advanceUntilIdle()
+        }
+
+        assertEquals(count, loads)
+        assertEquals(display, vm.uiState.value.display)
+        assertFalse(vm.uiState.value.isRefreshing)
+        vm.refresh()
+        advanceUntilIdle()
+        assertTrue(loads > count)
     }
 
     @Test fun `force refresh is not absorbed by an in-flight load`() = runTest {

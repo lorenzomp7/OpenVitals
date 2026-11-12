@@ -78,6 +78,7 @@ private val DashboardQuickActionsTopPadding = 14.dp
 @Composable
 internal fun DashboardContent(
     data: DashboardData,
+    listState: androidx.compose.foundation.lazy.LazyListState = androidx.compose.foundation.lazy.rememberLazyListState(),
     header: @Composable () -> Unit = {},
     /** The day the user asked for, ahead of [data] while a switch loads. */
     selectedDate: LocalDate = data.date,
@@ -205,6 +206,7 @@ internal fun DashboardContent(
             }
 
             androidx.compose.foundation.lazy.LazyColumn(
+                state = listState,
                 modifier = Modifier
                     .fillMaxWidth()
                     .weight(1f),

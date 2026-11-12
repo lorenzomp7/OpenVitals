@@ -52,6 +52,7 @@ fun DashboardScreen(
 ) {
     // Seeded from the flow's current value: a placeholder frame on return would
     // reset the carousel page and scroll position.
+    val listState = androidx.compose.foundation.lazy.rememberLazyListState()
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     val history by viewModel.workoutHistory.collectAsStateWithLifecycle()
     val isLoading = state.isLoading
@@ -127,6 +128,7 @@ fun DashboardScreen(
                     DashboardPlaceholder(header) { ErrorMessage(error?.resolve() ?: stringResource(R.string.unknown_error)) }
                 loadedData != null -> DashboardContent(
                     data = loadedData,
+                    listState = listState,
                     header = header,
                     earlierWorkouts = history.workouts.takeIf { history.date == loadedData.date && state.selectedRange == tech.mmarca.openvitals.core.period.TimeRange.DAY }.orEmpty(),
                     historyState = history.takeIf { it.date == selectedDate && state.selectedRange == tech.mmarca.openvitals.core.period.TimeRange.DAY },
