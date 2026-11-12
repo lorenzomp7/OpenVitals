@@ -17,6 +17,7 @@ import androidx.compose.material.icons.outlined.AccountCircle
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -96,9 +97,19 @@ private fun UserProfileFields(
                     Text(stringResource(R.string.user_profile_remove_photo))
                 }
                 OutlinedTextField(name, { onName(it.take(100)) }, label = { Text(stringResource(R.string.food_name)) },
-                    singleLine = true, modifier = Modifier.fillMaxWidth())
+                    shape = MaterialTheme.shapes.medium,
+        colors = OutlinedTextFieldDefaults.colors(
+            focusedContainerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
+            unfocusedContainerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
+        ),
+        singleLine = true, modifier = Modifier.fillMaxWidth())
                 OutlinedTextField(age, { onAge(it.take(3)) }, label = { Text(stringResource(R.string.user_profile_age)) },
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number), singleLine = true,
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number), shape = MaterialTheme.shapes.medium,
+        colors = OutlinedTextFieldDefaults.colors(
+            focusedContainerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
+            unfocusedContainerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
+        ),
+        singleLine = true,
                     isError = !validAge, modifier = Modifier.fillMaxWidth())
                 if (!validAge) Text(stringResource(R.string.body_entry_invalid_value), color = MaterialTheme.colorScheme.error)
                 state.error?.resolve()?.let { Text(it, color = MaterialTheme.colorScheme.error) }
