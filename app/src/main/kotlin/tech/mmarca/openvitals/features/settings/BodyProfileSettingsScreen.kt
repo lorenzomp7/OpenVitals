@@ -29,7 +29,7 @@ fun BodyProfileSettingsScreen(viewModel: BodySettingsViewModel) {
     val permissionLauncher = rememberHealthConnectPermissionLauncher(onResult = { viewModel.refresh() })
 
     SettingsSectionList {
-        item { UserProfileSettingsCard() }
+        item { UserProfileSettingsCard(calculatedAge = state.bodyProfile.birthDate?.let { state.bodyProfile.ageYears() }) }
         item { SettingsCardSpacer() }
         item { SectionHeader(stringResource(SettingsSection.BODY_PROFILE.titleRes)) }
         openWatchSync?.let { updatedAt ->

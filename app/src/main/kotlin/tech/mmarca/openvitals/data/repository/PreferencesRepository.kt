@@ -542,6 +542,8 @@ class PreferencesRepository @Inject constructor(
     override fun setBodyProfile(profile: BodyProfile) {
         val normalized = profile.normalized()
         prefs.edit {
+            normalized.birthDate?.let { putString(KEY_BODY_PROFILE_BIRTH_DATE, it.toString()) }
+                ?: remove(KEY_BODY_PROFILE_BIRTH_DATE)
             normalized.birthYear?.let { putInt(KEY_BODY_PROFILE_BIRTH_YEAR, it) }
                 ?: remove(KEY_BODY_PROFILE_BIRTH_YEAR)
             normalized.weightKg?.let { putFloat(KEY_BODY_PROFILE_WEIGHT_KG, it.toFloat()) }
@@ -1096,6 +1098,9 @@ class PreferencesRepository @Inject constructor(
             migrateLegacyBodyProfileValues()
         }
         return BodyProfile(
+            birthDate = prefs.getString(KEY_BODY_PROFILE_BIRTH_DATE, null)?.let {
+                runCatching { java.time.LocalDate.parse(it) }.getOrNull()
+            },
             birthYear = prefs.getInt(KEY_BODY_PROFILE_BIRTH_YEAR, MISSING_BODY_PROFILE_INT)
                 .takeIf { it != MISSING_BODY_PROFILE_INT },
             weightKg = prefs.getFloat(KEY_BODY_PROFILE_WEIGHT_KG, MISSING_BODY_PROFILE_FLOAT)
@@ -1369,6 +1374,7 @@ class PreferencesRepository @Inject constructor(
         private const val KEY_BODY_ENERGY_GAINS_ALGORITHM_VERSION = "body_energy_gains_algorithm_version"
         private const val KEY_BODY_ENERGY_CHAIN_SEED_MIRROR = "body_energy_chain_seed_mirror"
         private const val KEY_BODY_ENERGY_PERMISSION_SIGNATURE = "body_energy_permission_signature"
+        private const val KEY_BODY_PROFILE_BIRTH_DATE = "body_profile_birth_date"
         private const val KEY_BODY_PROFILE_BIRTH_YEAR = "body_profile_birth_year"
         private const val KEY_BODY_PROFILE_WEIGHT_KG = "body_profile_weight_kg"
         private const val KEY_BODY_PROFILE_HEIGHT_CM = "body_profile_height_cm"

@@ -63,15 +63,15 @@ internal fun UserProfileDialog(onDismiss: () -> Unit, viewModel: UserProfileView
 }
 
 @Composable
-internal fun UserProfileSettingsCard(viewModel: UserProfileViewModel = hiltViewModel()) {
+internal fun UserProfileSettingsCard(calculatedAge: Int? = null, viewModel: UserProfileViewModel = hiltViewModel()) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     if (state.loading) return
     var name by rememberSaveable(state.name) { mutableStateOf(state.name) }
-    var age by rememberSaveable(state.age) { mutableStateOf(state.age?.toString().orEmpty()) }
+    val age = calculatedAge?.toString().orEmpty()
     val validAge = age.isBlank() || age.toIntOrNull()?.let { it in 0..130 } == true
     tech.mmarca.openvitals.ui.components.OpenVitalsCard {
         Column(Modifier.fillMaxWidth().padding(Spacing.lg)) {
-            UserProfileFields(state, name, { name = it }, age, { age = it }, validAge, viewModel)
+            UserProfileFields(state, name, { name = it }, age, {}, validAge, viewModel)
             TextButton(enabled = validAge, onClick = { viewModel.save(name, age.toIntOrNull()) {} }) {
                 Text(stringResource(R.string.action_save))
             }
@@ -103,7 +103,7 @@ private fun UserProfileFields(
             unfocusedContainerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
         ),
         singleLine = true, modifier = Modifier.fillMaxWidth())
-                OutlinedTextField(age, { onAge(it.take(3)) }, label = { Text(stringResource(R.string.user_profile_age)) },
+                OutlinedTextField(age, {}, readOnly = true, label = { Text(stringResource(R.string.user_profile_age)) },
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number), shape = MaterialTheme.shapes.medium,
         colors = OutlinedTextFieldDefaults.colors(
             focusedContainerColor = MaterialTheme.colorScheme.surfaceContainerHigh,

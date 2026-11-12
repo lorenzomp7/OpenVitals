@@ -41,6 +41,7 @@ internal object SettingsBackupSchema {
             "body_energy_stress_drain_gain" to "Float",
             "body_energy_use_manual_zones" to "Boolean",
             "body_energy_zone_thresholds_bpm" to "String",
+            "body_profile_birth_date" to "String",
             "body_profile_birth_year" to "Int",
             "body_profile_height_cm" to "Float",
             "body_profile_max_hr_bpm" to "Int",

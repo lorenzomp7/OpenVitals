@@ -67,11 +67,10 @@ internal fun BodyProfileCard(
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.padding(top = 4.dp),
             )
-            BodyProfileNumberField(
-                label = stringResource(R.string.body_energy_calibration_birth_year),
-                value = draft.birthYear,
-                suffix = "",
-                onValue = { draft = draft.copy(birthYear = it) },
+            BodyProfileBirthDateField(
+                birthDate = draft.birthDate,
+                birthYear = draft.birthYear,
+                onValue = { draft = draft.copy(birthDate = it, birthYear = it?.year) },
             )
             BodyProfileDecimalField(
                 label = bodyMetricLabel(

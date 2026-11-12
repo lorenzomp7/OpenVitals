@@ -1,6 +1,7 @@
 package tech.mmarca.openvitals.domain.preferences
 
 import java.time.LocalDate
+import java.time.Period
 
 data class BodyProfile(
     val birthYear: Int? = null,
@@ -10,11 +11,13 @@ data class BodyProfile(
     val maxHeartRateBpm: Int? = null,
     /** The basal metabolic rate formula, cardio load's TRIMP weighting and the age-predicted maximum heart rate read it. */
     val sex: BiologicalSex? = null,
+    val birthDate: LocalDate? = null,
 ) {
     fun normalized(today: LocalDate = LocalDate.now()): BodyProfile {
         val currentYear = today.year
+        val validBirthDate = birthDate?.takeIf { it.year >= MinBirthYear && !it.isAfter(today) }
         return BodyProfile(
-            birthYear = birthYear?.takeIf { it in MinBirthYear..currentYear },
+            birthYear = validBirthDate?.year ?: birthYear?.takeIf { it in MinBirthYear..currentYear },
             weightKg = weightKg
                 ?.takeIf { it.isFinite() }
                 ?.coerceIn(MinWeightKg, MaxWeightKg),
@@ -26,12 +29,13 @@ data class BodyProfile(
             maxHeartRateBpm = maxHeartRateBpm
                 ?.coerceIn(MinMaxHeartRateBpm, MaxMaxHeartRateBpm),
             sex = sex,
+            birthDate = validBirthDate,
         )
     }
 
     fun ageYears(today: LocalDate = LocalDate.now()): Int? =
-        birthYear
-            ?.let { today.year - it }
+        (birthDate?.takeIf { !it.isAfter(today) }?.let { Period.between(it, today).years }
+            ?: birthYear?.let { today.year - it })
             ?.takeIf { it in MinAgeYears..MaxAgeYears }
 
     /** The Body Energy inputs. Sex is one: it picks the age formula for the maximum heart rate. */
@@ -39,6 +43,7 @@ data class BodyProfile(
         val normalized = normalized(today)
         return listOf(
             normalized.birthYear ?: "auto",
+            normalized.birthDate ?: "auto",
             normalized.weightKg ?: "auto",
             normalized.heightCm ?: "auto",
             normalized.restingHeartRateBpm ?: "auto",

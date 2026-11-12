@@ -8,6 +8,21 @@ import org.junit.Assert.assertTrue
 import org.junit.Test
 
 class BodyProfileTest {
+    @Test
+    fun `full birth date increments age only on birthday`() {
+        val profile = BodyProfile(birthYear = 1990, birthDate = LocalDate.of(1998, 11, 13))
+        assertEquals(27, profile.ageYears(LocalDate.of(2026, 11, 12)))
+        assertEquals(28, profile.ageYears(LocalDate.of(2026, 11, 13)))
+        assertEquals(28, profile.ageYears(LocalDate.of(2026, 11, 14)))
+        assertEquals(1998, profile.normalized(LocalDate.of(2026, 11, 12)).birthYear)
+    }
+
+    @Test
+    fun `future birth date is discarded`() {
+        assertNull(BodyProfile(birthDate = LocalDate.of(2027, 1, 1))
+            .normalized(LocalDate.of(2026, 11, 12)).birthDate)
+    }
+
 
     @Test
     fun `normalization keeps optional values in safe ranges`() {
