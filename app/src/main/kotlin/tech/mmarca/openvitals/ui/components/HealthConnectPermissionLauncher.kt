@@ -49,6 +49,7 @@ fun WithHealthConnectFeatureScreen(
     refreshKey: Any? = Unit,
     showInlineSyncBanner: Boolean = true,
     modifier: Modifier = Modifier,
+    accessGateHeader: (@Composable () -> Unit)? = null,
     content: @Composable (HealthConnectScreenUxState) -> Unit,
 ) {
     var reloadKey by remember { mutableIntStateOf(0) }
@@ -61,6 +62,7 @@ fun WithHealthConnectFeatureScreen(
         isLoading = isLoading,
         refreshKey = refreshKey to reloadKey,
         showInlineSyncBanner = showInlineSyncBanner,
+        accessGateHeader = accessGateHeader,
         modifier = modifier,
         onGrantPermissions = { permissions -> permissionLauncher.launch(permissions) },
         content = content,

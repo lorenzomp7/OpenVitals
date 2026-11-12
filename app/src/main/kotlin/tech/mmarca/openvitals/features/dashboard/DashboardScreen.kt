@@ -100,6 +100,9 @@ fun DashboardScreen(
 
     WithHealthConnectFeatureScreen(
         feature = HealthConnectFeature.DASHBOARD,
+        accessGateHeader = {
+            androidx.compose.foundation.layout.Box(Modifier.statusBarsPadding()) { header() }
+        },
         isLoading = isLoading && loadedData != null,
         refreshKey = refreshRequest to permissionReloadKey,
         // The body renders the sync banner itself; the shell must not add a second.

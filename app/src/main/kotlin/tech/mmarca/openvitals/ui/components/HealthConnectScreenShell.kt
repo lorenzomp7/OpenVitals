@@ -50,6 +50,7 @@ fun WithHealthConnectScreenUx(
     onDismissContextualPrompt: () -> Unit = {},
     showInlineSyncBanner: Boolean = true,
     modifier: Modifier = Modifier,
+    accessGateHeader: (@Composable () -> Unit)? = null,
     content: @Composable (HealthConnectScreenUxState) -> Unit,
 ) {
     val coordinator = rememberHealthConnectScreenUxCoordinator()
@@ -82,6 +83,7 @@ fun WithHealthConnectScreenUx(
         onGrantPermissions = onGrantPermissions,
         onDismissContextualPrompt = dismissPrompt,
         showInlineSyncBanner = showInlineSyncBanner,
+        accessGateHeader = accessGateHeader,
         modifier = modifier,
         content = { content(uxState) },
     )
@@ -94,6 +96,7 @@ fun HealthConnectScreenShell(
     onOpenHealthConnectSettings: () -> Unit = {},
     onDismissContextualPrompt: () -> Unit = {},
     modifier: Modifier = Modifier,
+    accessGateHeader: (@Composable () -> Unit)? = null,
     showInlineSyncBanner: Boolean = true,
     content: @Composable () -> Unit,
 ) {
@@ -106,6 +109,23 @@ fun HealthConnectScreenShell(
         permissions = uxState.missingReadPermissions.ifEmpty { uxState.requiredPermissions },
         onGrant = onGrantPermissions,
     )
+
+    // Navigation stays available while the dashboard's access gate replaces its list.
+    if (uxState.accessGateMode != null && accessGateHeader != null) {
+        Column(modifier.fillMaxSize()) {
+            accessGateHeader()
+            HealthConnectAccessGate(
+                mode = uxState.accessGateMode,
+                onGrant = { onGrantPermissions(uxState.requiredPermissions) },
+                onOpenHealthConnectSettings = {
+                    openHealthConnectPermissionSettings(context)
+                    onOpenHealthConnectSettings()
+                },
+                modifier = Modifier.weight(1f),
+            ) {}
+        }
+        return
+    }
 
     HealthConnectAccessGate(
         mode = uxState.accessGateMode,
