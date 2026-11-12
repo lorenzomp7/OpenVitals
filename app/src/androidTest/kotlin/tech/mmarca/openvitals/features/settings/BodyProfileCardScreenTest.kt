@@ -12,6 +12,9 @@ import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTextClearance
 import androidx.compose.ui.test.performTextInput
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
+import java.time.format.FormatStyle
 import org.junit.Assert.assertEquals
 import org.junit.Rule
 import org.junit.Test
@@ -34,7 +37,7 @@ class BodyProfileCardScreenTest {
     fun seedsItsFieldsFromTheStoredProfile() {
         setCard(STORED)
 
-        composeRule.onNodeWithText("1990").assertIsDisplayed()
+        composeRule.onNodeWithText(STORED.birthDate!!.format(DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM))).assertIsDisplayed()
         composeRule.onNodeWithText("72.5").assertIsDisplayed()
         composeRule.onNodeWithText("178.0").assertIsDisplayed()
         composeRule.onNodeWithText("52").assertIsDisplayed()
@@ -72,21 +75,21 @@ class BodyProfileCardScreenTest {
     }
 
     @Test
-    fun theBirthYearIsNotAskedForTwice() {
+    fun theBirthDateIsNotAskedForTwice() {
         // Both cards once carried a birth year and disagreed about it.
         setCard(STORED)
 
         composeRule
-            .onAllNodesWithText(string(R.string.body_energy_calibration_birth_year))
+            .onAllNodesWithText(string(R.string.medical_field_birth_date))
             .assertCountEquals(1)
     }
 
     @Test
-    fun standaloneItStillCarriesABirthYearAndASave() {
+    fun standaloneItStillCarriesABirthDateAndASave() {
         // This card on its own has to be enough to complete a profile.
         setCard(BodyProfile())
 
-        composeRule.onNodeWithText(string(R.string.body_energy_calibration_birth_year)).assertIsDisplayed()
+        composeRule.onNodeWithText(string(R.string.medical_field_birth_date)).assertIsDisplayed()
         composeRule.onNodeWithText(string(R.string.action_save)).assertIsDisplayed()
     }
 
@@ -112,6 +115,7 @@ class BodyProfileCardScreenTest {
     private companion object {
         val STORED = BodyProfile(
             birthYear = 1990,
+            birthDate = LocalDate.of(1990, 6, 15),
             weightKg = 72.5,
             heightCm = 178.0,
             restingHeartRateBpm = 52,

@@ -415,6 +415,18 @@ class PreferencesRepositoryTest {
 
     // region structured configs
 
+    @Test fun `full birth date survives preferences reload and clears with the profile`() {
+        val (repo, prefs) = newRepo()
+        val birthDate = LocalDate.of(1998, 11, 13)
+        repo.setBodyProfile(BodyProfile(birthDate = birthDate))
+        val reloaded = reload(prefs).bodyProfile()
+        assertEquals(birthDate, reloaded.birthDate)
+        assertEquals(1998, reloaded.birthYear)
+        assertEquals(27, reloaded.ageYears(LocalDate.of(2026, 11, 12)))
+        repo.setBodyProfile(BodyProfile())
+        assertNull(reload(prefs).bodyProfile().birthDate)
+    }
+
     @Test fun `bodyProfile round-trips and normalizes`() {
         val (repo, prefs) = newRepo()
         repo.setBodyProfile(BodyProfile(birthYear = 1990, weightKg = 72.5, sex = BiologicalSex.FEMALE))
