@@ -3844,4 +3844,6 @@
     <string name="screenshot_water_percent">La percentuale di acqua corporea viene convertita in kg usando il peso di questo screenshot.</string>
     <string name="dashboard_period_goal">Obiettivo del periodo</string>
     <string name="dashboard_nightly_goal">Obiettivo medio per notte</string>
+    <string name="user_profile_view_photo">Visualizza</string>
+    <string name="user_profile_change_photo">Cambia</string>
 </resources>

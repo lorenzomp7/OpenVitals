@@ -45,4 +45,4 @@ remain available; no samples are invented for unrecorded intervals.
 
 ## Profile and header refinements
 
-The dashboard header is the first ordinary item of the dashboard list, with no collapsing or nested-scroll behavior. The launcher symbol uses a continuous blue, red, yellow and green gradient over transparency. Body profile displays age from the complete birth date, keeps that date in settings backups, and stages the name, photo, body metrics, BMR option and caffeine factors until the single Save button is pressed. Camera and delete icons beside the photo choose and remove the profile picture.
+The dashboard header is the first ordinary item of the dashboard list, with no collapsing or nested-scroll behavior. The launcher symbol uses a continuous blue, red, yellow and green gradient over a solid white launcher background. Body profile displays age from the complete birth date, keeps that date in settings backups, and stages the name, photo, body metrics, BMR option and caffeine factors until the single Save button is pressed. The centered profile picture opens a menu with View, Change and Delete; View shows the full uncropped picture.

@@ -3845,4 +3845,6 @@
     <string name="dashboard_cardio_today_points">Hoy: %1$d puntos</string>
     <string name="dashboard_period_goal">Objetivo del período</string>
     <string name="dashboard_nightly_goal">Objetivo medio por noche</string>
+    <string name="user_profile_view_photo">Ver</string>
+    <string name="user_profile_change_photo">Cambiar</string>
 </resources>

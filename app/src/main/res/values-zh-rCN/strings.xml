@@ -3813,4 +3813,6 @@
     <string name="dashboard_cardio_today_points">今天：%1$d 分</string>
     <string name="dashboard_period_goal">所选时段目标</string>
     <string name="dashboard_nightly_goal">每晚平均目标</string>
+    <string name="user_profile_view_photo">查看</string>
+    <string name="user_profile_change_photo">更换</string>
 </resources>

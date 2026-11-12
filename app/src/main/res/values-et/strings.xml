@@ -3812,4 +3812,6 @@
     <string name="dashboard_cardio_today_points">Täna: %1$d punkti</string>
     <string name="dashboard_period_goal">Perioodi eesmärk</string>
     <string name="dashboard_nightly_goal">Keskmine öine eesmärk</string>
+    <string name="user_profile_view_photo">Vaata</string>
+    <string name="user_profile_change_photo">Muuda</string>
 </resources>

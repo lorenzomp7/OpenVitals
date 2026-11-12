@@ -3873,4 +3873,6 @@
     <string name="screenshot_water_percent">Body water percentage is converted to kg using the weight in this screenshot.</string>
     <string name="dashboard_period_goal">Period goal</string>
     <string name="dashboard_nightly_goal">Average nightly goal</string>
+    <string name="user_profile_view_photo">View</string>
+    <string name="user_profile_change_photo">Change</string>
 </resources>
