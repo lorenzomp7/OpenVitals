@@ -5,8 +5,6 @@ import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.mlkit.vision.common.InputImage
-import com.google.mlkit.vision.text.TextRecognition
-import com.google.mlkit.vision.text.latin.TextRecognizerOptions
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
@@ -14,10 +12,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.withContext
-import kotlin.coroutines.resume
-import kotlin.coroutines.resumeWithException
 import tech.mmarca.openvitals.core.presentation.ScreenError
 import tech.mmarca.openvitals.core.presentation.toScreenError
 import tech.mmarca.openvitals.core.presentation.isPermissionFailure
@@ -38,6 +33,7 @@ internal data class ScreenshotImportState(
 internal class ScreenshotImportViewModel @Inject constructor(
     @ApplicationContext private val context: Context,
     private val repository: AppleHealthImportRepository,
+    private val healthConnect: tech.mmarca.openvitals.healthconnect.HealthConnectManager,
 ) : ViewModel() {
     private val mutable = MutableStateFlow(ScreenshotImportState())
     val state = mutable.asStateFlow()
@@ -59,21 +55,10 @@ internal class ScreenshotImportViewModel @Inject constructor(
                         }
                     }.getOrNull().orEmpty()
                     val image = InputImage.fromFilePath(context, uri)
-                    val recognizer = TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS)
-                    try {
-                        val recognized = suspendCancellableCoroutine<com.google.mlkit.vision.text.Text> { continuation ->
-                            recognizer.process(image)
-                                .addOnSuccessListener { if (continuation.isActive) continuation.resume(it) }
-                                .addOnFailureListener { if (continuation.isActive) continuation.resumeWithException(it) }
-                        }
-                        recognized to ScreenshotParser.filenameTime(name)
-                    } finally { recognizer.close() }
+                    recognizeScreenshot(image) to ScreenshotParser.filenameTime(name)
                 }
                 val text = recognized.text
-                val lines = recognized.textBlocks.flatMap { it.lines }.mapNotNull { line ->
-                    line.boundingBox?.let { box -> ScreenshotOcrLine(line.text, box.left, box.top, box.right, box.bottom) }
-                }
-                val values = ScreenshotParser.parseLines(lines)
+                val values = screenshotOcrValues(recognized)
                 val seconds = values.firstOrNull { it.kind == "duration_min" }?.value?.toDoubleOrNull()?.times(60)?.let { kotlin.math.round(it).toLong() } ?: 0L
                 mutable.value = ScreenshotImportState(values = values,
                     exerciseType = ScreenshotParser.workoutType(text, screenshotWorkoutLabels(context)),
@@ -85,6 +70,17 @@ internal class ScreenshotImportViewModel @Inject constructor(
             }
         }
     }
+    suspend fun missingWritePermissions(): Set<String> {
+        healthConnect.invalidatePermissionCache()
+        return tech.mmarca.openvitals.healthconnect.screenshotPermissions(mutable.value.values.map { it.kind }) - healthConnect.grantedPermissions()
+    }
+
+    fun permissionsChanged() { healthConnect.invalidatePermissionCache() }
+
+    fun permissionScreenFailed() {
+        mutable.value = mutable.value.copy(error = ScreenError.Text(tech.mmarca.openvitals.R.string.onboarding_unable_open_permissions))
+    }
+
     fun edit(index: Int, value: String) {
         mutable.value = mutable.value.copy(values = mutable.value.values.mapIndexed { i, item ->
             if (i == index) item.copy(value = value) else item

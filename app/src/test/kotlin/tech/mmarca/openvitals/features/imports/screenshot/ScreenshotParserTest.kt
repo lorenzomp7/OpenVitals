@@ -81,4 +81,22 @@ class ScreenshotParserTest {
         assertTrue(result.contains(ScreenshotValue("kg", "70.0")))
         assertEquals("55.2", ScreenshotParser.parse("Fat-free mass 55.2 kg").single().value)
     }
+    @Test fun `body composition values can be right of split labels with units in separate OCR elements`() {
+        val result = ScreenshotParser.parseLines(listOf(
+            ScreenshotOcrLine("Lean", 20, 20, 100, 45), ScreenshotOcrLine("mass", 20, 50, 100, 75),
+            ScreenshotOcrLine("60.53", 300, 20, 400, 45), ScreenshotOcrLine("kg", 410, 20, 450, 45),
+            ScreenshotOcrLine("Body water", 20, 150, 220, 175),
+            ScreenshotOcrLine("58.2", 300, 150, 400, 175), ScreenshotOcrLine("%", 410, 150, 450, 175),
+        ))
+        assertEquals(setOf(ScreenshotValue("lean_mass", "60.53"), ScreenshotValue("body_water_percent", "58.2")), result.toSet())
+    }
+    @Test fun `units in body labels support bare values without guessing percent from mass`() {
+        val result = ScreenshotParser.parseLines(listOf(
+            ScreenshotOcrLine("Lean Mass (kg)", 20, 20, 200, 45), ScreenshotOcrLine("60.53", 300, 20, 400, 45),
+            ScreenshotOcrLine("Body Water (%)", 20, 150, 220, 175), ScreenshotOcrLine("58.2", 300, 150, 400, 175),
+        ))
+        assertTrue(result.contains(ScreenshotValue("lean_mass", "60.53")))
+        assertTrue(result.contains(ScreenshotValue("body_water_percent", "58.2")))
+        assertEquals(listOf(ScreenshotValue("body_water", "40.1")), ScreenshotParser.parse("Body water 40.1 kg"))
+    }
 }
