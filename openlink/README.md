@@ -1,7 +1,7 @@
 # OpenLink
 
-The control channel between [OpenVitals](https://github.com/OpenVitals-MTU/android-app) and
-[OpenWatch](https://github.com/OpenVitals-MTU/OpenWatch). Health data travels through Health
+The control channel between OpenVitals and
+OpenWatch. Health data travels through Health
 Connect; OpenLink carries what Health Connect cannot: the body profile, the state of the
 paired watches and scale with a "sync now", a request to keep a wearable streaming while the
 phone records an activity, and the live heart rate it streams.
