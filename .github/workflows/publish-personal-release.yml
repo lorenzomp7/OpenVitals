@@ -1,0 +1,119 @@
+name: publish-personal-release
+on:
+  push:
+    branches: [fix/dashboard-import-27-51]
+    paths: [.github/workflows/publish-personal-release.yml]
+  workflow_dispatch:
+permissions:
+  contents: write
+  actions: read
+concurrency:
+  group: publish-personal-apk-release
+  cancel-in-progress: false
+jobs:
+  release:
+    runs-on: ubuntu-26.04
+    timeout-minutes: 35
+    env:
+      GH_TOKEN: ${{ github.token }}
+      GH_REPO: ${{ github.repository }}
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+      - uses: gradle/actions/setup-gradle@v5
+        with:
+          cache-read-only: false
+      - name: Check the application source passed verification
+        run: |
+          set -euo pipefail
+          VERIFIED=2a139851d2d1a1fa9d20c36259ae2dde2197a4e1
+          gh api "repos/$GH_REPO/actions/runs/43496580323" --jq '.conclusion == "success" and .head_sha == "2a139851d2d1a1fa9d20c36259ae2dde2197a4e1"' | grep -qx true
+          git diff --quiet "$VERIFIED" HEAD -- app domain openlink gradle scripts build.gradle.kts settings.gradle.kts gradle.properties
+      - name: Fetch the previous published application
+        run: |
+          set -euo pipefail
+          mkdir -p previous-apk
+          gh release download --pattern OpenVitals.apk --dir previous-apk
+          test -s previous-apk/OpenVitals.apk
+      - name: Set an increasing update version
+        run: |
+          set -euo pipefail
+          scripts/ci-android-setup.sh
+          AAPT=$(find "$ANDROID_HOME/build-tools" -name aapt -type f | sort -V | tail -1)
+          "$AAPT" dump badging previous-apk/OpenVitals.apk > "$RUNNER_TEMP/previous-badging.txt"
+          grep -q "package: name='tech.mmarca.openvitals.debug'" "$RUNNER_TEMP/previous-badging.txt"
+          PREVIOUS=$(sed -n "s/.*versionCode='\([0-9]*\)'.*/\1/p" "$RUNNER_TEMP/previous-badging.txt" | head -1)
+          test -n "$PREVIOUS"
+          NEXT=$((PREVIOUS + 1))
+          if (( NEXT < 1070400000 )); then NEXT=1070400000; fi
+          echo "OPENVITALS_VERSION_CODE=$NEXT" >> "$GITHUB_ENV"
+          echo "OPENVITALS_VERSION_NAME=2.16.0-personal-27-51" >> "$GITHUB_ENV"
+      - name: Build the signed personal update
+        env:
+          OPENVITALS_RELEASE_STORE_FILE: ${{ github.workspace }}/personal/personal.p12
+          OPENVITALS_RELEASE_STORE_PASSWORD: openvitals-personal
+          OPENVITALS_RELEASE_KEY_ALIAS: personal
+          OPENVITALS_SIGN_DEBUG_WITH_RELEASE_KEY: 'true'
+          OPENVITALS_PUBLISHED_DEBUG_APK: 'true'
+        run: scripts/ci-android-gradle.sh verifyTranslations :app:assembleDebug
+      - name: Check package, version and signing certificate
+        run: |
+          set -euo pipefail
+          mkdir -p personal-apk
+          cp app/build/outputs/apk/debug/app-debug.apk personal-apk/OpenVitals-personal.apk
+          AAPT=$(find "$ANDROID_HOME/build-tools" -name aapt -type f | sort -V | tail -1)
+          SIGNER=$(find "$ANDROID_HOME/build-tools" -name apksigner -type f | sort -V | tail -1)
+          "$AAPT" dump badging personal-apk/OpenVitals-personal.apk > "$RUNNER_TEMP/update-badging.txt"
+          grep -q "package: name='tech.mmarca.openvitals.debug'" "$RUNNER_TEMP/update-badging.txt"
+          grep -q "versionCode='$OPENVITALS_VERSION_CODE'" "$RUNNER_TEMP/update-badging.txt"
+          "$SIGNER" verify --verbose --print-certs personal-apk/OpenVitals-personal.apk > personal-apk/signing-certificate.txt
+          "$SIGNER" verify --print-certs previous-apk/OpenVitals.apk > personal-apk/previous-certificate.txt
+          for cert in previous-certificate signing-certificate; do
+            sed -nE 's/^.*Signer.*certificate SHA-256 digest: ([[:xdigit:]]+).*$/\1/p' "personal-apk/$cert.txt" | tr '[:upper:]' '[:lower:]' | sort -u > "personal-apk/$cert.sha256"
+            test -s "personal-apk/$cert.sha256"
+          done
+          cmp personal-apk/previous-certificate.sha256 personal-apk/signing-certificate.sha256
+      - name: Enable KVM
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+      - name: Verify installation, update and launch
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 35
+          target: google_apis
+          arch: x86_64
+          profile: pixel_6
+          disable-animations: true
+          script: bash scripts/verify-personal-install.sh
+      - name: Publish the verified APK as a GitHub release
+        run: |
+          set -euo pipefail
+          mkdir -p release
+          cp personal-apk/OpenVitals-personal.apk release/OpenVitals.apk
+          (cd release && sha256sum OpenVitals.apk > SHA256SUMS.txt)
+          TAG="personal-27-51-$GITHUB_RUN_ID"
+          cat > release-notes.md <<EOF
+          Scarica **OpenVitals.apk** dagli allegati e aprilo sul telefono.
+
+          Aggiornamento personale con le correzioni 27, 43–48, 50 e 51: editor dashboard con conferma salva/scarta, trascinamento visibile, icone stabili, Activities a metà larghezza, filtro body fat a zero e miglioramenti all'importazione screenshot. Rimossi i riferimenti alla precedente organizzazione. Il punto 49 resta una proposta.
+
+          Questa versione aggiorna l'installazione personale compatibile di OpenVitals senza disinstallarla. Package e firma coincidono con l'APK pubblicato precedente; installazione, aggiornamento e avvio sono stati verificati su Android 15.
+
+          Versione: **2.16.0-personal-27-51**. Version code: **$OPENVITALS_VERSION_CODE**.
+          Sorgenti: https://github.com/$GH_REPO/commit/$GITHUB_SHA
+          Compilazione e verifica aggiornamento: https://github.com/$GH_REPO/actions/runs/$GITHUB_RUN_ID
+          EOF
+          if gh release view "$TAG" > /dev/null 2>&1; then
+            echo "Release already exists; keeping the published APK unchanged."
+          else
+            gh release create "$TAG" release/OpenVitals.apk release/SHA256SUMS.txt --target "$GITHUB_SHA" --title "OpenVitals 2.16.0 · correzioni 27–51" --notes-file release-notes.md --latest
+          fi
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: personal-release-install-checks
+          path: personal-apk/
+          if-no-files-found: ignore
