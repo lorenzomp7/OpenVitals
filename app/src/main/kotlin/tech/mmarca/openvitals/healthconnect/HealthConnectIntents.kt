@@ -28,16 +28,6 @@ fun openHealthConnectPermissionSettings(context: Context): Boolean {
     }
 }
 
-/** Open this installation's access page only; never substitute the generic Health Connect home. */
-fun openOwnHealthConnectPermissionSettings(context: Context): Boolean = runCatching {
-    val intent = ownHealthConnectPermissionIntent(context.packageName)
-    if (context !is Activity) intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-    context.startActivity(intent)
-}.isSuccess
-
-internal fun ownHealthConnectPermissionIntent(packageName: String): Intent =
-    Intent(ACTION_MANAGE_HEALTH_PERMISSIONS).putExtra(Intent.EXTRA_PACKAGE_NAME, packageName)
-
 /** Health Connect's data screens, where the user can delete records another app wrote. */
 fun openHealthConnectDataSettings(context: Context): Boolean {
     val intents = listOfNotNull(

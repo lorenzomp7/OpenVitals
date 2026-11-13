@@ -26,6 +26,7 @@ internal data class ScreenshotImportState(
     val suggestedEnd: String = "",
     val busy: Boolean = false,
     val saved: Boolean = false,
+    val writesGranted: Boolean = false,
     val error: ScreenError? = null,
 )
 
@@ -75,7 +76,16 @@ internal class ScreenshotImportViewModel @Inject constructor(
         return tech.mmarca.openvitals.healthconnect.screenshotPermissions(mutable.value.values.map { it.kind }) - healthConnect.grantedPermissions()
     }
 
-    fun permissionsChanged() { healthConnect.invalidatePermissionCache() }
+    suspend fun refreshWritePermissions(showDenied: Boolean = false) {
+        try {
+            val granted = missingWritePermissions().isEmpty()
+            mutable.value = mutable.value.copy(writesGranted = granted,
+                error = if (showDenied && !granted) ScreenError.PermissionDenied else mutable.value.error)
+        } catch (error: Exception) {
+            if (error is kotlinx.coroutines.CancellationException) throw error
+            mutable.value = mutable.value.copy(writesGranted = false)
+        }
+    }
 
     fun permissionScreenFailed() {
         mutable.value = mutable.value.copy(error = ScreenError.Text(tech.mmarca.openvitals.R.string.onboarding_unable_open_permissions))

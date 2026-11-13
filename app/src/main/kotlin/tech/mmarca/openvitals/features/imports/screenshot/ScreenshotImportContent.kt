@@ -32,7 +32,7 @@ internal fun ScreenshotImportContent(state: ScreenshotImportState, start: String
     val canSave = state.values.any { it.kind != "bmi" } &&
         (state.values.none { it.kind == "body_water_percent" } || state.values.any { it.kind == "kg" }) &&
         (state.values.none { it.kind == "duration_min" } || state.exerciseType != null) &&
-        confirmed && editable && start.isNotBlank() && end.isNotBlank()
+        confirmed && state.writesGranted && editable && start.isNotBlank() && end.isNotBlank()
     Column(Modifier.fillMaxWidth().padding(Spacing.lg).testTag("screenshot_import_form")) {
         Text(stringResource(R.string.screenshot_import_title), style = MaterialTheme.typography.titleLarge)
         Spacer(Modifier.height(Spacing.sm))
@@ -58,7 +58,8 @@ internal fun ScreenshotImportContent(state: ScreenshotImportState, start: String
                     Checkbox(confirmed, actions.onConfirmed, enabled = editable)
                     Text(stringResource(R.string.screenshot_import_confirm), style = MaterialTheme.typography.bodyMedium, modifier = Modifier.weight(1f))
                 }
-                OutlinedButton(onClick = actions.onPermissions, enabled = !state.busy, shape = MaterialTheme.shapes.medium,
+                if (state.writesGranted) ScreenshotHint(stringResource(R.string.onboarding_status_granted))
+                else OutlinedButton(onClick = actions.onPermissions, enabled = !state.busy, shape = MaterialTheme.shapes.medium,
                     modifier = Modifier.fillMaxWidth().heightIn(min = LayoutMetrics.minTouchTarget).testTag("screenshot_write_permissions")) {
                     Text(stringResource(R.string.screenshot_import_permissions), style = MaterialTheme.typography.labelLarge)
                 }

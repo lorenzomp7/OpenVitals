@@ -107,9 +107,9 @@ jobs:
           cat > release-notes.md <<EOF
           Scarica **OpenVitals.apk** dagli allegati e aprilo sul telefono.
 
-          Correzioni 46, 47 e 51: il pulsante permessi richiede le scritture per questa installazione di OpenVitals e apre solo la sua pagina di accesso; riconoscimento di lean mass e body water con etichette spezzate, valori laterali e unità separate; caratteri, campi, pulsanti e date uniformati nell'importazione screenshot.
+          Correzioni 46, 47 e 51: il pulsante permessi richiede le scritture per questa installazione di OpenVitals tramite la finestra nativa dedicata all’app; quando sono già concesse mostra lo stato autorizzato; riconoscimento di lean mass e body water con etichette spezzate, valori laterali e unità separate; caratteri, campi, pulsanti e date uniformati nell'importazione screenshot.
 
-          Verificati sul dispositivo di test: riconoscimento OCR reale di massa magra e acqua corporea, form di revisione e pagina Health Connect specifica di OpenVitals.
+          Verificati sul dispositivo di test: riconoscimento OCR reale di massa magra e acqua corporea, form di revisione e richiesta Health Connect specifica di OpenVitals.
 
           Questa versione aggiorna l'installazione personale compatibile di OpenVitals senza disinstallarla. Package e firma coincidono con l'APK pubblicato precedente; installazione, aggiornamento e avvio sono stati verificati su Android 15.
 

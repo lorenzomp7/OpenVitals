@@ -9,7 +9,6 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
@@ -18,7 +17,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kotlinx.coroutines.launch
 import tech.mmarca.openvitals.R
-import tech.mmarca.openvitals.healthconnect.openOwnHealthConnectPermissionSettings
 import tech.mmarca.openvitals.features.manualentry.rememberManualEntryWritePermissionRequester
 import tech.mmarca.openvitals.ui.theme.Spacing
 
@@ -37,12 +35,13 @@ internal fun ScreenshotImportDialog(onDismiss: () -> Unit, initialUri: Uri? = nu
     var start by rememberSaveable { mutableStateOf("") }
     var end by rememberSaveable { mutableStateOf("") }
     var confirmed by rememberSaveable { mutableStateOf(false) }
-    val context = LocalContext.current
     val scope = rememberCoroutineScope()
-    val requester = rememberManualEntryWritePermissionRequester { granted ->
-        viewModel.permissionsChanged()
-        // After a repeated refusal Android may suppress the request. Keep recovery on our own app page.
-        if (granted.isEmpty() && !openOwnHealthConnectPermissionSettings(context)) viewModel.permissionScreenFailed()
+    val requester = rememberManualEntryWritePermissionRequester {
+        scope.launch { viewModel.refreshWritePermissions(showDenied = true) }
+    }
+    LaunchedEffect(state.values.map { it.kind }) { viewModel.refreshWritePermissions() }
+    androidx.lifecycle.compose.LifecycleEventEffect(androidx.lifecycle.Lifecycle.Event.ON_RESUME) {
+        scope.launch { viewModel.refreshWritePermissions() }
     }
     val picker = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument()) { uri ->
         if (uri != null) { confirmed = false; viewModel.scan(uri) }
@@ -64,7 +63,7 @@ internal fun ScreenshotImportDialog(onDismiss: () -> Unit, initialUri: Uri? = nu
                 try {
                     val missing = viewModel.missingWritePermissions()
                     if (missing.isNotEmpty()) requester.launch(missing)
-                    else if (!openOwnHealthConnectPermissionSettings(context)) viewModel.permissionScreenFailed()
+                    else viewModel.refreshWritePermissions()
                 } catch (error: Exception) {
                     if (error is kotlinx.coroutines.CancellationException) throw error
                     viewModel.permissionScreenFailed()

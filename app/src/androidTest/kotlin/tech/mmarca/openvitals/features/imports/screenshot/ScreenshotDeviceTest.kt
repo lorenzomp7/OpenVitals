@@ -1,8 +1,5 @@
 package tech.mmarca.openvitals.features.imports.screenshot
 
-import android.content.ActivityNotFoundException
-import android.content.ContextWrapper
-import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Color
@@ -14,7 +11,6 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.asAndroidBitmap
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.test.platform.app.InstrumentationRegistry
@@ -26,7 +22,7 @@ import org.junit.FixMethodOrder
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runners.MethodSorters
-import tech.mmarca.openvitals.healthconnect.openOwnHealthConnectPermissionSettings
+import tech.mmarca.openvitals.features.manualentry.rememberManualEntryWritePermissionRequester
 import tech.mmarca.openvitals.ui.theme.OpenVitalsTheme
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
@@ -39,9 +35,9 @@ class ScreenshotDeviceTest {
         val canvas = Canvas(bitmap)
         canvas.drawColor(Color.WHITE)
         val paint = Paint(Paint.ANTI_ALIAS_FLAG).apply { color = Color.BLACK; textSize = 46f }
-        canvas.drawText("WEIGHT 69.9 kg", 70f, 110f, paint)
-        canvas.drawText("BMI 23.6", 70f, 200f, paint)
-        canvas.drawText("BODY FAT 13.4 %", 70f, 290f, paint)
+        canvas.drawText("WEIGHT 80.0 kg", 70f, 110f, paint)
+        canvas.drawText("BMI 24.7", 70f, 200f, paint)
+        canvas.drawText("BODY FAT 20.0 %", 70f, 290f, paint)
         canvas.drawText("LEAN", 70f, 410f, paint)
         canvas.drawText("MASS", 70f, 470f, paint)
         canvas.drawText("60.53", 500f, 410f, paint)
@@ -53,18 +49,18 @@ class ScreenshotDeviceTest {
         val result = screenshotOcrValues(recognizeScreenshot(InputImage.fromBitmap(bitmap, 0)))
         assertTrue("Missing lean mass: ${result.map { it.kind }}", result.contains(ScreenshotValue("lean_mass", "60.53")))
         assertTrue("Missing body water: ${result.map { it.kind }}", result.contains(ScreenshotValue("body_water_percent", "58.2")))
-        assertTrue(result.contains(ScreenshotValue("kg", "69.9")))
+        assertTrue(result.contains(ScreenshotValue("kg", "80.0")))
         assertFalse(result.contains(ScreenshotValue("lean_mass", "44.1")))
         save("screenshot-ocr-fixture.png", bitmap)
     }
 
     @Test fun b_importReviewShowsAllBodyMetricsWithConsistentFieldsAndFixedActions() {
-        val values = listOf(ScreenshotValue("bmi", "23.6"), ScreenshotValue("kg", "69.9"),
-            ScreenshotValue("body_fat", "13.4"), ScreenshotValue("lean_mass", "60.53"), ScreenshotValue("body_water_percent", "58.2"))
+        val values = listOf(ScreenshotValue("bmi", "24.7"), ScreenshotValue("kg", "80.0"),
+            ScreenshotValue("body_fat", "20.0"), ScreenshotValue("lean_mass", "60.53"), ScreenshotValue("body_water_percent", "58.2"))
         compose.setContent {
             OpenVitalsTheme(themeMode = tech.mmarca.openvitals.domain.preferences.AppThemeMode.AMOLED) {
                 Surface(Modifier.fillMaxSize()) {
-                    ScreenshotImportContent(ScreenshotImportState(values = values), "2026-11-13T23:22:16", "2026-11-13T23:22:16", false, ScreenshotImportActions())
+                    ScreenshotImportContent(ScreenshotImportState(values = values), "2026-01-02T12:00:00", "2026-01-02T12:00:00", false, ScreenshotImportActions())
                 }
             }
         }
@@ -76,29 +72,19 @@ class ScreenshotDeviceTest {
         save("screenshot-import-actions.png", compose.onRoot().captureToImage().asAndroidBitmap())
     }
 
-    @Test fun c_missingAppPermissionPageDoesNotFallBackToGenericHealthConnect() {
-        val attempted = mutableListOf<Intent>()
-        val context = object : ContextWrapper(instrumentation.targetContext) {
-            override fun startActivity(intent: Intent) { attempted += intent; throw ActivityNotFoundException() }
-        }
-        assertFalse(openOwnHealthConnectPermissionSettings(context))
-        assertEquals(1, attempted.size)
-        assertEquals(instrumentation.targetContext.packageName, attempted.single().getStringExtra(Intent.EXTRA_PACKAGE_NAME))
-        assertEquals(0, attempted.single().flags and Intent.FLAG_ACTIVITY_NEW_DOCUMENT)
-    }
-
-    @Test fun d_opensThisOpenVitalsInstallInsideHealthConnect() {
+    @Test fun c_requestsWritesForThisOpenVitalsInstallInsideHealthConnect() {
         val app = instrumentation.targetContext
-        instrumentation.uiAutomation.executeShellCommand("pm grant ${app.packageName} android.permission.health.WRITE_WEIGHT").use {
+        instrumentation.uiAutomation.executeShellCommand("pm revoke ${app.packageName} android.permission.health.WRITE_WEIGHT").use {
             android.os.ParcelFileDescriptor.AutoCloseInputStream(it).readBytes()
         }
-        var launched = false
         compose.setContent {
-            val context = LocalContext.current
-            Button(onClick = { launched = openOwnHealthConnectPermissionSettings(context) }) { Text("Open this app permissions") }
+            val requester = rememberManualEntryWritePermissionRequester { }
+            Button(onClick = { requester.launch(setOf("android.permission.health.WRITE_WEIGHT",
+                "android.permission.health.WRITE_LEAN_BODY_MASS", "android.permission.health.WRITE_BODY_WATER_MASS")) }) {
+                Text("Open this app permissions")
+            }
         }
         compose.onNodeWithText("Open this app permissions").performClick()
-        assertTrue(launched)
         val label = app.applicationInfo.loadLabel(app.packageManager).toString()
         val deadline = System.currentTimeMillis() + 20_000
         var text = ""
@@ -106,11 +92,13 @@ class ScreenshotDeviceTest {
             val root = instrumentation.uiAutomation.rootInActiveWindow
             text = texts(root).joinToString("\n")
             if (text.contains(label, true) && text.contains("Weight", true)) break
-            click(root, setOf("Get started", "Continue", "Done", "Allow all"))
+            click(root, setOf("Get started", "Continue", "Done"))
             Thread.sleep(250)
         }
         save("screenshot-openvitals-health-permissions.png", checkNotNull(instrumentation.uiAutomation.takeScreenshot()))
-        assertTrue("Expected OpenVitals app access page, found: $text", text.contains(label, true) && text.contains("Weight", true))
+        assertTrue("Expected OpenVitals write request, found: $text", text.contains(label, true) && text.contains("Weight", true))
+        assertTrue("Lean mass write permission missing: $text", text.contains("Lean body mass", true))
+        assertTrue("Body water write permission missing: $text", text.contains("Body water", true))
     }
 
     private fun texts(node: AccessibilityNodeInfo?): List<String> = if (node == null) emptyList() else
