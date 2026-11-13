@@ -192,14 +192,14 @@ internal fun DashboardSwipeToDeleteActivityCard(
 private fun DashboardActivitiesSectionHeader(
     onClick: () -> Unit,
 ) {
-    BoxWithConstraints(Modifier.fillMaxWidth().padding(start = DashboardScreenPadding, end = DashboardScreenPadding, top = 12.dp, bottom = 6.dp)) {
+    BoxWithConstraints(Modifier.fillMaxWidth().padding(start = DashboardScreenPadding, end = DashboardScreenPadding, top = Spacing.md, bottom = Spacing.md / 2)) {
         OpenVitalsButton(
             onClick = onClick,
             contentPadding = DashboardQuickActionContentPadding,
             modifier = Modifier.width((maxWidth - DashboardTileGap) / 2).height(DashboardQuickActionHeight),
         ) {
             Icon(Icons.AutoMirrored.Outlined.DirectionsRun, null, Modifier.size(DashboardQuickActionIconSize))
-            Spacer(Modifier.width(6.dp))
+            Spacer(Modifier.width(Spacing.md / 2))
             Text(stringResource(R.string.dashboard_activities_today))
         }
     }

@@ -2,6 +2,7 @@ package tech.mmarca.openvitals.features.dashboard
 
 import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.foundation.layout.wrapContentSize
+import tech.mmarca.openvitals.ui.theme.Spacing
 import androidx.compose.foundation.layout.Row
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Switch
@@ -268,14 +269,13 @@ internal fun DashboardWidgetCarousel(
                     specsById = specsById,
                     sizes = widgetSizes,
                     paged = pagedLayout,
-                    rowHeight = dashboardWidgetRowHeight() + 12.dp,
+                    rowHeight = dashboardWidgetRowHeight() + Spacing.md,
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(
                             start = DashboardScreenPadding,
                             end = DashboardScreenPadding,
                             top = DashboardGridTopPadding,
-                            bottom = 0.dp,
                         ),
                 )
             } else if (carouselIds.isNotEmpty()) {

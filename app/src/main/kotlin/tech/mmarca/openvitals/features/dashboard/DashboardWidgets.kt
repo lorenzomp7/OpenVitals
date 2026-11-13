@@ -1,5 +1,7 @@
 package tech.mmarca.openvitals.features.dashboard
 
+import tech.mmarca.openvitals.ui.theme.Spacing
+
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.LinearEasing
@@ -226,7 +228,7 @@ internal fun DashboardWidgetGrid(
     DashboardPlacedTileGrid(
         placements = placements,
         rowHeight = dashboardWidgetRowHeight() + (if (isEditingDashboard) 48.dp else 0.dp) +
-            12.dp,
+            Spacing.md,
         modifier = modifier.fillMaxWidth().padding(
             start = DashboardWidgetHorizontalPadding, end = DashboardWidgetHorizontalPadding,
             top = topPadding, bottom = bottomPadding,
@@ -257,7 +259,7 @@ internal fun DashboardWidgetGrid(
             onMovePrevious = ids.getOrNull(index - 1)?.let { target -> { onMoveWidgetToTarget(spec.id, target) } },
             onMoveNext = ids.getOrNull(index + 1)?.let { target -> { onMoveWidgetToTarget(spec.id, target) } },
             modifier = Modifier.fillMaxSize()
-                .then(if (dropTargetWidgetId == spec.id) Modifier.border(2.dp, MaterialTheme.colorScheme.primary,
+                .then(if (dropTargetWidgetId == spec.id) Modifier.border(Spacing.xs / 2, MaterialTheme.colorScheme.primary,
                     tech.mmarca.openvitals.features.dashboard.components.DashboardTileShape) else Modifier)
                 .onGloballyPositioned { coordinates ->
                 val bounds = coordinates.boundsInRoot()
