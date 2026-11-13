@@ -43,7 +43,7 @@ internal object ScreenshotBodyParser {
 
     fun parseText(text: String): List<ScreenshotValue> = metrics.flatMap { metric ->
         val aliases = metric.aliases.joinToString("|") { alias ->
-            Regex.escape(alias).replace(" ", "\\E\\s+\\Q")
+            Regex.escape(alias).replace(" ", "\\E[\\s_-]+\\Q")
         }
         val prefix = Regex("(?i)(?<![\\p{L}])(?:$aliases)\\s*(?:[(\\[]\\s*$Unit\\s*[)\\]])?\\s*[:：]?\\s*$Numeric\\s*$Unit?(?![\\p{L}\\d])")
         prefix.findAll(text.replace('％', '%')).mapNotNull { match ->
