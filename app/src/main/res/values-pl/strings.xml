@@ -3880,4 +3880,5 @@
     <string name="dashboard_nightly_goal">Średni cel na noc</string>
     <string name="user_profile_view_photo">Wyświetl</string>
     <string name="user_profile_change_photo">Zmień</string>
+    <string name="dashboard_save_changes">Zapisać zmiany pulpitu?</string>
 </resources>

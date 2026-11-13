@@ -3815,4 +3815,5 @@
     <string name="dashboard_nightly_goal">每晚平均目标</string>
     <string name="user_profile_view_photo">查看</string>
     <string name="user_profile_change_photo">更换</string>
+    <string name="dashboard_save_changes">保存仪表板更改？</string>
 </resources>

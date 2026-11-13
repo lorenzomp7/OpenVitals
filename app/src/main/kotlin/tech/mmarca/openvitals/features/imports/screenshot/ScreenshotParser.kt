@@ -22,9 +22,9 @@ internal object ScreenshotParser {
     private val extraBodyLabels = linkedMapOf(
         "bmi" to "(?:BMI|IMC)",
         "bmr" to "(?:BMR|basal metabolic rate|metabolismo basale)",
-        "lean_mass" to "(?:lean (?:body )?mass|massa magra)",
-        "body_water_percent" to "(?:body water|acqua corporea)",
-        "body_water" to "(?:body water(?: mass)?|acqua corporea)",
+        "lean_mass" to "(?:lean[\\s_-]*(?:body[\\s_-]*)?mass|fat[\\s_-]*free[\\s_-]*mass|massa magra)",
+        "body_water_percent" to "(?:body[\\s_-]*water(?: percentage| percent| %)?|acqua corporea)",
+        "body_water" to "(?:body[\\s_-]*water(?: mass)?|acqua corporea)",
         "bone_mass" to "(?:bone mass|massa ossea)",
     )
 
@@ -51,16 +51,16 @@ internal object ScreenshotParser {
             val label = lines.firstOrNull { pattern.matches(it.text.trim()) } ?: return@mapNotNull null
             val unit = when (kind) { "body_water_percent" -> "%"; "bmi" -> ""; "bmr" -> "kcal(?:/day|/d|/giorno)?"; "body_fat" -> "%"; else -> "kg" }
             val valuePattern = Regex("""^(\d{1,4}(?:[.,]\d+)?)\s*$unit$""", RegexOption.IGNORE_CASE)
-            lines.filter { it.top >= label.bottom &&
+            lines.filter { (it.top >= label.bottom || it.bottom <= label.top) &&
                 kotlin.math.abs(it.centerX - label.centerX) <= maxOf(label.width, it.width) * 0.75 &&
-                it.top - label.bottom <= maxOf(label.height, it.height) * 8
-            }.sortedBy { it.top - label.bottom }.firstNotNullOfOrNull { candidate ->
+                kotlin.math.min(kotlin.math.abs(it.top - label.bottom), kotlin.math.abs(label.top - it.bottom)) <= maxOf(label.height, it.height) * 8
+            }.sortedBy { kotlin.math.min(kotlin.math.abs(it.top - label.bottom), kotlin.math.abs(label.top - it.bottom)) }.firstNotNullOfOrNull { candidate ->
                 valuePattern.find(candidate.text.trim())?.let { ScreenshotValue(kind, it.groupValues[1].replace(',', '.')) }
             }
         }
         // Body screens have no single-heart-rate reading; never treat a BPM average as an instant sample.
         val text = lines.joinToString("\n") { it.text }
-        val resolvedBody = (body + lines.flatMap { extraBodyValues(it.text) }).distinct()
+        val resolvedBody = (body + lines.flatMap { labeledBodyValues(it.text) }).distinct()
         val basalValues = resolvedBody.filter { it.kind == "bmr" }.map { it.value }.toSet()
         return (parse(text).filterNot {
             it.kind in (extraBodyLabels.keys + setOf("kg", "body_fat")) ||

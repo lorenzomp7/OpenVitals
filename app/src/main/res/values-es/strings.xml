@@ -3847,4 +3847,5 @@
     <string name="dashboard_nightly_goal">Objetivo medio por noche</string>
     <string name="user_profile_view_photo">Ver</string>
     <string name="user_profile_change_photo">Cambiar</string>
+    <string name="dashboard_save_changes">¿Guardar los cambios del panel?</string>
 </resources>

@@ -52,8 +52,33 @@ fun DashboardScreen(
 ) {
     // Seeded from the flow's current value: a placeholder frame on return would
     // reset the carousel page and scroll position.
-    val listState = androidx.compose.foundation.lazy.rememberLazyListState()
+    val listState = androidx.compose.foundation.lazy.rememberLazyListState(
+        initialFirstVisibleItemIndex = viewModel.scrollPosition.first,
+        initialFirstVisibleItemScrollOffset = viewModel.scrollPosition.second,
+    )
+    androidx.compose.runtime.DisposableEffect(viewModel, listState) {
+        onDispose { viewModel.rememberScrollPosition(listState.firstVisibleItemIndex, listState.firstVisibleItemScrollOffset) }
+    }
     val state by viewModel.uiState.collectAsStateWithLifecycle()
+    var confirmEdit by androidx.compose.runtime.saveable.rememberSaveable { mutableStateOf(false) }
+    val requestFinishEdit: () -> Unit = { confirmEdit = true }
+    androidx.activity.compose.BackHandler(enabled = state.isEditingDashboard) { requestFinishEdit() }
+    if (confirmEdit && state.isEditingDashboard) {
+        androidx.compose.material3.AlertDialog(
+            onDismissRequest = { confirmEdit = false },
+            title = { androidx.compose.material3.Text(stringResource(R.string.dashboard_save_changes)) },
+            confirmButton = {
+                androidx.compose.material3.TextButton(onClick = { viewModel.finishDashboardEdit(true); confirmEdit = false }) {
+                    androidx.compose.material3.Text(stringResource(R.string.action_save))
+                }
+            },
+            dismissButton = {
+                androidx.compose.material3.TextButton(onClick = { viewModel.finishDashboardEdit(false); confirmEdit = false }) {
+                    androidx.compose.material3.Text(stringResource(R.string.action_discard))
+                }
+            },
+        )
+    }
     val history by viewModel.workoutHistory.collectAsStateWithLifecycle()
     val isLoading = state.isLoading
     val error = state.error
@@ -174,7 +199,7 @@ fun DashboardScreen(
                     onDeleteActivity = viewModel::deleteActivityEntry,
                     onOpenLog = onOpenLog,
                     onStartActivity = onStartActivity,
-                    onToggleDashboardEdit = viewModel::toggleDashboardEdit,
+                    onToggleDashboardEdit = { if (state.isEditingDashboard) requestFinishEdit() else viewModel.toggleDashboardEdit() },
                     placedWidgetIds = state.placedDashboardWidgets,
                 )
                 else -> DashboardPlaceholder(header) { ErrorMessage(stringResource(R.string.message_no_dashboard_data)) }

@@ -203,6 +203,7 @@ internal fun DashboardWidgetGrid(
     isEditingDashboard: Boolean,
     widgetBounds: MutableMap<DashboardWidgetId, Rect>,
     dragOverlayWidgetId: DashboardWidgetId?,
+    dropTargetWidgetId: DashboardWidgetId? = null,
     onDraggingWidgetChanged: (DashboardWidgetId?) -> Unit,
     onDraggingWidgetBoundsChanged: (DashboardWidgetId, Rect) -> Unit,
     onDragWidgetBy: (DashboardWidgetId, Offset) -> Unit,
@@ -225,7 +226,7 @@ internal fun DashboardWidgetGrid(
     DashboardPlacedTileGrid(
         placements = placements,
         rowHeight = dashboardWidgetRowHeight() + (if (isEditingDashboard) 48.dp else 0.dp) +
-            (if (specsById.values.any { it.detailCount == 3 }) 12.dp else 0.dp),
+            12.dp,
         modifier = modifier.fillMaxWidth().padding(
             start = DashboardWidgetHorizontalPadding, end = DashboardWidgetHorizontalPadding,
             top = topPadding, bottom = bottomPadding,
@@ -255,7 +256,10 @@ internal fun DashboardWidgetGrid(
             onCycleSize = onCycleWidgetSize?.let { cycle -> { cycle(spec.id) } },
             onMovePrevious = ids.getOrNull(index - 1)?.let { target -> { onMoveWidgetToTarget(spec.id, target) } },
             onMoveNext = ids.getOrNull(index + 1)?.let { target -> { onMoveWidgetToTarget(spec.id, target) } },
-            modifier = Modifier.fillMaxSize().onGloballyPositioned { coordinates ->
+            modifier = Modifier.fillMaxSize()
+                .then(if (dropTargetWidgetId == spec.id) Modifier.border(2.dp, MaterialTheme.colorScheme.primary,
+                    tech.mmarca.openvitals.features.dashboard.components.DashboardTileShape) else Modifier)
+                .onGloballyPositioned { coordinates ->
                 val bounds = coordinates.boundsInRoot()
                 widgetBounds[spec.id] = bounds
                 if (dragOverlayWidgetId == spec.id) onDraggingWidgetBoundsChanged(spec.id, bounds)
@@ -375,7 +379,7 @@ internal fun DashboardWidgetTile(
         modifier = modifier
             .zIndex(if (isDragging) 1f else 0f)
             .graphicsLayer {
-                alpha = if (hideContent) 0f else 1f
+                alpha = if (hideContent) 0.25f else 1f
                 rotationZ = if (isEditingDashboard && !isDragging) wiggleRotation else 0f
                 scaleX = if (isDragging) 1.02f else 1f
                 scaleY = if (isDragging) 1.02f else 1f

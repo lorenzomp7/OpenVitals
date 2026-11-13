@@ -82,6 +82,11 @@ class DashboardViewModel @Inject constructor(
     private val openWatchLink: tech.mmarca.openvitals.openwatch.OpenWatchLink? = null,
 ) : ViewModel() {
 
+    internal var scrollPosition: Pair<Int, Int> = 0 to 0
+        private set
+
+    internal fun rememberScrollPosition(index: Int, offset: Int) { scrollPosition = index to offset }
+
     val minimumOnboardingPermissions get() = repository.minimumOnboardingPermissions
 
     private val _uiState = MutableStateFlow(
@@ -667,23 +672,32 @@ class DashboardViewModel @Inject constructor(
     fun setWidgetSize(widgetId: DashboardWidgetId, spaces: Int) {
         if (spaces !in listOf(1, 2, 4)) return
         val sizes = _uiState.value.widgetSizes + (widgetId to spaces)
-        prefs.setDashboardWidgetSizes(sizes.mapKeys { it.key.name })
+        if (!_uiState.value.isEditingDashboard) prefs.setDashboardWidgetSizes(sizes.mapKeys { it.key.name })
         _uiState.value = _uiState.value.copy(widgetSizes = sizes)
     }
 
     fun setWidgetDetailCount(id: DashboardWidgetId, count: Int) {
         if (count !in 1..3) return
         val counts = _uiState.value.widgetDetailCounts + (id to count)
-        prefs.setDashboardDetailCounts(counts.mapKeys { it.key.name })
+        if (!_uiState.value.isEditingDashboard) prefs.setDashboardDetailCounts(counts.mapKeys { it.key.name })
         _uiState.value = _uiState.value.copy(widgetDetailCounts = counts)
     }
 
     fun setPagedLayout(paged: Boolean) {
-        prefs.setDashboardPagedLayout(paged)
+        if (!_uiState.value.isEditingDashboard) prefs.setDashboardPagedLayout(paged)
         _uiState.value = _uiState.value.copy(pagedLayout = paged)
     }
 
+    private val layoutEditor = DashboardLayoutEditor(prefs)
+
+    fun finishDashboardEdit(save: Boolean) {
+        _uiState.update { layoutEditor.finish(it, save) }
+        rebuildDisplay()
+    }
+
     fun toggleDashboardEdit() {
+        if (_uiState.value.isEditingDashboard) return
+        layoutEditor.begin(_uiState.value)
         val editing = !_uiState.value.isEditingDashboard
         _uiState.value = _uiState.value.copy(isEditingDashboard = editing)
         // Edit mode materialises unsupported metrics; rebuild the display, same data.
@@ -750,7 +764,7 @@ class DashboardViewModel @Inject constructor(
 
     private fun updateDashboardWidgets(widgets: List<DashboardWidgetId>) {
         val customizableWidgets = customizableDashboardWidgetIds(widgets)
-        prefs.setDashboardWidgetOrder(customizableWidgets.map { it.name })
+        if (!_uiState.value.isEditingDashboard) prefs.setDashboardWidgetOrder(customizableWidgets.map { it.name })
         _uiState.value = _uiState.value.copy(
             dashboardWidgets = customizableWidgets,
             placedDashboardWidgets = customizableWidgets.toSet(),

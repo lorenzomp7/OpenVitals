@@ -130,8 +130,7 @@ internal fun MetricStatCard(
                 // The icon sits in a darker capsule the height of the tile.
                 Box(
                     modifier = Modifier
-                        .fillMaxHeight()
-                        .width(MetricStatIconCapsuleWidth)
+                        .size(width = MetricStatIconCapsuleWidth, height = 48.dp)
                         .background(color = tileColors.iconContainer, shape = MetricStatIconCapsuleShape),
                     contentAlignment = Alignment.Center,
                 ) {

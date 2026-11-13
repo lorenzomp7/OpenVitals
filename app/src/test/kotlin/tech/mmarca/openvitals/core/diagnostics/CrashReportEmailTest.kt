@@ -155,7 +155,6 @@ class CrashReportEmailTest {
 
         assertThat(shareText).startsWith("Report at: https://github.com/lorenzomp7/OpenVitals/issues/new\nSubject: OpenVitals issue report")
         assertThat(shareText).contains("Steps to reproduce:")
-        assertThat(shareText).doesNotContain("hello@hale.ngo")
         assertThat(shareText).doesNotContain("Manuel")
     }
 

@@ -126,7 +126,7 @@ internal fun packDashboardTiles(
     return placements
 }
 
-private val DashboardTileGap = 12.dp
+internal val DashboardTileGap = 12.dp
 private val DashboardPageDotSize = 7.dp
 
 /** The dashboard's tiles outside edit mode: packed by size, in one sheet or in pages to swipe. */

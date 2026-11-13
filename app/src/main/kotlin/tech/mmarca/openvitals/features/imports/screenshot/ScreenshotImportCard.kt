@@ -18,8 +18,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import tech.mmarca.openvitals.R
 import tech.mmarca.openvitals.core.presentation.resolve
-import tech.mmarca.openvitals.healthconnect.screenshotPermissions
-import tech.mmarca.openvitals.ui.components.rememberHealthConnectPermissionLauncher
 
 @Composable
 internal fun ScreenshotImportCard(modifier: Modifier = Modifier) {
@@ -46,7 +44,7 @@ internal fun ScreenshotImportDialog(onDismiss: () -> Unit, initialUri: android.n
         confirmed = false
     }
     var typeMenu by remember { mutableStateOf(false) }
-    val permissions = rememberHealthConnectPermissionLauncher()
+    val context = androidx.compose.ui.platform.LocalContext.current
     val dialogHeight = LocalConfiguration.current.screenHeightDp.dp * 0.88f
     Dialog(onDismissRequest = { if (!state.busy) onDismiss() }, properties = DialogProperties(usePlatformDefaultWidth = false)) {
         Surface(modifier = Modifier.padding(16.dp).fillMaxWidth().heightIn(max = dialogHeight), shape = MaterialTheme.shapes.large) {
@@ -96,7 +94,7 @@ internal fun ScreenshotImportDialog(onDismiss: () -> Unit, initialUri: android.n
                         Checkbox(confirmed, { confirmed = it }, enabled = !state.busy && !state.saved)
                         Text(stringResource(R.string.screenshot_import_confirm), modifier = Modifier.weight(1f))
                     }
-                    TextButton(onClick = { permissions.launch(screenshotPermissions(state.values.map { it.kind })) }, enabled = !state.busy) {
+                    TextButton(onClick = { tech.mmarca.openvitals.healthconnect.openHealthConnectPermissionSettings(context) }, enabled = !state.busy) {
                         Text(stringResource(R.string.screenshot_import_permissions))
                     }
                     Button(onClick = { viewModel.save(start, end) }, enabled = state.values.any { it.kind != "bmi" } && (state.values.none { it.kind == "body_water_percent" } || state.values.any { it.kind == "kg" }) && (state.values.none { it.kind == "duration_min" } || state.exerciseType != null) && confirmed && !state.busy && !state.saved && start.isNotBlank() && end.isNotBlank()) {

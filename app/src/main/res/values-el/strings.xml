@@ -499,4 +499,5 @@
     <string name="dashboard_nightly_goal">Μέσος στόχος ανά νύχτα</string>
     <string name="user_profile_view_photo">Προβολή</string>
     <string name="user_profile_change_photo">Αλλαγή</string>
+    <string name="dashboard_save_changes">Αποθήκευση αλλαγών στον πίνακα ελέγχου;</string>
 </resources>

@@ -149,4 +149,5 @@
     <string name="dashboard_nightly_goal">متوسط الهدف الليلي</string>
     <string name="user_profile_view_photo">عرض</string>
     <string name="user_profile_change_photo">تغيير</string>
+    <string name="dashboard_save_changes">هل تريد حفظ تغييرات لوحة المعلومات؟</string>
 </resources>

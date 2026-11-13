@@ -3814,4 +3814,5 @@
     <string name="dashboard_nightly_goal">Keskmine öine eesmärk</string>
     <string name="user_profile_view_photo">Vaata</string>
     <string name="user_profile_change_photo">Muuda</string>
+    <string name="dashboard_save_changes">Kas salvestada töölaua muudatused?</string>
 </resources>

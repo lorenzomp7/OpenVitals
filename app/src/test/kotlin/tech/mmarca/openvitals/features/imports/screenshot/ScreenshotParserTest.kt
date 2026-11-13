@@ -68,4 +68,17 @@ class ScreenshotParserTest {
         assertEquals(setOf(ScreenshotValue("bmr", "1700"), ScreenshotValue("lean_mass", "55.2")), values.toSet())
     }
 
+    @Test fun `recognizes lean mass and body water above labels and on inline tiles`() {
+        val result = ScreenshotParser.parseLines(listOf(
+            ScreenshotOcrLine("55.2 kg", 0, 0, 100, 30),
+            ScreenshotOcrLine("LEAN MASS", 0, 40, 100, 70),
+            ScreenshotOcrLine("60.0 %", 300, 0, 410, 30),
+            ScreenshotOcrLine("BODY WATER", 300, 40, 410, 70),
+            ScreenshotOcrLine("Weight 70.0 kg", 0, 120, 120, 150),
+        ))
+        assertTrue(result.contains(ScreenshotValue("lean_mass", "55.2")))
+        assertTrue(result.contains(ScreenshotValue("body_water_percent", "60.0")))
+        assertTrue(result.contains(ScreenshotValue("kg", "70.0")))
+        assertEquals("55.2", ScreenshotParser.parse("Fat-free mass 55.2 kg").single().value)
+    }
 }

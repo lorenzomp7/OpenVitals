@@ -1156,7 +1156,7 @@ class DashboardViewModelTest {
         assertEquals(loadsBefore, loads)
         assertTrue(state.display.widgets.isNotEmpty())
 
-        vm.toggleDashboardEdit()
+        vm.finishDashboardEdit(save = true)
         advanceUntilIdle()
         assertFalse(vm.uiState.value.isEditingDashboard)
         assertEquals(loadsBefore, loads)
@@ -1229,11 +1229,35 @@ class DashboardViewModelTest {
         advanceUntilIdle()
         assertNotNull(vm.uiState.value.display.widgets[DashboardWidgetId.SPO2])
 
-        vm.toggleDashboardEdit()
+        vm.finishDashboardEdit(save = false)
         advanceUntilIdle()
 
         assertNull(vm.uiState.value.display.widgets[DashboardWidgetId.SPO2])
         assertTrue(vm.uiState.value.display.unsupportedIds.isEmpty())
+    }
+
+    @Test fun `editing changes no preferences before save and discard restores all controls`() = runTest {
+        val preferences = prefs()
+        val loader = mockDashboardDataLoader()
+        coEvery { loader.loadDashboard(any<DashboardQuery>()) } returns DashboardData(date = today)
+        val vm = dashboardViewModel(loader, preferences)
+        advanceUntilIdle()
+        val before = vm.uiState.value
+        vm.toggleDashboardEdit()
+        vm.setWidgetSize(DashboardWidgetId.STEPS, 4)
+        vm.setWidgetDetailCount(DashboardWidgetId.STEPS, 3)
+        vm.setPagedLayout(!before.pagedLayout)
+        vm.removeDashboardWidget(DashboardWidgetId.STEPS)
+        verify(exactly = 0) { preferences.setDashboardWidgetSizes(any()) }
+        verify(exactly = 0) { preferences.setDashboardDetailCounts(any()) }
+        verify(exactly = 0) { preferences.setDashboardPagedLayout(any()) }
+        verify(exactly = 0) { preferences.setDashboardWidgetOrder(any()) }
+        vm.finishDashboardEdit(false)
+        advanceUntilIdle()
+        assertEquals(before.dashboardWidgets, vm.uiState.value.dashboardWidgets)
+        assertEquals(before.widgetSizes, vm.uiState.value.widgetSizes)
+        assertEquals(before.widgetDetailCounts, vm.uiState.value.widgetDetailCounts)
+        assertEquals(before.pagedLayout, vm.uiState.value.pagedLayout)
     }
 
     // Body Energy timeline. Kotlin loads it from the ViewModel after the day settles,
