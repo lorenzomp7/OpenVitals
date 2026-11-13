@@ -3881,4 +3881,5 @@
     <string name="dashboard_nightly_goal">Средняя цель за ночь</string>
     <string name="user_profile_view_photo">Посмотреть</string>
     <string name="user_profile_change_photo">Изменить</string>
+    <string name="dashboard_save_changes">Сохранить изменения панели?</string>
 </resources>

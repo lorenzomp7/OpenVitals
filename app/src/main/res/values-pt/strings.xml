@@ -3841,4 +3841,5 @@
     <string name="dashboard_nightly_goal">Meta média por noite</string>
     <string name="user_profile_view_photo">Ver</string>
     <string name="user_profile_change_photo">Alterar</string>
+    <string name="dashboard_save_changes">Guardar as alterações do painel?</string>
 </resources>

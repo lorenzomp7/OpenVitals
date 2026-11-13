@@ -34,6 +34,7 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import tech.mmarca.openvitals.ui.theme.Radii
 
 private val MetricStatIconCapsuleWidth = 38.dp
+private val MetricStatIconCapsuleHeight = 48.dp
 private val MetricStatIconCapsuleShape = RoundedCornerShape(Radii.lg)
 private val MetricStatIconGlyphSize = 20.dp
 
@@ -130,8 +131,7 @@ internal fun MetricStatCard(
                 // The icon sits in a darker capsule the height of the tile.
                 Box(
                     modifier = Modifier
-                        .fillMaxHeight()
-                        .width(MetricStatIconCapsuleWidth)
+                        .size(width = MetricStatIconCapsuleWidth, height = MetricStatIconCapsuleHeight)
                         .background(color = tileColors.iconContainer, shape = MetricStatIconCapsuleShape),
                     contentAlignment = Alignment.Center,
                 ) {

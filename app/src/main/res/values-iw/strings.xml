@@ -149,4 +149,5 @@
     <string name="dashboard_nightly_goal">יעד ממוצע ללילה</string>
     <string name="user_profile_view_photo">הצגה</string>
     <string name="user_profile_change_photo">שינוי</string>
+    <string name="dashboard_save_changes">לשמור את השינויים בלוח הבקרה?</string>
 </resources>

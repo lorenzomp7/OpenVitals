@@ -277,6 +277,28 @@ class HealthConnectReadMappingTest {
         assertThat(entries.last().isOpenVitalsEntry).isTrue()
     }
 
+    @Test fun `latest body fat skips zero measurements across pages`() = runTest {
+        val positive = androidx.health.connect.client.records.BodyFatRecord(
+            time = sessionStart, zoneOffset = ZoneOffset.UTC,
+            percentage = androidx.health.connect.client.units.Percentage(6.0), metadata = Metadata.manualEntry())
+        val zeros = (1..105).map { index ->
+            androidx.health.connect.client.records.BodyFatRecord(
+                time = sessionStart.plusSeconds(index.toLong()), zoneOffset = ZoneOffset.UTC,
+                percentage = androidx.health.connect.client.units.Percentage(0.0), metadata = Metadata.manualEntry())
+        }
+        val reader = BodyHealthReader(support(seeded(*(listOf(positive) + zeros).toTypedArray())), APP_PACKAGE)
+        assertThat(reader.readLatestBodyFat()).isEqualTo(6.0)
+        assertThat(reader.readBodyFatEntries(sessionStart.minusSeconds(1), sessionEnd).map { it.percent })
+            .containsExactly(6.0)
+    }
+
+    @Test fun `only zero body fat measurements produce no valid reading`() = runTest {
+        val zero = androidx.health.connect.client.records.BodyFatRecord(
+            time = sessionStart, zoneOffset = ZoneOffset.UTC,
+            percentage = androidx.health.connect.client.units.Percentage(0.0), metadata = Metadata.manualEntry())
+        assertThat(BodyHealthReader(support(seeded(zero)), APP_PACKAGE).readLatestBodyFat()).isNull()
+    }
+
     // Sleep.
 
     @Test

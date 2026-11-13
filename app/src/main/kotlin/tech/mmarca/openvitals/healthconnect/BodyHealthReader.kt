@@ -137,13 +137,23 @@ internal class BodyHealthReader(
 
     suspend fun readLatestBodyFat(): Double? =
         support.withNullableLogging("readLatestBodyFat") {
-            support.client().readRecordsPaged(
-                recordType = BodyFatRecord::class,
-                timeRangeFilter = TimeRangeFilter.before(Instant.now()),
-                ascendingOrder = false,
-                pageSize = 1,
-                maxRecords = 1,
-            ).firstOrNull()?.percentage?.value
+            var token: String? = null
+            val client = support.client()
+            val before = Instant.now()
+            do {
+                val page = client.readRecords(androidx.health.connect.client.request.ReadRecordsRequest(
+                    recordType = BodyFatRecord::class,
+                    timeRangeFilter = TimeRangeFilter.before(before),
+                    ascendingOrder = false,
+                    pageSize = 100,
+                    pageToken = token,
+                ))
+                page.records.firstOrNull { it.percentage.value > 0.0 }?.let {
+                    return@withNullableLogging it.percentage.value
+                }
+                token = page.pageToken
+            } while (token != null)
+            null
         }
 
     suspend fun readBodyFatEntries(start: Instant, end: Instant): List<BodyFatEntry> =
@@ -152,7 +162,7 @@ internal class BodyHealthReader(
                 recordType = BodyFatRecord::class,
                 timeRangeFilter = TimeRangeFilter.between(start, end),
                 ascendingOrder = true,
-            ).map { record ->
+            ).filter { it.percentage.value > 0.0 }.map { record ->
                 BodyFatEntry(
                     time = record.time,
                     percent = record.percentage.value,

@@ -3814,4 +3814,5 @@
     <string name="dashboard_nightly_goal">Keskimääräinen yötavoite</string>
     <string name="user_profile_view_photo">Näytä</string>
     <string name="user_profile_change_photo">Vaihda</string>
+    <string name="dashboard_save_changes">Tallennetaanko koontinäytön muutokset?</string>
 </resources>

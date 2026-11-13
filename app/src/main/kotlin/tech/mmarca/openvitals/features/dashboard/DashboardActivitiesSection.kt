@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.width
 import tech.mmarca.openvitals.ui.components.OpenVitalsButton
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -191,14 +192,15 @@ internal fun DashboardSwipeToDeleteActivityCard(
 private fun DashboardActivitiesSectionHeader(
     onClick: () -> Unit,
 ) {
-    OpenVitalsButton(
-        onClick = onClick,
-        contentPadding = DashboardQuickActionContentPadding,
-        modifier = Modifier.padding(horizontal = DashboardScreenPadding, vertical = Spacing.md)
-            .fillMaxWidth().height(DashboardQuickActionHeight),
-    ) {
-        Icon(Icons.AutoMirrored.Outlined.DirectionsRun, null, Modifier.size(DashboardQuickActionIconSize))
-        Spacer(Modifier.width(6.dp))
-        Text(stringResource(R.string.dashboard_activities_today))
+    BoxWithConstraints(Modifier.fillMaxWidth().padding(start = DashboardScreenPadding, end = DashboardScreenPadding, top = Spacing.md, bottom = Spacing.md / 2)) {
+        OpenVitalsButton(
+            onClick = onClick,
+            contentPadding = DashboardQuickActionContentPadding,
+            modifier = Modifier.width((maxWidth - DashboardTileGap) / 2).height(DashboardQuickActionHeight),
+        ) {
+            Icon(Icons.AutoMirrored.Outlined.DirectionsRun, null, Modifier.size(DashboardQuickActionIconSize))
+            Spacer(Modifier.width(Spacing.md / 2))
+            Text(stringResource(R.string.dashboard_activities_today))
+        }
     }
 }

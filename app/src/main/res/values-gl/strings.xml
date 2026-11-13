@@ -3885,4 +3885,5 @@ Se Acceder a rutas de exercicio non aparece no diálogo de acceso, abre os axust
     <string name="dashboard_nightly_goal">Obxectivo medio por noite</string>
     <string name="user_profile_view_photo">Ver</string>
     <string name="user_profile_change_photo">Cambiar</string>
+    <string name="dashboard_save_changes">Gardar os cambios do panel?</string>
 </resources>

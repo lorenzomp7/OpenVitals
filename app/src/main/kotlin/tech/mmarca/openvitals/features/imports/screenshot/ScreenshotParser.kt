@@ -19,53 +19,16 @@ internal object ScreenshotParser {
     }.filterNot { it.kind == "kg" || (it.kind == "kcal" && extraBodyValues(text).any { v -> v.kind == "bmr" && v.value == it.value }) }.distinct() + labeledBodyValues(text) +
         listOfNotNull(durationMinutes(text)?.let { ScreenshotValue("duration_min", it.toString()) })
 
-    private val extraBodyLabels = linkedMapOf(
-        "bmi" to "(?:BMI|IMC)",
-        "bmr" to "(?:BMR|basal metabolic rate|metabolismo basale)",
-        "lean_mass" to "(?:lean (?:body )?mass|massa magra)",
-        "body_water_percent" to "(?:body water|acqua corporea)",
-        "body_water" to "(?:body water(?: mass)?|acqua corporea)",
-        "bone_mass" to "(?:bone mass|massa ossea)",
-    )
+    private fun labeledBodyValues(text: String) = ScreenshotBodyParser.parseText(text)
+    private fun extraBodyValues(text: String) = ScreenshotBodyParser.parseText(text)
 
-    private fun extraBodyValues(text: String): List<ScreenshotValue> = extraBodyLabels.mapNotNull { (kind, label) ->
-        val unit = when (kind) { "body_water_percent" -> "%"; "bmi" -> ""; "bmr" -> "kcal(?:/day|/d|/giorno)?"; else -> "kg" }
-        Regex("(?i)$label\\s*[:：]?\\s*(\\d{1,4}(?:[.,]\\d+)?)\\s*$unit(?!\\w)")
-            .find(text)?.let { ScreenshotValue(kind, it.groupValues[1].replace(',', '.')) }
-    }
-
-    private fun labeledBodyValues(text: String): List<ScreenshotValue> = extraBodyValues(text) + listOfNotNull(
-        Regex("""(?i)(?:weight|peso(?: corporeo)?)\s*[:：]?\s*(\d{2,3}(?:[.,]\d+)?)\s*kg\b""")
-            .find(text)?.let { ScreenshotValue("kg", it.groupValues[1].replace(',', '.')) },
-        Regex("""(?i)(?:body fat\s*%|body fat percentage|grasso corporeo\s*%|massa grassa\s*%)\s*[:：]?\s*(\d{1,2}(?:[.,]\d+)?)\s*%""")
-            .find(text)?.let { ScreenshotValue("body_fat", it.groupValues[1].replace(',', '.')) },
-    )
-
-    /** Match columns geometrically: a neighbouring BMI/muscle/fat mass tile cannot become weight. */
     fun parseLines(lines: List<ScreenshotOcrLine>): List<ScreenshotValue> {
-        val labels = extraBodyLabels.map { (kind, label) -> kind to Regex("(?i)^$label$") } + listOf(
-            "kg" to Regex("""(?i)^(?:weight|peso(?: corporeo)?)$"""),
-            "body_fat" to Regex("""(?i)^(?:body fat\s*%|body fat percentage|grasso corporeo\s*%|massa grassa\s*%)$"""),
-        )
-        val body = labels.mapNotNull { (kind, pattern) ->
-            val label = lines.firstOrNull { pattern.matches(it.text.trim()) } ?: return@mapNotNull null
-            val unit = when (kind) { "body_water_percent" -> "%"; "bmi" -> ""; "bmr" -> "kcal(?:/day|/d|/giorno)?"; "body_fat" -> "%"; else -> "kg" }
-            val valuePattern = Regex("""^(\d{1,4}(?:[.,]\d+)?)\s*$unit$""", RegexOption.IGNORE_CASE)
-            lines.filter { it.top >= label.bottom &&
-                kotlin.math.abs(it.centerX - label.centerX) <= maxOf(label.width, it.width) * 0.75 &&
-                it.top - label.bottom <= maxOf(label.height, it.height) * 8
-            }.sortedBy { it.top - label.bottom }.firstNotNullOfOrNull { candidate ->
-                valuePattern.find(candidate.text.trim())?.let { ScreenshotValue(kind, it.groupValues[1].replace(',', '.')) }
-            }
+        val body = ScreenshotBodyParser.parseLines(lines)
+        val basal = body.filter { it.kind == "bmr" }.map { it.value }.toSet()
+        val other = parse(lines.joinToString("\n") { it.text }).filterNot {
+            it.kind in ScreenshotBodyParser.kinds || (it.kind == "kcal" && it.value in basal)
         }
-        // Body screens have no single-heart-rate reading; never treat a BPM average as an instant sample.
-        val text = lines.joinToString("\n") { it.text }
-        val resolvedBody = (body + lines.flatMap { extraBodyValues(it.text) }).distinct()
-        val basalValues = resolvedBody.filter { it.kind == "bmr" }.map { it.value }.toSet()
-        return (parse(text).filterNot {
-            it.kind in (extraBodyLabels.keys + setOf("kg", "body_fat")) ||
-                (it.kind == "kcal" && it.value in basalValues)
-        } + resolvedBody).distinct()
+        return (body + other).distinct()
     }
 
     /** Require a duration label: an unlabelled clock could be the phone status bar. */

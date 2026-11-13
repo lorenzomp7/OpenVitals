@@ -3814,4 +3814,5 @@
     <string name="dashboard_nightly_goal">Durchschnittliches Ziel pro Nacht</string>
     <string name="user_profile_view_photo">Ansehen</string>
     <string name="user_profile_change_photo">Ändern</string>
+    <string name="dashboard_save_changes">Änderungen am Dashboard speichern?</string>
 </resources>

@@ -1,7 +1,5 @@
 package tech.mmarca.openvitals.openwatch
 
-import android.content.Intent
-import android.net.Uri
 import android.text.format.DateUtils
 import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
@@ -57,7 +55,7 @@ class OpenWatchSettingsViewModel @Inject constructor(
 
 /**
  * Settings, OpenWatch: where OpenVitals stands with OpenWatch in one line, and what to do
- * about it. Not installed: a link to get it. Waiting: the way to OpenWatch's consent screen.
+ * about it. Not installed: an explanation of the optional companion. Waiting: the way to OpenWatch's consent screen.
  * Connected: the watches it sees, what OpenWatch allows, and when the profile last crossed.
  */
 @Composable
@@ -66,20 +64,10 @@ fun OpenWatchSettingsScreen(viewModel: OpenWatchSettingsViewModel) {
     val context = LocalContext.current
     // Installing, updating or answering in OpenWatch happens in another app.
     LifecycleEventEffect(Lifecycle.Event.ON_RESUME) { viewModel.refresh() }
-    val openWatchUrl = stringResource(R.string.openwatch_url)
     val cannotOpen = stringResource(R.string.openwatch_cannot_open)
     val nothingToSync = stringResource(R.string.openwatch_profile_nothing_to_sync)
-    val noBrowser = stringResource(R.string.openwatch_move_no_browser, openWatchUrl)
     val openOpenWatch = {
         if (!viewModel.open(context)) Toast.makeText(context, cannotOpen, Toast.LENGTH_SHORT).show()
-    }
-    val getOpenWatch = {
-        runCatching {
-            context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(openWatchUrl)).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
-        }.onFailure {
-            Toast.makeText(context, noBrowser, Toast.LENGTH_LONG).show()
-        }
-        Unit
     }
 
     Column(
@@ -95,11 +83,9 @@ fun OpenWatchSettingsScreen(viewModel: OpenWatchSettingsViewModel) {
                 when (val current = summary) {
                     OpenWatchLinkSummary.NotInstalled -> {
                         Body(stringResource(R.string.openwatch_not_installed_body))
-                        Button(onClick = getOpenWatch) { Text(stringResource(R.string.openwatch_move_action_get)) }
                     }
                     OpenWatchLinkSummary.Unreachable -> {
                         Body(stringResource(R.string.openwatch_unreachable_body))
-                        Button(onClick = getOpenWatch) { Text(stringResource(R.string.openwatch_move_action_get)) }
                     }
                     OpenWatchLinkSummary.Connecting -> Unit
                     OpenWatchLinkSummary.WaitingForApproval -> {

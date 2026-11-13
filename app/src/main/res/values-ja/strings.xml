@@ -3882,4 +3882,5 @@
     <string name="dashboard_nightly_goal">1晩あたりの平均目標</string>
     <string name="user_profile_view_photo">表示</string>
     <string name="user_profile_change_photo">変更</string>
+    <string name="dashboard_save_changes">ダッシュボードの変更を保存しますか？</string>
 </resources>

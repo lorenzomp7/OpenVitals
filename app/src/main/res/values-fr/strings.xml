@@ -3847,4 +3847,5 @@
     <string name="dashboard_nightly_goal">Objectif moyen par nuit</string>
     <string name="user_profile_view_photo">Afficher</string>
     <string name="user_profile_change_photo">Modifier</string>
+    <string name="dashboard_save_changes">Enregistrer les modifications du tableau de bord ?</string>
 </resources>

@@ -1,5 +1,8 @@
 package tech.mmarca.openvitals.features.dashboard
 
+import androidx.compose.foundation.layout.requiredSize
+import androidx.compose.foundation.layout.wrapContentSize
+import tech.mmarca.openvitals.ui.theme.Spacing
 import androidx.compose.foundation.layout.Row
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Switch
@@ -180,6 +183,12 @@ internal fun DashboardWidgetCarousel(
         }
     }
 
+    val dropTargetWidgetId = draggingWidgetId?.let { id ->
+        draggingWidgetBounds?.let { bounds ->
+            closestDashboardWidgetId(id, bounds.center, dropTargetIdsFor(id, bounds), widgetBounds)
+        }
+    }
+
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -209,6 +218,7 @@ internal fun DashboardWidgetCarousel(
                 isEditingDashboard = isEditingDashboard,
                 widgetBounds = widgetBounds,
                 dragOverlayWidgetId = draggingWidgetId,
+                dropTargetWidgetId = dropTargetWidgetId,
                 onDraggingWidgetChanged = onGridDraggingWidgetChanged,
                 onDraggingWidgetBoundsChanged = { widgetId, bounds ->
                     if (draggingWidgetId == widgetId && draggingWidgetStartBounds == null) {
@@ -259,14 +269,13 @@ internal fun DashboardWidgetCarousel(
                     specsById = specsById,
                     sizes = widgetSizes,
                     paged = pagedLayout,
-                    rowHeight = dashboardWidgetRowHeight() + if (specsById.values.any { it.detailCount == 3 }) 12.dp else 0.dp,
+                    rowHeight = dashboardWidgetRowHeight() + Spacing.md,
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(
                             start = DashboardScreenPadding,
                             end = DashboardScreenPadding,
                             top = DashboardGridTopPadding,
-                            bottom = DashboardSectionSeparatorSpacing,
                         ),
                 )
             } else if (carouselIds.isNotEmpty()) {
@@ -277,6 +286,7 @@ internal fun DashboardWidgetCarousel(
                     isEditingDashboard = isEditingDashboard,
                     widgetBounds = widgetBounds,
                     dragOverlayWidgetId = draggingWidgetId,
+                dropTargetWidgetId = dropTargetWidgetId,
                     onDraggingWidgetChanged = onGridDraggingWidgetChanged,
                     onDraggingWidgetBoundsChanged = { widgetId, bounds ->
                         if (draggingWidgetId == widgetId && draggingWidgetStartBounds == null) {
@@ -306,6 +316,7 @@ internal fun DashboardWidgetCarousel(
             draggedBounds = draggingWidgetBounds,
             contentBounds = contentBounds,
             specsById = specsById,
+            widgetSizes = widgetSizes,
         )
     }
 }
@@ -316,6 +327,7 @@ private fun DashboardDraggedWidgetOverlay(
     draggedBounds: Rect?,
     contentBounds: Rect?,
     specsById: Map<DashboardWidgetId, DashboardWidgetSpec>,
+    widgetSizes: Map<DashboardWidgetId, Int>,
 ) {
     val widgetId = widgetId ?: return
     val spec = specsById[widgetId] ?: return
@@ -325,26 +337,15 @@ private fun DashboardDraggedWidgetOverlay(
 
     Box(
         modifier = Modifier
-            .width(with(density) { bounds.width.toDp() })
-            .height(with(density) { bounds.height.toDp() })
+            .wrapContentSize(Alignment.TopStart, unbounded = true)
+            .requiredSize(with(density) { bounds.width.toDp() }, with(density) { bounds.height.toDp() })
             .zIndex(10f)
             .graphicsLayer {
                 translationX = bounds.left - containerBounds.left
                 translationY = bounds.top - containerBounds.top
             },
     ) {
-        DashboardWidgetTile(
-            spec = spec,
-            specsById = specsById,
-            isEditingDashboard = false,
-            isDragging = true,
-            hideContent = false,
-            dragHandleModifier = Modifier,
-            onRemove = {},
-            onMovePrevious = null,
-            onMoveNext = null,
-            modifier = Modifier.fillMaxSize(),
-        )
+        DashboardSizedTile(spec, dashboardTileSize(spec, widgetSizes))
     }
 }
 
