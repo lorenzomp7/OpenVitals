@@ -3816,4 +3816,10 @@
     <string name="user_profile_view_photo">查看</string>
     <string name="user_profile_change_photo">更换</string>
     <string name="dashboard_save_changes">保存仪表板更改？</string>
+    <string name="activity_heart_rate_access_missing">允许 OpenVitals 读取心率，以查看本次训练的心率图表。</string>
+    <string name="settings_online_maps_mapbox_title">在线地图 - Mapbox</string>
+    <string name="settings_online_maps_status">状态：%1$s</string>
+    <string name="settings_online_maps_disconnected">未连接</string>
+    <string name="settings_online_maps_touch_to_disconnect">点按此处断开连接</string>
+    <string name="mapbox_login_body_short">在浏览器中登录以启用运动地图。公共地图令牌保存在此手机上。</string>
 </resources>

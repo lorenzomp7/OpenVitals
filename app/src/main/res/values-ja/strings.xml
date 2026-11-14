@@ -3883,4 +3883,10 @@
     <string name="user_profile_view_photo">表示</string>
     <string name="user_profile_change_photo">変更</string>
     <string name="dashboard_save_changes">ダッシュボードの変更を保存しますか？</string>
+    <string name="activity_heart_rate_access_missing">このセッションの心拍数グラフを表示するには、OpenVitals に心拍数の読み取りを許可してください。</string>
+    <string name="settings_online_maps_mapbox_title">オンライン地図 - Mapbox</string>
+    <string name="settings_online_maps_status">状態: %1$s</string>
+    <string name="settings_online_maps_disconnected">未接続</string>
+    <string name="settings_online_maps_touch_to_disconnect">ここをタップして接続を解除</string>
+    <string name="mapbox_login_body_short">ブラウザでサインインするとワークアウトの地図が有効になります。公開トークンはこのスマートフォンに保存されます。</string>
 </resources>

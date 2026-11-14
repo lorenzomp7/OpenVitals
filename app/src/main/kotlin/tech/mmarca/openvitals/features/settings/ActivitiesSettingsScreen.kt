@@ -107,6 +107,12 @@ private fun LazyListScope.activitiesSettingsCards(
     }
     item { SettingsCardSpacer() }
     item {
+        tech.mmarca.openvitals.features.activity.maps.MapboxAccountCard(
+            modifier = Modifier.padding(horizontal = LayoutMetrics.screenGutter),
+        )
+    }
+    item { SettingsCardSpacer() }
+    item {
         ElevationCorrectionCard(
             enabled = state.elevationCorrectionEnabled,
             tiles = state.elevationTiles,

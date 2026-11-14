@@ -14,20 +14,29 @@ internal object ScreenshotBodyParser {
         Metric("kg", listOf("weight", "peso", "peso corporeo"), setOf("kg")),
         Metric("bmi", listOf("BMI", "IMC"), setOf("")),
         Metric("body_fat", listOf("body fat", "body fat percentage", "body fat %", "grasso corporeo", "massa grassa %"), setOf("%")),
-        Metric("lean_mass", listOf("lean mass", "lean body mass", "fat free mass", "massa magra"), setOf("kg")),
-        Metric("body_water", listOf("body water", "body water mass", "total body water", "water", "acqua corporea"), setOf("kg", "%")),
+        Metric("lean_mass", listOf(
+            "lean mass", "lean body mass", "lean body weight", "lean weight", "fat free mass", "fat free body weight",
+            "fat free weight", "LBM", "FFM", "massa magra", "massa corporea magra", "massa senza grasso", "peso magro",
+            "Magermasse", "fettfreie Masse", "masa magra", "masse maigre", "massa magra corporal",
+        ), setOf("kg")),
+        Metric("body_water", listOf(
+            "body water", "body water mass", "total body water", "body water percentage", "body water rate",
+            "water", "water mass", "water weight", "water rate", "water percentage", "hydration", "TBW",
+            "acqua", "acqua corporea", "acqua corporea totale", "acqua totale", "percentuale acqua",
+            "percentuale di acqua", "idratazione", "Körperwasser", "agua corporal", "eau corporelle", "água corporal",
+        ), setOf("kg", "%")),
         Metric("bone_mass", listOf("bone mass", "massa ossea"), setOf("kg")),
         Metric("bmr", listOf("BMR", "basal metabolic rate", "metabolismo basale"), setOf("kcal")),
     )
     val kinds = metrics.map { it.kind }.toSet() + "body_water_percent"
     private const val Numeric = "(\\d{1,4}(?:[.,]\\d+)?)"
     private const val Unit = "(kg|%|kcal(?:/(?:day|d|giorno))?)"
-    private val numericLine = Regex("^$Numeric\\s*$Unit?$", RegexOption.IGNORE_CASE)
+    private val numericLine = Regex("^[^\\p{L}\\d]{0,2}$Numeric\\s*$Unit?(?:\\s+\\p{L}[\\p{L} ]{0,20})?$", RegexOption.IGNORE_CASE)
     private val unitLine = Regex("^$Unit$", RegexOption.IGNORE_CASE)
     private val suffixUnit = Regex("\\s*[(\\[]?\\s*$Unit\\s*[)\\]]?\\s*$", RegexOption.IGNORE_CASE)
 
     private fun normalized(text: String): String = text.lowercase(Locale.ROOT)
-        .replace('％', '%').replace(Regex("[()\\[\\]:：_/-]"), " ")
+        .replace('％', '%').replace(Regex("[^\\p{L}\\p{N}%.,]"), " ")
         .replace(Regex("\\s+"), " ").trim()
 
     private fun canonicalUnit(text: String?): String? = text?.lowercase(Locale.ROOT)?.let {
@@ -35,7 +44,13 @@ internal object ScreenshotBodyParser {
     }
 
     private fun value(metric: Metric, raw: String, unit: String?): ScreenshotValue? {
-        val effectiveUnit = canonicalUnit(unit) ?: if (metric.kind == "bmi") "" else return null
+        // A lean mass shown without its unit is in kilograms when it is a plausible one.
+        val plausibleLeanKg = metric.kind == "lean_mass" && raw.replace(',', '.').toDoubleOrNull()?.let { it in 15.0..150.0 } == true
+        val effectiveUnit = canonicalUnit(unit) ?: when {
+            metric.kind == "bmi" -> ""
+            plausibleLeanKg -> "kg"
+            else -> return null
+        }
         if (effectiveUnit !in metric.units) return null
         val kind = if (metric.kind == "body_water" && effectiveUnit == "%") "body_water_percent" else metric.kind
         return ScreenshotValue(kind, raw.replace(',', '.'))
@@ -45,7 +60,7 @@ internal object ScreenshotBodyParser {
         val aliases = metric.aliases.joinToString("|") { alias ->
             Regex.escape(alias).replace(" ", "\\E[\\s_-]+\\Q")
         }
-        val prefix = Regex("(?i)(?<![\\p{L}])(?:$aliases)\\s*(?:[(\\[]\\s*$Unit\\s*[)\\]])?\\s*[:：]?\\s*$Numeric\\s*$Unit?(?![\\p{L}\\d])")
+        val prefix = Regex("(?i)(?<![\\p{L}])(?:$aliases)\\s*(?:[(\\[]\\s*$Unit\\s*[)\\]])?[^\\p{L}\\d%]{0,4}$Numeric\\s*$Unit?(?![\\p{L}\\d])")
         prefix.findAll(text.replace('％', '%')).mapNotNull { match ->
             value(metric, match.groupValues[2], match.groupValues[3].ifBlank { match.groupValues[1] }.ifBlank { null })
         }.toList()

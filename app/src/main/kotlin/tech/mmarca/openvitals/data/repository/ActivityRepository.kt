@@ -389,6 +389,20 @@ class ActivityRepositoryImpl @Inject constructor(
         return hc.readSpeedSamples(start, end)
     }
 
+    override suspend fun loadCalorieSamples(
+        start: Instant,
+        end: Instant,
+    ): List<tech.mmarca.openvitals.domain.model.ActivityCalorieSample> {
+        val granted = grantedPermissionsIfAvailable()
+        val includeTotal = readCaloriesPermission in granted
+        val includeActive = readActiveCaloriesPermission in granted
+        if (!includeTotal && !includeActive) {
+            Log.w(TAG, "Skipping loadCalorieSamples missingCount=1")
+            return emptyList()
+        }
+        return hc.readCalorieSamples(start, end, includeTotal, includeActive)
+    }
+
     override suspend fun loadActivityCadenceSamples(start: Instant, end: Instant): List<ActivityCadenceSample> {
         val granted = grantedPermissionsIfAvailable()
         return loadActivityCadenceSamples(start, end, granted)

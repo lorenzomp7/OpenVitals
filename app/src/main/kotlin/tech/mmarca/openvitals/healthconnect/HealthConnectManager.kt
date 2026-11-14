@@ -361,6 +361,7 @@ class HealthConnectManager @Inject constructor(
     suspend fun readSpeedSamples(start: Instant, end: Instant): List<SpeedSample> =
         activityReader.readSpeedSamples(start, end)
 
+    suspend fun readCalorieSamples(start: Instant, end: Instant, total: Boolean, active: Boolean) = readerSupport.readSessionCalorieSamples(start, end, total, active)
     suspend fun readActivityCadenceSamples(
         start: Instant,
         end: Instant,

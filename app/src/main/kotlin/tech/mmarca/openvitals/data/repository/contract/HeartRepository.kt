@@ -27,6 +27,9 @@ interface HeartRepository {
 
     suspend fun loadHeartRateSamples(start: Instant, end: Instant): List<HeartRateSample>
 
+    /** Whether heart rate can be read at all; false shows a grant affordance instead of nothing. */
+    suspend fun hasHeartRateReadAccess(): Boolean = true
+
     /** The highest bpm in the window, without loading its samples. Any window length is safe. */
     suspend fun loadMaxHeartRate(start: Instant, end: Instant): Long?
 

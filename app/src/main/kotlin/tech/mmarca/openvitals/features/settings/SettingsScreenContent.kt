@@ -93,12 +93,6 @@ private fun LazyListScope.settingsRootCards(actions: SettingsScreenActions, open
             }
         }
 
-    item {
-        tech.mmarca.openvitals.features.activity.maps.MapboxAccountCard(
-            modifier = Modifier.padding(horizontal = LayoutMetrics.screenGutter),
-        )
-    }
-
     item { SectionHeader(stringResource(R.string.section_privacy)) }
 
     item {

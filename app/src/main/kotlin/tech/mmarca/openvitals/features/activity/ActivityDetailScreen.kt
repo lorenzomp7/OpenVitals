@@ -36,6 +36,7 @@ import tech.mmarca.openvitals.core.presentation.resolve
 import tech.mmarca.openvitals.domain.insights.ActivitySplits
 import tech.mmarca.openvitals.domain.insights.HeartRateRecoveryReading
 import tech.mmarca.openvitals.domain.model.ActivityCadenceSample
+import tech.mmarca.openvitals.domain.model.ActivityCalorieSample
 import tech.mmarca.openvitals.domain.model.ActivityRecordingMarker
 import tech.mmarca.openvitals.domain.model.CoMapsNavigationSnapshot
 import tech.mmarca.openvitals.domain.model.ExerciseData
@@ -46,6 +47,7 @@ import tech.mmarca.openvitals.ui.components.ErrorMessage
 import tech.mmarca.openvitals.ui.components.FullScreenLoading
 import tech.mmarca.openvitals.ui.components.OpenVitalsButton
 import tech.mmarca.openvitals.ui.components.OpenVitalsOutlinedButton
+import tech.mmarca.openvitals.ui.components.rememberHealthConnectPermissionLauncher
 import tech.mmarca.openvitals.ui.theme.Spacing
 import tech.mmarca.openvitals.healthconnect.openHealthConnectPermissionSettings
 import kotlinx.coroutines.launch
@@ -65,6 +67,7 @@ internal fun ActivityDetailScreen(
     val error = state.error
     val workout = state.workout
     val latestWorkout by rememberUpdatedState(workout)
+    val heartRatePermissionLauncher = rememberHealthConnectPermissionLauncher(onResult = viewModel::load)
     fun showRouteExportFailure() {
         Toast.makeText(
             context,
@@ -208,6 +211,15 @@ internal fun ActivityDetailScreen(
             heartRateRecovery = state.heartRateRecovery,
             speedSamples = state.speedSamples,
             cadenceSamples = state.cadenceSamples,
+            calorieSamples = state.calorieSamples,
+            heartRateAccessMissing = state.heartRateAccessMissing,
+            onGrantHeartRate = {
+                heartRatePermissionLauncher.launch(
+                    setOf(androidx.health.connect.client.permission.HealthPermission.getReadPermission(
+                        androidx.health.connect.client.records.HeartRateRecord::class,
+                    )),
+                )
+            },
             markers = state.markers,
             coMapsSamples = state.coMapsSamples,
             splits = state.splits,
@@ -259,6 +271,9 @@ internal fun ActivityDetailContent(
     speedSamples: List<SpeedSample>,
     cadenceSamples: List<ActivityCadenceSample>,
     markers: List<ActivityRecordingMarker>,
+    calorieSamples: List<ActivityCalorieSample> = emptyList(),
+    heartRateAccessMissing: Boolean = false,
+    onGrantHeartRate: () -> Unit = {},
     coMapsSamples: List<CoMapsNavigationSnapshot> = emptyList(),
     splits: ActivitySplits,
     splitDistanceMeters: Double,
@@ -349,6 +364,30 @@ internal fun ActivityDetailContent(
                 )
             }
         }
+        if (heartRateSamples.isEmpty() && heartRateAccessMissing) {
+            item {
+                ActivityHeartRateAccessCard(
+                    onGrant = onGrantHeartRate,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = Spacing.lg, vertical = Spacing.xs),
+                )
+            }
+        }
+        if (hasMeaningfulCalories(calorieSamples)) {
+            item {
+                ActivityCaloriesChartCard(
+                    samples = calorieSamples,
+                    sessionStart = workout.startTime,
+                    sessionEnd = workout.endTime,
+                    pauses = workout.segments.toSessionPauses(),
+                    unitFormatter = unitFormatter,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = Spacing.lg, vertical = Spacing.xs),
+                )
+            }
+        }
         // Only a reading with a measured peak is worth a card.
         if (heartRateRecovery != null && heartRateRecovery.peakBpm != null) {
             item {
@@ -428,7 +467,7 @@ internal fun ActivityDetailContent(
                     .padding(horizontal = 16.dp, vertical = 4.dp),
             )
         }
-        item {
+        if (workout.segments.isNotEmpty()) item {
             SegmentsCard(
                 segments = workout.segments,
                 unitFormatter = unitFormatter,
@@ -438,7 +477,8 @@ internal fun ActivityDetailContent(
                     .padding(horizontal = 16.dp, vertical = 4.dp),
             )
         }
-        item {
+        // 53: no route data, no route card.
+        if (workout.route.status == ExerciseRouteStatus.DATA && workout.route.points.isNotEmpty()) item {
             RouteCard(
                 route = workout.route,
                 unitFormatter = unitFormatter,
@@ -537,5 +577,32 @@ internal fun ActivityDetailContent(
             }
         }
         item { Spacer(Modifier.height(16.dp)) }
+    }
+}
+
+/** Heart rate access is off: the BPM chart's place offers the grant. */
+@Composable
+private fun ActivityHeartRateAccessCard(
+    onGrant: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    tech.mmarca.openvitals.ui.components.OpenVitalsCard(modifier = modifier) {
+        Column(
+            modifier = Modifier.padding(Spacing.lg),
+            verticalArrangement = Arrangement.spacedBy(Spacing.sm),
+        ) {
+            Text(
+                text = stringResource(R.string.activity_recording_live_heart_rate),
+                style = MaterialTheme.typography.titleMedium,
+            )
+            Text(
+                text = stringResource(R.string.activity_heart_rate_access_missing),
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+            OpenVitalsButton(onClick = onGrant) {
+                Text(text = stringResource(R.string.action_grant_permission))
+            }
+        }
     }
 }

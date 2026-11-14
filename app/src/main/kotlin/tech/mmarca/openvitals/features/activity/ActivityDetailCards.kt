@@ -97,12 +97,28 @@ internal fun WorkoutSummaryCard(
             }
 
             Spacer(Modifier.height(16.dp))
-            Text(
-                text = unitFormatter.duration(workout.durationMs),
-                style = MaterialTheme.typography.headlineLarge,
-                fontWeight = FontWeight.Bold,
-                color = WorkoutColor,
-            )
+            if (workout.exerciseType in TimeAndHeartRateSummaryExercises) {
+                // 54, 55: a machine session is summed up by its time and its average bpm.
+                Row(modifier = Modifier.fillMaxWidth()) {
+                    SummaryHeadlineStat(
+                        value = unitFormatter.duration(workout.durationMs),
+                        label = stringResource(R.string.detail_duration),
+                        modifier = Modifier.weight(1f),
+                    )
+                    SummaryHeadlineStat(
+                        value = workout.averageHeartRateBpm?.let { unitFormatter.heartRate(it).text } ?: "—",
+                        label = stringResource(R.string.metric_average_heart_rate),
+                        modifier = Modifier.weight(1f),
+                    )
+                }
+            } else {
+                Text(
+                    text = unitFormatter.duration(workout.durationMs),
+                    style = MaterialTheme.typography.headlineLarge,
+                    fontWeight = FontWeight.Bold,
+                    color = WorkoutColor,
+                )
+            }
             Text(
                 text = "${formatDateTime(start, dateTimeFormatterProvider)} - ${formatDateTime(end, dateTimeFormatterProvider)}",
                 style = MaterialTheme.typography.bodyMedium,
@@ -113,6 +129,33 @@ internal fun WorkoutSummaryCard(
                 modifier = Modifier.padding(top = 8.dp),
             )
         }
+    }
+}
+
+/** Treadmill runs and stationary rides: their summary is time and average heart rate. */
+internal val TimeAndHeartRateSummaryExercises: Set<Int> = setOf(
+    androidx.health.connect.client.records.ExerciseSessionRecord.EXERCISE_TYPE_RUNNING_TREADMILL,
+    androidx.health.connect.client.records.ExerciseSessionRecord.EXERCISE_TYPE_BIKING_STATIONARY,
+)
+
+@Composable
+private fun SummaryHeadlineStat(
+    value: String,
+    label: String,
+    modifier: Modifier = Modifier,
+) {
+    Column(modifier = modifier) {
+        Text(
+            text = value,
+            style = MaterialTheme.typography.headlineLarge,
+            fontWeight = FontWeight.Bold,
+            color = WorkoutColor,
+        )
+        Text(
+            text = label,
+            style = MaterialTheme.typography.labelMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
     }
 }
 
@@ -182,7 +225,7 @@ internal fun MetricsCard(
         )
         MetricRow(
             label = stringResource(R.string.metric_average_power),
-            value = workout.averagePowerWatts?.let { unitFormatter.power(it).text },
+            value = workout.averagePowerWatts?.takeIf { it > 0.0 }?.let { unitFormatter.power(it).text },
             metric = ActivityDetailMetric.AVERAGE_POWER,
             exerciseType = exerciseType,
         )
@@ -213,7 +256,7 @@ internal fun MetricsCard(
         )
         MetricRow(
             label = stringResource(R.string.metric_active_calories),
-            value = workout.activeCaloriesKcal?.let { unitFormatter.energy(it).text },
+            value = workout.activeCaloriesKcal?.takeIf { it >= 1.0 }?.let { unitFormatter.energy(it).text },
             metric = ActivityDetailMetric.ACTIVE_CALORIES,
             exerciseType = exerciseType,
         )

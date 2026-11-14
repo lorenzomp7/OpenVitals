@@ -38,7 +38,7 @@ import tech.mmarca.openvitals.features.dashboard.components.DashboardMultiRingHe
 /** The shipped layout's section rhythm, top to bottom. */
 private val DashboardHeroSectionTopPadding = 16.dp
 private val DashboardHeroSectionBottomPadding = 0.dp
-private val DashboardGridTopPadding = 32.dp
+private val DashboardGridTopPadding = DashboardSectionGap
 private val DashboardHeroRingHeight = 200.dp
 private val DashboardHeroTopPadding = 6.dp
 private const val DashboardHeroRingCount = 3
@@ -93,6 +93,8 @@ internal fun DashboardWidgetCarousel(
     var draggingWidgetStartBounds by remember { mutableStateOf<Rect?>(null) }
     var draggingWidgetDragOffset by remember { mutableStateOf(Offset.Zero) }
     var draggingWidgetBounds by remember { mutableStateOf<Rect?>(null) }
+    // 59: the tile the last live swap went to, so a reflow under the finger cannot swap back at once.
+    var lastSwapTargetId by remember { mutableStateOf<DashboardWidgetId?>(null) }
 
     LaunchedEffect(visibleIds) {
         val visibleSet = visibleIds.toSet()
@@ -134,19 +136,6 @@ internal fun DashboardWidgetCarousel(
         draggingWidgetBounds = projectedDraggingBounds(widgetId)
     }
 
-    fun dragWidgetBy(widgetId: DashboardWidgetId, dragAmount: Offset) {
-        if (draggingWidgetId != widgetId) return
-        draggingWidgetDragOffset += dragAmount
-        draggingWidgetBounds = projectedDraggingBounds(widgetId)
-    }
-
-    fun clearDraggingWidget() {
-        draggingWidgetId = null
-        draggingWidgetStartBounds = null
-        draggingWidgetDragOffset = Offset.Zero
-        draggingWidgetBounds = null
-    }
-
     fun dropTargetIdsFor(draggedId: DashboardWidgetId, draggedBounds: Rect): List<DashboardWidgetId> {
         val currentPageIds = carouselIds.filter { widgetBounds[it]?.overlaps(draggedBounds) == true }.ifEmpty { carouselIds }
         val dropCenter = draggedBounds.center
@@ -161,7 +150,37 @@ internal fun DashboardWidgetCarousel(
         }
     }
 
+    fun dragWidgetBy(widgetId: DashboardWidgetId, dragAmount: Offset) {
+        if (draggingWidgetId != widgetId) return
+        draggingWidgetDragOffset += dragAmount
+        val bounds = projectedDraggingBounds(widgetId) ?: return
+        draggingWidgetBounds = bounds
+        // 59: like the log grid, the others make room while the finger moves; nothing waits for the drop.
+        val center = bounds.center
+        val target = dropTargetIdsFor(widgetId, bounds).firstOrNull { id ->
+            id != widgetId && widgetBounds[id]?.deflate(0.2f)?.containsPoint(center) == true
+        }
+        if (target == null) {
+            if (lastSwapTargetId != null && widgetBounds[lastSwapTargetId]?.containsPoint(center) != true) {
+                lastSwapTargetId = null
+            }
+        } else if (target != lastSwapTargetId) {
+            lastSwapTargetId = target
+            onMoveWidgetToTarget(widgetId, target)
+        }
+    }
+
+    fun clearDraggingWidget() {
+        lastSwapTargetId = null
+        draggingWidgetId = null
+        draggingWidgetStartBounds = null
+        draggingWidgetDragOffset = Offset.Zero
+        draggingWidgetBounds = null
+    }
+
     fun dropWidget(widgetId: DashboardWidgetId) {
+        // Live swaps already put the tile where it was let go.
+        if (lastSwapTargetId != null || draggingWidgetId != widgetId) return
         val draggedBounds = projectedDraggingBounds(widgetId) ?: draggingWidgetBounds ?: widgetBounds[widgetId] ?: return
         val targetIds = dropTargetIdsFor(widgetId, draggedBounds)
 
@@ -345,7 +364,11 @@ private fun DashboardDraggedWidgetOverlay(
                 translationY = bounds.top - containerBounds.top
             },
     ) {
-        DashboardSizedTile(spec, dashboardTileSize(spec, widgetSizes))
+        // 50: the grid tile keeps a 48 dp controls band above its content; so does its moving copy,
+        // or the copy would stretch the content over the band and look larger than the tile.
+        Box(Modifier.fillMaxSize().padding(top = tech.mmarca.openvitals.ui.theme.LayoutMetrics.minTouchTarget)) {
+            DashboardSizedTile(spec, dashboardTileSize(spec, widgetSizes))
+        }
     }
 }
 
@@ -365,6 +388,14 @@ private fun closestDashboardWidgetId(
 
 private fun Rect.containsPoint(point: Offset): Boolean =
     point.x >= left && point.x <= right && point.y >= top && point.y <= bottom
+
+/** The rect shrunk by [fraction] of its size on every side. */
+private fun Rect.deflate(fraction: Float): Rect = Rect(
+    left = left + width * fraction,
+    top = top + height * fraction,
+    right = right - width * fraction,
+    bottom = bottom - height * fraction,
+)
 
 private fun Rect.translateBy(offset: Offset): Rect =
     Rect(

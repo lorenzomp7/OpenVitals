@@ -252,6 +252,9 @@ class HeartRepositoryImpl @Inject constructor(
         return loadHeartRateSamples(start, end, granted)
     }
 
+    override suspend fun hasHeartRateReadAccess(): Boolean =
+        readHeartRatePermission in grantedPermissionsIfAvailable()
+
     override suspend fun loadMaxHeartRate(start: Instant, end: Instant): Long? {
         if (readHeartRatePermission !in grantedPermissionsIfAvailable()) {
             Log.w(TAG, "Skipping loadMaxHeartRate missingCount=1")

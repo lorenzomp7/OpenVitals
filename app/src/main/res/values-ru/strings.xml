@@ -3882,4 +3882,10 @@
     <string name="user_profile_view_photo">Посмотреть</string>
     <string name="user_profile_change_photo">Изменить</string>
     <string name="dashboard_save_changes">Сохранить изменения панели?</string>
+    <string name="activity_heart_rate_access_missing">Разрешите OpenVitals читать пульс, чтобы увидеть график ЧСС этой тренировки.</string>
+    <string name="settings_online_maps_mapbox_title">Онлайн-карты - Mapbox</string>
+    <string name="settings_online_maps_status">Статус: %1$s</string>
+    <string name="settings_online_maps_disconnected">Отключено</string>
+    <string name="settings_online_maps_touch_to_disconnect">Нажмите здесь, чтобы отключить</string>
+    <string name="mapbox_login_body_short">Войдите в браузере, чтобы включить карты тренировок. Публичный токен остаётся на этом телефоне.</string>
 </resources>

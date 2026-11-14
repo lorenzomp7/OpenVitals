@@ -25,6 +25,7 @@ import tech.mmarca.openvitals.domain.insights.buildActivitySplits
 import tech.mmarca.openvitals.domain.insights.calculateHeartRateRecovery
 import tech.mmarca.openvitals.domain.insights.heartRateRecoveryWindowFor
 import tech.mmarca.openvitals.domain.model.ActivityCadenceSample
+import tech.mmarca.openvitals.domain.model.ActivityCalorieSample
 import tech.mmarca.openvitals.domain.model.ActivityRecordingMarker
 import tech.mmarca.openvitals.domain.model.CoMapsNavigationSnapshot
 import tech.mmarca.openvitals.domain.model.ExerciseData
@@ -52,6 +53,12 @@ internal data class ActivityDetailUiState(
     val heartRateSamples: List<HeartRateSample> = emptyList(),
     val speedSamples: List<SpeedSample> = emptyList(),
     val cadenceSamples: List<ActivityCadenceSample> = emptyList(),
+
+    /** Running energy total over the session; empty without calorie data. */
+    val calorieSamples: List<ActivityCalorieSample> = emptyList(),
+
+    /** Heart rate cannot be read: the chart slot offers the grant instead. */
+    val heartRateAccessMissing: Boolean = false,
     val markers: List<ActivityRecordingMarker> = emptyList(),
 
     /** CoMaps guidance saved beside the activity; app-local, empty for most. */
@@ -151,6 +158,18 @@ internal class ActivityDetailViewModel @Inject constructor(
                 runCatchingCancellable {
                     repository.loadSpeedSamples(workout.startTime, workout.endTime)
                 }.getOrDefault(emptyList())
+                    // A trainer without a wheel sensor writes zeros: that is no speed, not 0 km/h.
+                    .takeIf { hasMeaningfulSpeed(it) }
+                    .orEmpty()
+            }
+            val calorieSamples = async {
+                runCatchingCancellable {
+                    repository.loadCalorieSamples(workout.startTime, workout.endTime)
+                }.getOrDefault(emptyList())
+            }
+            val heartRateAccess = async {
+                runCatchingCancellable { heartRepository?.hasHeartRateReadAccess() ?: true }
+                    .getOrDefault(true)
             }
             val cadenceSamples = async {
                 runCatchingCancellable {
@@ -174,6 +193,8 @@ internal class ActivityDetailViewModel @Inject constructor(
             val heartRate = heartRateSamples.await()
             val speed = speedSamples.await()
             val cadence = cadenceSamples.await()
+            val calories = calorieSamples.await()
+            val hasHeartRateAccess = heartRateAccess.await()
             val loadedMarkers = markers.await()
             val loadedCoMapsSamples = coMapsSamples.await()
             val recovery = heartRateRecovery.await()
@@ -191,6 +212,8 @@ internal class ActivityDetailViewModel @Inject constructor(
                     heartRateSamples = heartRate,
                     speedSamples = speed,
                     cadenceSamples = cadence,
+                    calorieSamples = calories,
+                    heartRateAccessMissing = heartRate.isEmpty() && !hasHeartRateAccess,
                     markers = loadedMarkers,
                     coMapsSamples = loadedCoMapsSamples,
                     elevationSamples = elevationProfile(backfilledWorkout.route),

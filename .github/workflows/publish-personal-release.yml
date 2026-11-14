@@ -1,7 +1,7 @@
 name: publish-personal-release
 on:
   push:
-    branches: [fix/dashboard-import-27-51]
+    branches: [main_claude_02]
     paths: [.github/workflows/publish-personal-release.yml]
   workflow_dispatch:
 permissions:
@@ -11,7 +11,11 @@ concurrency:
   group: publish-personal-apk-release
   cancel-in-progress: true
 jobs:
+  # The full verification of this exact revision, run here because no pull request exists for it.
+  verify:
+    uses: ./.github/workflows/verify.yml
   release:
+    needs: verify
     runs-on: ubuntu-26.04
     timeout-minutes: 35
     env:
@@ -42,7 +46,7 @@ jobs:
           NEXT=$((PREVIOUS + 1))
           if (( NEXT < 1070400000 )); then NEXT=1070400000; fi
           echo "OPENVITALS_VERSION_CODE=$NEXT" >> "$GITHUB_ENV"
-          echo "OPENVITALS_VERSION_NAME=2.16.0-personal-46-47-51" >> "$GITHUB_ENV"
+          echo "OPENVITALS_VERSION_NAME=2.17.0-personal-claude-02" >> "$GITHUB_ENV"
       - name: Build the signed personal update
         env:
           OPENVITALS_RELEASE_STORE_FILE: ${{ github.workspace }}/personal/personal.p12
@@ -51,21 +55,13 @@ jobs:
           OPENVITALS_SIGN_DEBUG_WITH_RELEASE_KEY: 'true'
           OPENVITALS_PUBLISHED_DEBUG_APK: 'true'
         run: scripts/ci-android-gradle.sh verifyTranslations :app:assembleDebug
-      - name: Wait for this source revision to pass verification
-        run: |
-          set -euo pipefail
-          for attempt in $(seq 1 80); do
-            RUN=$(gh api "repos/$GH_REPO/actions/runs?head_sha=$GITHUB_SHA&event=pull_request&per_page=20" --jq '[.workflow_runs[] | select(.name == "verify")][0]')
-            STATUS=$(echo "$RUN" | jq -r '.status // "queued"')
-            if [ "$STATUS" = completed ]; then
-              test "$(echo "$RUN" | jq -r .conclusion)" = success
-              RUN_ID=$(echo "$RUN" | jq -r .id)
-              gh run download "$RUN_ID" --name ci-apks --dir verified-ci
-              break
-            fi
-            sleep 15
-          done
-          test -s verified-ci/ci/app-ci.apk
+      - name: Take the APKs this run's verification built and tested
+        uses: actions/download-artifact@v4
+        with:
+          name: ci-apks
+          path: verified-ci
+      - name: Check the verified APKs are present
+        run: test -s verified-ci/ci/app-ci.apk
       - name: Check package, version and signing certificate
         run: |
           set -euo pipefail
@@ -103,24 +99,27 @@ jobs:
           mkdir -p release
           cp personal-apk/OpenVitals-personal.apk release/OpenVitals.apk
           (cd release && sha256sum OpenVitals.apk > SHA256SUMS.txt)
-          TAG="personal-import-$GITHUB_RUN_ID"
+          TAG="personal-claude-02-$GITHUB_RUN_ID"
           cat > release-notes.md <<EOF
           Scarica **OpenVitals.apk** dagli allegati e aprilo sul telefono.
 
-          Correzioni 46, 47 e 51: il pulsante permessi richiede le scritture per questa installazione di OpenVitals tramite la finestra nativa dedicata all’app; quando sono già concesse mostra lo stato autorizzato; riconoscimento di lean mass e body water con etichette spezzate, valori laterali e unità separate; caratteri, campi, pulsanti e date uniformati nell'importazione screenshot.
+          Branch main_claude_02 — modifiche C, 16, 26, 35, 37, 46, 47, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63:
+          - Attività: grafico delle calorie nel tempo; grafico BPM anche per la bici da camera (o richiesta di accesso alla frequenza cardiaca se manca); grafici e schede senza dati nascosti; riepilogo Tempo + BPM medi per tapis roulant e bici da camera; velocità tutta a zero non più disegnata; "Avg gap" tolto dal menu Attività.
+          - Impostazioni: "Mappe online - Mapbox" nelle impostazioni Attività dopo le mappe offline, con "Stato: Connesso/Disconnesso" e "Tocca qui per disconnettere".
+          - Import screenshot: si apre subito la galleria; schermata intera con freccia indietro; i permessi aprono la pagina di OpenVitals in Health Connect quando Android non mostra il dialogo; riconoscimento più ampio di massa magra e acqua corporea; tile nello stile del menu "+ log".
+          - Dashboard: riordino dei toggle in tempo reale come nel menu "+ log", senza ingrandimento; spaziature uguali sopra e sotto i toggle; niente lampo della barra in alto al ritorno; tema AMOLED predefinito.
+          - Logo animato in stile Material 3 Expressive e icona con i colori Google sfumati.
 
-          Verificati sul dispositivo di test: riconoscimento OCR reale di massa magra e acqua corporea, form di revisione e richiesta Health Connect specifica di OpenVitals.
+          Questa versione aggiorna l'installazione personale compatibile di OpenVitals senza disinstallarla. La revisione ha superato la verifica completa (verify) in questa stessa esecuzione; package e firma coincidono con l'APK pubblicato precedente; installazione, aggiornamento, avvio e import screenshot sono verificati su Android 15.
 
-          Questa versione aggiorna l'installazione personale compatibile di OpenVitals senza disinstallarla. Package e firma coincidono con l'APK pubblicato precedente; installazione, aggiornamento e avvio sono stati verificati su Android 15.
-
-          Versione: **2.16.0-personal-46-47-51**. Version code: **$OPENVITALS_VERSION_CODE**.
+          Versione: **2.17.0-personal-claude-02**. Version code: **$OPENVITALS_VERSION_CODE**.
           Sorgenti: https://github.com/$GH_REPO/commit/$GITHUB_SHA
           Compilazione e verifica aggiornamento: https://github.com/$GH_REPO/actions/runs/$GITHUB_RUN_ID
           EOF
           if gh release view "$TAG" > /dev/null 2>&1; then
             echo "Release already exists; keeping the published APK unchanged."
           else
-            gh release create "$TAG" release/OpenVitals.apk release/SHA256SUMS.txt --target "$GITHUB_SHA" --title "OpenVitals 2.16.0 · import screenshot e permessi" --notes-file release-notes.md --latest
+            gh release create "$TAG" release/OpenVitals.apk release/SHA256SUMS.txt --target "$GITHUB_SHA" --title "OpenVitals 2.17.0 · main_claude_02" --notes-file release-notes.md --latest
           fi
       - uses: actions/upload-artifact@v4
         if: always()

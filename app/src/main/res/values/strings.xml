@@ -3875,4 +3875,10 @@
     <string name="user_profile_view_photo">View</string>
     <string name="user_profile_change_photo">Change</string>
     <string name="dashboard_save_changes">Save dashboard changes?</string>
+    <string name="activity_heart_rate_access_missing">Allow OpenVitals to read heart rate to see the BPM chart for this session.</string>
+    <string name="settings_online_maps_mapbox_title">Online maps - Mapbox</string>
+    <string name="settings_online_maps_status">Status: %1$s</string>
+    <string name="settings_online_maps_disconnected">Disconnected</string>
+    <string name="settings_online_maps_touch_to_disconnect">Touch here to disconnect</string>
+    <string name="mapbox_login_body_short">Sign in in your browser to enable workout maps. The public map token stays on this phone.</string>
 </resources>

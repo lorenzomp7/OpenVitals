@@ -3848,4 +3848,10 @@
     <string name="user_profile_view_photo">Afficher</string>
     <string name="user_profile_change_photo">Modifier</string>
     <string name="dashboard_save_changes">Enregistrer les modifications du tableau de bord ?</string>
+    <string name="activity_heart_rate_access_missing">Autorisez OpenVitals à lire la fréquence cardiaque pour voir le graphique des BPM de cette séance.</string>
+    <string name="settings_online_maps_mapbox_title">Cartes en ligne - Mapbox</string>
+    <string name="settings_online_maps_status">État : %1$s</string>
+    <string name="settings_online_maps_disconnected">Déconnecté</string>
+    <string name="settings_online_maps_touch_to_disconnect">Touchez ici pour vous déconnecter</string>
+    <string name="mapbox_login_body_short">Connectez-vous dans votre navigateur pour activer les cartes d\'entraînement. Le jeton public reste sur ce téléphone.</string>
 </resources>

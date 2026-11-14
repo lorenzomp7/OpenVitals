@@ -3881,4 +3881,10 @@
     <string name="user_profile_view_photo">Wyświetl</string>
     <string name="user_profile_change_photo">Zmień</string>
     <string name="dashboard_save_changes">Zapisać zmiany pulpitu?</string>
+    <string name="activity_heart_rate_access_missing">Zezwól OpenVitals na odczyt tętna, aby zobaczyć wykres BPM tej sesji.</string>
+    <string name="settings_online_maps_mapbox_title">Mapy online - Mapbox</string>
+    <string name="settings_online_maps_status">Stan: %1$s</string>
+    <string name="settings_online_maps_disconnected">Rozłączono</string>
+    <string name="settings_online_maps_touch_to_disconnect">Dotknij tutaj, aby rozłączyć</string>
+    <string name="mapbox_login_body_short">Zaloguj się w przeglądarce, aby włączyć mapy treningów. Publiczny token zostaje na tym telefonie.</string>
 </resources>

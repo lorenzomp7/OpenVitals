@@ -500,4 +500,10 @@
     <string name="user_profile_view_photo">Προβολή</string>
     <string name="user_profile_change_photo">Αλλαγή</string>
     <string name="dashboard_save_changes">Αποθήκευση αλλαγών στον πίνακα ελέγχου;</string>
+    <string name="activity_heart_rate_access_missing">Επιτρέψτε στο OpenVitals να διαβάζει τον καρδιακό ρυθμό για να δείτε το γράφημα BPM αυτής της συνεδρίας.</string>
+    <string name="settings_online_maps_mapbox_title">Διαδικτυακοί χάρτες - Mapbox</string>
+    <string name="settings_online_maps_status">Κατάσταση: %1$s</string>
+    <string name="settings_online_maps_disconnected">Αποσυνδεδεμένο</string>
+    <string name="settings_online_maps_touch_to_disconnect">Πατήστε εδώ για αποσύνδεση</string>
+    <string name="mapbox_login_body_short">Συνδεθείτε στο πρόγραμμα περιήγησης για να ενεργοποιήσετε τους χάρτες προπονήσεων. Το δημόσιο διακριτικό μένει σε αυτό το τηλέφωνο.</string>
 </resources>

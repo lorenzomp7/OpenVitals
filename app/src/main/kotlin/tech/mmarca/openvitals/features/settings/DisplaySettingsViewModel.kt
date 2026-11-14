@@ -26,7 +26,7 @@ data class DisplaySettingsUiState(
     val unitSystem: UnitSystem = UnitSystem.METRIC,
     /** Per-quantity display overrides; an absent quantity follows [unitSystem]. */
     val unitOverrides: Map<UnitQuantity, UnitSystem> = emptyMap(),
-    val appThemeMode: AppThemeMode = AppThemeMode.SYSTEM,
+    val appThemeMode: AppThemeMode = AppThemeMode.AMOLED,
     val dynamicColor: Boolean = false,
     val chartAggregationMode: ChartAggregationMode = ChartAggregationMode.OFF,
     val dashboardSortEmptyTilesLast: Boolean = true,

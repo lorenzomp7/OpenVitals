@@ -6,6 +6,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Close
+import androidx.compose.material.icons.automirrored.outlined.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -13,6 +14,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.unit.dp
 import tech.mmarca.openvitals.R
 import tech.mmarca.openvitals.core.presentation.resolve
 import tech.mmarca.openvitals.ui.theme.LayoutMetrics
@@ -33,9 +35,29 @@ internal fun ScreenshotImportContent(state: ScreenshotImportState, start: String
         (state.values.none { it.kind == "body_water_percent" } || state.values.any { it.kind == "kg" }) &&
         (state.values.none { it.kind == "duration_min" } || state.exerciseType != null) &&
         confirmed && state.writesGranted && editable && start.isNotBlank() && end.isNotBlank()
-    Column(Modifier.fillMaxWidth().padding(Spacing.lg).testTag("screenshot_import_form")) {
-        Text(stringResource(R.string.screenshot_import_title), style = MaterialTheme.typography.titleLarge)
-        Spacer(Modifier.height(Spacing.sm))
+    Column(
+        Modifier.fillMaxWidth().windowInsetsPadding(WindowInsets.systemBars).testTag("screenshot_import_form"),
+    ) {
+        Row(
+            modifier = Modifier.fillMaxWidth().heightIn(min = LayoutMetrics.minTouchTarget + Spacing.lg).padding(horizontal = Spacing.xs),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            tech.mmarca.openvitals.ui.components.OpenVitalsIconButton(
+                onClick = { if (!state.busy) actions.onClose() },
+            ) {
+                Icon(
+                    imageVector = Icons.AutoMirrored.Outlined.ArrowBack,
+                    contentDescription = stringResource(R.string.cd_back),
+                    tint = MaterialTheme.colorScheme.onSurface,
+                )
+            }
+            Text(
+                stringResource(R.string.screenshot_import_title),
+                style = MaterialTheme.typography.titleLarge,
+                modifier = Modifier.padding(start = Spacing.xs),
+            )
+        }
+        Column(Modifier.weight(1f, fill = false).padding(horizontal = Spacing.lg)) {
         Text(stringResource(R.string.screenshot_import_body), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
         Column(Modifier.weight(1f, fill = false).verticalScroll(rememberScrollState()).padding(top = Spacing.lg),
             verticalArrangement = Arrangement.spacedBy(Spacing.md)) {
@@ -67,15 +89,12 @@ internal fun ScreenshotImportContent(state: ScreenshotImportState, start: String
             state.error.resolve()?.let { Text(it, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.error) }
             if (state.saved) Text(stringResource(R.string.screenshot_import_saved), style = MaterialTheme.typography.bodyMedium)
         }
+        }
         Spacer(Modifier.height(Spacing.lg))
-        Row(horizontalArrangement = Arrangement.spacedBy(Spacing.sm), verticalAlignment = Alignment.CenterVertically) {
-            TextButton(onClick = actions.onClose, enabled = !state.busy) {
-                Text(stringResource(R.string.screenshot_import_close), style = MaterialTheme.typography.labelLarge)
-            }
-            Button(onClick = actions.onSave, enabled = canSave, shape = MaterialTheme.shapes.medium,
-                modifier = Modifier.weight(1f).heightIn(min = LayoutMetrics.minTouchTarget)) {
-                Text(stringResource(R.string.screenshot_import_save), style = MaterialTheme.typography.labelLarge)
-            }
+        Button(onClick = actions.onSave, enabled = canSave, shape = MaterialTheme.shapes.medium,
+            modifier = Modifier.fillMaxWidth().padding(horizontal = Spacing.lg).padding(bottom = Spacing.lg)
+                .heightIn(min = LayoutMetrics.minTouchTarget)) {
+            Text(stringResource(R.string.screenshot_import_save), style = MaterialTheme.typography.labelLarge)
         }
     }
 }

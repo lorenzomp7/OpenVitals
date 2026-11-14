@@ -338,6 +338,13 @@ data class SpeedSample(
     val source: String,
 )
 
+/** Energy burned since the session started, at [time]. [active] when only active energy was recorded. */
+data class ActivityCalorieSample(
+    val time: Instant,
+    val cumulativeKcal: Double,
+    val active: Boolean,
+)
+
 enum class ActivityCadenceKind {
     CYCLING,
     STEPS,

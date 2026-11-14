@@ -1022,7 +1022,7 @@ class PreferencesRepository @Inject constructor(
     private fun readAppThemeMode(): AppThemeMode =
         prefs.getString(KEY_APP_THEME_MODE, null)
             ?.let { value -> runCatching { AppThemeMode.valueOf(value) }.getOrNull() }
-            ?: AppThemeMode.SYSTEM
+            ?: AppThemeMode.AMOLED // 62: AMOLED until the user picks another theme.
 
     private fun readDynamicColor(): Boolean =
         prefs.getBoolean(KEY_DYNAMIC_COLOR, false)

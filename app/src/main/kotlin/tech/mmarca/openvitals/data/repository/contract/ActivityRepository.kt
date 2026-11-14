@@ -59,6 +59,10 @@ interface ActivityRepository {
 
     suspend fun loadActivityCadenceSamples(start: Instant, end: Instant): List<ActivityCadenceSample>
 
+    /** Cumulative energy over the session, total calories preferred over active. Empty without either. */
+    suspend fun loadCalorieSamples(start: Instant, end: Instant): List<tech.mmarca.openvitals.domain.model.ActivityCalorieSample> =
+        emptyList()
+
     suspend fun loadPlannedWorkouts(start: LocalDate, end: LocalDate): List<PlannedExerciseData>
 
     suspend fun loadExistingPlannedWorkouts(anchorDate: LocalDate = LocalDate.now()): List<PlannedExerciseData>

@@ -974,7 +974,8 @@ internal fun LazyListScope.workoutGoal(
     item {
         DailyGoalStatistics(
             progress = progress,
-            averageGap = unitFormatter.minutes(progress.averageGapToGoal.roundToLong()),
+            // 16: the activities menu shows no average gap.
+            averageGap = null,
             unitFormatter = unitFormatter,
             icon = Icons.AutoMirrored.Outlined.DirectionsRun,
             accentColor = WorkoutColor,

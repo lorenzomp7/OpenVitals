@@ -421,7 +421,8 @@ private fun WorkoutStatisticsSectionContent(
     Column(modifier = Modifier.fillMaxWidth()) {
         DailyGoalStatistics(
             progress = goalProgress,
-            averageGap = unitFormatter.minutes(goalProgress.averageGapToGoal.roundToLong()),
+            // 16: the activities menu shows no average gap.
+            averageGap = null,
             unitFormatter = unitFormatter,
             icon = Icons.AutoMirrored.Outlined.DirectionsRun,
             accentColor = WorkoutColor,

@@ -3881,4 +3881,10 @@
     <string name="user_profile_view_photo">Zobrazit</string>
     <string name="user_profile_change_photo">Změnit</string>
     <string name="dashboard_save_changes">Uložit změny hlavní obrazovky?</string>
+    <string name="activity_heart_rate_access_missing">Povolte OpenVitals číst tepovou frekvenci, abyste viděli graf BPM této relace.</string>
+    <string name="settings_online_maps_mapbox_title">Online mapy - Mapbox</string>
+    <string name="settings_online_maps_status">Stav: %1$s</string>
+    <string name="settings_online_maps_disconnected">Odpojeno</string>
+    <string name="settings_online_maps_touch_to_disconnect">Klepnutím sem odpojíte</string>
+    <string name="mapbox_login_body_short">Přihlaste se v prohlížeči a zapněte mapy tréninků. Veřejný token zůstane v tomto telefonu.</string>
 </resources>

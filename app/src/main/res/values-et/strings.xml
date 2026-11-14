@@ -3815,4 +3815,10 @@
     <string name="user_profile_view_photo">Vaata</string>
     <string name="user_profile_change_photo">Muuda</string>
     <string name="dashboard_save_changes">Kas salvestada töölaua muudatused?</string>
+    <string name="activity_heart_rate_access_missing">Luba OpenVitalsil lugeda pulssi, et näha selle treeningu BPM-graafikut.</string>
+    <string name="settings_online_maps_mapbox_title">Võrgukaardid - Mapbox</string>
+    <string name="settings_online_maps_status">Olek: %1$s</string>
+    <string name="settings_online_maps_disconnected">Ühendus katkestatud</string>
+    <string name="settings_online_maps_touch_to_disconnect">Puuduta siin, et ühendus katkestada</string>
+    <string name="mapbox_login_body_short">Logi brauseris sisse, et lubada treeningkaardid. Avalik kaardivõti jääb sellesse telefoni.</string>
 </resources>

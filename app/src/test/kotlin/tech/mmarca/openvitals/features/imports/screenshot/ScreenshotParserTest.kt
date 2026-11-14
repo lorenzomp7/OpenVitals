@@ -99,4 +99,22 @@ class ScreenshotParserTest {
         assertTrue(result.contains(ScreenshotValue("body_water_percent", "58.2")))
         assertEquals(listOf(ScreenshotValue("body_water", "40.1")), ScreenshotParser.parse("Body water 40.1 kg"))
     }
+    @Test fun `lean mass and body water are read from scale tiles with icons, status words and missing units`() {
+        val lines = listOf(
+            ScreenshotOcrLine("Lean body mass ›", 50, 50, 250, 80),
+            ScreenshotOcrLine("58.4 Standard", 50, 100, 220, 130),
+            ScreenshotOcrLine("ⓘ Body Water", 320, 50, 500, 80),
+            ScreenshotOcrLine("55.1 %", 320, 100, 420, 130),
+        )
+        val values = ScreenshotParser.parseLines(lines).toSet()
+        assertTrue(ScreenshotValue("lean_mass", "58.4") in values)
+        assertTrue(ScreenshotValue("body_water_percent", "55.1") in values)
+    }
+    @Test fun `Italian and alternative lean mass and water labels are recognised inline`() {
+        val values = ScreenshotParser.parse("Massa magra: 56,3 kg Acqua 54,2 % Fat-free mass 57.0 kg Idratazione 41,2 kg").toSet()
+        assertTrue(ScreenshotValue("lean_mass", "56.3") in values)
+        assertTrue(ScreenshotValue("lean_mass", "57.0") in values)
+        assertTrue(ScreenshotValue("body_water_percent", "54.2") in values)
+        assertTrue(ScreenshotValue("body_water", "41.2") in values)
+    }
 }

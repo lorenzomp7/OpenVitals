@@ -1,5 +1,7 @@
 package tech.mmarca.openvitals.navigation
 
+import androidx.compose.animation.ExitTransition
+import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -366,12 +368,26 @@ fun AppNavigation(
             // the default scales the leaving screen down over the one behind it.
             enterTransition = { fadeIn(tween(NavFadeMillis)) },
             exitTransition = { fadeOut(tween(NavFadeMillis)) },
-            popEnterTransition = { fadeIn(tween(NavFadeMillis)) },
-            popExitTransition = { fadeOut(tween(NavFadeMillis)) },
+            // 63: back to the dashboard is a cut, not a cross-fade. During the fade the top bar of the
+            // screen being left is already gone and the dashboard's header showed alone over it.
+            popEnterTransition = {
+                if (targetState.destination.route == Screen.Dashboard.route) EnterTransition.None
+                else fadeIn(tween(NavFadeMillis))
+            },
+            popExitTransition = {
+                if (targetState.destination.route == Screen.Dashboard.route) ExitTransition.None
+                else fadeOut(tween(NavFadeMillis))
+            },
             // The back gesture has its own pair, and its default shrinks the
             // leaving screen to 70% over the one behind.
-            predictivePopEnterTransition = { _ -> fadeIn(tween(NavFadeMillis)) },
-            predictivePopExitTransition = { _ -> fadeOut(tween(NavFadeMillis)) },
+            predictivePopEnterTransition = { _ ->
+                if (targetState.destination.route == Screen.Dashboard.route) EnterTransition.None
+                else fadeIn(tween(NavFadeMillis))
+            },
+            predictivePopExitTransition = { _ ->
+                if (targetState.destination.route == Screen.Dashboard.route) ExitTransition.None
+                else fadeOut(tween(NavFadeMillis))
+            },
         ) {
             composable(Screen.Onboarding.route) {
                 val onboardingViewModel = hiltViewModel<OnboardingViewModel>()

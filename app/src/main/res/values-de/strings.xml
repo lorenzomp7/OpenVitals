@@ -3815,4 +3815,10 @@
     <string name="user_profile_view_photo">Ansehen</string>
     <string name="user_profile_change_photo">Ändern</string>
     <string name="dashboard_save_changes">Änderungen am Dashboard speichern?</string>
+    <string name="activity_heart_rate_access_missing">Erlaube OpenVitals, die Herzfrequenz zu lesen, um das BPM-Diagramm dieser Einheit zu sehen.</string>
+    <string name="settings_online_maps_mapbox_title">Online-Karten - Mapbox</string>
+    <string name="settings_online_maps_status">Status: %1$s</string>
+    <string name="settings_online_maps_disconnected">Getrennt</string>
+    <string name="settings_online_maps_touch_to_disconnect">Hier tippen, um die Verbindung zu trennen</string>
+    <string name="mapbox_login_body_short">Melde dich im Browser an, um Trainingskarten zu aktivieren. Das öffentliche Karten-Token bleibt auf diesem Telefon.</string>
 </resources>

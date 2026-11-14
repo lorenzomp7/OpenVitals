@@ -150,4 +150,10 @@
     <string name="user_profile_view_photo">הצגה</string>
     <string name="user_profile_change_photo">שינוי</string>
     <string name="dashboard_save_changes">לשמור את השינויים בלוח הבקרה?</string>
+    <string name="activity_heart_rate_access_missing">אפשרו ל-OpenVitals לקרוא את קצב הלב כדי לראות את תרשים הדופק של האימון.</string>
+    <string name="settings_online_maps_mapbox_title">מפות מקוונות - Mapbox</string>
+    <string name="settings_online_maps_status">מצב: %1$s</string>
+    <string name="settings_online_maps_disconnected">מנותק</string>
+    <string name="settings_online_maps_touch_to_disconnect">געו כאן כדי להתנתק</string>
+    <string name="mapbox_login_body_short">התחברו בדפדפן כדי להפעיל מפות אימון. אסימון המפה הציבורי נשאר בטלפון הזה.</string>
 </resources>

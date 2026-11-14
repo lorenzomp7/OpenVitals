@@ -1,5 +1,13 @@
 package tech.mmarca.openvitals.features.dashboard
 
+import androidx.compose.animation.core.VectorConverter
+import kotlinx.coroutines.launch
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.getValue
+import androidx.compose.foundation.layout.offset
+import androidx.compose.ui.layout.positionInParent
+import androidx.compose.ui.layout.onPlaced
+import androidx.compose.ui.composed
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -215,7 +223,7 @@ internal fun DashboardPlacedTileGrid(
         modifier = modifier,
         content = {
             placements.forEach { placement ->
-                androidx.compose.runtime.key(placement.id) { Box { tile(placement) } }
+                androidx.compose.runtime.key(placement.id) { Box(Modifier.animateTilePlacement()) { tile(placement) } }
             }
         },
     ) { measurables, constraints ->
@@ -351,4 +359,37 @@ private fun DashboardLargeTile(ring: DashboardHeroRing, details: List<String>) {
             }
         }
     }
+}
+
+/** Slides a tile from its old place to its new one when the grid reflows, instead of jumping. */
+private fun Modifier.animateTilePlacement(): Modifier = composed {
+    val scope = androidx.compose.runtime.rememberCoroutineScope()
+    var target by androidx.compose.runtime.remember { androidx.compose.runtime.mutableStateOf<androidx.compose.ui.unit.IntOffset?>(null) }
+    val animatable = androidx.compose.runtime.remember {
+        androidx.compose.runtime.mutableStateOf<androidx.compose.animation.core.Animatable<androidx.compose.ui.unit.IntOffset, androidx.compose.animation.core.AnimationVector2D>?>(null)
+    }
+    this
+        .onPlaced { coordinates ->
+            val position = coordinates.positionInParent()
+            target = androidx.compose.ui.unit.IntOffset(position.x.toInt(), position.y.toInt())
+        }
+        .offset {
+            val goal = target ?: return@offset androidx.compose.ui.unit.IntOffset.Zero
+            val anim = animatable.value ?: androidx.compose.animation.core.Animatable(
+                goal,
+                androidx.compose.ui.unit.IntOffset.VectorConverter,
+            ).also { animatable.value = it }
+            if (anim.targetValue != goal) {
+                scope.launch {
+                    anim.animateTo(
+                        goal,
+                        androidx.compose.animation.core.spring(
+                            dampingRatio = androidx.compose.animation.core.Spring.DampingRatioNoBouncy,
+                            stiffness = androidx.compose.animation.core.Spring.StiffnessMediumLow,
+                        ),
+                    )
+                }
+            }
+            anim.value - goal
+        }
 }

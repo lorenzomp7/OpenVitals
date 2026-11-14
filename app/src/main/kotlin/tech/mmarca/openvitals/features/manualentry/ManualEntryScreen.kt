@@ -1,5 +1,6 @@
 package tech.mmarca.openvitals.features.manualentry
 
+import tech.mmarca.openvitals.ui.theme.Spacing
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -135,8 +136,9 @@ fun ManualEntryScreen(
 
     LazyColumn(contentPadding = PaddingValues(vertical = 8.dp)) {
         item(key = "screenshot_import") {
+                // 61: the grid's own gutter and gap: 12 dp at the sides, 4 + 4 dp to the first row.
                 tech.mmarca.openvitals.features.imports.screenshot.ScreenshotImportCard(
-                    modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+                    modifier = Modifier.fillMaxWidth().padding(horizontal = Spacing.md, vertical = Spacing.xs),
                 )
             }
             item {

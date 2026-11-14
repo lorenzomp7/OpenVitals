@@ -3,7 +3,9 @@ package tech.mmarca.openvitals.features.imports.screenshot
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.material.icons.outlined.AddPhotoAlternate
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -18,16 +20,53 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kotlinx.coroutines.launch
 import tech.mmarca.openvitals.R
 import tech.mmarca.openvitals.features.manualentry.rememberManualEntryWritePermissionRequester
+import tech.mmarca.openvitals.ui.theme.LayoutMetrics
 import tech.mmarca.openvitals.ui.theme.Spacing
 
+/**
+ * 51, 61: a "+ log" tile, styled like the others. A tap opens the image
+ * picker at once; the review opens only with a picked image.
+ */
 @Composable
 internal fun ScreenshotImportCard(modifier: Modifier = Modifier) {
-    var open by rememberSaveable { mutableStateOf(false) }
-    OutlinedCard(modifier) {
-        TextButton(onClick = { open = true }) { Text(stringResource(R.string.screenshot_import_title)) }
+    var pickedUri by rememberSaveable { mutableStateOf<Uri?>(null) }
+    val picker = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument()) { uri ->
+        if (uri != null) pickedUri = uri
     }
-    if (open) ScreenshotImportDialog(onDismiss = { open = false })
+    tech.mmarca.openvitals.ui.components.OpenVitalsCard(
+        modifier = modifier
+            .fillMaxWidth()
+            .clickable { picker.launch(arrayOf("image/*")) },
+        style = tech.mmarca.openvitals.ui.components.OpenVitalsCardStyle.Accent,
+        accentColor = ScreenshotImportAccent,
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .heightIn(min = LayoutMetrics.minTouchTarget)
+                .padding(horizontal = Spacing.md, vertical = Spacing.sm),
+            verticalAlignment = androidx.compose.ui.Alignment.CenterVertically,
+        ) {
+            Icon(
+                imageVector = androidx.compose.material.icons.Icons.Outlined.AddPhotoAlternate,
+                contentDescription = null,
+                tint = ScreenshotImportAccent.copy(alpha = 0.75f),
+                modifier = Modifier.size(Spacing.lg + Spacing.sm),
+            )
+            Text(
+                text = stringResource(R.string.screenshot_import_title),
+                style = MaterialTheme.typography.labelMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.padding(start = Spacing.md),
+            )
+        }
+    }
+    pickedUri?.let { uri ->
+        ScreenshotImportDialog(onDismiss = { pickedUri = null }, initialUri = uri)
+    }
 }
+
+private val ScreenshotImportAccent = androidx.compose.ui.graphics.Color(0xFF4285F4)
 
 @Composable
 internal fun ScreenshotImportDialog(onDismiss: () -> Unit, initialUri: Uri? = null, viewModel: ScreenshotImportViewModel = hiltViewModel()) {
@@ -36,8 +75,15 @@ internal fun ScreenshotImportDialog(onDismiss: () -> Unit, initialUri: Uri? = nu
     var end by rememberSaveable { mutableStateOf("") }
     var confirmed by rememberSaveable { mutableStateOf(false) }
     val scope = rememberCoroutineScope()
-    val requester = rememberManualEntryWritePermissionRequester {
-        scope.launch { viewModel.refreshWritePermissions(showDenied = true) }
+    val context = androidx.compose.ui.platform.LocalContext.current
+    var requested by remember { mutableStateOf<Set<String>>(emptySet()) }
+    // 46: Android stops showing the Health Connect dialog after repeated denials and answers
+    // at once with nothing. Then OpenVitals' own page in Health Connect is the way to grant.
+    val requester = rememberManualEntryWritePermissionRequester { granted ->
+        if (!granted.containsAll(requested)) {
+            tech.mmarca.openvitals.healthconnect.openHealthConnectPermissionSettings(context)
+        }
+        scope.launch { viewModel.refreshWritePermissions() }
     }
     LaunchedEffect(state.values.map { it.kind }) { viewModel.refreshWritePermissions() }
     androidx.lifecycle.compose.LifecycleEventEffect(androidx.lifecycle.Lifecycle.Event.ON_RESUME) {
@@ -62,20 +108,30 @@ internal fun ScreenshotImportDialog(onDismiss: () -> Unit, initialUri: Uri? = nu
             scope.launch {
                 try {
                     val missing = viewModel.missingWritePermissions()
-                    if (missing.isNotEmpty()) requester.launch(missing)
-                    else viewModel.refreshWritePermissions()
+                    if (missing.isNotEmpty()) {
+                        requested = missing
+                        requester.launch(missing)
+                    } else {
+                        viewModel.refreshWritePermissions()
+                    }
                 } catch (error: Exception) {
                     if (error is kotlinx.coroutines.CancellationException) throw error
-                    viewModel.permissionScreenFailed()
+                    if (!tech.mmarca.openvitals.healthconnect.openHealthConnectPermissionSettings(context)) {
+                        viewModel.permissionScreenFailed()
+                    }
                 }
             }
         },
         onSave = { viewModel.save(start, end) }, onClose = onDismiss,
     )
-    Dialog(onDismissRequest = { if (!state.busy) onDismiss() }, properties = DialogProperties(usePlatformDefaultWidth = false)) {
+    // 58: a full screen with the back arrow on top, like every other menu.
+    Dialog(
+        onDismissRequest = { if (!state.busy) onDismiss() },
+        properties = DialogProperties(usePlatformDefaultWidth = false, decorFitsSystemWindows = false),
+    ) {
         Surface(
-            modifier = Modifier.padding(Spacing.lg).fillMaxWidth().heightIn(max = LocalConfiguration.current.screenHeightDp.dp * 0.9f),
-            shape = MaterialTheme.shapes.large,
+            modifier = Modifier.fillMaxSize(),
+            color = MaterialTheme.colorScheme.background,
         ) { ScreenshotImportContent(state, start, end, confirmed, actions) }
     }
 }

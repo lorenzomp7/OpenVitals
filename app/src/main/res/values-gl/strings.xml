@@ -3886,4 +3886,10 @@ Se Acceder a rutas de exercicio non aparece no diálogo de acceso, abre os axust
     <string name="user_profile_view_photo">Ver</string>
     <string name="user_profile_change_photo">Cambiar</string>
     <string name="dashboard_save_changes">Gardar os cambios do panel?</string>
+    <string name="activity_heart_rate_access_missing">Permite que OpenVitals lea a frecuencia cardíaca para ver o gráfico de BPM desta sesión.</string>
+    <string name="settings_online_maps_mapbox_title">Mapas en liña - Mapbox</string>
+    <string name="settings_online_maps_status">Estado: %1$s</string>
+    <string name="settings_online_maps_disconnected">Desconectado</string>
+    <string name="settings_online_maps_touch_to_disconnect">Toca aquí para desconectar</string>
+    <string name="mapbox_login_body_short">Inicia sesión no navegador para activar os mapas de adestramento. O token público queda neste teléfono.</string>
 </resources>

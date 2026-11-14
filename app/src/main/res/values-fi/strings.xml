@@ -3815,4 +3815,10 @@
     <string name="user_profile_view_photo">Näytä</string>
     <string name="user_profile_change_photo">Vaihda</string>
     <string name="dashboard_save_changes">Tallennetaanko koontinäytön muutokset?</string>
+    <string name="activity_heart_rate_access_missing">Salli OpenVitalsin lukea syke nähdäksesi tämän harjoituksen BPM-kaavion.</string>
+    <string name="settings_online_maps_mapbox_title">Verkkokartat - Mapbox</string>
+    <string name="settings_online_maps_status">Tila: %1$s</string>
+    <string name="settings_online_maps_disconnected">Ei yhdistetty</string>
+    <string name="settings_online_maps_touch_to_disconnect">Katkaise yhteys napauttamalla tästä</string>
+    <string name="mapbox_login_body_short">Kirjaudu selaimessa ottaaksesi harjoituskartat käyttöön. Julkinen karttatunnus pysyy tässä puhelimessa.</string>
 </resources>

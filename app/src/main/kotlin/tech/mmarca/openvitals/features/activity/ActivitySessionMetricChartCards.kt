@@ -24,6 +24,7 @@ import tech.mmarca.openvitals.R
 import tech.mmarca.openvitals.core.presentation.UnitFormatter
 import tech.mmarca.openvitals.domain.insights.SplitSource
 import tech.mmarca.openvitals.domain.model.ActivityCadenceKind
+import tech.mmarca.openvitals.domain.model.ActivityCalorieSample
 import tech.mmarca.openvitals.domain.model.ActivityCadenceSample
 import tech.mmarca.openvitals.domain.model.SpeedSample
 import tech.mmarca.openvitals.ui.components.ChartXAxisWithYAxis
@@ -35,6 +36,7 @@ import tech.mmarca.openvitals.ui.components.SessionAxis
 import tech.mmarca.openvitals.ui.components.SessionAxisLabels
 import tech.mmarca.openvitals.ui.components.SessionPause
 import tech.mmarca.openvitals.ui.components.formatElapsedChartLabel
+import tech.mmarca.openvitals.ui.theme.CaloriesColor
 import tech.mmarca.openvitals.ui.theme.CycleColor
 import tech.mmarca.openvitals.ui.theme.DistanceColor
 import tech.mmarca.openvitals.ui.theme.ElevationColor
@@ -49,7 +51,7 @@ internal fun ActivitySpeedChartCard(
     modifier: Modifier = Modifier,
     pauses: List<SessionPause> = emptyList(),
 ) {
-    if (samples.isEmpty()) return
+    if (!hasMeaningfulSpeed(samples)) return
 
     ActivitySessionMetricChartCard(
         title = stringResource(R.string.activity_recording_live_speed),
@@ -119,6 +121,54 @@ internal fun ActivitySplitSpeedChartCard(
  * The height profile. Health Connect has no elevation series, so this is
  * drawn from the route's altitudes. No route or altitude, no card.
  */
+/**
+ * Energy burned over the session, as a running total. The stats are the
+ * total and the mean burn rate; an average of a running total says nothing.
+ */
+@Composable
+internal fun ActivityCaloriesChartCard(
+    samples: List<ActivityCalorieSample>,
+    sessionStart: Instant,
+    sessionEnd: Instant,
+    unitFormatter: UnitFormatter,
+    modifier: Modifier = Modifier,
+    pauses: List<SessionPause> = emptyList(),
+) {
+    if (!hasMeaningfulCalories(samples)) return
+    val total = samples.last().cumulativeKcal
+    val minutes = java.time.Duration.between(samples.first().time, samples.last().time).seconds / 60.0
+    val rate = if (minutes > 0.0) total / minutes else 0.0
+    val title = if (samples.first().active) {
+        stringResource(R.string.metric_active_calories)
+    } else {
+        stringResource(R.string.metric_calories_burned)
+    }
+    ActivitySessionMetricChartCard(
+        title = title,
+        sortedValues = remember(samples) { samples.map { it.time to it.cumulativeKcal } },
+        sessionStart = sessionStart,
+        sessionEnd = sessionEnd,
+        unitFormatter = unitFormatter,
+        accentColor = CaloriesColor,
+        valueFormatter = { unitFormatter.energy(it).text },
+        statsOverride = listOf(
+            stringResource(R.string.stat_total) to unitFormatter.energy(total).text,
+            stringResource(R.string.summary_average) to
+                String.format(java.util.Locale.getDefault(), "%.1f kcal/min", rate),
+        ),
+        modifier = modifier,
+        pauses = pauses,
+    )
+}
+
+/** Energy worth charting: some was burned. */
+internal fun hasMeaningfulCalories(samples: List<ActivityCalorieSample>): Boolean =
+    samples.size >= 2 && samples.last().cumulativeKcal >= 1.0
+
+/** Speed worth charting: at least one sample moved. A trainer without a wheel sensor writes zeros. */
+internal fun hasMeaningfulSpeed(samples: List<SpeedSample>): Boolean =
+    samples.any { it.metersPerSecond.isFinite() && it.metersPerSecond > 0.05 }
+
 @Composable
 internal fun ActivityElevationChartCard(
     samples: List<ActivityElevationSample>,
@@ -155,7 +205,8 @@ internal fun ActivityCadenceChartCard(
     pauses: List<SessionPause> = emptyList(),
 ) {
     val filtered = remember(samples, kind) { samples.filter { it.kind == kind } }
-    if (filtered.isEmpty()) return
+    // All zeros is a sensor that was not there, not a cadence.
+    if (filtered.none { it.rate > 0.0 }) return
 
     val title = when (kind) {
         ActivityCadenceKind.CYCLING -> stringResource(R.string.metric_cycling_cadence)
@@ -202,6 +253,8 @@ private fun ActivitySessionMetricChartCard(
     countLabel: String? = null,
     averageOverride: Double? = null,
     pauses: List<SessionPause> = emptyList(),
+    // Label to value; replaces the average, range and sample stats when set.
+    statsOverride: List<Pair<String, String>>? = null,
 ) {
     if (sortedValues.isEmpty()) return
 
@@ -209,7 +262,9 @@ private fun ActivitySessionMetricChartCard(
     val minValue = remember(sortedValues) { sortedValues.minOf { it.second } }
     val maxValue = remember(sortedValues) { sortedValues.maxOf { it.second } }
     val avgValue = averageOverride ?: remember(sortedValues) { sortedValues.map { it.second }.average() }
-    val valueRange = (maxValue - minValue).coerceAtLeast(0.001)
+    // A flat trace still needs a readable axis: give it room around its value.
+    val valueRange = (maxValue - minValue).takeIf { it > 1e-6 }
+        ?: maxOf(kotlin.math.abs(maxValue) * 0.2, 1.0)
     val paddedMin = (minValue - valueRange * 0.1).let { if (floorAtZero) it.coerceAtLeast(0.0) else it }
     val paddedMax = maxValue + valueRange * 0.1
     // The axis counts only moving time: a pause gets none of the chart.
@@ -237,7 +292,21 @@ private fun ActivitySessionMetricChartCard(
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold,
             )
-            Row(
+            if (statsOverride != null) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(16.dp),
+                ) {
+                    statsOverride.forEach { (label, value) ->
+                        ActivitySessionMetricStat(
+                            label = label,
+                            value = value,
+                            accentColor = accentColor,
+                            modifier = Modifier.weight(1f),
+                        )
+                    }
+                }
+            } else Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(16.dp),
             ) {
