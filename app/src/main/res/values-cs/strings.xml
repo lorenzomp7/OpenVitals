@@ -3887,4 +3887,9 @@
     <string name="settings_online_maps_disconnected">Odpojeno</string>
     <string name="settings_online_maps_touch_to_disconnect">Klepnutím sem odpojíte</string>
     <string name="mapbox_login_body_short">Přihlaste se v prohlížeči a zapněte mapy tréninků. Veřejný token zůstane v tomto telefonu.</string>
+    <string name="metric_sections_save_changes">Uložit změny rozvržení?</string>
+    <string name="activity_calories_per_interval_title">Spálené kalorie každé %1$d min</string>
+    <string name="activity_calories_peak">Špička</string>
+    <string name="activity_calories_from_heart_rate">Odhadnuto z tepové frekvence a z hmotnosti, věku a pohlaví v tělesném profilu.</string>
+    <string name="activity_calories_from_recorded">Z kalorií zaznamenaných aplikacemi. Přidejte do tělesného profilu hmotnost a věk pro odhad z tepové frekvence.</string>
 </resources>

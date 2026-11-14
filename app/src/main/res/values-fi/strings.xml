@@ -3821,4 +3821,9 @@
     <string name="settings_online_maps_disconnected">Ei yhdistetty</string>
     <string name="settings_online_maps_touch_to_disconnect">Katkaise yhteys napauttamalla tästä</string>
     <string name="mapbox_login_body_short">Kirjaudu selaimessa ottaaksesi harjoituskartat käyttöön. Julkinen karttatunnus pysyy tässä puhelimessa.</string>
+    <string name="metric_sections_save_changes">Tallennetaanko asettelun muutokset?</string>
+    <string name="activity_calories_per_interval_title">Kulutetut kalorit %1$d min välein</string>
+    <string name="activity_calories_peak">Huippu</string>
+    <string name="activity_calories_from_heart_rate">Arvioitu sykkeestä sekä kehoprofiilin painosta, iästä ja sukupuolesta.</string>
+    <string name="activity_calories_from_recorded">Sovellusten tallentamista kaloreista. Lisää paino ja ikä kehoprofiiliin, niin ne arvioidaan sykkeestä.</string>
 </resources>

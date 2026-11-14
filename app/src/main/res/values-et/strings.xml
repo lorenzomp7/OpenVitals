@@ -3821,4 +3821,9 @@
     <string name="settings_online_maps_disconnected">Ühendus katkestatud</string>
     <string name="settings_online_maps_touch_to_disconnect">Puuduta siin, et ühendus katkestada</string>
     <string name="mapbox_login_body_short">Logi brauseris sisse, et lubada treeningkaardid. Avalik kaardivõti jääb sellesse telefoni.</string>
+    <string name="metric_sections_save_changes">Kas salvestada paigutuse muudatused?</string>
+    <string name="activity_calories_per_interval_title">Põletatud kalorid iga %1$d min järel</string>
+    <string name="activity_calories_peak">Tipp</string>
+    <string name="activity_calories_from_heart_rate">Hinnatud pulsi ning kehaprofiili kaalu, vanuse ja soo põhjal.</string>
+    <string name="activity_calories_from_recorded">Rakenduste salvestatud kalorite põhjal. Lisa kehaprofiili kaal ja vanus, et hinnata neid pulsi järgi.</string>
 </resources>

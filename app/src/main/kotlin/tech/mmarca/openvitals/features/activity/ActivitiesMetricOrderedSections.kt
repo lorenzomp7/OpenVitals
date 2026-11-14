@@ -123,7 +123,6 @@ internal fun LazyListScope.renderActivitiesOrderedContent(
             MetricDetailSectionId.ACTIVITY_SUMMARY,
             state.workouts.isNotEmpty() ||
                 sortedOverviewDays.isNotEmpty() ||
-                state.plannedWorkouts.isNotEmpty() ||
                 !state.isLoading,
         ) {
             Column(modifier = Modifier.fillMaxWidth()) {
@@ -158,15 +157,7 @@ internal fun LazyListScope.renderActivitiesOrderedContent(
                         unitFormatter = unitFormatter,
                     )
                 }
-                if (state.plannedWorkouts.isNotEmpty() || state.plannedWorkoutsAvailable) {
-                    PlannedWorkoutListCard(
-                        plannedWorkouts = state.plannedWorkouts,
-                        unitFormatter = unitFormatter,
-                        dateTimeFormatterProvider = dateTimeFormatterProvider,
-                        onStartPlannedWorkout = onStartPlannedWorkout,
-                        onManageWorkoutPlans = onManageWorkoutPlans,
-                    )
-                }
+                // 65: no planned workouts in the activities screen; plans live under Workout plans.
             }
         }
         section(

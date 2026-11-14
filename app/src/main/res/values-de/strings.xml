@@ -3821,4 +3821,9 @@
     <string name="settings_online_maps_disconnected">Getrennt</string>
     <string name="settings_online_maps_touch_to_disconnect">Hier tippen, um die Verbindung zu trennen</string>
     <string name="mapbox_login_body_short">Melde dich im Browser an, um Trainingskarten zu aktivieren. Das öffentliche Karten-Token bleibt auf diesem Telefon.</string>
+    <string name="metric_sections_save_changes">Layoutänderungen speichern?</string>
+    <string name="activity_calories_per_interval_title">Kalorienverbrauch alle %1$d Min.</string>
+    <string name="activity_calories_peak">Spitze</string>
+    <string name="activity_calories_from_heart_rate">Geschätzt aus Herzfrequenz sowie Gewicht, Alter und Geschlecht im Körperprofil.</string>
+    <string name="activity_calories_from_recorded">Aus den von deinen Apps erfassten Kalorien. Gib Gewicht und Alter im Körperprofil an, um sie aus der Herzfrequenz zu schätzen.</string>
 </resources>

@@ -156,4 +156,9 @@
     <string name="settings_online_maps_disconnected">غير متصل</string>
     <string name="settings_online_maps_touch_to_disconnect">المس هنا لقطع الاتصال</string>
     <string name="mapbox_login_body_short">سجّل الدخول من المتصفح لتفعيل خرائط التمارين. يبقى رمز الخريطة العام على هذا الهاتف.</string>
+    <string name="metric_sections_save_changes">هل تريد حفظ تغييرات التخطيط؟</string>
+    <string name="activity_calories_per_interval_title">السعرات المحروقة كل %1$d دقيقة</string>
+    <string name="activity_calories_peak">الذروة</string>
+    <string name="activity_calories_from_heart_rate">تقدير من معدل ضربات القلب والوزن والعمر والجنس في ملفك الجسدي.</string>
+    <string name="activity_calories_from_recorded">من السعرات التي سجلتها تطبيقاتك. أضف الوزن والعمر إلى ملفك الجسدي لتقديرها من نبض القلب.</string>
 </resources>

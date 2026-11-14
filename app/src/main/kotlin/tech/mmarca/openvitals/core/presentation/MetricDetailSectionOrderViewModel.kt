@@ -23,8 +23,31 @@ class MetricDetailSectionOrderViewModel @Inject constructor(
     private val _isEditingSections = MutableStateFlow(false)
     val isEditingSections: StateFlow<Boolean> = _isEditingSections.asStateFlow()
 
+    /** The order before editing began; moves made while editing are a draft until Save. */
+    private var orderBeforeEdit: List<MetricDetailSectionId>? = null
+
+    /** Starts editing; while editing, the toggle asks Save or Discard (see [finishSectionEdit]). */
     fun toggleSectionEdit() {
-        _isEditingSections.value = !_isEditingSections.value
+        if (_isEditingSections.value) {
+            finishSectionEdit(save = true)
+        } else {
+            orderBeforeEdit = _sectionOrder.value
+            _isEditingSections.value = true
+        }
+    }
+
+    /** 67: ends editing like the dashboard does: Save keeps the new order, Discard puts the old one back. */
+    fun finishSectionEdit(save: Boolean) {
+        val before = orderBeforeEdit
+        orderBeforeEdit = null
+        _isEditingSections.value = false
+        if (save) {
+            if (before != _sectionOrder.value) {
+                widgetOrder.setMetricDetailSectionOrder(_sectionOrder.value.map { it.name })
+            }
+        } else if (before != null) {
+            _sectionOrder.value = before
+        }
     }
 
     fun moveSectionToTarget(sectionId: MetricDetailSectionId, targetSectionId: MetricDetailSectionId) {
@@ -58,7 +81,8 @@ class MetricDetailSectionOrderViewModel @Inject constructor(
     }
 
     private fun updateSectionOrder(order: List<MetricDetailSectionId>) {
-        widgetOrder.setMetricDetailSectionOrder(order.map { it.name })
+        // While editing, the order is a draft that only Save writes.
+        if (!_isEditingSections.value) widgetOrder.setMetricDetailSectionOrder(order.map { it.name })
         _sectionOrder.value = order
     }
 }

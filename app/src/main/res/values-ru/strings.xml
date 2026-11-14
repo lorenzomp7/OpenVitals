@@ -3888,4 +3888,9 @@
     <string name="settings_online_maps_disconnected">Отключено</string>
     <string name="settings_online_maps_touch_to_disconnect">Нажмите здесь, чтобы отключить</string>
     <string name="mapbox_login_body_short">Войдите в браузере, чтобы включить карты тренировок. Публичный токен остаётся на этом телефоне.</string>
+    <string name="metric_sections_save_changes">Сохранить изменения макета?</string>
+    <string name="activity_calories_per_interval_title">Сожжённые калории каждые %1$d мин</string>
+    <string name="activity_calories_peak">Пик</string>
+    <string name="activity_calories_from_heart_rate">Оценка по пульсу, а также весу, возрасту и полу из профиля тела.</string>
+    <string name="activity_calories_from_recorded">По калориям, записанным приложениями. Добавьте вес и возраст в профиль тела, чтобы оценивать их по пульсу.</string>
 </resources>

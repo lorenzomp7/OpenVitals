@@ -105,4 +105,25 @@ class MetricDetailSectionOrderViewModelTest {
 
         assertEquals(DefaultMetricDetailSectionOrder, viewModel.sectionOrder.value)
     }
+
+    @Test
+    fun editing_isADraftThatDiscardRestoresAndSaveWrites() {
+        val prefs = mockk<WidgetOrderPreferences>(relaxed = true) {
+            every { metricDetailSectionOrder() } returns null
+        }
+        val viewModel = MetricDetailSectionOrderViewModel(prefs)
+        val original = viewModel.sectionOrder.value
+
+        viewModel.toggleSectionEdit()
+        viewModel.moveSection(original.last(), -1)
+        verify(exactly = 0) { prefs.setMetricDetailSectionOrder(any()) }
+        viewModel.finishSectionEdit(save = false)
+        assertEquals(original, viewModel.sectionOrder.value)
+        assertFalse(viewModel.isEditingSections.value)
+
+        viewModel.toggleSectionEdit()
+        viewModel.moveSection(original.last(), -1)
+        viewModel.finishSectionEdit(save = true)
+        verify(exactly = 1) { prefs.setMetricDetailSectionOrder(viewModel.sectionOrder.value.map { it.name }) }
+    }
 }

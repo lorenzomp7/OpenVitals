@@ -3822,4 +3822,9 @@
     <string name="settings_online_maps_disconnected">未连接</string>
     <string name="settings_online_maps_touch_to_disconnect">点按此处断开连接</string>
     <string name="mapbox_login_body_short">在浏览器中登录以启用运动地图。公共地图令牌保存在此手机上。</string>
+    <string name="metric_sections_save_changes">保存布局更改？</string>
+    <string name="activity_calories_per_interval_title">每 %1$d 分钟消耗的卡路里</string>
+    <string name="activity_calories_peak">峰值</string>
+    <string name="activity_calories_from_heart_rate">根据心率以及身体资料中的体重、年龄和性别估算。</string>
+    <string name="activity_calories_from_recorded">来自应用记录的卡路里。在身体资料中添加体重和年龄即可根据心率估算。</string>
 </resources>

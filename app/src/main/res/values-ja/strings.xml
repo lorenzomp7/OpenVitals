@@ -3889,4 +3889,9 @@
     <string name="settings_online_maps_disconnected">未接続</string>
     <string name="settings_online_maps_touch_to_disconnect">ここをタップして接続を解除</string>
     <string name="mapbox_login_body_short">ブラウザでサインインするとワークアウトの地図が有効になります。公開トークンはこのスマートフォンに保存されます。</string>
+    <string name="metric_sections_save_changes">レイアウトの変更を保存しますか？</string>
+    <string name="activity_calories_per_interval_title">%1$d 分ごとの消費カロリー</string>
+    <string name="activity_calories_peak">ピーク</string>
+    <string name="activity_calories_from_heart_rate">心拍数と、身体プロフィールの体重・年齢・性別から推定しています。</string>
+    <string name="activity_calories_from_recorded">アプリが記録したカロリーから。身体プロフィールに体重と年齢を入れると心拍数から推定します。</string>
 </resources>

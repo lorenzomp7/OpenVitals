@@ -36,7 +36,6 @@ import tech.mmarca.openvitals.core.presentation.resolve
 import tech.mmarca.openvitals.domain.insights.ActivitySplits
 import tech.mmarca.openvitals.domain.insights.HeartRateRecoveryReading
 import tech.mmarca.openvitals.domain.model.ActivityCadenceSample
-import tech.mmarca.openvitals.domain.model.ActivityCalorieSample
 import tech.mmarca.openvitals.domain.model.ActivityRecordingMarker
 import tech.mmarca.openvitals.domain.model.CoMapsNavigationSnapshot
 import tech.mmarca.openvitals.domain.model.ExerciseData
@@ -211,7 +210,7 @@ internal fun ActivityDetailScreen(
             heartRateRecovery = state.heartRateRecovery,
             speedSamples = state.speedSamples,
             cadenceSamples = state.cadenceSamples,
-            calorieSamples = state.calorieSamples,
+            sessionCalories = state.sessionCalories,
             heartRateAccessMissing = state.heartRateAccessMissing,
             onGrantHeartRate = {
                 heartRatePermissionLauncher.launch(
@@ -271,7 +270,7 @@ internal fun ActivityDetailContent(
     speedSamples: List<SpeedSample>,
     cadenceSamples: List<ActivityCadenceSample>,
     markers: List<ActivityRecordingMarker>,
-    calorieSamples: List<ActivityCalorieSample> = emptyList(),
+    sessionCalories: tech.mmarca.openvitals.domain.insights.SessionCalories? = null,
     heartRateAccessMissing: Boolean = false,
     onGrantHeartRate: () -> Unit = {},
     coMapsSamples: List<CoMapsNavigationSnapshot> = emptyList(),
@@ -374,13 +373,12 @@ internal fun ActivityDetailContent(
                 )
             }
         }
-        if (hasMeaningfulCalories(calorieSamples)) {
-            item {
-                ActivityCaloriesChartCard(
-                    samples = calorieSamples,
+        sessionCalories?.let { calories ->
+            item(key = "session-calories") {
+                ActivityCaloriesBarChartCard(
+                    calories = calories,
                     sessionStart = workout.startTime,
                     sessionEnd = workout.endTime,
-                    pauses = workout.segments.toSessionPauses(),
                     unitFormatter = unitFormatter,
                     modifier = Modifier
                         .fillMaxWidth()

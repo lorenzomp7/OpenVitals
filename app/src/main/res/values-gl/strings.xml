@@ -3892,4 +3892,9 @@ Se Acceder a rutas de exercicio non aparece no diálogo de acceso, abre os axust
     <string name="settings_online_maps_disconnected">Desconectado</string>
     <string name="settings_online_maps_touch_to_disconnect">Toca aquí para desconectar</string>
     <string name="mapbox_login_body_short">Inicia sesión no navegador para activar os mapas de adestramento. O token público queda neste teléfono.</string>
+    <string name="metric_sections_save_changes">Gardar os cambios do deseño?</string>
+    <string name="activity_calories_per_interval_title">Calorías queimadas cada %1$d min</string>
+    <string name="activity_calories_peak">Pico</string>
+    <string name="activity_calories_from_heart_rate">Estimadas a partir da frecuencia cardíaca e do peso, idade e sexo do teu perfil corporal.</string>
+    <string name="activity_calories_from_recorded">Das calorías rexistradas polas túas apps. Engade peso e idade ao perfil corporal para estimalas pola frecuencia cardíaca.</string>
 </resources>

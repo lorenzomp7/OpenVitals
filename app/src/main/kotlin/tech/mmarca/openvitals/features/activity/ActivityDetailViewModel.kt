@@ -57,6 +57,9 @@ internal data class ActivityDetailUiState(
     /** Running energy total over the session; empty without calorie data. */
     val calorieSamples: List<ActivityCalorieSample> = emptyList(),
 
+    /** 64: energy per slice of the session, from heart rate when it can be, else from recorded calories. */
+    val sessionCalories: tech.mmarca.openvitals.domain.insights.SessionCalories? = null,
+
     /** Heart rate cannot be read: the chart slot offers the grant instead. */
     val heartRateAccessMissing: Boolean = false,
     val markers: List<ActivityRecordingMarker> = emptyList(),
@@ -200,7 +203,17 @@ internal class ActivityDetailViewModel @Inject constructor(
             val recovery = heartRateRecovery.await()
             val plan = linkedPlan.await()
             // Backfill, height profile and splits walk every sample.
+            val profile = runCatchingCancellable { bodyProfilePreferences.bodyProfile() }.getOrNull()
             withContext(dispatchers.default) {
+                val sessionCalories = tech.mmarca.openvitals.domain.insights.sessionCalories(
+                    start = workout.startTime,
+                    end = workout.endTime,
+                    heartRate = heartRate,
+                    recorded = calories,
+                    weightKg = profile?.weightKg,
+                    ageYears = profile?.ageYears(),
+                    sex = profile?.sex,
+                )
                 val backfilledWorkout = workout.withSampleBackfilledMetrics(
                     heartRateSamples = heartRate,
                     speedSamples = speed,
@@ -213,6 +226,7 @@ internal class ActivityDetailViewModel @Inject constructor(
                     speedSamples = speed,
                     cadenceSamples = cadence,
                     calorieSamples = calories,
+                    sessionCalories = sessionCalories,
                     heartRateAccessMissing = heartRate.isEmpty() && !hasHeartRateAccess,
                     markers = loadedMarkers,
                     coMapsSamples = loadedCoMapsSamples,

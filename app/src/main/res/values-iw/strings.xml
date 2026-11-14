@@ -156,4 +156,9 @@
     <string name="settings_online_maps_disconnected">מנותק</string>
     <string name="settings_online_maps_touch_to_disconnect">געו כאן כדי להתנתק</string>
     <string name="mapbox_login_body_short">התחברו בדפדפן כדי להפעיל מפות אימון. אסימון המפה הציבורי נשאר בטלפון הזה.</string>
+    <string name="metric_sections_save_changes">לשמור את השינויים בפריסה?</string>
+    <string name="activity_calories_per_interval_title">קלוריות שנשרפו כל %1$d דק׳</string>
+    <string name="activity_calories_peak">שיא</string>
+    <string name="activity_calories_from_heart_rate">הערכה לפי הדופק ולפי המשקל, הגיל והמין בפרופיל הגוף.</string>
+    <string name="activity_calories_from_recorded">לפי הקלוריות שהאפליקציות רשמו. הוסיפו משקל וגיל לפרופיל הגוף כדי להעריך אותן לפי הדופק.</string>
 </resources>

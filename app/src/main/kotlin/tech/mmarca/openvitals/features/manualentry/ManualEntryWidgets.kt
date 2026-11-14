@@ -482,6 +482,9 @@ internal fun ManualEntryMetricTile(
                     Modifier
                 }
             ),
+        // 66: under AMOLED the shared accent tint (9% over black) left the log grid dim; these
+        // tiles take a stronger wash, a full-strength icon and a primary label.
+        containerColor = manualEntryTileContainer(accentColor),
         style = OpenVitalsCardStyle.Accent,
         accentColor = accentColor,
     ) {
@@ -494,18 +497,29 @@ internal fun ManualEntryMetricTile(
             Icon(
                 imageVector = icon,
                 contentDescription = null,
-                tint = accentColor.copy(alpha = 0.75f),
+                tint = accentColor,
                 modifier = Modifier.size(ManualEntryTileIconSize),
             )
             AutoResizeText(
                 text = title,
                 style = MaterialTheme.typography.labelMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                color = MaterialTheme.colorScheme.onSurface,
                 maxLines = 2,
             )
         }
     }
 }
+
+/** The log tile's container: the accent's own wash, light enough to read on black. */
+@Composable
+internal fun manualEntryTileContainer(accentColor: Color): Color =
+    tech.mmarca.openvitals.ui.theme.accentSurfaceContainerColor(
+        accentColor = accentColor,
+        amoledAlpha = ManualEntryAmoledTileAlpha,
+        fallback = MaterialTheme.colorScheme.surfaceContainerHigh,
+    )
+
+private const val ManualEntryAmoledTileAlpha = 0.2f
 
 internal data class ManualEntryWidgetSpec(
     val id: ManualEntryWidgetId,

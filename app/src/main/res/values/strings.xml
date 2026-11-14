@@ -3881,4 +3881,9 @@
     <string name="settings_online_maps_disconnected">Disconnected</string>
     <string name="settings_online_maps_touch_to_disconnect">Touch here to disconnect</string>
     <string name="mapbox_login_body_short">Sign in in your browser to enable workout maps. The public map token stays on this phone.</string>
+    <string name="metric_sections_save_changes">Save layout changes?</string>
+    <string name="activity_calories_per_interval_title">Calories burned every %1$d min</string>
+    <string name="activity_calories_peak">Peak</string>
+    <string name="activity_calories_from_heart_rate">Estimated from heart rate, weight, age and sex in your body profile.</string>
+    <string name="activity_calories_from_recorded">From the calories recorded by your apps. Add weight and age to your body profile to estimate them from heart rate.</string>
 </resources>

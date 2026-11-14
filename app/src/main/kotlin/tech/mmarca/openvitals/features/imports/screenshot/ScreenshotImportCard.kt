@@ -37,6 +37,7 @@ internal fun ScreenshotImportCard(modifier: Modifier = Modifier) {
         modifier = modifier
             .fillMaxWidth()
             .clickable { picker.launch(arrayOf("image/*")) },
+        containerColor = tech.mmarca.openvitals.features.manualentry.manualEntryTileContainer(ScreenshotImportAccent),
         style = tech.mmarca.openvitals.ui.components.OpenVitalsCardStyle.Accent,
         accentColor = ScreenshotImportAccent,
     ) {
@@ -50,13 +51,13 @@ internal fun ScreenshotImportCard(modifier: Modifier = Modifier) {
             Icon(
                 imageVector = androidx.compose.material.icons.Icons.Outlined.AddPhotoAlternate,
                 contentDescription = null,
-                tint = ScreenshotImportAccent.copy(alpha = 0.75f),
+                tint = ScreenshotImportAccent,
                 modifier = Modifier.size(Spacing.lg + Spacing.sm),
             )
             Text(
                 text = stringResource(R.string.screenshot_import_title),
                 style = MaterialTheme.typography.labelMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                color = MaterialTheme.colorScheme.onSurface,
                 modifier = Modifier.padding(start = Spacing.md),
             )
         }

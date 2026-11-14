@@ -3848,4 +3848,9 @@
     <string name="settings_online_maps_disconnected">Desligado</string>
     <string name="settings_online_maps_touch_to_disconnect">Toque aqui para desligar</string>
     <string name="mapbox_login_body_short">Inicie sessão no navegador para ativar os mapas de treino. O token público fica neste telemóvel.</string>
+    <string name="metric_sections_save_changes">Guardar as alterações do esquema?</string>
+    <string name="activity_calories_per_interval_title">Calorias queimadas a cada %1$d min</string>
+    <string name="activity_calories_peak">Pico</string>
+    <string name="activity_calories_from_heart_rate">Estimadas a partir da frequência cardíaca e do peso, idade e sexo do seu perfil corporal.</string>
+    <string name="activity_calories_from_recorded">A partir das calorias registadas pelas suas apps. Adicione peso e idade ao perfil corporal para as estimar pela frequência cardíaca.</string>
 </resources>

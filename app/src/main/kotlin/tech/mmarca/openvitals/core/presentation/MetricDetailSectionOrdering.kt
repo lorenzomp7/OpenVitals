@@ -8,6 +8,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
 import androidx.compose.runtime.remember
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -41,6 +42,27 @@ fun rememberMetricDetailSectionOrdering(): MetricDetailSectionContext {
     val isEditingSections by sectionOrderViewModel.isEditingSections.collectAsStateWithLifecycle()
     val sectionListState = rememberMetricDetailSectionListState()
     val editingTint = MaterialTheme.colorScheme.primary
+    // 67: finishing an arrangement asks Save or Discard, as the dashboard's pencil does.
+    var confirmFinish by androidx.compose.runtime.saveable.rememberSaveable { androidx.compose.runtime.mutableStateOf(false) }
+    androidx.activity.compose.BackHandler(enabled = isEditingSections) { confirmFinish = true }
+    if (confirmFinish && isEditingSections) {
+        androidx.compose.material3.AlertDialog(
+            onDismissRequest = { confirmFinish = false },
+            title = { androidx.compose.material3.Text(androidx.compose.ui.res.stringResource(R.string.metric_sections_save_changes)) },
+            confirmButton = {
+                androidx.compose.material3.TextButton(onClick = {
+                    sectionOrderViewModel.finishSectionEdit(save = true)
+                    confirmFinish = false
+                }) { androidx.compose.material3.Text(androidx.compose.ui.res.stringResource(R.string.action_save)) }
+            },
+            dismissButton = {
+                androidx.compose.material3.TextButton(onClick = {
+                    sectionOrderViewModel.finishSectionEdit(save = false)
+                    confirmFinish = false
+                }) { androidx.compose.material3.Text(androidx.compose.ui.res.stringResource(R.string.action_discard)) }
+            },
+        )
+    }
 
     DeclareAppBar(
         remember(isEditingSections, editingTint) {
@@ -54,7 +76,9 @@ fun rememberMetricDetailSectionOrdering(): MetricDetailSectionContext {
                             R.string.cd_edit_metric_sections
                         },
                         tint = if (isEditingSections) editingTint else null,
-                        onClick = sectionOrderViewModel::toggleSectionEdit,
+                        onClick = {
+                            if (isEditingSections) confirmFinish = true else sectionOrderViewModel.toggleSectionEdit()
+                        },
                     ),
                 ),
             )
@@ -71,8 +95,9 @@ fun rememberMetricDetailSectionOrdering(): MetricDetailSectionContext {
 
     DisposableEffect(Unit) {
         onDispose {
+            // Leaving the screen mid-edit keeps nothing unsaved: the draft is discarded.
             if (isEditingSections) {
-                sectionOrderViewModel.toggleSectionEdit()
+                sectionOrderViewModel.finishSectionEdit(save = false)
             }
         }
     }

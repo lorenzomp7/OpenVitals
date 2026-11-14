@@ -506,4 +506,9 @@
     <string name="settings_online_maps_disconnected">Αποσυνδεδεμένο</string>
     <string name="settings_online_maps_touch_to_disconnect">Πατήστε εδώ για αποσύνδεση</string>
     <string name="mapbox_login_body_short">Συνδεθείτε στο πρόγραμμα περιήγησης για να ενεργοποιήσετε τους χάρτες προπονήσεων. Το δημόσιο διακριτικό μένει σε αυτό το τηλέφωνο.</string>
+    <string name="metric_sections_save_changes">Αποθήκευση αλλαγών διάταξης;</string>
+    <string name="activity_calories_per_interval_title">Θερμίδες που κάηκαν ανά %1$d λεπ.</string>
+    <string name="activity_calories_peak">Μέγιστο</string>
+    <string name="activity_calories_from_heart_rate">Εκτίμηση από τον καρδιακό ρυθμό και το βάρος, την ηλικία και το φύλο του προφίλ σώματος.</string>
+    <string name="activity_calories_from_recorded">Από τις θερμίδες που κατέγραψαν οι εφαρμογές σας. Προσθέστε βάρος και ηλικία στο προφίλ σώματος για εκτίμηση από τον καρδιακό ρυθμό.</string>
 </resources>

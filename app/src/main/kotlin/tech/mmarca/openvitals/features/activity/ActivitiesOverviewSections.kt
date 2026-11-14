@@ -562,6 +562,21 @@ internal fun ActivityOverviewWorkoutRowContent(
                 style = MaterialTheme.typography.labelSmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
+            // 54, 55: machine sessions add their average bpm to the time.
+            val averageBpm = workout.averageHeartRateBpm
+            if (workout.exerciseType in TimeAndHeartRateSummaryExercises && averageBpm != null) {
+                Text(
+                    text = unitFormatter.heartRate(averageBpm).text,
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.onSurface,
+                )
+                Text(
+                    text = stringResource(R.string.metric_avg_heart_rate),
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
         }
         if (onEdit != null) {
             Spacer(Modifier.width(8.dp))

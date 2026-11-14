@@ -3853,4 +3853,9 @@
     <string name="settings_online_maps_disconnected">Disconnesso</string>
     <string name="settings_online_maps_touch_to_disconnect">Tocca qui per disconnettere</string>
     <string name="mapbox_login_body_short">Accedi dal browser per attivare le mappe degli allenamenti. Il token pubblico rimane su questo telefono.</string>
+    <string name="metric_sections_save_changes">Salvare le modifiche al layout?</string>
+    <string name="activity_calories_per_interval_title">Calorie bruciate ogni %1$d min</string>
+    <string name="activity_calories_peak">Picco</string>
+    <string name="activity_calories_from_heart_rate">Stimate dalla frequenza cardiaca e da peso, età e sesso del tuo profilo corporeo.</string>
+    <string name="activity_calories_from_recorded">Dalle calorie registrate dalle tue app. Aggiungi peso ed età al profilo corporeo per stimarle dai battiti.</string>
 </resources>

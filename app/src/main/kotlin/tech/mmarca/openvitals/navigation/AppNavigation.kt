@@ -366,8 +366,15 @@ fun AppNavigation(
             modifier = Modifier.padding(innerPadding),
             // One screen fades over the other, which stays whole underneath:
             // the default scales the leaving screen down over the one behind it.
-            enterTransition = { fadeIn(tween(NavFadeMillis)) },
-            exitTransition = { fadeOut(tween(NavFadeMillis)) },
+            // 63: arriving at the dashboard by any path (back, the bottom bar, after a save) is a cut.
+            enterTransition = {
+                if (targetState.destination.route == Screen.Dashboard.route) EnterTransition.None
+                else fadeIn(tween(NavFadeMillis))
+            },
+            exitTransition = {
+                if (targetState.destination.route == Screen.Dashboard.route) ExitTransition.None
+                else fadeOut(tween(NavFadeMillis))
+            },
             // 63: back to the dashboard is a cut, not a cross-fade. During the fade the top bar of the
             // screen being left is already gone and the dashboard's header showed alone over it.
             popEnterTransition = {
