@@ -3831,4 +3831,6 @@
     <string name="screenshot_water_percent_skipped">Kuvakaappauksessa tai kehoprofiilissa ei ole painoa: kehon veden prosenttia ei tallenneta. Muut arvot tallennetaan.</string>
     <string name="activity_map_recenter">Näytä koko reitti</string>
     <string name="dashboard_edit_page_label">Sivu %1$d</string>
+    <string name="dashboard_edit_rings_label">Renkaat ylhäällä</string>
+    <string name="dashboard_edit_tiles_label">Ruudut</string>
 </resources>

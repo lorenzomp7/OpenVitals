@@ -3897,4 +3897,6 @@
     <string name="screenshot_water_percent_skipped">Snímek ani tělesný profil neobsahuje hmotnost: procento vody se neuloží. Ostatní hodnoty ano.</string>
     <string name="activity_map_recenter">Zobrazit celou trasu</string>
     <string name="dashboard_edit_page_label">Stránka %1$d</string>
+    <string name="dashboard_edit_rings_label">Kruhy nahoře</string>
+    <string name="dashboard_edit_tiles_label">Dlaždice</string>
 </resources>

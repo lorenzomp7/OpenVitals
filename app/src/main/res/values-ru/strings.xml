@@ -3898,4 +3898,6 @@
     <string name="screenshot_water_percent_skipped">Нет веса ни на снимке, ни в профиле тела: процент воды не сохранится. Остальные значения сохранятся.</string>
     <string name="activity_map_recenter">Показать весь маршрут</string>
     <string name="dashboard_edit_page_label">Страница %1$d</string>
+    <string name="dashboard_edit_rings_label">Кольца вверху</string>
+    <string name="dashboard_edit_tiles_label">Плитки</string>
 </resources>

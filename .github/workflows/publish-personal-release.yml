@@ -46,7 +46,7 @@ jobs:
           NEXT=$((PREVIOUS + 1))
           if (( NEXT < 1070400000 )); then NEXT=1070400000; fi
           echo "OPENVITALS_VERSION_CODE=$NEXT" >> "$GITHUB_ENV"
-          echo "OPENVITALS_VERSION_NAME=2.17.2-personal-claude-02" >> "$GITHUB_ENV"
+          echo "OPENVITALS_VERSION_NAME=2.17.3-personal-claude-02" >> "$GITHUB_ENV"
       - name: Build the signed personal update
         env:
           OPENVITALS_RELEASE_STORE_FILE: ${{ github.workspace }}/personal/personal.p12
@@ -103,25 +103,26 @@ jobs:
           cat > release-notes.md <<EOF
           Scarica **OpenVitals.apk** dagli allegati e aprilo sul telefono.
 
-          Branch main_claude_02 — terza tornata: 35, 63, 64, 68, 69, 70, 71, 72, 73, 74:
-          - 35: nuovo "Toggle animato OpenVitals" in stile Gemini: onde luminose nei colori Google che si fondono, scintille e un anello di colori che scorre sul bordo.
-          - 63: tolto il "predictive back" di sistema che disegnava la dashboard sopra la schermata in uscita; transizioni Material "fade through" senza sovrapposizioni, ritorno alla dashboard immediato.
-          - 64, 68: il grafico delle calorie (kcal al minuto dai battiti) ha lo stesso stile dei grafici Heart rate ed Elevation.
-          - 69, 70: "Salva o Scarta" quando si esce con modifiche non salvate: matita del "+ log", profilo corporeo, import screenshot, peso/composizione, parametri vitali, attività manuale, schede mediche. Senza modifiche si torna indietro normalmente.
-          - 71, 72: nella mappa Mapbox a tutto schermo la X è in basso a destra (non copre più la bussola) e c'è un pulsante per riportare in vista tutto il percorso.
-          - 73: l'import screenshot si può salvare anche senza peso nello screenshot: l'acqua corporea in % usa il peso del profilo corporeo (o viene saltata, salvando il resto).
-          - 74: in modifica della dashboard con "pagine da 6" i toggle sono divisi nelle pagine reali, con l'etichetta "Pagina N".
+          Branch main_claude_02 — quarta tornata: 63, 64, 70, 72, 73, 75, 76, 77, 78:
+          - 63: la barra in alto cambia solo quando la nuova schermata inizia ad apparire e anche la dashboard entra ed esce con la dissolvenza Material: niente più lampo al ritorno.
+          - 64: nessun grafico a linee disegna più i puntini.
+          - 70: Salva/Scarta compare solo se qualcosa è davvero cambiato; se sposti e rimetti com'era, esce senza chiedere (dashboard, "+ log", sezioni).
+          - 72: la mappa piccola ha gli stessi due pulsanti, nella stessa posizione, della mappa a tutto schermo.
+          - 73, 77: l'import screenshot non chiede più "Save changes?"; dopo il salvataggio mostra la conferma e si chiude.
+          - 75: la modifica dei toggle della dashboard usa lo stesso sistema del "+ log": il riquadro segue il dito e gli altri si spostano mentre passi.
+          - 76: logo del README aggiornato con l'icona nuova.
+          - 78: icone profilo, achievement e impostazioni nello stile del toggle animato.
 
           Questa versione aggiorna l'installazione personale compatibile di OpenVitals senza disinstallarla. La revisione ha superato la verifica completa (verify) in questa stessa esecuzione; package e firma coincidono con l'APK pubblicato precedente; installazione, aggiornamento, avvio e import screenshot sono verificati su Android 15.
 
-          Versione: **2.17.2-personal-claude-02**. Version code: **$OPENVITALS_VERSION_CODE**.
+          Versione: **2.17.3-personal-claude-02**. Version code: **$OPENVITALS_VERSION_CODE**.
           Sorgenti: https://github.com/$GH_REPO/commit/$GITHUB_SHA
           Compilazione e verifica aggiornamento: https://github.com/$GH_REPO/actions/runs/$GITHUB_RUN_ID
           EOF
           if gh release view "$TAG" > /dev/null 2>&1; then
             echo "Release already exists; keeping the published APK unchanged."
           else
-            gh release create "$TAG" release/OpenVitals.apk release/SHA256SUMS.txt --target "$GITHUB_SHA" --title "OpenVitals 2.17.2 · main_claude_02" --notes-file release-notes.md --latest
+            gh release create "$TAG" release/OpenVitals.apk release/SHA256SUMS.txt --target "$GITHUB_SHA" --title "OpenVitals 2.17.3 · main_claude_02" --notes-file release-notes.md --latest
           fi
       - uses: actions/upload-artifact@v4
         if: always()

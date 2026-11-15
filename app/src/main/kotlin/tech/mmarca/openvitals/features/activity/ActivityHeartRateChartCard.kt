@@ -116,7 +116,7 @@ internal fun ActivityHeartRateChartCard(
                         valueFormatter = { unitFormatter.heartRate(it.roundToLong()).text },
                         pointRadius = if (sorted.size <= 120) 2.dp else 0.dp,
                         lineStrokeWidth = 2.dp,
-                        drawPoints = sorted.size <= 120,
+                        drawPoints = false,
                         viewport = zoom.viewport,
                         multiTouch = zoom.multiTouch,
                         title = stringResource(R.string.activity_recording_live_heart_rate),

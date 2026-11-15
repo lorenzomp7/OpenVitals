@@ -61,7 +61,10 @@ fun DashboardScreen(
     }
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     var confirmEdit by androidx.compose.runtime.saveable.rememberSaveable { mutableStateOf(false) }
-    val requestFinishEdit: () -> Unit = { confirmEdit = true }
+    // 70: an edit that ends where it began closes without asking.
+    val requestFinishEdit: () -> Unit = {
+        if (viewModel.hasDashboardEdits()) confirmEdit = true else viewModel.finishDashboardEdit(false)
+    }
     androidx.activity.compose.BackHandler(enabled = state.isEditingDashboard) { requestFinishEdit() }
     if (confirmEdit && state.isEditingDashboard) {
         androidx.compose.material3.AlertDialog(
@@ -180,6 +183,7 @@ fun DashboardScreen(
                     onNextDay = viewModel::nextDay,
                     onOpenCalendar = { showDatePicker = true },
                     onMoveWidgetToTarget = viewModel::moveDashboardWidgetToTarget,
+                    onMoveWidget = viewModel::moveDashboardWidget,
                     onRemoveWidget = viewModel::removeDashboardWidget,
                     widgetSizes = state.widgetSizes,
                     widgetDetailCounts = state.widgetDetailCounts,

@@ -44,7 +44,9 @@ fun rememberMetricDetailSectionOrdering(): MetricDetailSectionContext {
     val editingTint = MaterialTheme.colorScheme.primary
     // 67: finishing an arrangement asks Save or Discard, as the dashboard's pencil does.
     var confirmFinish by androidx.compose.runtime.saveable.rememberSaveable { androidx.compose.runtime.mutableStateOf(false) }
-    androidx.activity.compose.BackHandler(enabled = isEditingSections) { confirmFinish = true }
+    androidx.activity.compose.BackHandler(enabled = isEditingSections) {
+        if (sectionOrderViewModel.hasSectionEdits()) confirmFinish = true else sectionOrderViewModel.finishSectionEdit(save = false)
+    }
     if (confirmFinish && isEditingSections) {
         androidx.compose.material3.AlertDialog(
             onDismissRequest = { confirmFinish = false },
@@ -77,7 +79,11 @@ fun rememberMetricDetailSectionOrdering(): MetricDetailSectionContext {
                         },
                         tint = if (isEditingSections) editingTint else null,
                         onClick = {
-                            if (isEditingSections) confirmFinish = true else sectionOrderViewModel.toggleSectionEdit()
+                            when {
+                                !isEditingSections -> sectionOrderViewModel.toggleSectionEdit()
+                                sectionOrderViewModel.hasSectionEdits() -> confirmFinish = true
+                                else -> sectionOrderViewModel.finishSectionEdit(save = false)
+                            }
                         },
                     ),
                 ),

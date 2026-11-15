@@ -89,7 +89,7 @@ internal val BrandGreen = Color(0xFF34A853)
 private val BrandColors = listOf(BrandBlue, BrandRed, BrandYellow, BrandGreen)
 
 /** The night the light is drawn on, as in the Gemini reel the toggle follows. */
-private val ToggleNight = Color(0xFF0B0F1A)
+internal val ToggleNight = Color(0xFF0B0F1A)
 private const val ToggleRestSeconds = 4f
 private const val ToggleTwoPi = (2.0 * Math.PI).toFloat()
 
@@ -214,7 +214,7 @@ private fun DrawScope.drawOpenVitalsToggle(seconds: Float, intro: Float, borderP
 }
 
 /** The four colours around a circle, blended between neighbours; [position] wraps. */
-private fun cyclicBrandColor(position: Float): Color {
+internal fun cyclicBrandColor(position: Float): Color {
     val p = ((position % 1f) + 1f) % 1f * BrandColors.size
     val index = p.toInt() % BrandColors.size
     return lerpColor(BrandColors[index], BrandColors[(index + 1) % BrandColors.size], p - p.toInt())

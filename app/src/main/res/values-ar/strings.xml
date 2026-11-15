@@ -166,4 +166,6 @@
     <string name="screenshot_water_percent_skipped">لا يوجد وزن في لقطة الشاشة ولا في ملفك الجسدي: لن تُحفظ نسبة ماء الجسم. ستُحفظ القيم الأخرى.</string>
     <string name="activity_map_recenter">عرض المسار بالكامل</string>
     <string name="dashboard_edit_page_label">الصفحة %1$d</string>
+    <string name="dashboard_edit_rings_label">الحلقات في الأعلى</string>
+    <string name="dashboard_edit_tiles_label">المربعات</string>
 </resources>

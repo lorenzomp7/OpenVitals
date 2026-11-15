@@ -36,6 +36,9 @@ class MetricDetailSectionOrderViewModel @Inject constructor(
         }
     }
 
+    /** 70: whether the order differs from where editing began. */
+    fun hasSectionEdits(): Boolean = orderBeforeEdit?.let { it != _sectionOrder.value } == true
+
     /** 67: ends editing like the dashboard does: Save keeps the new order, Discard puts the old one back. */
     fun finishSectionEdit(save: Boolean) {
         val before = orderBeforeEdit

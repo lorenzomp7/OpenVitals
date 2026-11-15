@@ -166,4 +166,6 @@
     <string name="screenshot_water_percent_skipped">אין משקל בצילום המסך או בפרופיל הגוף: אחוז מי הגוף לא יישמר. שאר הערכים יישמרו.</string>
     <string name="activity_map_recenter">הצגת המסלול כולו</string>
     <string name="dashboard_edit_page_label">עמוד %1$d</string>
+    <string name="dashboard_edit_rings_label">טבעות למעלה</string>
+    <string name="dashboard_edit_tiles_label">אריחים</string>
 </resources>

@@ -3831,4 +3831,6 @@
     <string name="screenshot_water_percent_skipped">Kein Gewicht im Screenshot oder Körperprofil: Der Körperwasseranteil wird nicht gespeichert, die anderen Werte schon.</string>
     <string name="activity_map_recenter">Ganze Route anzeigen</string>
     <string name="dashboard_edit_page_label">Seite %1$d</string>
+    <string name="dashboard_edit_rings_label">Ringe oben</string>
+    <string name="dashboard_edit_tiles_label">Kacheln</string>
 </resources>

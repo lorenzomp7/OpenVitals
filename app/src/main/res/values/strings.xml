@@ -3891,4 +3891,6 @@
     <string name="screenshot_water_percent_skipped">No weight in this screenshot or in your body profile: body water percentage will not be saved. The other values will.</string>
     <string name="activity_map_recenter">Show the whole route</string>
     <string name="dashboard_edit_page_label">Page %1$d</string>
+    <string name="dashboard_edit_rings_label">Rings at the top</string>
+    <string name="dashboard_edit_tiles_label">Tiles</string>
 </resources>

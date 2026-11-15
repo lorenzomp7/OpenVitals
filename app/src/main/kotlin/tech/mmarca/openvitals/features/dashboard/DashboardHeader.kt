@@ -25,6 +25,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import tech.mmarca.openvitals.R
 import tech.mmarca.openvitals.ui.components.AmbientFluidBrand
+import tech.mmarca.openvitals.ui.components.BrandIconFrame
 import tech.mmarca.openvitals.ui.components.FluidBrandTimeline
 import tech.mmarca.openvitals.ui.components.OpenVitalsIconButton
 
@@ -49,17 +50,24 @@ internal fun DashboardHeader(
             if (hasDevices) OpenVitalsIconButton(onClick = onOpenDevices) {
                 Icon(Icons.Outlined.BatteryChargingFull, stringResource(R.string.cd_sensor_battery_status))
             }
+            // 78: profile, achievements and settings dressed like the animated toggle.
             OpenVitalsIconButton(onClick = onOpenProfile) {
                 val description = stringResource(R.string.user_profile_title)
-                if (photo != null) Image(photo, description,
-                    Modifier.size(28.dp).clip(CircleShape), contentScale = ContentScale.Crop)
-                else Icon(Icons.Outlined.AccountCircle, description)
+                BrandIconFrame(timeline, tintContent = photo == null) {
+                    if (photo != null) Image(photo, description,
+                        Modifier.size(28.dp).clip(CircleShape), contentScale = ContentScale.Crop)
+                    else Icon(Icons.Outlined.AccountCircle, description)
+                }
             }
             OpenVitalsIconButton(onClick = onOpenAchievements) {
-                Icon(Icons.Outlined.WorkspacePremium, stringResource(R.string.cd_achievements))
+                BrandIconFrame(timeline) {
+                    Icon(Icons.Outlined.WorkspacePremium, stringResource(R.string.cd_achievements))
+                }
             }
             OpenVitalsIconButton(onClick = onOpenSettings) {
-                Icon(Icons.Outlined.Settings, stringResource(R.string.cd_settings))
+                BrandIconFrame(timeline) {
+                    Icon(Icons.Outlined.Settings, stringResource(R.string.cd_settings))
+                }
             }
         }
     }

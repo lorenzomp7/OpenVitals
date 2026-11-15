@@ -3831,4 +3831,6 @@
     <string name="screenshot_water_percent_skipped">Kuvatõmmisel ega kehaprofiilis pole kaalu: kehavee protsenti ei salvestata. Teised väärtused salvestatakse.</string>
     <string name="activity_map_recenter">Näita kogu marsruuti</string>
     <string name="dashboard_edit_page_label">Leht %1$d</string>
+    <string name="dashboard_edit_rings_label">Rõngad üleval</string>
+    <string name="dashboard_edit_tiles_label">Paanid</string>
 </resources>

@@ -690,6 +690,8 @@ class DashboardViewModel @Inject constructor(
 
     private val layoutEditor = DashboardLayoutEditor(prefs)
 
+    fun hasDashboardEdits(): Boolean = layoutEditor.hasChanges(_uiState.value)
+
     fun finishDashboardEdit(save: Boolean) {
         _uiState.update { layoutEditor.finish(it, save) }
         rebuildDisplay()
@@ -745,21 +747,21 @@ class DashboardViewModel @Inject constructor(
         val targetIndex = current.indexOf(targetWidgetId)
         if (fromIndex == -1 || targetIndex == -1 || fromIndex == targetIndex) return
 
-        // The same list the grid lays out: an unsupported metric the user never placed is in the
-        // tray, not the rows. Counting it here put the section boundary one tile off the screen's.
-        val state = _uiState.value
-        val fixedWidgetIds = current.filterNot {
-            it == DashboardWidgetId.WORKOUT ||
-                (it in state.display.unsupportedIds && it !in state.placedDashboardWidgets)
-        }.take(3)
-        val fromFixedSection = widgetId in fixedWidgetIds
-        val targetFixedSection = targetWidgetId in fixedWidgetIds
         val updated = current.toMutableList().apply {
             this[fromIndex] = targetWidgetId
             this[targetIndex] = widgetId
         }
 
         updateDashboardWidgets(updated)
+    }
+
+    /** 75: [widgetId] takes [targetWidgetId]'s place and the tiles between shift by one, as a reorderable grid moves them. */
+    fun moveDashboardWidget(widgetId: DashboardWidgetId, targetWidgetId: DashboardWidgetId) {
+        val current = _uiState.value.dashboardWidgets
+        val fromIndex = current.indexOf(widgetId)
+        val targetIndex = current.indexOf(targetWidgetId)
+        if (fromIndex == -1 || targetIndex == -1 || fromIndex == targetIndex) return
+        updateDashboardWidgets(current.toMutableList().apply { removeAt(fromIndex); add(targetIndex, widgetId) })
     }
 
     private fun updateDashboardWidgets(widgets: List<DashboardWidgetId>) {

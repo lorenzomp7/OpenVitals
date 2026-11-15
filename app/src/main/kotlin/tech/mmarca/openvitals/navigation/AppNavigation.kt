@@ -131,7 +131,17 @@ fun AppNavigation(
     val fluidBrandTimeline = rememberFluidBrandTimeline()
     val navController = rememberNavController()
     val backDispatcher = LocalOnBackPressedDispatcherOwner.current?.onBackPressedDispatcher
-    val navBackStackEntry by navController.currentBackStackEntryAsState()
+    val liveBackStackEntry by navController.currentBackStackEntryAsState()
+    // 63: the app bar, its title and the content padding follow the screen that is on view. They
+    // switch when the outgoing screen has faded out, not the instant the route changes: switching at
+    // once dropped or added the bar under a screen still fading, which jumped and flashed.
+    var navBackStackEntry by remember { mutableStateOf(liveBackStackEntry) }
+    LaunchedEffect(liveBackStackEntry) {
+        if (navBackStackEntry != null && liveBackStackEntry != null) {
+            kotlinx.coroutines.delay(NavFadeOutMillis.toLong())
+        }
+        navBackStackEntry = liveBackStackEntry
+    }
     val currentDestination = navBackStackEntry?.destination
     // Day-accepting destinations register with a query pattern appended; compare
     // against the bare route or nothing matches.
@@ -373,29 +383,14 @@ fun AppNavigation(
             navController = navController,
             startDestination = startDestination,
             modifier = Modifier.padding(innerPadding),
-            // 63: Material "fade through": the screen being left fades out first, then the new
-            // one fades in. The screens draw no background of their own, so a cross-fade showed both
-            // at once. The dashboard has no shared app bar to wait for, so leaving it or coming back
-            // to it is a cut. The system's predictive back is off (manifest): it drew the dashboard
-            // over the screen being left and dropped that screen's app bar mid-gesture.
-            enterTransition = {
-                if (targetState.destination.route == Screen.Dashboard.route) EnterTransition.None
-                else navFadeThroughEnter()
-            },
-            exitTransition = {
-                if (initialState.destination.route == Screen.Dashboard.route ||
-                    targetState.destination.route == Screen.Dashboard.route
-                ) ExitTransition.None
-                else navFadeThroughExit()
-            },
-            popEnterTransition = {
-                if (targetState.destination.route == Screen.Dashboard.route) EnterTransition.None
-                else navFadeThroughEnter()
-            },
-            popExitTransition = {
-                if (targetState.destination.route == Screen.Dashboard.route) ExitTransition.None
-                else navFadeThroughExit()
-            },
+            // 63: Material "fade through" for every screen, the dashboard included: the screen being
+            // left fades out first, then the new one fades and scales in. The screens draw no background
+            // of their own, so a cross-fade showed both at once. The system's predictive back is off
+            // (manifest): it drew the dashboard over the screen being left mid-gesture.
+            enterTransition = { navFadeThroughEnter() },
+            exitTransition = { navFadeThroughExit() },
+            popEnterTransition = { navFadeThroughEnter() },
+            popExitTransition = { navFadeThroughExit() },
         ) {
             composable(Screen.Onboarding.route) {
                 val onboardingViewModel = hiltViewModel<OnboardingViewModel>()

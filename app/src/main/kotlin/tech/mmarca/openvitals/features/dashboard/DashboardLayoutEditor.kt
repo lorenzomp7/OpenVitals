@@ -8,6 +8,15 @@ internal class DashboardLayoutEditor(private val prefs: PreferencesRepository) {
 
     fun begin(state: DashboardUiState) { original = state }
 
+    /** 70: whether the layout differs from where editing began; moving a tile and back is no change. */
+    fun hasChanges(current: DashboardUiState): Boolean {
+        val before = original ?: return false
+        return current.dashboardWidgets != before.dashboardWidgets ||
+            current.widgetSizes != before.widgetSizes ||
+            current.widgetDetailCounts != before.widgetDetailCounts ||
+            current.pagedLayout != before.pagedLayout
+    }
+
     fun finish(current: DashboardUiState, save: Boolean): DashboardUiState {
         val before = original ?: return current
         val layout = if (save) current else before

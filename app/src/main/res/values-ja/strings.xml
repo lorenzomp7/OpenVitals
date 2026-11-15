@@ -3899,4 +3899,6 @@
     <string name="screenshot_water_percent_skipped">スクリーンショットにも身体プロフィールにも体重がないため、体水分率は保存されません。他の値は保存されます。</string>
     <string name="activity_map_recenter">ルート全体を表示</string>
     <string name="dashboard_edit_page_label">%1$d ページ</string>
+    <string name="dashboard_edit_rings_label">上部のリング</string>
+    <string name="dashboard_edit_tiles_label">タイル</string>
 </resources>

@@ -3832,4 +3832,6 @@
     <string name="screenshot_water_percent_skipped">截图和身体资料中都没有体重：身体水分百分比不会保存，其他数值会保存。</string>
     <string name="activity_map_recenter">显示完整路线</string>
     <string name="dashboard_edit_page_label">第 %1$d 页</string>
+    <string name="dashboard_edit_rings_label">顶部圆环</string>
+    <string name="dashboard_edit_tiles_label">磁贴</string>
 </resources>

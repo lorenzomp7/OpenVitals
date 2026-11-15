@@ -3864,4 +3864,6 @@
     <string name="screenshot_water_percent_skipped">No hay peso en la captura ni en tu perfil corporal: el porcentaje de agua corporal no se guardará. Los demás valores sí.</string>
     <string name="activity_map_recenter">Mostrar toda la ruta</string>
     <string name="dashboard_edit_page_label">Página %1$d</string>
+    <string name="dashboard_edit_rings_label">Anillos arriba</string>
+    <string name="dashboard_edit_tiles_label">Mosaicos</string>
 </resources>

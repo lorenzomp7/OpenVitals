@@ -50,6 +50,8 @@ internal fun DashboardWidgetCarousel(
     isEditingDashboard: Boolean,
     onMoveWidgetToTarget: (DashboardWidgetId, DashboardWidgetId) -> Unit,
     onRemoveWidget: (DashboardWidgetId) -> Unit,
+    /** Moves a tile to the target's place, the others shifting by one: what the reorderable grid needs. */
+    onMoveWidget: (DashboardWidgetId, DashboardWidgetId) -> Unit = onMoveWidgetToTarget,
     widgetSizes: Map<DashboardWidgetId, Int> = emptyMap(),
     pagedLayout: Boolean = false,
     onSetWidgetDetailCount: (DashboardWidgetId, Int) -> Unit = { _, _ -> },
@@ -80,6 +82,38 @@ internal fun DashboardWidgetCarousel(
                 onDismiss = { configuringId = null },
             )
         }
+    }
+    // 75: editing uses one reorderable grid, the "+ log" way: the held tile follows the finger.
+    if (isEditingDashboard) {
+        Column {
+            actionContent()
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(start = DashboardScreenPadding, end = DashboardScreenPadding, top = DashboardGridTopPadding),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Text(
+                    text = stringResource(R.string.dashboard_paged_layout_toggle),
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = MaterialTheme.colorScheme.onSurface,
+                    modifier = Modifier.weight(1f),
+                )
+                Switch(checked = pagedLayout, onCheckedChange = onSetPagedLayout)
+            }
+            DashboardReorderableEditGrid(
+                visibleIds = visibleIds,
+                specsById = specsById,
+                sizeOf = sizeOf,
+                pagedLayout = pagedLayout,
+                onMoveWidget = onMoveWidget,
+                onRemoveWidget = onRemoveWidget,
+                onCycleWidgetSize = cycleSize,
+                modifier = Modifier.padding(horizontal = DashboardScreenPadding),
+            )
+            hiddenContent()
+        }
+        return
     }
     val fixedIdSet = fixedIds.toSet()
     // Every other widget, in one grid that scrolls with the page.

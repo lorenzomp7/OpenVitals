@@ -3863,4 +3863,6 @@
     <string name="screenshot_water_percent_skipped">Nessun peso nello screenshot né nel profilo corporeo: la percentuale di acqua corporea non verrà salvata. Gli altri valori sì.</string>
     <string name="activity_map_recenter">Mostra tutto il percorso</string>
     <string name="dashboard_edit_page_label">Pagina %1$d</string>
+    <string name="dashboard_edit_rings_label">Anelli in alto</string>
+    <string name="dashboard_edit_tiles_label">Riquadri</string>
 </resources>

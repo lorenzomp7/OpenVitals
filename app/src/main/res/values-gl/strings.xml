@@ -3902,4 +3902,6 @@ Se Acceder a rutas de exercicio non aparece no diálogo de acceso, abre os axust
     <string name="screenshot_water_percent_skipped">Non hai peso na captura nin no perfil corporal: a porcentaxe de auga non se gardará. Os outros valores si.</string>
     <string name="activity_map_recenter">Amosar toda a ruta</string>
     <string name="dashboard_edit_page_label">Páxina %1$d</string>
+    <string name="dashboard_edit_rings_label">Aneis arriba</string>
+    <string name="dashboard_edit_tiles_label">Mosaicos</string>
 </resources>

@@ -284,7 +284,8 @@ private fun ActivitySessionMetricChartCard(
     val chartHeight = 180.dp
     val zone = ZoneId.systemDefault()
     val timeFormatter = DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT)
-    val drawPoints = sortedValues.size <= 120
+    // 64: lines only, as the heart rate and elevation charts are.
+    val drawPoints = false
     // Built once, identity-stable, so the geometry cache holds.
     val chartPoints = remember(sortedValues, axis) {
         sortedValues.map { (time, value) ->

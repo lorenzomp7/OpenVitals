@@ -23,7 +23,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import tech.mmarca.openvitals.R
@@ -35,14 +34,27 @@ internal fun ActivityMapboxMap(points: List<ExerciseRoutePoint>, modifier: Modif
     if (points.none { it.latitude.isFinite() && it.longitude.isFinite() &&
             it.latitude in -90.0..90.0 && it.longitude in -180.0..180.0 }) return
     var fullscreen by rememberSaveable { mutableStateOf(false) }
+    var cardRecenter by rememberSaveable { mutableStateOf(0) }
     Box(modifier) {
         // Only one native map is alive; closing the dialog restores the card.
-        if (!fullscreen) ActivityRouteMapContent(points, Modifier.fillMaxSize())
-        FilledIconButton(
-            onClick = { fullscreen = true },
-            modifier = Modifier.align(Alignment.TopEnd).padding(8.dp).testTag("map-fullscreen-open"),
+        if (!fullscreen) ActivityRouteMapContent(points, Modifier.fillMaxSize(), recenterRequest = cardRecenter)
+        // 72: the same two buttons in the same place as in full screen: recenter above, open below.
+        Column(
+            modifier = Modifier.align(Alignment.BottomEnd).padding(Spacing.md),
+            verticalArrangement = Arrangement.spacedBy(Spacing.sm),
         ) {
-            Icon(Icons.Outlined.Fullscreen, stringResource(R.string.activity_map_fullscreen))
+            FilledTonalIconButton(
+                onClick = { cardRecenter += 1 },
+                modifier = Modifier.testTag("map-recenter"),
+            ) {
+                Icon(Icons.Outlined.CenterFocusStrong, stringResource(R.string.activity_map_recenter))
+            }
+            FilledIconButton(
+                onClick = { fullscreen = true },
+                modifier = Modifier.testTag("map-fullscreen-open"),
+            ) {
+                Icon(Icons.Outlined.Fullscreen, stringResource(R.string.activity_map_fullscreen))
+            }
         }
     }
     if (fullscreen) {

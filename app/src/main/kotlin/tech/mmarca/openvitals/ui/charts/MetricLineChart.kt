@@ -96,7 +96,7 @@ fun MetricLinePlot(
     canvasModifier: Modifier = Modifier,
     lineStrokeWidth: Dp = 2.dp,
     pointRadius: Dp = 3.5.dp,
-    drawPoints: Boolean = true,
+    drawPoints: Boolean = false,
     guides: List<ChartGuideLine> = emptyList(),
     markers: List<ChartMarker> = emptyList(),
     band: List<ChartBandSpan> = emptyList(),
@@ -202,7 +202,7 @@ fun <T> DayTimelineLinePlot(
     chartHeight: Dp = ChartTokens.heightDay,
     lineStrokeWidth: Dp = 2.dp,
     pointRadius: Dp = 3.5.dp,
-    drawPoints: Boolean = true,
+    drawPoints: Boolean = false,
     zoomKey: Any? = null,
     guides: List<ChartGuideLine> = emptyList(),
     /** Spoken before the shape of the series: the metric's name. */

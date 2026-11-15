@@ -85,7 +85,7 @@ internal fun BodyEnergyTimelineChart(
                 chartHeight = ChartTokens.heightBodyEnergy,
                 valueFormatter = { it.roundToInt().toString() },
                 lineStrokeWidth = 2.5.dp,
-                drawPoints = points.size <= 40,
+                drawPoints = false,
                 viewport = zoom.viewport,
                 multiTouch = zoom.multiTouch,
                 // The score points carry only their position across the day.

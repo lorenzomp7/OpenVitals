@@ -99,6 +99,15 @@ Do not break these without an explicit decision. They are app-wide, and each has
 - **Room is at version 18.** A new entity means a `MIGRATION_18_19` and a bump, not `fallbackToDestructiveMigration`.
 - **The docs are checked against the code.** `ArchitectureDocTest` fails when a Room table, the Room version or a package is missing from the docs. `HealthConnectLayeringTest` holds the Health Connect layering rule. `FileSizeRatchetTest` stops a file passing 800 lines, and `FunctionLengthRatchetTest` stops a new function passing 150. When one fails, fix the code or the doc in the same commit.
 
+## App icon
+
+When the launcher icon changes (`app/src/main/res/drawable/ic_launcher_foreground.xml` or its background), regenerate the README logo and the store icon in the same commit:
+
+```bash
+python3 scripts/render-readme-logo.py app/src/main/res/drawable/ic_launcher_foreground.xml docs/images/readme-logo.png 512
+python3 scripts/render-readme-logo.py app/src/main/res/drawable/ic_launcher_foreground.xml fastlane/metadata/android/en-US/images/icon.png 512
+```
+
 ## Implementation Rules
 
 ### Feature packages

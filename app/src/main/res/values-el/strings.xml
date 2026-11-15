@@ -516,4 +516,6 @@
     <string name="screenshot_water_percent_skipped">Δεν υπάρχει βάρος στο στιγμιότυπο ή στο προφίλ σώματος: το ποσοστό νερού δεν θα αποθηκευτεί. Οι άλλες τιμές ναι.</string>
     <string name="activity_map_recenter">Εμφάνιση ολόκληρης της διαδρομής</string>
     <string name="dashboard_edit_page_label">Σελίδα %1$d</string>
+    <string name="dashboard_edit_rings_label">Δαχτυλίδια επάνω</string>
+    <string name="dashboard_edit_tiles_label">Πλακίδια</string>
 </resources>
