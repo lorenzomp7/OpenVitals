@@ -1,7 +1,7 @@
 name: publish-personal-release
 on:
   push:
-    branches: [main_claude_02]
+    branches: [main]
     paths: [.github/workflows/publish-personal-release.yml]
   workflow_dispatch:
 permissions:
