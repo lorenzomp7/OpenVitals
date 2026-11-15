@@ -8,6 +8,12 @@
 
 Questa repository distribuisce la versione personalizzata di OpenVitals: dashboard configurabile, periodi giorno/settimana/mese/anno, dettagli degli allenamenti, mappe dei percorsi e importazione da screenshot sul telefono.
 
+## Demo nel browser
+
+La cartella [`web/`](web/README.md) contiene una demo web con inserimento manuale di passi, distanza, calorie attive, sonno, peso, battito a riposo e acqua. Include selettore giorno/settimana/mese/anno, storico, grafici e backup JSON. I dati restano nel browser; non è richiesto un account e non viene effettuato alcun collegamento a Health Connect o HealthKit.
+
+Il workflow **OpenVitals Web** verifica la demo su `main_chatgpt_04` e la pubblica da `main` tramite GitHub Pages, dopo la configurazione iniziale descritta nella [guida web](web/README.md). La compilazione Android su `main` resta indipendente; `web/` non viene inclusa nell'APK. La pubblicazione automatica non converte le modifiche Android in modifiche web.
+
 ## Scarica l’app
 
 [![Scarica APK](https://img.shields.io/badge/Scarica_APK-Android-3DDC84?style=for-the-badge&logo=android&logoColor=white)](https://github.com/lorenzomp7/OpenVitals/releases/latest/download/OpenVitals.apk)

@@ -1,0 +1,10 @@
+import {cp,mkdir,rm,writeFile} from 'node:fs/promises';
+import {fileURLToPath} from 'node:url';
+const root=fileURLToPath(new URL('../',import.meta.url));
+const output=new URL('../dist/',import.meta.url);
+await rm(output,{recursive:true,force:true});
+await mkdir(output,{recursive:true});
+for(const file of ['index.html','app.js','model.js','style.css','manifest.webmanifest']) await cp(`${root}${file}`,new URL(file,output));
+await cp(new URL('../../docs/images/readme-logo.png',import.meta.url),new URL('logo.png',output));
+await writeFile(new URL('.nojekyll',output),'');
+console.log('OpenVitals Web built in web/dist (static files only).');

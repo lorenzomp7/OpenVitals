@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#fff7f2">
+  <meta name="description" content="OpenVitals Web: una demo personale per esplorare attività, sonno e parametri del corpo.">
+  <link rel="icon" href="./logo.png">
+  <link rel="apple-touch-icon" href="./logo.png">
+  <link rel="manifest" href="./manifest.webmanifest">
+  <link rel="stylesheet" href="./style.css">
+  <title>OpenVitals · Demo web</title>
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="./"><img src="./logo.png" alt="" width="44" height="44"><span>OpenVitals<small>La tua salute, a colpo d’occhio.</small></span></a>
+    <span class="badge">DEMO WEB</span>
+  </header>
+  <main>
+    <section class="intro"><div><p class="eyebrow">IL TUO SPAZIO PERSONALE</p><h1>Ogni giorno conta.</h1><p>Attività, recupero e corpo. Tutto in una sola vista.</p></div><button id="add" class="primary">+ Inserisci dati</button></section>
+    <div class="notice"><span class="dot"></span><p>Demo con dati manuali, salvati solo in questo browser. Nessun collegamento ai servizi sanitari.</p></div>
+    <section class="toolbar" aria-label="Selezione periodo"><div class="segments" id="ranges"><button data-range="day" aria-pressed="true">Giorno</button><button data-range="week" aria-pressed="false">Settimana</button><button data-range="month" aria-pressed="false">Mese</button><button data-range="year" aria-pressed="false">Anno</button></div><div class="date-nav"><button id="previous" aria-label="Periodo precedente">‹</button><label><span class="sr-only">Data di riferimento</span><input id="anchor" type="date" required></label><button id="next" aria-label="Periodo successivo">›</button></div></section>
+    <div class="section-title"><h2 id="period-title">Il tuo riepilogo</h2><span id="record-count"></span></div>
+    <section class="hero-grid" aria-label="Obiettivi di attività"><article class="hero-card"><div><p class="eyebrow">UN PASSO ALLA VOLTA</p><h2>Muoviti al tuo ritmo.</h2><p id="steps-caption">Inserisci i tuoi primi passi.</p></div><button class="ring" id="steps-ring" aria-label="Mostra storico passi"><span class="ring-inner"><strong id="steps-value">—</strong><span>passi</span></span></button></article><article class="summary-card"><p class="eyebrow">IL TUO EQUILIBRIO</p><h2>Piccoli gesti.<br>Una visione più chiara.</h2><p>Seleziona una scheda per esplorare lo storico. Puoi modificare ogni giornata quando vuoi.</p><button id="sample" class="secondary">Prova dati di esempio</button></article></section>
+    <section id="metrics" class="metrics" aria-label="Parametri di salute"></section>
+    <section class="history"><div class="section-title"><div><p class="eyebrow">NEL TEMPO</p><h2 id="chart-title">Passi</h2></div><span id="chart-description"></span></div><div id="chart" class="chart"></div><p id="chart-empty" class="empty"></p></section>
+    <section class="entries"><div class="section-title"><h2>Le tue giornate</h2><button id="edit" class="text-button">Modifica la data selezionata</button></div><div id="entries"></div></section>
+    <section class="data-tools" aria-label="Gestione dati"><div><h2>La demo è tua.</h2><p>Esporta un backup prima di cancellare i dati del browser. Ogni dispositivo conserva una copia separata.</p></div><div class="tool-buttons"><button id="export" class="secondary">Esporta JSON</button><label class="secondary file-label">Importa JSON<input id="import" type="file" accept="application/json,.json"></label><button id="clear" class="text-button danger">Cancella dati</button></div></section>
+    <p id="status" role="status" aria-live="polite"></p>
+  </main>
+  <footer><span>OpenVitals · Demo web</span><a href="https://github.com/lorenzomp7/OpenVitals">Codice sorgente · AGPL-3.0</a><span>Nessuna valutazione medica.</span></footer>
+  <dialog id="entry-dialog"><form id="entry-form"><div class="section-title"><h2>La tua giornata</h2><button type="button" id="close-dialog" aria-label="Chiudi">×</button></div><p>Lascia vuoti i parametri che non vuoi registrare. Il salvataggio sostituisce i dati di questa data.</p><label>Data<input name="date" type="date" required></label><div id="fields" class="fields"></div><p id="form-error" role="alert"></p><div class="dialog-actions"><button type="button" id="delete-entry" class="text-button danger">Elimina giornata</button><button class="primary" type="submit">Salva giornata</button></div></form></dialog>
+  <script type="module" src="./app.js"></script>
+</body>
+</html>
