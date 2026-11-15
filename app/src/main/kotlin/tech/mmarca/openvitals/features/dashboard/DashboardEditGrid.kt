@@ -3,7 +3,6 @@ package tech.mmarca.openvitals.features.dashboard
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -96,7 +95,7 @@ internal fun DashboardReorderableEditGrid(
     val rowHeight = dashboardWidgetRowHeight() + LayoutMetrics.minTouchTarget
     val gap = DashboardTileGap
 
-    BoxWithConstraints(modifier = modifier.fillMaxWidth()) {
+    Box(modifier = modifier.fillMaxWidth()) {
         val gridHeight = dashboardEditGridHeight(entries, rowHeight, gap)
         LazyVerticalGrid(
             columns = GridCells.Fixed(DashboardTileColumns),

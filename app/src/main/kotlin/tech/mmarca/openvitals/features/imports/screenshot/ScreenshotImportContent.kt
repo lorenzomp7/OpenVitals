@@ -81,7 +81,7 @@ internal fun ScreenshotImportContent(state: ScreenshotImportState, start: String
                         state.values.any { it.kind == "kg" } -> stringResource(R.string.screenshot_water_percent)
                         profileWeight != null -> stringResource(
                             R.string.screenshot_water_percent_profile_weight,
-                            String.format(java.util.Locale.getDefault(), "%.1f", profileWeight),
+                            String.format(androidx.compose.ui.platform.LocalLocale.current.platformLocale, "%.1f", profileWeight),
                         )
                         else -> stringResource(R.string.screenshot_water_percent_skipped)
                     },
