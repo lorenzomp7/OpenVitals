@@ -23,6 +23,8 @@ import java.time.format.FormatStyle
 import tech.mmarca.openvitals.R
 import tech.mmarca.openvitals.core.presentation.UnitFormatter
 import tech.mmarca.openvitals.domain.insights.SplitSource
+import tech.mmarca.openvitals.domain.insights.CalorieIntervalSource
+import tech.mmarca.openvitals.domain.insights.SessionCalories
 import tech.mmarca.openvitals.domain.model.ActivityCadenceKind
 import tech.mmarca.openvitals.domain.model.ActivityCadenceSample
 import tech.mmarca.openvitals.domain.model.SpeedSample
@@ -35,6 +37,7 @@ import tech.mmarca.openvitals.ui.components.SessionAxis
 import tech.mmarca.openvitals.ui.components.SessionAxisLabels
 import tech.mmarca.openvitals.ui.components.SessionPause
 import tech.mmarca.openvitals.ui.components.formatElapsedChartLabel
+import tech.mmarca.openvitals.ui.theme.CaloriesColor
 import tech.mmarca.openvitals.ui.theme.CycleColor
 import tech.mmarca.openvitals.ui.theme.DistanceColor
 import tech.mmarca.openvitals.ui.theme.ElevationColor
@@ -119,6 +122,57 @@ internal fun ActivitySplitSpeedChartCard(
  * The height profile. Health Connect has no elevation series, so this is
  * drawn from the route's altitudes. No route or altitude, no card.
  */
+/**
+ * 64, 68: the energy burned minute by minute, drawn like the heart rate and
+ * elevation charts. Each point is the kcal per minute of one slice of the
+ * session, from heart rate (Keytel) when the body profile allows it.
+ */
+@Composable
+internal fun ActivityCaloriesChartCard(
+    calories: SessionCalories,
+    sessionStart: Instant,
+    sessionEnd: Instant,
+    unitFormatter: UnitFormatter,
+    modifier: Modifier = Modifier,
+    pauses: List<SessionPause> = emptyList(),
+) {
+    if (calories.intervals.isEmpty() || calories.totalKcal < 1.0) return
+    val perMinute = remember(calories) {
+        calories.intervals.map { interval ->
+            val seconds = java.time.Duration.between(interval.start, interval.end).seconds.coerceAtLeast(1L)
+            interval.start.plusSeconds(seconds / 2) to interval.kcal / (seconds / 60.0)
+        }
+    }
+    val sessionMinutes = java.time.Duration.between(sessionStart, sessionEnd).seconds / 60.0
+    val average = if (sessionMinutes > 0.0) calories.totalKcal / sessionMinutes else 0.0
+    ActivitySessionMetricChartCard(
+        title = stringResource(R.string.activity_calories_per_interval_title),
+        sortedValues = perMinute,
+        sessionStart = sessionStart,
+        sessionEnd = sessionEnd,
+        unitFormatter = unitFormatter,
+        accentColor = CaloriesColor,
+        valueFormatter = { kcalPerMinuteText(it) },
+        statsOverride = listOf(
+            stringResource(R.string.stat_total) to unitFormatter.energy(calories.totalKcal).text,
+            stringResource(R.string.summary_average) to kcalPerMinuteText(average),
+            stringResource(R.string.activity_calories_peak) to kcalPerMinuteText(perMinute.maxOf { it.second }),
+        ),
+        footnote = stringResource(
+            if (calories.source == CalorieIntervalSource.HEART_RATE) {
+                R.string.activity_calories_from_heart_rate
+            } else {
+                R.string.activity_calories_from_recorded
+            },
+        ),
+        modifier = modifier,
+        pauses = pauses,
+    )
+}
+
+private fun kcalPerMinuteText(value: Double): String =
+    String.format(java.util.Locale.getDefault(), "%.1f kcal/min", value)
+
 /** Speed worth charting: at least one sample moved. A trainer without a wheel sensor writes zeros. */
 internal fun hasMeaningfulSpeed(samples: List<SpeedSample>): Boolean =
     samples.any { it.metersPerSecond.isFinite() && it.metersPerSecond > 0.05 }
@@ -209,6 +263,8 @@ private fun ActivitySessionMetricChartCard(
     pauses: List<SessionPause> = emptyList(),
     // Label to value; replaces the average, range and sample stats when set.
     statsOverride: List<Pair<String, String>>? = null,
+    // A line under the "recorded" time, such as where the numbers came from.
+    footnote: String? = null,
 ) {
     if (sortedValues.isEmpty()) return
 
@@ -325,6 +381,13 @@ private fun ActivitySessionMetricChartCard(
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
+            footnote?.let {
+                Text(
+                    text = it,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
         }
     }
 }

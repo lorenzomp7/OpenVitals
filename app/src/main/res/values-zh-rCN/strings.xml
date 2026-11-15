@@ -3823,8 +3823,13 @@
     <string name="settings_online_maps_touch_to_disconnect">点按此处断开连接</string>
     <string name="mapbox_login_body_short">在浏览器中登录以启用运动地图。公共地图令牌保存在此手机上。</string>
     <string name="metric_sections_save_changes">保存布局更改？</string>
-    <string name="activity_calories_per_interval_title">每 %1$d 分钟消耗的卡路里</string>
+    <string name="activity_calories_per_interval_title">每分钟消耗的卡路里</string>
     <string name="activity_calories_peak">峰值</string>
     <string name="activity_calories_from_heart_rate">根据心率以及身体资料中的体重、年龄和性别估算。</string>
     <string name="activity_calories_from_recorded">来自应用记录的卡路里。在身体资料中添加体重和年龄即可根据心率估算。</string>
+    <string name="unsaved_changes_title">保存更改？</string>
+    <string name="screenshot_water_percent_profile_weight">身体水分百分比会按身体资料中的体重（%1$s kg）换算为千克。</string>
+    <string name="screenshot_water_percent_skipped">截图和身体资料中都没有体重：身体水分百分比不会保存，其他数值会保存。</string>
+    <string name="activity_map_recenter">显示完整路线</string>
+    <string name="dashboard_edit_page_label">第 %1$d 页</string>
 </resources>

@@ -46,7 +46,7 @@ jobs:
           NEXT=$((PREVIOUS + 1))
           if (( NEXT < 1070400000 )); then NEXT=1070400000; fi
           echo "OPENVITALS_VERSION_CODE=$NEXT" >> "$GITHUB_ENV"
-          echo "OPENVITALS_VERSION_NAME=2.17.1-personal-claude-02" >> "$GITHUB_ENV"
+          echo "OPENVITALS_VERSION_NAME=2.17.2-personal-claude-02" >> "$GITHUB_ENV"
       - name: Build the signed personal update
         env:
           OPENVITALS_RELEASE_STORE_FILE: ${{ github.workspace }}/personal/personal.p12
@@ -103,24 +103,25 @@ jobs:
           cat > release-notes.md <<EOF
           Scarica **OpenVitals.apk** dagli allegati e aprilo sul telefono.
 
-          Branch main_claude_02 — seconda tornata: 54, 55, 63, 64, 65, 66, 67:
-          - 54, 55: nella scheda "Per tipo di attività" e nell'elenco, tapis roulant e bici da camera mostrano Tempo e BPM medi (niente più distanza e velocità vuote).
-          - 64: il grafico delle calorie ora mostra le calorie bruciate in ogni intervallo (1 min, o più per sessioni lunghe) a barre, calcolate dai battiti con l'equazione di Keytel usando peso, età e sesso del profilo corporeo; senza profilo usa le calorie registrate dalle app.
-          - 65: tolti gli allenamenti pianificati dalla schermata Attività.
-          - 66: le tile del menu "+ log" sono più luminose nel tema AMOLED.
-          - 67: l'icona impostazioni delle sezioni (Attività e le altre schede) chiede "Salva" o "Scarta" alla fine, come la matita della dashboard.
-          - 63: anche l'arrivo alla dashboard dalla barra in basso o dopo un salvataggio è immediato, senza dissolvenza.
+          Branch main_claude_02 — terza tornata: 35, 63, 64, 68, 69, 70, 71, 72, 73, 74:
+          - 35: nuovo "Toggle animato OpenVitals" in stile Gemini: onde luminose nei colori Google che si fondono, scintille e un anello di colori che scorre sul bordo.
+          - 63: tolto il "predictive back" di sistema che disegnava la dashboard sopra la schermata in uscita; transizioni Material "fade through" senza sovrapposizioni, ritorno alla dashboard immediato.
+          - 64, 68: il grafico delle calorie (kcal al minuto dai battiti) ha lo stesso stile dei grafici Heart rate ed Elevation.
+          - 69, 70: "Salva o Scarta" quando si esce con modifiche non salvate: matita del "+ log", profilo corporeo, import screenshot, peso/composizione, parametri vitali, attività manuale, schede mediche. Senza modifiche si torna indietro normalmente.
+          - 71, 72: nella mappa Mapbox a tutto schermo la X è in basso a destra (non copre più la bussola) e c'è un pulsante per riportare in vista tutto il percorso.
+          - 73: l'import screenshot si può salvare anche senza peso nello screenshot: l'acqua corporea in % usa il peso del profilo corporeo (o viene saltata, salvando il resto).
+          - 74: in modifica della dashboard con "pagine da 6" i toggle sono divisi nelle pagine reali, con l'etichetta "Pagina N".
 
           Questa versione aggiorna l'installazione personale compatibile di OpenVitals senza disinstallarla. La revisione ha superato la verifica completa (verify) in questa stessa esecuzione; package e firma coincidono con l'APK pubblicato precedente; installazione, aggiornamento, avvio e import screenshot sono verificati su Android 15.
 
-          Versione: **2.17.1-personal-claude-02**. Version code: **$OPENVITALS_VERSION_CODE**.
+          Versione: **2.17.2-personal-claude-02**. Version code: **$OPENVITALS_VERSION_CODE**.
           Sorgenti: https://github.com/$GH_REPO/commit/$GITHUB_SHA
           Compilazione e verifica aggiornamento: https://github.com/$GH_REPO/actions/runs/$GITHUB_RUN_ID
           EOF
           if gh release view "$TAG" > /dev/null 2>&1; then
             echo "Release already exists; keeping the published APK unchanged."
           else
-            gh release create "$TAG" release/OpenVitals.apk release/SHA256SUMS.txt --target "$GITHUB_SHA" --title "OpenVitals 2.17.1 · main_claude_02" --notes-file release-notes.md --latest
+            gh release create "$TAG" release/OpenVitals.apk release/SHA256SUMS.txt --target "$GITHUB_SHA" --title "OpenVitals 2.17.2 · main_claude_02" --notes-file release-notes.md --latest
           fi
       - uses: actions/upload-artifact@v4
         if: always()

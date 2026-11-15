@@ -20,6 +20,8 @@ internal data class UserProfileState(
     val loading: Boolean = true,
     val saving: Boolean = false,
     val error: ScreenError? = null,
+    /** A photo picked or removed but not saved yet. */
+    val photoPending: Boolean = false,
 )
 
 @HiltViewModel
@@ -35,7 +37,7 @@ class UserProfileViewModel @Inject constructor(private val repository: UserProfi
     fun refresh() {
         viewModelScope.launch {
             val profile = repository.read()
-            _state.value = UserProfileState(profile.name, profile.age, if (photoChanged) _state.value.photo else repository.photo(), loading = false)
+            _state.value = UserProfileState(profile.name, profile.age, if (photoChanged) _state.value.photo else repository.photo(), loading = false, photoPending = photoChanged)
         }
     }
 
@@ -49,7 +51,7 @@ class UserProfileViewModel @Inject constructor(private val repository: UserProfi
                 onSuccess = {
                     photoChanged = false
                     pendingPhoto = null
-                    _state.value = _state.value.copy(name = name.trim(), age = age, saving = false)
+                    _state.value = _state.value.copy(name = name.trim(), age = age, saving = false, photoPending = false)
                     onSaved()
                 },
                 onFailure = { _state.value = _state.value.copy(error = it.toScreenError(), saving = false) },
@@ -60,7 +62,7 @@ class UserProfileViewModel @Inject constructor(private val repository: UserProfi
     fun setPhoto(uri: Uri?) {
         viewModelScope.launch {
             runCatching { repository.previewPhoto(uri) }.fold(
-                onSuccess = { pendingPhoto = uri; photoChanged = true; _state.value = _state.value.copy(photo = it, error = null) },
+                onSuccess = { pendingPhoto = uri; photoChanged = true; _state.value = _state.value.copy(photo = it, error = null, photoPending = true) },
                 onFailure = { _state.value = _state.value.copy(error = it.toScreenError(), saving = false) },
             )
         }

@@ -3855,8 +3855,13 @@
     <string name="settings_online_maps_touch_to_disconnect">Touchez ici pour vous déconnecter</string>
     <string name="mapbox_login_body_short">Connectez-vous dans votre navigateur pour activer les cartes d\'entraînement. Le jeton public reste sur ce téléphone.</string>
     <string name="metric_sections_save_changes">Enregistrer les modifications de la disposition ?</string>
-    <string name="activity_calories_per_interval_title">Calories brûlées toutes les %1$d min</string>
+    <string name="activity_calories_per_interval_title">Calories brûlées par minute</string>
     <string name="activity_calories_peak">Pic</string>
     <string name="activity_calories_from_heart_rate">Estimées à partir de la fréquence cardiaque et du poids, de l\'âge et du sexe de votre profil corporel.</string>
     <string name="activity_calories_from_recorded">D\'après les calories enregistrées par vos applis. Ajoutez poids et âge à votre profil corporel pour les estimer à partir du cœur.</string>
+    <string name="unsaved_changes_title">Enregistrer les modifications ?</string>
+    <string name="screenshot_water_percent_profile_weight">Le pourcentage d\'eau corporelle est converti en kg avec le poids de votre profil corporel (%1$s kg).</string>
+    <string name="screenshot_water_percent_skipped">Aucun poids dans la capture ni dans votre profil corporel : le pourcentage d\'eau corporelle ne sera pas enregistré. Les autres valeurs oui.</string>
+    <string name="activity_map_recenter">Afficher tout le parcours</string>
+    <string name="dashboard_edit_page_label">Page %1$d</string>
 </resources>

@@ -129,8 +129,32 @@ class ManualEntryViewModel @Inject constructor(
 
     // Widget layout.
 
+    /** The tiles before editing began; edits are a draft until Save, as on the dashboard. */
+    private var widgetsBeforeEdit: List<ManualEntryWidgetId>? = null
+
     fun toggleWidgetEdit() {
-        _uiState.value = _uiState.value.copy(isEditingWidgets = !_uiState.value.isEditingWidgets)
+        if (_uiState.value.isEditingWidgets) {
+            finishWidgetEdit(save = true)
+        } else {
+            widgetsBeforeEdit = _uiState.value.widgets
+            _uiState.value = _uiState.value.copy(isEditingWidgets = true)
+        }
+    }
+
+    /** Whether the draft differs from the tiles editing started from. */
+    fun hasWidgetEdits(): Boolean = widgetsBeforeEdit?.let { it != _uiState.value.widgets } == true
+
+    /** 69: Save writes the new tiles; Discard puts the old ones back. */
+    fun finishWidgetEdit(save: Boolean) {
+        val before = widgetsBeforeEdit
+        widgetsBeforeEdit = null
+        val widgets = _uiState.value.widgets
+        if (save) {
+            if (before != widgets) widgetOrder.setManualEntryWidgetOrder(widgets.map { it.name })
+            _uiState.value = _uiState.value.copy(isEditingWidgets = false)
+        } else {
+            _uiState.value = _uiState.value.copy(isEditingWidgets = false, widgets = before ?: widgets)
+        }
     }
 
     fun removeWidget(widgetId: ManualEntryWidgetId) {
@@ -160,7 +184,7 @@ class ManualEntryViewModel @Inject constructor(
 
     private fun updateWidgets(widgets: List<ManualEntryWidgetId>) {
         val customizableWidgets = customizableManualEntryWidgetIds(widgets)
-        widgetOrder.setManualEntryWidgetOrder(customizableWidgets.map { it.name })
+        if (!_uiState.value.isEditingWidgets) widgetOrder.setManualEntryWidgetOrder(customizableWidgets.map { it.name })
         _uiState.value = _uiState.value.copy(widgets = customizableWidgets)
     }
 }

@@ -1,5 +1,7 @@
 package tech.mmarca.openvitals.features.manualentry.vitals
 
+import tech.mmarca.openvitals.ui.components.UnsavedChangesBackHandler
+import tech.mmarca.openvitals.ui.components.formHasChanges
 import tech.mmarca.openvitals.core.presentation.TemperatureUnits
 import tech.mmarca.openvitals.ui.components.OpenVitalsCard
 
@@ -120,22 +122,7 @@ fun VitalsMeasurementEntryScreen(
         viewModel.refreshPermission()
     }
 
-    LazyColumn(contentPadding = PaddingValues(vertical = 8.dp)) {
-        item {
-            VitalsMeasurementEntryCard(
-                state = state,
-                unitFormatter = unitFormatter,
-                onInputChanged = viewModel::updateInput,
-                onSecondaryInputChanged = viewModel::updateSecondaryInput,
-                onPulseInputChanged = viewModel::updatePulseInput,
-                onSelectBpMealContext = viewModel::selectBpMealContext,
-                onSelectBpBodyPosition = viewModel::selectBpBodyPosition,
-                onSelectBpMeasurementLocation = viewModel::selectBpMeasurementLocation,
-                onSelectGlucoseUnit = viewModel::selectGlucoseUnit,
-                onGlucoseChanged = viewModel::updateGlucose,
-                onSelectVo2MaxMeasurementMethod = viewModel::selectVo2MaxMeasurementMethod,
-                onEntryTimeChanged = viewModel::updateEntryTime,
-                onAddEntry = {
+    val addEntry: () -> Unit = {
                     viewModel.addEntry(
                         value = canonicalVitalsValue(
                             input = state.inputText,
@@ -153,7 +140,38 @@ fun VitalsMeasurementEntryScreen(
                             null
                         },
                     )
-                },
+                }
+    // 70: back with an unsaved reading asks Save or Discard; Save leaves once it is stored.
+    val hasChanges = formHasChanges(
+        signature = listOf(
+            state.inputText, state.secondaryInputText, state.pulseInputText, state.bpMealContext,
+            state.bpBodyPosition, state.bpMeasurementLocation, state.glucose, state.vo2MaxMeasurementMethod,
+            state.editTime.takeIf { state.isEditMode },
+        ),
+        ready = !state.isCheckingPermission && (!state.isEditMode || state.inputText.isNotBlank()),
+    )
+    UnsavedChangesBackHandler(
+        hasChanges = hasChanges && !state.saveCompleted,
+        canSave = !state.isSavingEntry && state.inputText.isNotBlank(),
+        onSave = { addEntry() },
+    )
+
+    LazyColumn(contentPadding = PaddingValues(vertical = 8.dp)) {
+        item {
+            VitalsMeasurementEntryCard(
+                state = state,
+                unitFormatter = unitFormatter,
+                onInputChanged = viewModel::updateInput,
+                onSecondaryInputChanged = viewModel::updateSecondaryInput,
+                onPulseInputChanged = viewModel::updatePulseInput,
+                onSelectBpMealContext = viewModel::selectBpMealContext,
+                onSelectBpBodyPosition = viewModel::selectBpBodyPosition,
+                onSelectBpMeasurementLocation = viewModel::selectBpMeasurementLocation,
+                onSelectGlucoseUnit = viewModel::selectGlucoseUnit,
+                onGlucoseChanged = viewModel::updateGlucose,
+                onSelectVo2MaxMeasurementMethod = viewModel::selectVo2MaxMeasurementMethod,
+                onEntryTimeChanged = viewModel::updateEntryTime,
+                onAddEntry = addEntry,
                 onRequestWritePermission = {
                     requestWritePermissions.launch(state.writePermissions)
                 },

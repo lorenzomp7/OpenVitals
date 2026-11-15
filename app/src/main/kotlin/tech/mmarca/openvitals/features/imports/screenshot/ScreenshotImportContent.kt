@@ -26,15 +26,18 @@ internal data class ScreenshotImportActions(
     val onType: (Int) -> Unit = {}, val onPermissions: () -> Unit = {}, val onSave: () -> Unit = {}, val onClose: () -> Unit = {},
 )
 
+/** Whether the review can be saved as it stands: shared by the Save button and the leave dialog. */
+internal fun screenshotCanSave(state: ScreenshotImportState, start: String, end: String, confirmed: Boolean): Boolean =
+    state.values.any { it.kind != "bmi" } &&
+        (state.values.none { it.kind == "duration_min" } || state.exerciseType != null) &&
+        confirmed && state.writesGranted && !state.busy && !state.saved && start.isNotBlank() && end.isNotBlank()
+
 internal fun screenshotNeedsInterval(values: List<ScreenshotValue>) = values.any { it.kind in setOf("duration_min", "steps", "km", "kcal") }
 
 @Composable
 internal fun ScreenshotImportContent(state: ScreenshotImportState, start: String, end: String, confirmed: Boolean, actions: ScreenshotImportActions) {
     val editable = !state.busy && !state.saved
-    val canSave = state.values.any { it.kind != "bmi" } &&
-        (state.values.none { it.kind == "body_water_percent" } || state.values.any { it.kind == "kg" }) &&
-        (state.values.none { it.kind == "duration_min" } || state.exerciseType != null) &&
-        confirmed && state.writesGranted && editable && start.isNotBlank() && end.isNotBlank()
+    val canSave = screenshotCanSave(state, start, end, confirmed)
     Column(
         Modifier.fillMaxWidth().windowInsetsPadding(WindowInsets.systemBars).testTag("screenshot_import_form"),
     ) {
@@ -70,7 +73,20 @@ internal fun ScreenshotImportContent(state: ScreenshotImportState, start: String
                 ScreenshotValueField(item, editable, { actions.onEdit(index, it) }, { actions.onRemove(index) })
             }
             if (state.values.any { it.kind == "bmi" }) ScreenshotHint(stringResource(R.string.screenshot_bmi_preview))
-            if (state.values.any { it.kind == "body_water_percent" }) ScreenshotHint(stringResource(R.string.screenshot_water_percent))
+            if (state.values.any { it.kind == "body_water_percent" }) {
+                // 73: a screenshot without a weight takes the body profile's; with neither, body water % is skipped.
+                val profileWeight = state.referenceWeightKg
+                ScreenshotHint(
+                    when {
+                        state.values.any { it.kind == "kg" } -> stringResource(R.string.screenshot_water_percent)
+                        profileWeight != null -> stringResource(
+                            R.string.screenshot_water_percent_profile_weight,
+                            String.format(java.util.Locale.getDefault(), "%.1f", profileWeight),
+                        )
+                        else -> stringResource(R.string.screenshot_water_percent_skipped)
+                    },
+                )
+            }
             if (state.values.isNotEmpty()) {
                 if (state.values.any { it.kind == "duration_min" }) ScreenshotWorkoutPicker(state, actions.onType)
                 ScreenshotHint(stringResource(R.string.screenshot_import_time_help))

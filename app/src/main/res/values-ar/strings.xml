@@ -157,8 +157,13 @@
     <string name="settings_online_maps_touch_to_disconnect">المس هنا لقطع الاتصال</string>
     <string name="mapbox_login_body_short">سجّل الدخول من المتصفح لتفعيل خرائط التمارين. يبقى رمز الخريطة العام على هذا الهاتف.</string>
     <string name="metric_sections_save_changes">هل تريد حفظ تغييرات التخطيط؟</string>
-    <string name="activity_calories_per_interval_title">السعرات المحروقة كل %1$d دقيقة</string>
+    <string name="activity_calories_per_interval_title">السعرات المحروقة في الدقيقة</string>
     <string name="activity_calories_peak">الذروة</string>
     <string name="activity_calories_from_heart_rate">تقدير من معدل ضربات القلب والوزن والعمر والجنس في ملفك الجسدي.</string>
     <string name="activity_calories_from_recorded">من السعرات التي سجلتها تطبيقاتك. أضف الوزن والعمر إلى ملفك الجسدي لتقديرها من نبض القلب.</string>
+    <string name="unsaved_changes_title">هل تريد حفظ التغييرات؟</string>
+    <string name="screenshot_water_percent_profile_weight">تُحوَّل نسبة ماء الجسم إلى كغ باستخدام الوزن في ملفك الجسدي (%1$s كغ).</string>
+    <string name="screenshot_water_percent_skipped">لا يوجد وزن في لقطة الشاشة ولا في ملفك الجسدي: لن تُحفظ نسبة ماء الجسم. ستُحفظ القيم الأخرى.</string>
+    <string name="activity_map_recenter">عرض المسار بالكامل</string>
+    <string name="dashboard_edit_page_label">الصفحة %1$d</string>
 </resources>

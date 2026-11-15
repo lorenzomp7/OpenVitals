@@ -28,6 +28,8 @@ internal data class ScreenshotImportState(
     val saved: Boolean = false,
     val writesGranted: Boolean = false,
     val error: ScreenError? = null,
+    /** The body profile's weight, for body water % when the screenshot has no weight. */
+    val referenceWeightKg: Double? = null,
 )
 
 @HiltViewModel
@@ -35,7 +37,10 @@ internal class ScreenshotImportViewModel @Inject constructor(
     @ApplicationContext private val context: Context,
     private val repository: AppleHealthImportRepository,
     private val healthConnect: tech.mmarca.openvitals.healthconnect.HealthConnectManager,
+    private val bodyProfile: tech.mmarca.openvitals.data.repository.contract.BodyProfilePreferences,
 ) : ViewModel() {
+    private fun profileWeightKg(): Double? =
+        runCatching { bodyProfile.bodyProfile().weightKg }.getOrNull()?.takeIf { it.isFinite() && it > 0 }
     private val mutable = MutableStateFlow(ScreenshotImportState())
     val state = mutable.asStateFlow()
     private var sharedUri: Uri? = null
@@ -61,7 +66,7 @@ internal class ScreenshotImportViewModel @Inject constructor(
                 val text = recognized.text
                 val values = screenshotOcrValues(recognized)
                 val seconds = values.firstOrNull { it.kind == "duration_min" }?.value?.toDoubleOrNull()?.times(60)?.let { kotlin.math.round(it).toLong() } ?: 0L
-                mutable.value = ScreenshotImportState(values = values,
+                mutable.value = ScreenshotImportState(values = values, referenceWeightKg = profileWeightKg(),
                     exerciseType = ScreenshotParser.workoutType(text, screenshotWorkoutLabels(context)),
                     suggestedStart = timestamp?.minusSeconds(seconds)?.toString().orEmpty(),
                     suggestedEnd = timestamp?.toString().orEmpty())
@@ -106,8 +111,12 @@ internal class ScreenshotImportViewModel @Inject constructor(
         mutable.value = mutable.value.copy(busy = true, error = null)
         viewModelScope.launch {
             try {
-                repository.insertImportedRecords(screenshotRecords(values.map { it.kind to it.value }, start, end,
-                    if (values.any { it.kind == "duration_min" }) requireNotNull(mutable.value.exerciseType) else null))
+                // Body water % without any weight to take it of is left out rather than blocking the rest.
+                val weight = mutable.value.referenceWeightKg
+                val savable = values.filterNot { it.kind == "body_water_percent" && values.none { v -> v.kind == "kg" } && weight == null }
+                repository.insertImportedRecords(screenshotRecords(savable.map { it.kind to it.value }, start, end,
+                    if (values.any { it.kind == "duration_min" }) requireNotNull(mutable.value.exerciseType) else null,
+                    referenceWeightKg = weight))
                 mutable.value = mutable.value.copy(busy = false, saved = true)
             } catch (error: Exception) {
                 if (error is kotlinx.coroutines.CancellationException) throw error

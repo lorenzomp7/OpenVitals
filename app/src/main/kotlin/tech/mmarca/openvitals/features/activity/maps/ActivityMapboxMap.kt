@@ -25,6 +25,7 @@ import com.mapbox.maps.CameraOptions
 import com.mapbox.maps.EdgeInsets
 import com.mapbox.maps.MapView
 import com.mapbox.maps.Style
+import com.mapbox.maps.plugin.animation.camera
 import com.mapbox.maps.plugin.annotation.annotations
 import com.mapbox.maps.plugin.annotation.generated.CircleAnnotationOptions
 import com.mapbox.maps.plugin.annotation.generated.PolylineAnnotationOptions
@@ -45,6 +46,8 @@ import tech.mmarca.openvitals.features.activity.RoutePreview
 internal fun ActivityRouteMapContent(
     points: List<ExerciseRoutePoint>,
     modifier: Modifier = Modifier,
+    /** 72: each new value brings the whole route back into view. */
+    recenterRequest: Int = 0,
 ) {
     val validPoints = remember(points) { points.filter {
         it.latitude.isFinite() && it.longitude.isFinite() &&
@@ -63,13 +66,19 @@ internal fun ActivityRouteMapContent(
     }
     val dark = MaterialTheme.colorScheme.background.luminance() < 0.5f
     key(validPoints, dark, token) {
-        MapboxRouteContent(validPoints, dark, token, modifier)
+        MapboxRouteContent(validPoints, dark, token, modifier, recenterRequest)
     }
 }
 
 @SuppressLint("ClickableViewAccessibility")
 @Composable
-private fun MapboxRouteContent(points: List<ExerciseRoutePoint>, dark: Boolean, token: String, modifier: Modifier) {
+private fun MapboxRouteContent(
+    points: List<ExerciseRoutePoint>,
+    dark: Boolean,
+    token: String,
+    modifier: Modifier,
+    recenterRequest: Int = 0,
+) {
     val context = LocalContext.current
     var ready by remember { mutableStateOf(false) }
     val coordinates = remember(points) { points.map { Point.fromLngLat(it.longitude, it.latitude) } }
@@ -109,13 +118,7 @@ private fun MapboxRouteContent(points: List<ExerciseRoutePoint>, dark: Boolean, 
                 markers.create(CircleAnnotationOptions().withPoint(point).withCircleColor(color)
                     .withCircleRadius(7.0).withCircleStrokeColor("#FFFFFF").withCircleStrokeWidth(2.0))
             }
-            mapView.post {
-                mapView.mapboxMap.cameraForCoordinates(
-                    coordinates, CameraOptions.Builder().build(), EdgeInsets(48.0, 48.0, 48.0, 48.0), 16.0, null,
-                ) { camera ->
-                    mapView.mapboxMap.setCamera(camera)
-                }
-            }
+            mapView.post { fitRoute(mapView, coordinates, animate = false) }
         }
         onDispose {
             lifecycleOwner.lifecycle.removeObserver(observer)
@@ -125,11 +128,31 @@ private fun MapboxRouteContent(points: List<ExerciseRoutePoint>, dark: Boolean, 
             mapView.onDestroy()
         }
     }
+    LaunchedEffect(recenterRequest) {
+        if (recenterRequest > 0) fitRoute(mapView, coordinates, animate = true)
+    }
     Box(modifier) {
         // Also covers offline first launch, missing styles, revoked token and tile failures.
         RoutePreview(points = points, modifier = Modifier.fillMaxSize())
         AndroidView(factory = { mapView }, modifier = Modifier.fillMaxSize()
             .alpha(if (ready) 1f else 0f)
             .then(if (ready) Modifier.testTag("mapbox-cartography") else Modifier))
+    }
+}
+
+/** Frames the whole route; [animate] flies there, as the recenter button does. */
+private fun fitRoute(mapView: MapView, coordinates: List<Point>, animate: Boolean) {
+    mapView.mapboxMap.cameraForCoordinates(
+        coordinates, CameraOptions.Builder().bearing(0.0).pitch(0.0).build(),
+        EdgeInsets(48.0, 48.0, 48.0, 48.0), 16.0, null,
+    ) { camera ->
+        if (animate) {
+            mapView.camera.easeTo(
+                camera,
+                com.mapbox.maps.plugin.animation.MapAnimationOptions.mapAnimationOptions { duration(600L) },
+            )
+        } else {
+            mapView.mapboxMap.setCamera(camera)
+        }
     }
 }

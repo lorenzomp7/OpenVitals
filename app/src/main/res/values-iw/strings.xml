@@ -157,8 +157,13 @@
     <string name="settings_online_maps_touch_to_disconnect">געו כאן כדי להתנתק</string>
     <string name="mapbox_login_body_short">התחברו בדפדפן כדי להפעיל מפות אימון. אסימון המפה הציבורי נשאר בטלפון הזה.</string>
     <string name="metric_sections_save_changes">לשמור את השינויים בפריסה?</string>
-    <string name="activity_calories_per_interval_title">קלוריות שנשרפו כל %1$d דק׳</string>
+    <string name="activity_calories_per_interval_title">קלוריות שנשרפו לדקה</string>
     <string name="activity_calories_peak">שיא</string>
     <string name="activity_calories_from_heart_rate">הערכה לפי הדופק ולפי המשקל, הגיל והמין בפרופיל הגוף.</string>
     <string name="activity_calories_from_recorded">לפי הקלוריות שהאפליקציות רשמו. הוסיפו משקל וגיל לפרופיל הגוף כדי להעריך אותן לפי הדופק.</string>
+    <string name="unsaved_changes_title">לשמור את השינויים?</string>
+    <string name="screenshot_water_percent_profile_weight">אחוז מי הגוף מומר לק״ג לפי המשקל בפרופיל הגוף (%1$s ק״ג).</string>
+    <string name="screenshot_water_percent_skipped">אין משקל בצילום המסך או בפרופיל הגוף: אחוז מי הגוף לא יישמר. שאר הערכים יישמרו.</string>
+    <string name="activity_map_recenter">הצגת המסלול כולו</string>
+    <string name="dashboard_edit_page_label">עמוד %1$d</string>
 </resources>

@@ -1,5 +1,7 @@
 package tech.mmarca.openvitals.features.medical
 
+import tech.mmarca.openvitals.ui.components.UnsavedChangesBackHandler
+import tech.mmarca.openvitals.ui.components.formHasChanges
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -64,6 +66,16 @@ fun MedicalRecordEntryScreen(viewModel: MedicalRecordEntryViewModel, onDone: () 
         else -> null
     }
     val nextLabel = stringResource(accessLabelRes(state.canWrite, access == MedicalAccessAction.OpenSettings))
+    // 70: a typed record left with back asks Save or Discard.
+    val changed = formHasChanges(
+        signature = listOf(state.draft, state.owner),
+        ready = !state.isLoading && state.draft != null,
+    )
+    UnsavedChangesBackHandler(
+        hasChanges = changed && !state.saved,
+        canSave = state.canWrite && state.canSave(LocalDate.now()) && !state.isSaving,
+        onSave = { viewModel.save(sourceName) },
+    )
 
     WithHealthConnectFeatureScreen(feature = HealthConnectFeature.MEDICAL_IMPORT, modifier = Modifier.fillMaxSize()) {
         val draft = state.draft

@@ -1,5 +1,6 @@
 package tech.mmarca.openvitals.features.settings
 
+import tech.mmarca.openvitals.ui.components.UnsavedChangesBackHandler
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -39,6 +40,27 @@ fun BodyProfileSettingsScreen(viewModel: BodySettingsViewModel) {
     // The write permission is granted in Health Connect, so it is re-read on the way back.
     LifecycleEventEffect(Lifecycle.Event.ON_RESUME) { viewModel.refresh() }
     val permissionLauncher = rememberHealthConnectPermissionLauncher(onResult = { viewModel.refresh() })
+
+    fun saveAll(after: () -> Unit = {}) {
+        profileViewModel.save(name, draft.birthDate?.let { draft.ageYears() }) {
+            viewModel.updateBodyProfile(draft)
+            viewModel.updateCaffeinePreferences(metabolism.copy(profileCompleted = true))
+            viewModel.setBmrEstimateEnabled(bmrEnabled)
+            after()
+        }
+    }
+    // 70: back with unsaved edits asks Save or Discard; with none, it simply goes back.
+    UnsavedChangesBackHandler(
+        hasChanges = !identity.loading && (
+            name.trim() != identity.name.trim() ||
+                draft != state.bodyProfile ||
+                metabolism != state.caffeinePreferences ||
+                bmrEnabled != state.bmrEstimateEnabled ||
+                identity.photoPending
+            ),
+        canSave = !identity.saving,
+        onSave = { leave -> saveAll(leave) },
+    )
 
     SettingsSectionList {
         item {
@@ -103,13 +125,7 @@ fun BodyProfileSettingsScreen(viewModel: BodySettingsViewModel) {
         item {
             OpenVitalsTonalButton(
                 enabled = !identity.loading && !identity.saving,
-                onClick = {
-                    profileViewModel.save(name, draft.birthDate?.let { draft.ageYears() }) {
-                        viewModel.updateBodyProfile(draft)
-                        viewModel.updateCaffeinePreferences(metabolism.copy(profileCompleted = true))
-                        viewModel.setBmrEstimateEnabled(bmrEnabled)
-                    }
-                },
+                onClick = { saveAll() },
                 modifier = Modifier.padding(horizontal = LayoutMetrics.screenGutter, vertical = 16.dp),
             ) { Text(stringResource(R.string.action_save)) }
         }

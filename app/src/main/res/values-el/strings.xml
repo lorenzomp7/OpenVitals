@@ -507,8 +507,13 @@
     <string name="settings_online_maps_touch_to_disconnect">Πατήστε εδώ για αποσύνδεση</string>
     <string name="mapbox_login_body_short">Συνδεθείτε στο πρόγραμμα περιήγησης για να ενεργοποιήσετε τους χάρτες προπονήσεων. Το δημόσιο διακριτικό μένει σε αυτό το τηλέφωνο.</string>
     <string name="metric_sections_save_changes">Αποθήκευση αλλαγών διάταξης;</string>
-    <string name="activity_calories_per_interval_title">Θερμίδες που κάηκαν ανά %1$d λεπ.</string>
+    <string name="activity_calories_per_interval_title">Θερμίδες που καίγονται ανά λεπτό</string>
     <string name="activity_calories_peak">Μέγιστο</string>
     <string name="activity_calories_from_heart_rate">Εκτίμηση από τον καρδιακό ρυθμό και το βάρος, την ηλικία και το φύλο του προφίλ σώματος.</string>
     <string name="activity_calories_from_recorded">Από τις θερμίδες που κατέγραψαν οι εφαρμογές σας. Προσθέστε βάρος και ηλικία στο προφίλ σώματος για εκτίμηση από τον καρδιακό ρυθμό.</string>
+    <string name="unsaved_changes_title">Αποθήκευση αλλαγών;</string>
+    <string name="screenshot_water_percent_profile_weight">Το ποσοστό νερού σώματος μετατρέπεται σε kg με το βάρος του προφίλ σώματος (%1$s kg).</string>
+    <string name="screenshot_water_percent_skipped">Δεν υπάρχει βάρος στο στιγμιότυπο ή στο προφίλ σώματος: το ποσοστό νερού δεν θα αποθηκευτεί. Οι άλλες τιμές ναι.</string>
+    <string name="activity_map_recenter">Εμφάνιση ολόκληρης της διαδρομής</string>
+    <string name="dashboard_edit_page_label">Σελίδα %1$d</string>
 </resources>

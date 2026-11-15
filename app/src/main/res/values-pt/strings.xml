@@ -3849,8 +3849,13 @@
     <string name="settings_online_maps_touch_to_disconnect">Toque aqui para desligar</string>
     <string name="mapbox_login_body_short">Inicie sessão no navegador para ativar os mapas de treino. O token público fica neste telemóvel.</string>
     <string name="metric_sections_save_changes">Guardar as alterações do esquema?</string>
-    <string name="activity_calories_per_interval_title">Calorias queimadas a cada %1$d min</string>
+    <string name="activity_calories_per_interval_title">Calorias queimadas por minuto</string>
     <string name="activity_calories_peak">Pico</string>
     <string name="activity_calories_from_heart_rate">Estimadas a partir da frequência cardíaca e do peso, idade e sexo do seu perfil corporal.</string>
     <string name="activity_calories_from_recorded">A partir das calorias registadas pelas suas apps. Adicione peso e idade ao perfil corporal para as estimar pela frequência cardíaca.</string>
+    <string name="unsaved_changes_title">Guardar as alterações?</string>
+    <string name="screenshot_water_percent_profile_weight">A percentagem de água corporal é convertida em kg com o peso do seu perfil corporal (%1$s kg).</string>
+    <string name="screenshot_water_percent_skipped">Sem peso na captura nem no perfil corporal: a percentagem de água corporal não será guardada. Os outros valores sim.</string>
+    <string name="activity_map_recenter">Mostrar todo o percurso</string>
+    <string name="dashboard_edit_page_label">Página %1$d</string>
 </resources>

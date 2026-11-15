@@ -3890,8 +3890,13 @@
     <string name="settings_online_maps_touch_to_disconnect">ここをタップして接続を解除</string>
     <string name="mapbox_login_body_short">ブラウザでサインインするとワークアウトの地図が有効になります。公開トークンはこのスマートフォンに保存されます。</string>
     <string name="metric_sections_save_changes">レイアウトの変更を保存しますか？</string>
-    <string name="activity_calories_per_interval_title">%1$d 分ごとの消費カロリー</string>
+    <string name="activity_calories_per_interval_title">1 分あたりの消費カロリー</string>
     <string name="activity_calories_peak">ピーク</string>
     <string name="activity_calories_from_heart_rate">心拍数と、身体プロフィールの体重・年齢・性別から推定しています。</string>
     <string name="activity_calories_from_recorded">アプリが記録したカロリーから。身体プロフィールに体重と年齢を入れると心拍数から推定します。</string>
+    <string name="unsaved_changes_title">変更を保存しますか？</string>
+    <string name="screenshot_water_percent_profile_weight">体水分率は身体プロフィールの体重（%1$s kg）で kg に換算されます。</string>
+    <string name="screenshot_water_percent_skipped">スクリーンショットにも身体プロフィールにも体重がないため、体水分率は保存されません。他の値は保存されます。</string>
+    <string name="activity_map_recenter">ルート全体を表示</string>
+    <string name="dashboard_edit_page_label">%1$d ページ</string>
 </resources>

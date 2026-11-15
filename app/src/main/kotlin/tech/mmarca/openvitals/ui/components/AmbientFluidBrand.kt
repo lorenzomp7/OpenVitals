@@ -3,7 +3,6 @@ package tech.mmarca.openvitals.ui.components
 import android.os.SystemClock
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.MaterialTheme
@@ -20,9 +19,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.graphics.Path
+import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.DrawScope
-import androidx.compose.ui.graphics.drawscope.rotate
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
@@ -34,14 +35,12 @@ import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.repeatOnLifecycle
 import kotlinx.coroutines.isActive
 import tech.mmarca.openvitals.R
-import tech.mmarca.openvitals.ui.theme.Emphasis
 import tech.mmarca.openvitals.ui.theme.WorkoutActionMetrics
 import tech.mmarca.openvitals.ui.theme.loopingMotionAllowed
-import kotlin.math.cos
 import kotlin.math.sin
 
 private val FluidBorderWidth = 1.dp
-private const val FluidFrameIntervalNanos = 33_333_333L
+private const val FluidFrameIntervalNanos = 16_666_666L
 
 @Composable
 fun rememberFluidBrandTimeline(): FluidBrandTimeline = rememberSaveable(
@@ -71,15 +70,14 @@ fun AmbientFluidBrand(timeline: FluidBrandTimeline, windowWidth: Dp, modifier: M
         modifier = modifier
             .size(WorkoutActionMetrics.primaryWidth(windowWidth), WorkoutActionMetrics.height)
             .clip(CircleShape)
-            .background(MaterialTheme.colorScheme.surfaceVariant)
-            .border(FluidBorderWidth, MaterialTheme.colorScheme.outlineVariant.copy(alpha = Emphasis.subtle), CircleShape)
+            .background(ToggleNight)
             .semantics { contentDescription = description }
             .testTag("ambient_fluid_brand"),
     ) {
         // Reading the frame only in DrawScope invalidates this tiny canvas, not the screen composition.
-        val seconds = if (animate) timeline.secondsAt(frameMillis) else ExpressiveRestSeconds
+        val seconds = if (animate) timeline.secondsAt(frameMillis) else ToggleRestSeconds
         val intro = if (animate) timeline.fillAt(frameMillis) else 1f
-        drawExpressiveBrand(seconds, intro)
+        drawOpenVitalsToggle(seconds, intro, FluidBorderWidth.toPx())
     }
 }
 
@@ -90,95 +88,139 @@ internal val BrandYellow = Color(0xFFFBBC04)
 internal val BrandGreen = Color(0xFF34A853)
 private val BrandColors = listOf(BrandBlue, BrandRed, BrandYellow, BrandGreen)
 
-/** One choreography cycle: a hop runs along the four shapes, then they rest and breathe. */
-private const val ExpressiveCycleSeconds = 3.2f
-private const val ExpressiveStaggerSeconds = 0.16f
-private const val ExpressiveHopFraction = 0.3f
-private const val ExpressiveRestSeconds = 2.6f
+/** The night the light is drawn on, as in the Gemini reel the toggle follows. */
+private val ToggleNight = Color(0xFF0B0F1A)
+private const val ToggleRestSeconds = 4f
+private const val ToggleTwoPi = (2.0 * Math.PI).toFloat()
 
-/** M3 emphasized easing, cubic-bezier(0.2, 0, 0, 1). */
-private val EmphasizedEasing = androidx.compose.animation.core.CubicBezierEasing(0.2f, 0f, 0f, 1f)
+/** One lobe of the voice wave: where it sits, how wide, and how it breathes. */
+private class ToggleLobe(
+    val color: Color,
+    val center: Float,
+    val width: Float,
+    val up: Float,
+    val down: Float,
+    val speed: Float,
+    val phase: Float,
+)
 
-/** A spatial spring in closed form: overshoots once and settles, as M3 Expressive springs do. */
-private fun expressiveSpring(t: Float): Float {
-    if (t <= 0f) return 0f
-    if (t >= 1f) return 1f
-    val damping = 5.2f
-    val frequency = 9.5f
-    return 1f - kotlin.math.exp(-damping * t) * cos(frequency * t)
+private val ToggleLobes = listOf(
+    ToggleLobe(BrandBlue, center = 0.28f, width = 0.16f, up = 0.36f, down = 0.30f, speed = 0.9f, phase = 0f),
+    ToggleLobe(BrandRed, center = 0.40f, width = 0.22f, up = 0.12f, down = 0.18f, speed = 1.3f, phase = 1.7f),
+    ToggleLobe(BrandYellow, center = 0.60f, width = 0.14f, up = 0.32f, down = 0.10f, speed = 1.1f, phase = 3.1f),
+    ToggleLobe(BrandGreen, center = 0.72f, width = 0.15f, up = 0.10f, down = 0.34f, speed = 0.8f, phase = 4.4f),
+)
+
+/** Fixed sparkle seeds: position, drift, twinkle rate and tint, so every frame agrees. */
+private val ToggleSparks = List(14) { index ->
+    val golden = 0.618034f
+    floatArrayOf(
+        (index * golden) % 1f,
+        ((index * 7 + 3) * golden) % 1f,
+        0.6f + (index % 5) * 0.25f,
+        index.toFloat(),
+    )
 }
 
 /**
- * M3 Expressive motion on the Google palette: the shapes spring in one after the
- * other, then a hop travels along them. Each shape squashes and stretches, and
- * morphs between a circle and a rounded square while it turns, as the Material 3
- * Expressive shape morphs do. A soft wash of the four colours drifts behind.
+ * 35: the "Toggle animato OpenVitals", after the Gemini reel: on a night pill,
+ * a voice wave of four light lobes in the Google colours that swell, drift and
+ * add up where they cross; sparks that twinkle and drift; and a ring of the four
+ * colours that runs round the edge. It opens by drawing the wave out from the
+ * centre, with the M3 emphasized easing.
  */
-private fun DrawScope.drawExpressiveBrand(seconds: Float, intro: Float) {
+private fun DrawScope.drawOpenVitalsToggle(seconds: Float, intro: Float, borderPx: Float) {
     val w = size.width
     val h = size.height
-    // The wash: the icon's gradient, very light, sliding slowly.
-    val drift = sin(seconds * 0.35f) * w * 0.25f
+    val mid = h / 2f
+    val open = EmphasizedEasing.transform(intro.coerceIn(0f, 1f))
+    // Soft halo behind the wave.
     drawRect(
-        Brush.linearGradient(
-            colors = BrandColors.map { it.copy(alpha = 0.16f) },
-            start = Offset(-w * 0.25f + drift, 0f),
-            end = Offset(w * 1.25f + drift, h),
+        Brush.radialGradient(
+            colors = listOf(BrandBlue.copy(alpha = 0.22f * open), Color.Transparent),
+            center = Offset(w * (0.5f + sin(seconds * 0.3f) * 0.15f), mid),
+            radius = w * 0.45f,
         ),
     )
-    val count = BrandColors.size
-    val dot = minOf(h * 0.4f, w / (count * 2.6f))
-    val gap = dot * 0.75f
-    val rowWidth = count * dot + (count - 1) * gap
-    val left = (w - rowWidth) / 2f
-    val baseline = h / 2f
-    BrandColors.forEachIndexed { index, color ->
-        // Entrance: staggered spring scale.
-        val enter = expressiveSpring(((intro * 1.4f) - index * 0.12f).coerceIn(0f, 1f))
-        if (enter <= 0f) return@forEachIndexed
-        val local = (((seconds - index * ExpressiveStaggerSeconds) % ExpressiveCycleSeconds) +
-            ExpressiveCycleSeconds) % ExpressiveCycleSeconds / ExpressiveCycleSeconds
-        var lift = 0f
-        var stretchY = 1f
-        var stretchX = 1f
-        var morph = 0f
-        if (local < ExpressiveHopFraction) {
-            val p = local / ExpressiveHopFraction
-            lift = sin(Math.PI.toFloat() * EmphasizedEasing.transform(p)) * h * 0.2f
-            // Stretch in the air, squash on take-off and landing.
-            val air = sin(Math.PI.toFloat() * p)
-            stretchY = 1f + 0.22f * air - 0.18f * (1f - air) * (if (p < 0.12f || p > 0.88f) 1f else 0f)
-            stretchX = 1f / stretchY
-            morph = air
-        } else {
-            // Rest: a slow breath.
-            val breath = sin((local - ExpressiveHopFraction) * 2f * Math.PI.toFloat())
-            stretchY = 1f + 0.03f * breath
-            stretchX = 1f - 0.03f * breath
+    // The wave: each lobe a lens above and below the midline, its height breathing.
+    ToggleLobes.forEach { lobe ->
+        val drift = sin(seconds * 0.35f * lobe.speed + lobe.phase) * 0.06f
+        val cx = (0.5f + (lobe.center + drift - 0.5f) * open) * w
+        val halfWidth = lobe.width * w * (0.4f + 0.6f * open)
+        val breath = 0.55f + 0.45f * sin(seconds * lobe.speed * 1.6f + lobe.phase)
+        val up = lobe.up * h * breath * open
+        val down = lobe.down * h * (1.1f - breath * 0.6f) * open
+        val path = Path().apply {
+            val steps = 28
+            moveTo(cx - halfWidth * 2.2f, mid)
+            for (step in 0..steps) {
+                val x = cx - halfWidth * 2.2f + halfWidth * 4.4f * step / steps
+                val u = (x - cx) / halfWidth
+                lineTo(x, mid - up * kotlin.math.exp(-u * u))
+            }
+            for (step in steps downTo 0) {
+                val x = cx - halfWidth * 2.2f + halfWidth * 4.4f * step / steps
+                val u = (x - cx) / halfWidth
+                lineTo(x, mid + down * kotlin.math.exp(-u * u))
+            }
+            close()
         }
-        val width = dot * stretchX * enter
-        val height = dot * stretchY * enter
-        val cx = left + dot / 2f + index * (dot + gap)
-        val cy = baseline - lift + (dot - height) / 2f * 0f
-        // Morph: circle (radius = half) to rounded square (radius = 28%), turning a quarter.
-        val radius = minOf(width, height) * (0.5f - 0.22f * morph)
-        val angle = 90f * EmphasizedEasing.transform(morph.coerceIn(0f, 1f)) * (if (index % 2 == 0) 1f else -1f)
-        val topLeft = Offset(cx - width / 2f, cy - height / 2f)
-        val sizeRect = androidx.compose.ui.geometry.Size(width, height)
-        val shade = Brush.linearGradient(
-            colors = listOf(color, lerpColor(color, Color.White, 0.18f)),
-            start = topLeft,
-            end = Offset(topLeft.x + width, topLeft.y + height),
+        drawPath(
+            path = path,
+            brush = Brush.verticalGradient(
+                colors = listOf(
+                    lobe.color.copy(alpha = 0.95f),
+                    lobe.color.copy(alpha = 0.35f),
+                    lobe.color.copy(alpha = 0.95f),
+                ),
+                startY = mid - up,
+                endY = mid + down,
+            ),
+            blendMode = BlendMode.Plus,
         )
-        rotate(angle, Offset(cx, cy)) {
-            drawRoundRect(
-                brush = shade,
-                topLeft = topLeft,
-                size = sizeRect,
-                cornerRadius = androidx.compose.ui.geometry.CornerRadius(radius, radius),
-            )
-        }
+        drawPath(
+            path = path,
+            color = lerpColor(lobe.color, Color.White, 0.3f).copy(alpha = 0.7f),
+            style = Stroke(width = borderPx),
+            blendMode = BlendMode.Plus,
+        )
     }
+    // The bright thread the lobes hang from.
+    drawLine(
+        brush = Brush.horizontalGradient(BrandColors.map { it.copy(alpha = 0.55f * open) }),
+        start = Offset(w * 0.08f, mid),
+        end = Offset(w * 0.92f, mid),
+        strokeWidth = borderPx,
+    )
+    // Sparks: drift up and sideways, twinkle.
+    ToggleSparks.forEach { (sx, sy, rate, tint) ->
+        val x = ((sx + seconds * 0.015f * rate) % 1f) * w
+        val y = (((sy - seconds * 0.04f * rate) % 1f + 1f) % 1f) * h
+        val twinkle = (0.5f + 0.5f * sin(seconds * rate * 2.2f + tint)).let { it * it }
+        val color = lerpColor(BrandColors[tint.toInt() % BrandColors.size], Color.White, 0.6f)
+        drawCircle(color.copy(alpha = 0.25f * twinkle * open), radius = h * 0.06f, center = Offset(x, y))
+        drawCircle(color.copy(alpha = 0.95f * twinkle * open), radius = h * 0.018f, center = Offset(x, y))
+    }
+    // The ring of colours running round the edge, with a soft glow under it.
+    val shift = (seconds * 0.11f) % 1f
+    val stops = Array(17) { k ->
+        val position = k / 16f
+        position to cyclicBrandColor(position - shift)
+    }
+    val ring = Brush.sweepGradient(*stops, center = Offset(w / 2f, mid))
+    val radius = androidx.compose.ui.geometry.CornerRadius(h / 2f, h / 2f)
+    drawRoundRect(brush = ring, alpha = 0.35f * open, style = Stroke(width = borderPx * 4f), cornerRadius = radius)
+    drawRoundRect(brush = ring, alpha = open, style = Stroke(width = borderPx * 1.5f), cornerRadius = radius)
 }
+
+/** The four colours around a circle, blended between neighbours; [position] wraps. */
+private fun cyclicBrandColor(position: Float): Color {
+    val p = ((position % 1f) + 1f) % 1f * BrandColors.size
+    val index = p.toInt() % BrandColors.size
+    return lerpColor(BrandColors[index], BrandColors[(index + 1) % BrandColors.size], p - p.toInt())
+}
+
+/** M3 emphasized easing, cubic-bezier(0.2, 0, 0, 1). */
+private val EmphasizedEasing = androidx.compose.animation.core.CubicBezierEasing(0.2f, 0f, 0f, 1f)
 
 private fun lerpColor(a: Color, b: Color, t: Float): Color = androidx.compose.ui.graphics.lerp(a, b, t)

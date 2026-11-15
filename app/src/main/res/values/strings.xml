@@ -3882,8 +3882,13 @@
     <string name="settings_online_maps_touch_to_disconnect">Touch here to disconnect</string>
     <string name="mapbox_login_body_short">Sign in in your browser to enable workout maps. The public map token stays on this phone.</string>
     <string name="metric_sections_save_changes">Save layout changes?</string>
-    <string name="activity_calories_per_interval_title">Calories burned every %1$d min</string>
+    <string name="activity_calories_per_interval_title">Calories burned per minute</string>
     <string name="activity_calories_peak">Peak</string>
     <string name="activity_calories_from_heart_rate">Estimated from heart rate, weight, age and sex in your body profile.</string>
     <string name="activity_calories_from_recorded">From the calories recorded by your apps. Add weight and age to your body profile to estimate them from heart rate.</string>
+    <string name="unsaved_changes_title">Save changes?</string>
+    <string name="screenshot_water_percent_profile_weight">Body water percentage is converted to kg using the weight in your body profile (%1$s kg).</string>
+    <string name="screenshot_water_percent_skipped">No weight in this screenshot or in your body profile: body water percentage will not be saved. The other values will.</string>
+    <string name="activity_map_recenter">Show the whole route</string>
+    <string name="dashboard_edit_page_label">Page %1$d</string>
 </resources>

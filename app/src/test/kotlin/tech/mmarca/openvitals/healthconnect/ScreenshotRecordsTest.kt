@@ -53,4 +53,10 @@ class ScreenshotRecordsTest {
         org.junit.Assert.assertEquals(40.0, water.mass.inKilograms, 0.001)
     }
 
+    @org.junit.Test fun `body water percentage without a screenshot weight uses the body profile weight`() {
+        val records = screenshotRecords(listOf("body_water_percent" to "59.4", "lean_mass" to "60.6"),
+            "2025-01-01T10:00", "2025-01-01T10:00", referenceWeightKg = 80.0)
+        val water = records.filterIsInstance<androidx.health.connect.client.records.BodyWaterMassRecord>().single()
+        org.junit.Assert.assertEquals(47.52, water.mass.inKilograms, 0.001)
+    }
 }

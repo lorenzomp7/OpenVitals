@@ -1,13 +1,17 @@
 package tech.mmarca.openvitals.features.activity.maps
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.CenterFocusStrong
 import androidx.compose.material.icons.outlined.Close
 import androidx.compose.material.icons.outlined.Fullscreen
 import androidx.compose.material3.FilledIconButton
+import androidx.compose.material3.FilledTonalIconButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
@@ -23,6 +27,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import tech.mmarca.openvitals.R
+import tech.mmarca.openvitals.ui.theme.Spacing
 import tech.mmarca.openvitals.domain.model.ExerciseRoutePoint
 
 @Composable
@@ -47,12 +52,26 @@ internal fun ActivityMapboxMap(points: List<ExerciseRoutePoint>, modifier: Modif
         ) {
             Surface(Modifier.fillMaxSize().testTag("map-fullscreen")) {
                 Box(Modifier.fillMaxSize().safeDrawingPadding()) {
-                    ActivityRouteMapContent(points, Modifier.fillMaxSize())
-                    FilledIconButton(
-                        onClick = { fullscreen = false },
-                        modifier = Modifier.align(Alignment.TopEnd).padding(12.dp).testTag("map-fullscreen-close"),
+                    var recenter by rememberSaveable { mutableStateOf(0) }
+                    ActivityRouteMapContent(points, Modifier.fillMaxSize(), recenterRequest = recenter)
+                    // 71: the buttons sit at the bottom right, clear of Mapbox's compass (top right),
+                    // scale bar (top left) and logo (bottom left). 72: the upper one brings the route back.
+                    Column(
+                        modifier = Modifier.align(Alignment.BottomEnd).padding(Spacing.md),
+                        verticalArrangement = Arrangement.spacedBy(Spacing.sm),
                     ) {
-                        Icon(Icons.Outlined.Close, stringResource(R.string.action_close))
+                        FilledTonalIconButton(
+                            onClick = { recenter += 1 },
+                            modifier = Modifier.testTag("map-fullscreen-recenter"),
+                        ) {
+                            Icon(Icons.Outlined.CenterFocusStrong, stringResource(R.string.activity_map_recenter))
+                        }
+                        FilledIconButton(
+                            onClick = { fullscreen = false },
+                            modifier = Modifier.testTag("map-fullscreen-close"),
+                        ) {
+                            Icon(Icons.Outlined.Close, stringResource(R.string.action_close))
+                        }
                     }
                 }
             }

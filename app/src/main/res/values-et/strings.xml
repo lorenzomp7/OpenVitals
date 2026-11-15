@@ -3822,8 +3822,13 @@
     <string name="settings_online_maps_touch_to_disconnect">Puuduta siin, et ühendus katkestada</string>
     <string name="mapbox_login_body_short">Logi brauseris sisse, et lubada treeningkaardid. Avalik kaardivõti jääb sellesse telefoni.</string>
     <string name="metric_sections_save_changes">Kas salvestada paigutuse muudatused?</string>
-    <string name="activity_calories_per_interval_title">Põletatud kalorid iga %1$d min järel</string>
+    <string name="activity_calories_per_interval_title">Põletatud kalorid minutis</string>
     <string name="activity_calories_peak">Tipp</string>
     <string name="activity_calories_from_heart_rate">Hinnatud pulsi ning kehaprofiili kaalu, vanuse ja soo põhjal.</string>
     <string name="activity_calories_from_recorded">Rakenduste salvestatud kalorite põhjal. Lisa kehaprofiili kaal ja vanus, et hinnata neid pulsi järgi.</string>
+    <string name="unsaved_changes_title">Kas salvestada muudatused?</string>
+    <string name="screenshot_water_percent_profile_weight">Kehavee protsent teisendatakse kilogrammideks kehaprofiili kaalu järgi (%1$s kg).</string>
+    <string name="screenshot_water_percent_skipped">Kuvatõmmisel ega kehaprofiilis pole kaalu: kehavee protsenti ei salvestata. Teised väärtused salvestatakse.</string>
+    <string name="activity_map_recenter">Näita kogu marsruuti</string>
+    <string name="dashboard_edit_page_label">Leht %1$d</string>
 </resources>

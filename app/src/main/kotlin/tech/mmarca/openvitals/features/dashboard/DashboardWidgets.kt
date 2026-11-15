@@ -220,20 +220,21 @@ internal fun DashboardWidgetGrid(
     bottomPadding: Dp = DashboardWidgetSectionPadding,
     /** Sizes the section so a full-span widget is square, as the shipped design draws the hero rings. */
     squareRowSpan: Boolean = false,
+    /** 74: with the sideways pages on, the edit grid is cut into the same pages, each labelled. */
+    pagedRows: Int? = null,
 ) {
-    val placements = packDashboardTiles(ids.mapNotNull { id ->
-        specsById[id]?.let { id to (sizeOf(id) ?: dashboardTileSize(it, emptyMap())) }
-    })
+    val placements = packDashboardTiles(
+        ids.mapNotNull { id -> specsById[id]?.let { id to (sizeOf(id) ?: dashboardTileSize(it, emptyMap())) } },
+        rowsPerPage = pagedRows,
+    )
     if (placements.isEmpty()) return
-    DashboardPlacedTileGrid(
-        placements = placements,
-        rowHeight = dashboardWidgetRowHeight() + (if (isEditingDashboard) 48.dp else 0.dp) +
-            Spacing.md,
-        modifier = modifier.fillMaxWidth().padding(
-            start = DashboardWidgetHorizontalPadding, end = DashboardWidgetHorizontalPadding,
-            top = topPadding, bottom = bottomPadding,
-        ),
-    ) { placement ->
+    val rowHeight = (dashboardWidgetRowHeight() + Spacing.md)
+        .let { if (isEditingDashboard) it + tech.mmarca.openvitals.ui.theme.LayoutMetrics.minTouchTarget else it }
+    val gridModifier = modifier.fillMaxWidth().padding(
+        start = DashboardWidgetHorizontalPadding, end = DashboardWidgetHorizontalPadding,
+        top = topPadding, bottom = bottomPadding,
+    )
+    val tile: @Composable (DashboardTilePlacement) -> Unit = { placement ->
         val spec = specsById.getValue(placement.id)
         val index = ids.indexOf(spec.id)
         val sizedSpec = spec.copy(content = { tileModifier ->
@@ -268,6 +269,29 @@ internal fun DashboardWidgetGrid(
             },
         )
     }
+    if (pagedRows != null) {
+        Column(gridModifier, verticalArrangement = Arrangement.spacedBy(Spacing.md)) {
+            placements.groupBy { it.page }.toSortedMap().forEach { (page, pagePlacements) ->
+                Text(
+                    text = stringResource(R.string.dashboard_edit_page_label, page + 1),
+                    style = MaterialTheme.typography.labelLarge,
+                    color = MaterialTheme.colorScheme.primary,
+                )
+                DashboardPlacedTileGrid(
+                    placements = pagePlacements,
+                    rowHeight = rowHeight,
+                    minimumRows = pagedRows,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .border(Spacing.xs / 4, MaterialTheme.colorScheme.outlineVariant, MaterialTheme.shapes.large)
+                        .padding(Spacing.sm),
+                    tile = tile,
+                )
+            }
+        }
+        return
+    }
+    DashboardPlacedTileGrid(placements = placements, rowHeight = rowHeight, modifier = gridModifier, tile = tile)
 }
 
 private class DashboardDragGestureDetector(

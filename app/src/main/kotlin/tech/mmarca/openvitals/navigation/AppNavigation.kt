@@ -91,7 +91,16 @@ import tech.mmarca.openvitals.ui.components.LocalAppBarState
 import tech.mmarca.openvitals.ui.components.OpenWatchMoveNoticePrompt
 import tech.mmarca.openvitals.ui.components.PrivacyReconsentPrompt
 
-private const val NavFadeMillis = 140
+private const val NavFadeOutMillis = 90
+private const val NavFadeInMillis = 210
+
+/** M3 fade through, incoming half: waits for the outgoing screen, then fades and scales up from 92%. */
+private fun navFadeThroughEnter(): EnterTransition =
+    fadeIn(tween(NavFadeInMillis, delayMillis = NavFadeOutMillis)) +
+        androidx.compose.animation.scaleIn(tween(NavFadeInMillis, delayMillis = NavFadeOutMillis), initialScale = 0.92f)
+
+/** M3 fade through, outgoing half. */
+private fun navFadeThroughExit(): ExitTransition = fadeOut(tween(NavFadeOutMillis))
 internal const val CardioLoadDetailRoute = "activity/cardio_load"
 internal const val SleepEfficiencyDetailRoute = "recovery/sleep_efficiency"
 internal const val SleepScoreDetailRoute = "recovery/sleep_score"
@@ -364,36 +373,28 @@ fun AppNavigation(
             navController = navController,
             startDestination = startDestination,
             modifier = Modifier.padding(innerPadding),
-            // One screen fades over the other, which stays whole underneath:
-            // the default scales the leaving screen down over the one behind it.
-            // 63: arriving at the dashboard by any path (back, the bottom bar, after a save) is a cut.
+            // 63: Material "fade through": the screen being left fades out first, then the new
+            // one fades in. The screens draw no background of their own, so a cross-fade showed both
+            // at once. The dashboard has no shared app bar to wait for, so leaving it or coming back
+            // to it is a cut. The system's predictive back is off (manifest): it drew the dashboard
+            // over the screen being left and dropped that screen's app bar mid-gesture.
             enterTransition = {
                 if (targetState.destination.route == Screen.Dashboard.route) EnterTransition.None
-                else fadeIn(tween(NavFadeMillis))
+                else navFadeThroughEnter()
             },
             exitTransition = {
-                if (targetState.destination.route == Screen.Dashboard.route) ExitTransition.None
-                else fadeOut(tween(NavFadeMillis))
+                if (initialState.destination.route == Screen.Dashboard.route ||
+                    targetState.destination.route == Screen.Dashboard.route
+                ) ExitTransition.None
+                else navFadeThroughExit()
             },
-            // 63: back to the dashboard is a cut, not a cross-fade. During the fade the top bar of the
-            // screen being left is already gone and the dashboard's header showed alone over it.
             popEnterTransition = {
                 if (targetState.destination.route == Screen.Dashboard.route) EnterTransition.None
-                else fadeIn(tween(NavFadeMillis))
+                else navFadeThroughEnter()
             },
             popExitTransition = {
                 if (targetState.destination.route == Screen.Dashboard.route) ExitTransition.None
-                else fadeOut(tween(NavFadeMillis))
-            },
-            // The back gesture has its own pair, and its default shrinks the
-            // leaving screen to 70% over the one behind.
-            predictivePopEnterTransition = { _ ->
-                if (targetState.destination.route == Screen.Dashboard.route) EnterTransition.None
-                else fadeIn(tween(NavFadeMillis))
-            },
-            predictivePopExitTransition = { _ ->
-                if (targetState.destination.route == Screen.Dashboard.route) ExitTransition.None
-                else fadeOut(tween(NavFadeMillis))
+                else navFadeThroughExit()
             },
         ) {
             composable(Screen.Onboarding.route) {

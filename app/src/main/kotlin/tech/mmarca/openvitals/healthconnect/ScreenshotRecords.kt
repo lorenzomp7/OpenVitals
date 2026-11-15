@@ -12,7 +12,14 @@ import java.time.LocalDateTime
 import java.time.ZoneId
 
 /** Stable IDs make repeated imports of the same metric/value/interval idempotent. */
-internal fun screenshotRecords(values: List<Pair<String, String>>, start: String, end: String, exerciseType: Int? = null): List<Record> {
+internal fun screenshotRecords(
+    values: List<Pair<String, String>>,
+    start: String,
+    end: String,
+    exerciseType: Int? = null,
+    /** 73: the weight body water % is taken of when the screenshot shows none: the body profile's. */
+    referenceWeightKg: Double? = null,
+): List<Record> {
     val zone = ZoneId.systemDefault()
     val from = LocalDateTime.parse(start).atZone(zone)
     val to = LocalDateTime.parse(end).atZone(zone)
@@ -21,7 +28,7 @@ internal fun screenshotRecords(values: List<Pair<String, String>>, start: String
         val value = raw.replace(',', '.').toDouble()
         require(value.isFinite() && value > 0)
         val key = "$kind|$value|${from.toInstant()}|${to.toInstant()}" +
-            (if (kind == "body_water_percent") "|${values.firstOrNull { it.first == "kg" }?.second}" else "") +
+            (if (kind == "body_water_percent") "|${values.firstOrNull { it.first == "kg" }?.second ?: referenceWeightKg}" else "") +
             if (kind == "duration_min") "|${exerciseType ?: ExerciseSessionRecord.EXERCISE_TYPE_OTHER_WORKOUT}" else ""
         val digest = MessageDigest.getInstance("SHA-256").digest(key.toByteArray()).joinToString("") { "%02x".format(it) }
         val metadata = Metadata.manualEntry(clientRecordId = "screenshot_$digest", clientRecordVersion = 1)
@@ -32,7 +39,9 @@ internal fun screenshotRecords(values: List<Pair<String, String>>, start: String
             "lean_mass" -> LeanBodyMassRecord(time, offset, Mass.kilograms(value), metadata)
             "body_water_percent" -> {
                 require(value <= 100)
-                val weight = requireNotNull(values.firstOrNull { it.first == "kg" }?.second?.replace(',', '.')?.toDoubleOrNull())
+                val weight = requireNotNull(
+                    values.firstOrNull { it.first == "kg" }?.second?.replace(',', '.')?.toDoubleOrNull() ?: referenceWeightKg,
+                )
                 require(weight.isFinite() && weight > 0)
                 BodyWaterMassRecord(time, offset, Mass.kilograms(weight * value / 100), metadata)
             }

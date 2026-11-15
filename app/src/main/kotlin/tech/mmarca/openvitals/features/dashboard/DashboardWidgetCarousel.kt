@@ -324,6 +324,7 @@ internal fun DashboardWidgetCarousel(
                         .zIndex(if (draggingWidgetId in carouselIds) 2f else 0f),
                     topPadding = DashboardGridTopPadding,
                     bottomPadding = DashboardSectionSeparatorSpacing,
+                    pagedRows = DashboardPagedRows.takeIf { pagedLayout },
                 )
             }
 

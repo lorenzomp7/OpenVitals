@@ -13,6 +13,9 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
+import androidx.compose.material3.Text
+import androidx.compose.ui.res.stringResource
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -59,6 +62,29 @@ fun ManualEntryScreen(
     val hiddenSpecs = specs.filter { it.id !in visibleIds }
 
     val editingTint = MaterialTheme.colorScheme.primary
+    // 69, 70: finishing or leaving an edit with changes asks Save or Discard, as on the dashboard.
+    var confirmFinishEdit by androidx.compose.runtime.saveable.rememberSaveable { androidx.compose.runtime.mutableStateOf(false) }
+    androidx.activity.compose.BackHandler(enabled = state.isEditingWidgets) {
+        if (viewModel.hasWidgetEdits()) confirmFinishEdit = true else viewModel.finishWidgetEdit(save = true)
+    }
+    if (confirmFinishEdit && state.isEditingWidgets) {
+        androidx.compose.material3.AlertDialog(
+            onDismissRequest = { confirmFinishEdit = false },
+            title = { Text(stringResource(R.string.unsaved_changes_title)) },
+            confirmButton = {
+                androidx.compose.material3.TextButton(onClick = {
+                    viewModel.finishWidgetEdit(save = true)
+                    confirmFinishEdit = false
+                }) { Text(stringResource(R.string.action_save)) }
+            },
+            dismissButton = {
+                androidx.compose.material3.TextButton(onClick = {
+                    viewModel.finishWidgetEdit(save = false)
+                    confirmFinishEdit = false
+                }) { Text(stringResource(R.string.action_discard)) }
+            },
+        )
+    }
     DeclareAppBar(
         remember(state.isEditingWidgets, editingTint) {
             ScreenAppBar(
@@ -71,7 +97,13 @@ fun ManualEntryScreen(
                             R.string.cd_edit_manual_entry_widgets
                         },
                         tint = if (state.isEditingWidgets) editingTint else null,
-                        onClick = viewModel::toggleWidgetEdit,
+                        onClick = {
+                            when {
+                                !state.isEditingWidgets -> viewModel.toggleWidgetEdit()
+                                viewModel.hasWidgetEdits() -> confirmFinishEdit = true
+                                else -> viewModel.finishWidgetEdit(save = true)
+                            }
+                        },
                     ),
                 ),
             )

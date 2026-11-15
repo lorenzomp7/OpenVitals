@@ -1,5 +1,7 @@
 package tech.mmarca.openvitals.features.manualentry.activity
 
+import tech.mmarca.openvitals.ui.components.UnsavedChangesBackHandler
+import tech.mmarca.openvitals.ui.components.formHasChanges
 import android.Manifest
 import android.net.Uri
 import android.os.Build
@@ -166,6 +168,21 @@ fun ActivityEntryScreen(
             onEntrySaved()
         }
     }
+    // 70: a typed activity left with back asks Save or Discard; nothing typed, back just goes back.
+    val manualFormReady = state.mode == ActivityEntryMode.MANUAL && !state.isCheckingPermission &&
+        (!state.isEditMode || state.editEntryLoaded)
+    val manualFormChanged = formHasChanges(
+        signature = listOf(
+            state.selectedActivityType, state.titleText, state.selectedFeeling, state.notesText,
+            state.startDateText, state.startTimeText, state.durationMinutesText, state.distanceText,
+            state.elevationText, state.activeCaloriesText, state.totalCaloriesText, state.repetitionTotalText,
+        ),
+        ready = manualFormReady,
+    )
+    UnsavedChangesBackHandler(
+        hasChanges = manualFormReady && manualFormChanged && !state.saveCompleted,
+        onSave = { viewModel.addEntry(ActivityEntryUnits.from(unitFormatter)) },
+    )
     LaunchedEffect(state.pendingBuilderPlanId) {
         val planId = state.pendingBuilderPlanId ?: return@LaunchedEffect
         viewModel.onBuilderNavigationHandled()

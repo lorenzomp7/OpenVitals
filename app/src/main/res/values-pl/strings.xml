@@ -3888,8 +3888,13 @@
     <string name="settings_online_maps_touch_to_disconnect">Dotknij tutaj, aby rozłączyć</string>
     <string name="mapbox_login_body_short">Zaloguj się w przeglądarce, aby włączyć mapy treningów. Publiczny token zostaje na tym telefonie.</string>
     <string name="metric_sections_save_changes">Zapisać zmiany układu?</string>
-    <string name="activity_calories_per_interval_title">Spalone kalorie co %1$d min</string>
+    <string name="activity_calories_per_interval_title">Spalone kalorie na minutę</string>
     <string name="activity_calories_peak">Szczyt</string>
     <string name="activity_calories_from_heart_rate">Oszacowane na podstawie tętna oraz wagi, wieku i płci z profilu ciała.</string>
     <string name="activity_calories_from_recorded">Na podstawie kalorii zapisanych przez aplikacje. Dodaj wagę i wiek w profilu ciała, aby szacować je z tętna.</string>
+    <string name="unsaved_changes_title">Zapisać zmiany?</string>
+    <string name="screenshot_water_percent_profile_weight">Procent wody w ciele jest przeliczany na kg według wagi z profilu ciała (%1$s kg).</string>
+    <string name="screenshot_water_percent_skipped">Brak wagi na zrzucie i w profilu ciała: procent wody nie zostanie zapisany. Pozostałe wartości tak.</string>
+    <string name="activity_map_recenter">Pokaż całą trasę</string>
+    <string name="dashboard_edit_page_label">Strona %1$d</string>
 </resources>

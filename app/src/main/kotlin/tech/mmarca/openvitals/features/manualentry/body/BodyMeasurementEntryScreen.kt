@@ -1,5 +1,7 @@
 package tech.mmarca.openvitals.features.manualentry.body
 
+import tech.mmarca.openvitals.ui.components.UnsavedChangesBackHandler
+import tech.mmarca.openvitals.ui.components.formHasChanges
 import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -80,6 +82,16 @@ fun BodyMeasurementEntryScreen(
     LifecycleEventEffect(Lifecycle.Event.ON_RESUME) {
         viewModel.refreshPermission()
     }
+    // 70: back with an unsaved measurement asks Save or Discard; Save leaves once it is stored.
+    val hasChanges = formHasChanges(
+        signature = state.inputs.filterValues { it.isNotBlank() } to state.entryTime.takeIf { state.isEditMode },
+        ready = !state.isCheckingPermission && (!state.isEditMode || state.inputs.isNotEmpty()),
+    )
+    UnsavedChangesBackHandler(
+        hasChanges = hasChanges && !state.saveCompleted,
+        canSave = !state.isSavingEntry,
+        onSave = { viewModel.save(units) },
+    )
 
     LazyColumn(contentPadding = PaddingValues(vertical = 8.dp)) {
         item {

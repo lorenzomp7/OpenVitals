@@ -375,10 +375,11 @@ internal fun ActivityDetailContent(
         }
         sessionCalories?.let { calories ->
             item(key = "session-calories") {
-                ActivityCaloriesBarChartCard(
+                ActivityCaloriesChartCard(
                     calories = calories,
                     sessionStart = workout.startTime,
                     sessionEnd = workout.endTime,
+                    pauses = workout.segments.toSessionPauses(),
                     unitFormatter = unitFormatter,
                     modifier = Modifier
                         .fillMaxWidth()

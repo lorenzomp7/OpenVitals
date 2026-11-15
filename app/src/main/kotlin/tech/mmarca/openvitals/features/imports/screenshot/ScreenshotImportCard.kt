@@ -97,6 +97,33 @@ internal fun ScreenshotImportDialog(onDismiss: () -> Unit, initialUri: Uri? = nu
     LaunchedEffect(state.suggestedStart, state.suggestedEnd) {
         start = state.suggestedStart; end = state.suggestedEnd; confirmed = false
     }
+    // 70: leaving with recognised values not yet saved asks Save or Discard.
+    var askClose by remember { mutableStateOf(false) }
+    var closeAfterSave by remember { mutableStateOf(false) }
+    fun requestClose() {
+        if (state.busy) return
+        if (state.values.isNotEmpty() && !state.saved) askClose = true else onDismiss()
+    }
+    LaunchedEffect(state.saved, closeAfterSave) { if (state.saved && closeAfterSave) onDismiss() }
+    if (askClose) {
+        AlertDialog(
+            onDismissRequest = { askClose = false },
+            title = { Text(stringResource(R.string.unsaved_changes_title)) },
+            confirmButton = {
+                TextButton(
+                    enabled = screenshotCanSave(state, start, end, confirmed),
+                    onClick = {
+                        askClose = false
+                        closeAfterSave = true
+                        viewModel.save(start, end)
+                    },
+                ) { Text(stringResource(R.string.action_save)) }
+            },
+            dismissButton = {
+                TextButton(onClick = { askClose = false; onDismiss() }) { Text(stringResource(R.string.action_discard)) }
+            },
+        )
+    }
     val actions = ScreenshotImportActions(
         onPick = { picker.launch(arrayOf("image/*")) },
         onEdit = { index, value -> confirmed = false; viewModel.edit(index, value) },
@@ -123,11 +150,11 @@ internal fun ScreenshotImportDialog(onDismiss: () -> Unit, initialUri: Uri? = nu
                 }
             }
         },
-        onSave = { viewModel.save(start, end) }, onClose = onDismiss,
+        onSave = { viewModel.save(start, end) }, onClose = { requestClose() },
     )
     // 58: a full screen with the back arrow on top, like every other menu.
     Dialog(
-        onDismissRequest = { if (!state.busy) onDismiss() },
+        onDismissRequest = { requestClose() },
         properties = DialogProperties(usePlatformDefaultWidth = false, decorFitsSystemWindows = false),
     ) {
         Surface(
