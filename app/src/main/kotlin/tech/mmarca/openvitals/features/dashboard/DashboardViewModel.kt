@@ -669,8 +669,12 @@ class DashboardViewModel @Inject constructor(
         if (permissionPromptDismissedForLoad) emptySet()
         else missingPermissions - prefs.acknowledgedPermissionsFor(HealthConnectFeature.DASHBOARD)
 
-    fun setWidgetSize(widgetId: DashboardWidgetId, spaces: Int) {
+    /** The tiles' default spaces, as the screen reported them: 70, a size back at its default is no change. */
+    private val defaultWidgetSpaces = mutableMapOf<DashboardWidgetId, Int>()
+
+    fun setWidgetSize(widgetId: DashboardWidgetId, spaces: Int, defaultSpaces: Int? = null) {
         if (spaces !in listOf(1, 2, 4)) return
+        if (defaultSpaces != null) defaultWidgetSpaces[widgetId] = defaultSpaces
         val sizes = _uiState.value.widgetSizes + (widgetId to spaces)
         if (!_uiState.value.isEditingDashboard) prefs.setDashboardWidgetSizes(sizes.mapKeys { it.key.name })
         _uiState.value = _uiState.value.copy(widgetSizes = sizes)
@@ -690,7 +694,7 @@ class DashboardViewModel @Inject constructor(
 
     private val layoutEditor = DashboardLayoutEditor(prefs)
 
-    fun hasDashboardEdits(): Boolean = layoutEditor.hasChanges(_uiState.value)
+    fun hasDashboardEdits(): Boolean = layoutEditor.hasChanges(_uiState.value, defaultWidgetSpaces, DefaultDetailCount)
 
     fun finishDashboardEdit(save: Boolean) {
         _uiState.update { layoutEditor.finish(it, save) }
@@ -755,10 +759,10 @@ class DashboardViewModel @Inject constructor(
         updateDashboardWidgets(updated)
     }
 
-    /** 75: [widgetId] takes [targetWidgetId]'s place and the tiles between shift by one, as a reorderable grid moves them. */
-    fun moveDashboardWidget(widgetId: DashboardWidgetId, targetWidgetId: DashboardWidgetId, onView: List<DashboardWidgetId>) {
+    /** 75: the tiles on view take [order], in the slots they held, so hidden ones keep their places. */
+    fun setDashboardVisibleOrder(order: List<DashboardWidgetId>) {
         val current = _uiState.value.dashboardWidgets
-        val moved = tech.mmarca.openvitals.core.presentation.moveWithinVisible(current, onView.toSet(), widgetId, targetWidgetId)
+        val moved = tech.mmarca.openvitals.core.presentation.replaceVisibleOrder(current, order)
         // Only the order changes: which tiles count as placed stays put, so none appear mid-drag.
         if (moved != current) _uiState.value = _uiState.value.copy(dashboardWidgets = customizableDashboardWidgetIds(moved))
     }

@@ -362,7 +362,7 @@ private fun DashboardLargeTile(ring: DashboardHeroRing, details: List<String>) {
 }
 
 /** Slides a tile from its old place to its new one when the grid reflows, instead of jumping. */
-private fun Modifier.animateTilePlacement(): Modifier = composed {
+internal fun Modifier.animateTilePlacement(): Modifier = composed {
     val scope = androidx.compose.runtime.rememberCoroutineScope()
     var target by androidx.compose.runtime.remember { androidx.compose.runtime.mutableStateOf<androidx.compose.ui.unit.IntOffset?>(null) }
     val animatable = androidx.compose.runtime.remember {

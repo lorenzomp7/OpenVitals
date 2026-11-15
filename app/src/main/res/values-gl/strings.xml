@@ -3907,4 +3907,6 @@ Se Acceder a rutas de exercicio non aparece no diálogo de acceso, abre os axust
     <string name="dashboard_edit_ring_center">Centro</string>
     <string name="dashboard_edit_ring_left">Esquerda</string>
     <string name="dashboard_edit_ring_right">Dereita</string>
+    <string name="chart_full_screen">Amosar o gráfico a pantalla completa</string>
+    <string name="chart_rotate">Rotar o gráfico 90°</string>
 </resources>

@@ -40,8 +40,9 @@ Workout steps are aggregated from the session writer rather than the phone prior
 source. An absent writer total stays missing. Steps cadence uses spm; cycling uses rpm.
 A missing cycling permission no longer prevents reading granted steps cadence.
 Speed and cadence charts initially focus a short recorded sample interval while their
-axis retains the true elapsed session times. Pinch/pan and double-tap full-session reset
-remain available; no samples are invented for unrecorded intervals.
+axis retains the true elapsed session times; no samples are invented for unrecorded intervals.
+Charts do not pinch (83): every chart has a full-screen button instead, and the full-screen
+view turns the chart a quarter turn to read it along the long side (84).
 
 ## Profile and header refinements
 

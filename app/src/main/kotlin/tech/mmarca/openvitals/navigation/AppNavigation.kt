@@ -146,6 +146,16 @@ fun AppNavigation(
         }
         navBackStackEntry = liveBackStackEntry
     }
+    // 63: while the outgoing screen fades, its bar fades with it: a bar left standing over the
+    // emptied screen read as a black page with only a title, before the next screen came in.
+    val chromeSettled = liveBackStackEntry?.id == navBackStackEntry?.id
+    val topBarAlpha by androidx.compose.animation.core.animateFloatAsState(
+        targetValue = if (chromeSettled) 1f else 0f,
+        animationSpec = tween(
+            durationMillis = if (chromeSettled) NavFadeInMillis else NavFadeOutMillis,
+        ),
+        label = "topBarAlpha",
+    )
     val currentDestination = navBackStackEntry?.destination
     // Day-accepting destinations register with a query pattern appended; compare
     // against the bare route or nothing matches.
@@ -318,6 +328,7 @@ fun AppNavigation(
         navigationContentDescription = stringResource(R.string.cd_back),
         action = addEntryAction,
         containerColor = screenAppBar?.containerColor,
+        topBarAlpha = { topBarAlpha },
         topBarActions = {
             // The hydration screen's app-bar add-drink shortcut.
             if (currentRoute == Screen.Metric.route &&

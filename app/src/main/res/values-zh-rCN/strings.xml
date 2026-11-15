@@ -3837,4 +3837,6 @@
     <string name="dashboard_edit_ring_center">中间</string>
     <string name="dashboard_edit_ring_left">左侧</string>
     <string name="dashboard_edit_ring_right">右侧</string>
+    <string name="chart_full_screen">全屏显示图表</string>
+    <string name="chart_rotate">将图表旋转 90°</string>
 </resources>

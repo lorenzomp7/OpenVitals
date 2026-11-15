@@ -3902,4 +3902,6 @@
     <string name="dashboard_edit_ring_center">Střed</string>
     <string name="dashboard_edit_ring_left">Vlevo</string>
     <string name="dashboard_edit_ring_right">Vpravo</string>
+    <string name="chart_full_screen">Zobrazit graf na celou obrazovku</string>
+    <string name="chart_rotate">Otočit graf o 90°</string>
 </resources>

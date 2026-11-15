@@ -1236,6 +1236,22 @@ class DashboardViewModelTest {
         assertTrue(vm.uiState.value.display.unsupportedIds.isEmpty())
     }
 
+    @Test fun `a size or a value count put back as it was is no edit`() = runTest {
+        val loader = mockDashboardDataLoader()
+        coEvery { loader.loadDashboard(any<DashboardQuery>()) } returns DashboardData(date = today)
+        val vm = dashboardViewModel(loader, prefs())
+        advanceUntilIdle()
+        vm.toggleDashboardEdit()
+        vm.setWidgetDetailCount(DashboardWidgetId.STEPS, 3)
+        assertTrue(vm.hasDashboardEdits())
+        vm.setWidgetDetailCount(DashboardWidgetId.STEPS, 2)
+        assertFalse(vm.hasDashboardEdits())
+        vm.setWidgetSize(DashboardWidgetId.STEPS, 4, defaultSpaces = 2)
+        assertTrue(vm.hasDashboardEdits())
+        vm.setWidgetSize(DashboardWidgetId.STEPS, 2, defaultSpaces = 2)
+        assertFalse(vm.hasDashboardEdits())
+    }
+
     @Test fun `editing changes no preferences before save and discard restores all controls`() = runTest {
         val preferences = prefs()
         val loader = mockDashboardDataLoader()

@@ -153,7 +153,9 @@ internal fun ScreenshotImportDialog(
     val savedMessage = stringResource(R.string.screenshot_import_saved)
     // The context above also serves the toast.
     LaunchedEffect(state.saved) {
-        if (state.saved) {
+        // Read the live value: the composed one can still be the last import's "saved".
+        if (state.saved && viewModel.state.value.saved) {
+            viewModel.onSavedHandled()
             if (onSaved != null) onSaved() else {
                 android.widget.Toast.makeText(context, savedMessage, android.widget.Toast.LENGTH_LONG).show()
             }

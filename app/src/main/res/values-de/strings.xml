@@ -3836,4 +3836,6 @@
     <string name="dashboard_edit_ring_center">Mitte</string>
     <string name="dashboard_edit_ring_left">Links</string>
     <string name="dashboard_edit_ring_right">Rechts</string>
+    <string name="chart_full_screen">Diagramm im Vollbild anzeigen</string>
+    <string name="chart_rotate">Diagramm um 90° drehen</string>
 </resources>

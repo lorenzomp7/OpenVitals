@@ -23,6 +23,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
@@ -73,6 +74,8 @@ fun OpenVitalsAdaptiveScaffold(
     containerColor: Color? = null,
     titleContent: (@Composable (Dp) -> Unit)? = null,
     topBarActions: @Composable RowScope.() -> Unit = {},
+    /** 63: the bar's opacity, read at draw, so it fades with the screen it belongs to. */
+    topBarAlpha: () -> Float = { 1f },
     content: @Composable (PaddingValues) -> Unit,
 ) {
     val scaffoldContent: @Composable () -> Unit = {
@@ -86,7 +89,11 @@ fun OpenVitalsAdaptiveScaffold(
             contentWindowInsets = WindowInsets.navigationBars,
             topBar = {
                 if (showTopBar) {
-                    BoxWithConstraints(Modifier.fillMaxWidth()) {
+                    BoxWithConstraints(
+                        Modifier
+                            .fillMaxWidth()
+                            .graphicsLayer { alpha = topBarAlpha() },
+                    ) {
                         TopAppBar(
                             // 56dp, matching the shipped app.
                             expandedHeight = TopBarHeight,

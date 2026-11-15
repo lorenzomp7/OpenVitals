@@ -3836,4 +3836,6 @@
     <string name="dashboard_edit_ring_center">Keskellä</string>
     <string name="dashboard_edit_ring_left">Vasemmalla</string>
     <string name="dashboard_edit_ring_right">Oikealla</string>
+    <string name="chart_full_screen">Näytä kaavio koko näytöllä</string>
+    <string name="chart_rotate">Käännä kaaviota 90°</string>
 </resources>

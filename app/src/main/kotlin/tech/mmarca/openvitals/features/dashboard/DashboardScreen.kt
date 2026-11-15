@@ -183,7 +183,7 @@ fun DashboardScreen(
                     onNextDay = viewModel::nextDay,
                     onOpenCalendar = { showDatePicker = true },
                     onMoveWidgetToTarget = viewModel::moveDashboardWidgetToTarget,
-                    onMoveWidget = viewModel::moveDashboardWidget,
+                    onReorderWidgets = viewModel::setDashboardVisibleOrder,
                     onRemoveWidget = viewModel::removeDashboardWidget,
                     widgetSizes = state.widgetSizes,
                     widgetDetailCounts = state.widgetDetailCounts,

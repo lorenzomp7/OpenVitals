@@ -50,6 +50,12 @@ internal class ScreenshotImportViewModel @Inject constructor(
         scan(uri)
     }
 
+    /** The save was shown to the person: the next review starts blank, whenever it is opened. */
+    fun onSavedHandled() {
+        sharedUri = null
+        mutable.value = ScreenshotImportState()
+    }
+
     /** 78: a new pick starts a new review: the last import's "saved" must not close this one. */
     fun startWith(uri: Uri) {
         if (mutable.value.busy) return

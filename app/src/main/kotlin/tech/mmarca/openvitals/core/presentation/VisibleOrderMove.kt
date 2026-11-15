@@ -15,3 +15,11 @@ fun <T> moveWithinVisible(full: List<T>, visible: Set<T>, item: T, target: T): L
     val next = order.iterator()
     return full.map { if (it in visible) next.next() else it }
 }
+
+/** [full] with its [newVisibleOrder] items written, in order, into the slots its visible items held. */
+fun <T> replaceVisibleOrder(full: List<T>, newVisibleOrder: List<T>): List<T> {
+    val visible = newVisibleOrder.toSet()
+    if (full.count { it in visible } != newVisibleOrder.size) return full
+    val next = newVisibleOrder.iterator()
+    return full.map { if (it in visible) next.next() else it }
+}

@@ -3896,4 +3896,6 @@
     <string name="dashboard_edit_ring_center">Centre</string>
     <string name="dashboard_edit_ring_left">Left</string>
     <string name="dashboard_edit_ring_right">Right</string>
+    <string name="chart_full_screen">Show the chart full screen</string>
+    <string name="chart_rotate">Turn the chart a quarter turn</string>
 </resources>

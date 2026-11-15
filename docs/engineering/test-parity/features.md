@@ -921,7 +921,7 @@ Note: Kotlin bodyenergy belongs to a separate workstream; classified against wha
 
 | Flutter case | Status | Kotlin test | Note |
 |---|---|---|---|
-| pinching the Body Energy chart zooms the line, strip and hours | PORTED | BodyEnergyChartZoomTest: `pinchingTheChartZoomsTheLineStripAndHoursTogether` | Compose instrumentation; runs on a device, not in CI |
+| pinching the Body Energy chart zooms the line, strip and hours | N/A-BEHAVIOR | — | Charts no longer pinch (83): two fingers moved the page and flung it on release; the test went with the gesture |
 
 ## test/features/bodyenergy/body_energy_details_screen_test.dart
 Kotlin counterpart: none (BodyEnergyScreen.kt has no Compose/androidTest; mapper covered separately by BodyEnergyPresentationMapperTest.kt)

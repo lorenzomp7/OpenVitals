@@ -171,4 +171,6 @@
     <string name="dashboard_edit_ring_center">الوسط</string>
     <string name="dashboard_edit_ring_left">اليسار</string>
     <string name="dashboard_edit_ring_right">اليمين</string>
+    <string name="chart_full_screen">عرض الرسم البياني بملء الشاشة</string>
+    <string name="chart_rotate">تدوير الرسم البياني 90°</string>
 </resources>

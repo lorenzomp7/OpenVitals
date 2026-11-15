@@ -3836,4 +3836,6 @@
     <string name="dashboard_edit_ring_center">Keskel</string>
     <string name="dashboard_edit_ring_left">Vasakul</string>
     <string name="dashboard_edit_ring_right">Paremal</string>
+    <string name="chart_full_screen">Näita diagrammi täisekraanil</string>
+    <string name="chart_rotate">Pööra diagrammi 90°</string>
 </resources>

@@ -1,45 +1,62 @@
 package tech.mmarca.openvitals.ui.components
 
-import tech.mmarca.openvitals.R
-import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.semantics.customActions
-import androidx.compose.ui.semantics.CustomAccessibilityAction
-import androidx.compose.ui.res.stringResource
-import androidx.compose.foundation.gestures.awaitEachGesture
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawing
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Close
+import androidx.compose.material.icons.outlined.Fullscreen
+import androidx.compose.material.icons.outlined.ScreenRotation
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.input.pointer.PointerEventPass
-import androidx.compose.ui.input.pointer.PointerId
-import androidx.compose.ui.input.pointer.changedToDownIgnoreConsumed
-import androidx.compose.ui.input.pointer.changedToUpIgnoreConsumed
-import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.input.pointer.positionChanged
-import androidx.compose.ui.unit.dp
-import kotlin.math.max
-import kotlin.math.min
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.layout.Layout
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.CustomAccessibilityAction
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.customActions
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.unit.Constraints
+import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
+import tech.mmarca.openvitals.R
+import tech.mmarca.openvitals.ui.theme.Emphasis
+import tech.mmarca.openvitals.ui.theme.Spacing
 
 /** What [ChartZoom] hands its content: the visible slice, and whether a pinch is live. */
 @Immutable
 data class ChartZoomState(
     val viewport: ChartViewport,
-    /** True while a second finger is down. The scrubber hides itself off this flag. */
+    /** True while a second finger is down. Charts no longer pinch, so this stays false. */
     val multiTouch: Boolean,
 )
 
 /**
- * Pinch a chart to look closer. Two fingers only: one finger already
- * belongs to the scrubber and the page. Position changes are consumed in
- * the Main pass only while two pointers are down, so a single finger
- * behaves as before. Double tap resets, spotted from raw pointers so the
- * bar chart's tap is not swallowed. [keys] reset the viewport when the
- * chart's subject changes.
+ * Every chart's frame. 83: there is no pinch any more: two fingers on a chart moved the page
+ * under them, and lifting them flung it (85). A screen reader still gets zoom in, zoom out
+ * and reset. 84: a button opens the chart full screen, where it can be turned on its side.
+ * [keys] reset the viewport when the chart's subject changes.
  */
 @Composable
 fun ChartZoom(
@@ -49,20 +66,14 @@ fun ChartZoom(
     initialViewport: ChartViewport = ChartViewport.Full,
     content: @Composable (ChartZoomState) -> Unit,
 ) {
-    if (!enabled) {
-        // Nothing to zoom into.
-        Box(modifier) { content(ChartZoomState(ChartViewport.Full, multiTouch = false)) }
-        return
-    }
-
     var viewport by remember(*keys, initialViewport) { mutableStateOf(initialViewport) }
-    var multiTouch by remember { mutableStateOf(false) }
+    var fullScreen by rememberSaveable { mutableStateOf(false) }
+    val state = ChartZoomState(if (enabled) viewport else ChartViewport.Full, multiTouch = false)
 
-    // A pinch is touch-only. These give a screen reader the same three moves.
     val zoomInLabel = stringResource(R.string.chart_zoom_in)
     val zoomOutLabel = stringResource(R.string.chart_zoom_out)
     val resetLabel = stringResource(R.string.chart_zoom_reset)
-    val zoomActions = Modifier.semantics {
+    val zoomActions = if (!enabled) Modifier else Modifier.semantics {
         customActions = buildList {
             if (viewport.span > ChartViewport.MinimumSpan) {
                 add(CustomAccessibilityAction(zoomInLabel) { viewport = viewport.zoomed(2f, 0.5f); true })
@@ -74,142 +85,95 @@ fun ChartZoom(
         }
     }
 
-    Box(
-        modifier = modifier.then(zoomActions).pointerInput(*keys) {
-            val tapSlopPx = TapSlop.toPx()
-            // The last single-finger lift, for spotting a double tap.
-            var lastTapAtMillis = 0L
-            var lastTapPosition: Offset? = null
-
-            awaitEachGesture {
-                // Where each finger currently is, by pointer id.
-                val pointers = LinkedHashMap<PointerId, Offset>()
-
-                // The state the pinch started from. Applying moves to it avoids drift.
-                var pinchStartViewport: ChartViewport? = null
-                var pinchStartSeparation = 0f
-                var pinchStartFocus = 0f
-
-                // Whether a pinch has happened, as opposed to two fingers resting.
-                var isPinching = false
-                var downPosition: Offset? = null
-
-                // Horizontal separation is the zoom: the y axis is a fixed scale.
-                fun separation(): Float {
-                    var minX = Float.POSITIVE_INFINITY
-                    var maxX = Float.NEGATIVE_INFINITY
-                    for (position in pointers.values) {
-                        minX = min(minX, position.x)
-                        maxX = max(maxX, position.x)
-                    }
-                    return maxX - minX
-                }
-
-                fun focusX(): Float {
-                    var sum = 0f
-                    for (position in pointers.values) sum += position.x
-                    return sum / pointers.size
-                }
-
-                // Rebaseline when the finger count changes, so the chart does not leap.
-                fun restartPinch() {
-                    if (pointers.isEmpty()) isPinching = false
-                    if (pointers.size < 2) {
-                        pinchStartViewport = null
-                        return
-                    }
-                    val width = size.width.toFloat()
-                    pinchStartViewport = viewport
-                    pinchStartSeparation = separation()
-                    pinchStartFocus =
-                        if (width <= 0f) 0.5f else (focusX() / width).coerceIn(0f, 1f)
-                }
-
-                // A double tap from raw pointers, so the taps underneath keep working.
-                fun maybeDoubleTap(position: Offset, uptimeMillis: Long) {
-                    val down = downPosition ?: return
-                    if ((position - down).getDistance() > tapSlopPx) return
-
-                    val lastPosition = lastTapPosition
-                    if (lastPosition != null &&
-                        uptimeMillis - lastTapAtMillis < DoubleTapWindowMillis &&
-                        (position - lastPosition).getDistance() <= tapSlopPx
-                    ) {
-                        lastTapPosition = null
-                        if (viewport.isZoomed) viewport = ChartViewport.Full
-                        return
-                    }
-                    lastTapAtMillis = uptimeMillis
-                    lastTapPosition = position
-                }
-
-                try {
-                    while (true) {
-                        val event = awaitPointerEvent(PointerEventPass.Main)
-                        for (change in event.changes) {
-                            when {
-                                change.changedToDownIgnoreConsumed() -> {
-                                    pointers[change.id] = change.position
-                                    downPosition = change.position
-                                    restartPinch()
-                                }
-
-                                change.changedToUpIgnoreConsumed() -> {
-                                    // Only a single-finger, still gesture counts as a tap.
-                                    if (pointers.size == 1 && !isPinching) {
-                                        maybeDoubleTap(change.position, change.uptimeMillis)
-                                    }
-                                    pointers.remove(change.id)
-                                    restartPinch()
-                                }
-
-                                change.pressed -> {
-                                    if (pointers.containsKey(change.id)) {
-                                        pointers[change.id] = change.position
-                                    }
-                                }
-                            }
-                        }
-
-                        val startViewport = pinchStartViewport
-                        if (startViewport != null && pointers.size >= 2 && size.width > 0) {
-                            val separationNow = separation()
-                            if (separationNow > 0f && pinchStartSeparation > 0f) {
-                                val scale = separationNow / pinchStartSeparation
-                                val focus = focusX() / size.width.toFloat()
-
-                                // Zoom about the point between the fingers, then slide
-                                // by how far it travelled: a two-finger drag pans.
-                                val next = startViewport
-                                    .zoomed(scale, pinchStartFocus)
-                                    .panned(focus - pinchStartFocus)
-                                if (next != viewport) {
-                                    isPinching = true
-                                    viewport = next
-                                }
-                            }
-                        }
-
-                        // Consume only with two or more fingers down.
-                        if (pointers.size >= 2) {
-                            for (change in event.changes) {
-                                if (change.positionChanged()) change.consume()
-                            }
-                        }
-
-                        multiTouch = pointers.size >= 2
-                        if (event.changes.none { it.pressed }) break
-                    }
-                } finally {
-                    // The gesture can end mid-pinch; the flag must not stay latched.
-                    multiTouch = false
-                }
-            }
-        },
-    ) {
-        content(ChartZoomState(viewport, multiTouch))
+    Box(modifier = modifier.then(zoomActions)) {
+        content(state)
+        if (enabled) {
+            ChartFrameButton(
+                icon = { Icon(Icons.Outlined.Fullscreen, contentDescription = null) },
+                label = stringResource(R.string.chart_full_screen),
+                onClick = { fullScreen = true },
+                modifier = Modifier.align(Alignment.TopEnd),
+            )
+        }
+    }
+    if (fullScreen) {
+        ChartFullScreen(onDismiss = { fullScreen = false }) { content(state) }
     }
 }
 
-private const val DoubleTapWindowMillis = 300L
-private val TapSlop = 18.dp
+/** The chart alone on the screen; [content] is laid out across the long side once turned. */
+@Composable
+private fun ChartFullScreen(onDismiss: () -> Unit, content: @Composable () -> Unit) {
+    var turned by rememberSaveable { mutableStateOf(false) }
+    Dialog(
+        onDismissRequest = onDismiss,
+        properties = DialogProperties(usePlatformDefaultWidth = false, decorFitsSystemWindows = false),
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(MaterialTheme.colorScheme.surface)
+                .windowInsetsPadding(WindowInsets.safeDrawing)
+                .padding(Spacing.lg),
+        ) {
+            Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+                ChartFrameButton(
+                    icon = { Icon(Icons.Outlined.Close, contentDescription = null) },
+                    label = stringResource(R.string.action_close),
+                    onClick = onDismiss,
+                )
+                Spacer(Modifier.weight(1f))
+                ChartFrameButton(
+                    icon = { Icon(Icons.Outlined.ScreenRotation, contentDescription = null) },
+                    label = stringResource(R.string.chart_rotate),
+                    onClick = { turned = !turned },
+                )
+            }
+            TurnableBox(turned = turned, modifier = Modifier.weight(1f).fillMaxWidth().padding(top = Spacing.lg)) {
+                content()
+            }
+        }
+    }
+}
+
+/**
+ * Lays [content] out across the box, or, [turned], across its height and then a quarter turn
+ * round, so a long chart reads along the long side of the phone. Touch follows the turn.
+ */
+@Composable
+private fun TurnableBox(turned: Boolean, modifier: Modifier = Modifier, content: @Composable () -> Unit) {
+    Layout(
+        modifier = modifier,
+        content = { Box(Modifier.graphicsLayer { rotationZ = if (turned) 90f else 0f }) { content() } },
+    ) { measurables, constraints ->
+        val across = if (turned) constraints.maxHeight else constraints.maxWidth
+        val along = if (turned) constraints.maxWidth else constraints.maxHeight
+        val placeable = measurables.first().measure(Constraints(minWidth = across, maxWidth = across, maxHeight = along))
+        layout(constraints.maxWidth, constraints.maxHeight) {
+            placeable.place(
+                x = (constraints.maxWidth - placeable.width) / 2,
+                y = (constraints.maxHeight - placeable.height) / 2,
+            )
+        }
+    }
+}
+
+@Composable
+private fun ChartFrameButton(
+    icon: @Composable () -> Unit,
+    label: String,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Box(
+        modifier = modifier
+            .size(Spacing.xxxl)
+            .clip(CircleShape)
+            .background(MaterialTheme.colorScheme.surfaceContainerHighest.copy(alpha = Emphasis.strong))
+            .clickable(onClick = onClick)
+            .semantics { contentDescription = label },
+        contentAlignment = Alignment.Center,
+    ) {
+        Box(Modifier.size(Spacing.xl)) { icon() }
+    }
+}

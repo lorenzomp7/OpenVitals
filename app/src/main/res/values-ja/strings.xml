@@ -3904,4 +3904,6 @@
     <string name="dashboard_edit_ring_center">中央</string>
     <string name="dashboard_edit_ring_left">左</string>
     <string name="dashboard_edit_ring_right">右</string>
+    <string name="chart_full_screen">グラフを全画面で表示</string>
+    <string name="chart_rotate">グラフを90°回転</string>
 </resources>

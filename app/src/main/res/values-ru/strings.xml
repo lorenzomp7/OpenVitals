@@ -3903,4 +3903,6 @@
     <string name="dashboard_edit_ring_center">Центр</string>
     <string name="dashboard_edit_ring_left">Слева</string>
     <string name="dashboard_edit_ring_right">Справа</string>
+    <string name="chart_full_screen">Показать график на весь экран</string>
+    <string name="chart_rotate">Повернуть график на 90°</string>
 </resources>

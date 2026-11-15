@@ -3869,4 +3869,6 @@
     <string name="dashboard_edit_ring_center">Centre</string>
     <string name="dashboard_edit_ring_left">Gauche</string>
     <string name="dashboard_edit_ring_right">Droite</string>
+    <string name="chart_full_screen">Afficher le graphique en plein écran</string>
+    <string name="chart_rotate">Faire pivoter le graphique de 90°</string>
 </resources>

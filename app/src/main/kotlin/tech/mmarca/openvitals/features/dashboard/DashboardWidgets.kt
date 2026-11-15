@@ -368,8 +368,6 @@ internal fun DashboardWidgetTile(
     onCycleSize: (() -> Unit)? = null,
     /** 81: how many values the tile shows; tapping opens the tile's options, as the size does. */
     detailCount: Int? = null,
-    /** 82: the ring this tile becomes at the top (centre, left, right), if any. */
-    roleLabel: String? = null,
 ) {
     val wiggleRotation = 0f
     val removeWidgetLabel = stringResource(R.string.cd_remove_widget)
@@ -430,7 +428,6 @@ internal fun DashboardWidgetTile(
             DashboardEditTileControls(
                 sizeLabel = sizeLabel,
                 detailCount = detailCount,
-                roleLabel = roleLabel,
                 onCycleSize = onCycleSize,
                 onRemove = onRemove,
                 removeWidgetLabel = removeWidgetLabel,
@@ -440,12 +437,11 @@ internal fun DashboardWidgetTile(
     }
 }
 
-/** The band above a tile in edit mode: its ring role, its shape and value count, and remove. */
+/** The band above a tile in edit mode: its shape and value count, and remove. */
 @Composable
 private fun DashboardEditTileControls(
     sizeLabel: String?,
     detailCount: Int?,
-    roleLabel: String?,
     onCycleSize: (() -> Unit)?,
     onRemove: () -> Unit,
     removeWidgetLabel: String,
@@ -456,9 +452,6 @@ private fun DashboardEditTileControls(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(Spacing.xs),
     ) {
-        if (roleLabel != null) {
-            DashboardEditChip(text = roleLabel, onClick = null, emphasized = false)
-        }
         Spacer(Modifier.weight(1f))
         if (sizeLabel != null && onCycleSize != null) {
             DashboardEditChip(text = sizeLabel, onClick = onCycleSize, emphasized = true)

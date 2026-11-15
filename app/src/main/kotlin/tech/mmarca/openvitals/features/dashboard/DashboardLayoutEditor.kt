@@ -9,11 +9,18 @@ internal class DashboardLayoutEditor(private val prefs: PreferencesRepository) {
     fun begin(state: DashboardUiState) { original = state }
 
     /** 70: whether the layout differs from where editing began; moving a tile and back is no change. */
-    fun hasChanges(current: DashboardUiState): Boolean {
+    fun hasChanges(
+        current: DashboardUiState,
+        defaultSpaces: Map<DashboardWidgetId, Int> = emptyMap(),
+        defaultDetailCount: Int = 2,
+    ): Boolean {
         val before = original ?: return false
+        // A size or a value count set back to the tile's default is the same as never set.
+        fun Map<DashboardWidgetId, Int>.sizes() = filterNot { (id, spaces) -> defaultSpaces[id] == spaces }
+        fun Map<DashboardWidgetId, Int>.counts() = filterNot { (_, count) -> count == defaultDetailCount }
         return current.dashboardWidgets != before.dashboardWidgets ||
-            current.widgetSizes != before.widgetSizes ||
-            current.widgetDetailCounts != before.widgetDetailCounts ||
+            current.widgetSizes.sizes() != before.widgetSizes.sizes() ||
+            current.widgetDetailCounts.counts() != before.widgetDetailCounts.counts() ||
             current.pagedLayout != before.pagedLayout
     }
 
@@ -39,3 +46,6 @@ internal class DashboardLayoutEditor(private val prefs: PreferencesRepository) {
         )
     }
 }
+
+/** The values a tile shows when none was chosen, as the specs default it. */
+internal const val DefaultDetailCount = 2
