@@ -1,12 +1,5 @@
-export const METRICS = [
-  {key:'steps', label:'Passi', unit:'passi', color:'#56824c', max:200000, step:1, mode:'sum', icon:'↗'},
-  {key:'distance', label:'Distanza', unit:'km', color:'#347fbb', max:2000, step:0.01, mode:'sum', icon:'↔'},
-  {key:'calories', label:'Calorie attive', unit:'kcal', color:'#c65b42', max:30000, step:1, mode:'sum', icon:'♨'},
-  {key:'sleep', label:'Sonno', unit:'h', color:'#8864b5', max:24, step:0.1, mode:'mean', icon:'☾'},
-  {key:'weight', label:'Peso', unit:'kg', color:'#b98a32', max:500, step:0.1, mode:'last', icon:'◇'},
-  {key:'heart', label:'Battito a riposo', unit:'bpm', color:'#be5263', max:300, step:1, mode:'mean', icon:'♡'},
-  {key:'water', label:'Acqua', unit:'L', color:'#348f9a', max:30, step:0.1, mode:'sum', icon:'◉'}
-];
+import {METRICS} from './metrics.js';
+export {METRICS};
 export function dateKey(date = new Date()) {
   return `${date.getFullYear()}-${String(date.getMonth()+1).padStart(2,'0')}-${String(date.getDate()).padStart(2,'0')}`;
 }

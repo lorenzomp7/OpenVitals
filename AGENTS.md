@@ -8,7 +8,7 @@ Read this before adding a new feature or extending an existing metric screen.
 
 ### Browser demo
 
-`web/` is an independent, static browser demo with manual daily records and browser-local storage, not an Android module. It has its own instructions in `web/README.md`, Node-based model tests and build script. The workflow `.github/workflows/web.yml` checks `main_chatgpt_04` and `main`, and deploys only `main` to GitHub Pages. Android compilation remains in `verify.yml`; do not add web dependencies to Gradle or change Android signing for web work. No Health Connect/HealthKit or server synchronization is part of this demo. Android-specific architectural and translation rules below apply to Android changes; web UI strings are currently Italian.
+`web/` is an installable PWA port with manual daily records and browser-local storage, not an Android module. It synchronizes the Android widget catalogue at build time, includes a versioned offline service worker, and has its own instructions in `web/README.md`, Node-based model tests and build script. The workflow `.github/workflows/web.yml` checks `main_chatgpt_04` and `main`, and deploys only `main` to GitHub Pages. Android compilation remains in `verify.yml`; do not add web dependencies to Gradle or change Android signing for web work. No Health Connect/HealthKit or server synchronization is part of this demo. Android-specific architectural and translation rules below apply to Android changes; web UI strings are currently Italian.
 
 The app is moving toward a consistent, period-based detail architecture for health metrics.
 

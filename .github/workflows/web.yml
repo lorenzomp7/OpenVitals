@@ -23,12 +23,15 @@ jobs:
         run: |
           node --check app.js
           node --check model.js
-      - name: Test periods, calculations and backup validation
-        working-directory: web
-        run: npm test
-      - name: Build static demo
+          node --check views.js
+          node --check state.js
+          node --check metrics.js
+      - name: Build PWA and sync Android widget metadata
         working-directory: web
         run: npm run build
+      - name: Verify periods, backups and offline PWA shell
+        working-directory: web
+        run: npm test
       - uses: actions/upload-pages-artifact@v3
         with:
           path: web/dist

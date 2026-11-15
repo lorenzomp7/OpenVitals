@@ -8,11 +8,13 @@
 
 Questa repository distribuisce la versione personalizzata di OpenVitals: dashboard configurabile, periodi giorno/settimana/mese/anno, dettagli degli allenamenti, mappe dei percorsi e importazione da screenshot sul telefono.
 
-## Demo nel browser
+## PWA nel browser
 
-La cartella [`web/`](web/README.md) contiene una demo web con inserimento manuale di passi, distanza, calorie attive, sonno, peso, battito a riposo e acqua. Include selettore giorno/settimana/mese/anno, storico, grafici e backup JSON. I dati restano nel browser; non è richiesto un account e non viene effettuato alcun collegamento a Health Connect o HealthKit.
+### [Apri OpenVitals PWA](https://openvitals-demo-lorenzomp7.meshedarbor16.chatgpt.site/)
 
-Il workflow **OpenVitals Web** verifica la demo su `main_chatgpt_04` e la pubblica da `main` tramite GitHub Pages, dopo la configurazione iniziale descritta nella [guida web](web/README.md). La compilazione Android su `main` resta indipendente; `web/` non viene inclusa nell'APK. La pubblicazione automatica non converte le modifiche Android in modifiche web.
+La cartella [`web/`](web/README.md) contiene la PWA con dashboard ad anelli, riquadri modificabili, periodi giorno/settimana/mese/anno, dettagli dei parametri, attività, profilo, impostazioni e backup. È installabile dalla schermata Home e dispone di cache offline. I dati demo vengono inseriti manualmente e restano nel browser: non sono richiesti account, Health Connect o HealthKit.
+
+Il catalogo dei riquadri riprende automaticamente nomi, colori e ordine dal codice Android durante la build. La [guida web](web/README.md) descrive le funzioni portate e quelle Android ancora non presenti. Il workflow **OpenVitals Web** verifica `main_chatgpt_04` e `main`, con pubblicazione GitHub Pages da `main` dopo l'attivazione iniziale. La pubblicazione al link sopra usa un hosting separato. La compilazione Android rimane indipendente; `web/` non entra nell'APK.
 
 ## Scarica l’app
 
