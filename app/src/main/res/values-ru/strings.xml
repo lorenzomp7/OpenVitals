@@ -3900,4 +3900,7 @@
     <string name="dashboard_edit_page_label">Страница %1$d</string>
     <string name="dashboard_edit_rings_label">Кольца вверху</string>
     <string name="dashboard_edit_tiles_label">Плитки</string>
+    <string name="dashboard_edit_ring_center">Центр</string>
+    <string name="dashboard_edit_ring_left">Слева</string>
+    <string name="dashboard_edit_ring_right">Справа</string>
 </resources>

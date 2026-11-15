@@ -6,6 +6,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.outlined.AddPhotoAlternate
+import androidx.compose.material.icons.outlined.CheckCircle
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -33,8 +34,9 @@ internal fun ScreenshotImportCard(modifier: Modifier = Modifier) {
     val picker = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument()) { uri ->
         if (uri != null) pickedUri = uri
     }
+    Column(modifier = modifier.fillMaxWidth()) {
     tech.mmarca.openvitals.ui.components.OpenVitalsCard(
-        modifier = modifier
+        modifier = Modifier
             .fillMaxWidth()
             .clickable { picker.launch(arrayOf("image/*")) },
         containerColor = tech.mmarca.openvitals.features.manualentry.manualEntryTileContainer(ScreenshotImportAccent),
@@ -62,15 +64,62 @@ internal fun ScreenshotImportCard(modifier: Modifier = Modifier) {
             )
         }
     }
+    var savedBanner by rememberSaveable { mutableStateOf(false) }
     pickedUri?.let { uri ->
-        ScreenshotImportDialog(onDismiss = { pickedUri = null }, initialUri = uri)
+        ScreenshotImportDialog(
+            onDismiss = { pickedUri = null },
+            initialUri = uri,
+            onSaved = { savedBanner = true },
+        )
+    }
+    // 73: the confirmation is a card of the app's own, under the tile, gone after a few seconds.
+    LaunchedEffect(savedBanner) {
+        if (savedBanner) {
+            kotlinx.coroutines.delay(ScreenshotSavedBannerMillis)
+            savedBanner = false
+        }
+    }
+    androidx.compose.animation.AnimatedVisibility(visible = savedBanner) {
+        tech.mmarca.openvitals.ui.components.OpenVitalsCard(
+            modifier = Modifier.fillMaxWidth().padding(top = Spacing.sm),
+            style = tech.mmarca.openvitals.ui.components.OpenVitalsCardStyle.Accent,
+            accentColor = ScreenshotImportAccent,
+            containerColor = tech.mmarca.openvitals.features.manualentry.manualEntryTileContainer(ScreenshotImportAccent),
+        ) {
+            Row(
+                modifier = Modifier.fillMaxWidth().padding(Spacing.md),
+                verticalAlignment = androidx.compose.ui.Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(Spacing.md),
+            ) {
+                Icon(
+                    imageVector = androidx.compose.material.icons.Icons.Outlined.CheckCircle,
+                    contentDescription = null,
+                    tint = ScreenshotImportAccent,
+                )
+                Text(
+                    text = stringResource(R.string.screenshot_import_saved),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurface,
+                    modifier = Modifier.weight(1f),
+                )
+            }
+        }
+    }
     }
 }
+
+private const val ScreenshotSavedBannerMillis = 4_000L
 
 private val ScreenshotImportAccent = androidx.compose.ui.graphics.Color(0xFF4285F4)
 
 @Composable
-internal fun ScreenshotImportDialog(onDismiss: () -> Unit, initialUri: Uri? = null, viewModel: ScreenshotImportViewModel = hiltViewModel()) {
+internal fun ScreenshotImportDialog(
+    onDismiss: () -> Unit,
+    initialUri: Uri? = null,
+    /** Called once the values are in Health Connect, before the review closes. */
+    onSaved: (() -> Unit)? = null,
+    viewModel: ScreenshotImportViewModel = hiltViewModel(),
+) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     var start by rememberSaveable { mutableStateOf("") }
     var end by rememberSaveable { mutableStateOf("") }
@@ -93,7 +142,7 @@ internal fun ScreenshotImportDialog(onDismiss: () -> Unit, initialUri: Uri? = nu
     val picker = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument()) { uri ->
         if (uri != null) { confirmed = false; viewModel.scan(uri) }
     }
-    LaunchedEffect(initialUri) { initialUri?.let(viewModel::scanShared) }
+    LaunchedEffect(initialUri) { initialUri?.let(viewModel::startWith) }
     LaunchedEffect(state.suggestedStart, state.suggestedEnd) {
         start = state.suggestedStart; end = state.suggestedEnd; confirmed = false
     }
@@ -105,7 +154,9 @@ internal fun ScreenshotImportDialog(onDismiss: () -> Unit, initialUri: Uri? = nu
     // The context above also serves the toast.
     LaunchedEffect(state.saved) {
         if (state.saved) {
-            android.widget.Toast.makeText(context, savedMessage, android.widget.Toast.LENGTH_LONG).show()
+            if (onSaved != null) onSaved() else {
+                android.widget.Toast.makeText(context, savedMessage, android.widget.Toast.LENGTH_LONG).show()
+            }
             onDismiss()
         }
     }

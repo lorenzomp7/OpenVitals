@@ -756,12 +756,11 @@ class DashboardViewModel @Inject constructor(
     }
 
     /** 75: [widgetId] takes [targetWidgetId]'s place and the tiles between shift by one, as a reorderable grid moves them. */
-    fun moveDashboardWidget(widgetId: DashboardWidgetId, targetWidgetId: DashboardWidgetId) {
+    fun moveDashboardWidget(widgetId: DashboardWidgetId, targetWidgetId: DashboardWidgetId, onView: List<DashboardWidgetId>) {
         val current = _uiState.value.dashboardWidgets
-        val fromIndex = current.indexOf(widgetId)
-        val targetIndex = current.indexOf(targetWidgetId)
-        if (fromIndex == -1 || targetIndex == -1 || fromIndex == targetIndex) return
-        updateDashboardWidgets(current.toMutableList().apply { removeAt(fromIndex); add(targetIndex, widgetId) })
+        val moved = tech.mmarca.openvitals.core.presentation.moveWithinVisible(current, onView.toSet(), widgetId, targetWidgetId)
+        // Only the order changes: which tiles count as placed stays put, so none appear mid-drag.
+        if (moved != current) _uiState.value = _uiState.value.copy(dashboardWidgets = customizableDashboardWidgetIds(moved))
     }
 
     private fun updateDashboardWidgets(widgets: List<DashboardWidgetId>) {

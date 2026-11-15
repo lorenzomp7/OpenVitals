@@ -3833,4 +3833,7 @@
     <string name="dashboard_edit_page_label">Leht %1$d</string>
     <string name="dashboard_edit_rings_label">Rõngad üleval</string>
     <string name="dashboard_edit_tiles_label">Paanid</string>
+    <string name="dashboard_edit_ring_center">Keskel</string>
+    <string name="dashboard_edit_ring_left">Vasakul</string>
+    <string name="dashboard_edit_ring_right">Paremal</string>
 </resources>

@@ -3904,4 +3904,7 @@ Se Acceder a rutas de exercicio non aparece no diálogo de acceso, abre os axust
     <string name="dashboard_edit_page_label">Páxina %1$d</string>
     <string name="dashboard_edit_rings_label">Aneis arriba</string>
     <string name="dashboard_edit_tiles_label">Mosaicos</string>
+    <string name="dashboard_edit_ring_center">Centro</string>
+    <string name="dashboard_edit_ring_left">Esquerda</string>
+    <string name="dashboard_edit_ring_right">Dereita</string>
 </resources>

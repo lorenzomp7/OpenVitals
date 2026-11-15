@@ -53,7 +53,17 @@ class MetricDetailSectionOrderViewModel @Inject constructor(
         }
     }
 
-    fun moveSectionToTarget(sectionId: MetricDetailSectionId, targetSectionId: MetricDetailSectionId) {
+    /** [visible] is the sections the screen shows; the others keep their slots (see [moveWithinVisible]). */
+    fun moveSectionToTarget(
+        sectionId: MetricDetailSectionId,
+        targetSectionId: MetricDetailSectionId,
+        visible: Set<MetricDetailSectionId>? = null,
+    ) {
+        if (visible != null) {
+            val moved = moveWithinVisible(_sectionOrder.value, visible, sectionId, targetSectionId)
+            if (moved != _sectionOrder.value) updateSectionOrder(moved)
+            return
+        }
         val current = _sectionOrder.value
         val fromIndex = current.indexOf(sectionId)
         val targetIndex = current.indexOf(targetSectionId)

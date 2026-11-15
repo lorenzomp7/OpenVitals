@@ -32,7 +32,8 @@ private sealed interface DashboardEditEntry {
     /** [page] is the 1-based page number for a page label, null for the rings and tiles labels. */
     data class Label(override val key: String, val textRes: Int, val page: Int? = null) : DashboardEditEntry
 
-    data class Tile(val id: DashboardWidgetId, val size: DashboardTileSize) : DashboardEditEntry {
+    /** [ringRole] is 0, 1, 2 for the rings' centre, left and right; null for an ordinary tile. */
+    data class Tile(val id: DashboardWidgetId, val size: DashboardTileSize, val ringRole: Int? = null) : DashboardEditEntry {
         override val key: Any get() = id
     }
 }
@@ -65,7 +66,7 @@ internal fun DashboardReorderableEditGrid(
             val rest = tiles.drop(DashboardFixedRingCount)
             if (rings.isNotEmpty()) {
                 add(DashboardEditEntry.Label("label-rings", R.string.dashboard_edit_rings_label))
-                addAll(rings)
+                rings.forEachIndexed { index, tile -> add(tile.copy(ringRole = index)) }
             }
             if (rest.isEmpty()) return@buildList
             if (!pagedLayout) {
@@ -140,8 +141,20 @@ internal fun DashboardReorderableEditGrid(
                                 onRemove = { onRemoveWidget(entry.id) },
                                 onMovePrevious = null,
                                 onMoveNext = null,
-                                sizeLabel = entry.size.spaces.toString(),
+                                // 81: the shape, not a count of spaces; and the values the tile shows.
+                                sizeLabel = "${entry.size.columns}×${entry.size.rows}",
                                 onCycleSize = { onCycleWidgetSize(entry.id) },
+                                detailCount = spec.detailCount,
+                                // 82: which ring of the top hero each of the first three becomes.
+                                roleLabel = entry.ringRole?.let { role ->
+                                    stringResource(
+                                        when (role) {
+                                            0 -> R.string.dashboard_edit_ring_center
+                                            1 -> R.string.dashboard_edit_ring_left
+                                            else -> R.string.dashboard_edit_ring_right
+                                        },
+                                    )
+                                },
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .height(rowHeight * entry.size.rows + gap * (entry.size.rows - 1)),

@@ -68,6 +68,10 @@ class MetricDetailSectionListState(
 ) {
     internal var isEditingSections by mutableStateOf(false)
     internal var onMoveSectionToTarget: ((MetricDetailSectionId, MetricDetailSectionId) -> Unit)? = null
+
+    /** The sections the screen shows now; a move keeps the others in their slots. */
+    var visibleSectionIds: Set<MetricDetailSectionId> = emptySet()
+        internal set
     internal var reorderableState by mutableStateOf<ReorderableLazyListState?>(null)
 }
 
@@ -101,6 +105,7 @@ fun LazyListScope.orderedMetricDetailSections(
 ) {
     val sectionBuilder = MetricDetailSectionBuilder().apply(builder)
     val visibleOrder = order.filter { it in sectionBuilder.sections }
+    listState.visibleSectionIds = visibleOrder.toSet()
 
     // For a caller that builds the list without rememberMetricDetailSectionOrdering, which sets
     // the same two values where a scroll cannot skip them.

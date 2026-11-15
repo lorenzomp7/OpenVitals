@@ -3833,4 +3833,7 @@
     <string name="dashboard_edit_page_label">Seite %1$d</string>
     <string name="dashboard_edit_rings_label">Ringe oben</string>
     <string name="dashboard_edit_tiles_label">Kacheln</string>
+    <string name="dashboard_edit_ring_center">Mitte</string>
+    <string name="dashboard_edit_ring_left">Links</string>
+    <string name="dashboard_edit_ring_right">Rechts</string>
 </resources>

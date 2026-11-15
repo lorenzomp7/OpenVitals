@@ -168,4 +168,7 @@
     <string name="dashboard_edit_page_label">الصفحة %1$d</string>
     <string name="dashboard_edit_rings_label">الحلقات في الأعلى</string>
     <string name="dashboard_edit_tiles_label">المربعات</string>
+    <string name="dashboard_edit_ring_center">الوسط</string>
+    <string name="dashboard_edit_ring_left">اليسار</string>
+    <string name="dashboard_edit_ring_right">اليمين</string>
 </resources>

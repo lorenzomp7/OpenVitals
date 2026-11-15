@@ -96,7 +96,9 @@ fun rememberMetricDetailSectionOrdering(): MetricDetailSectionContext {
     // has scrolled past, so after a scroll restore a drag moved nothing and said nothing.
     SideEffect {
         sectionListState.isEditingSections = isEditingSections
-        sectionListState.onMoveSectionToTarget = sectionOrderViewModel::moveSectionToTarget
+        sectionListState.onMoveSectionToTarget = { section, target ->
+            sectionOrderViewModel.moveSectionToTarget(section, target, sectionListState.visibleSectionIds.ifEmpty { null })
+        }
     }
 
     DisposableEffect(Unit) {
@@ -112,7 +114,9 @@ fun rememberMetricDetailSectionOrdering(): MetricDetailSectionContext {
         listState = sectionListState,
         order = sectionOrder,
         isEditingSections = isEditingSections,
-        onMoveSectionToTarget = sectionOrderViewModel::moveSectionToTarget,
+        onMoveSectionToTarget = { section, target ->
+            sectionOrderViewModel.moveSectionToTarget(section, target, sectionListState.visibleSectionIds.ifEmpty { null })
+        },
         onMoveSection = sectionOrderViewModel::moveSection,
     )
 }

@@ -3899,4 +3899,7 @@
     <string name="dashboard_edit_page_label">Stránka %1$d</string>
     <string name="dashboard_edit_rings_label">Kruhy nahoře</string>
     <string name="dashboard_edit_tiles_label">Dlaždice</string>
+    <string name="dashboard_edit_ring_center">Střed</string>
+    <string name="dashboard_edit_ring_left">Vlevo</string>
+    <string name="dashboard_edit_ring_right">Vpravo</string>
 </resources>

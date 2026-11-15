@@ -97,19 +97,17 @@ class ActivityDetailDisplayTest {
         ),
     )
 
-    @Test fun `a split holds its speed across its window - the trace is a step`() {
+    @Test fun `a split is one point at its middle and the trace spans the session smoothly`() {
         val trace = splitSpeedTrace(recordedSpeed = emptyList(), splits = twoSplits())!!
 
-        // Two points per split, at the same height. A split's speed is an average over a window.
+        // Start, the middle of each split, end: no flat steps for the line to square off.
         assertEquals(4, trace.samples.size)
         assertEquals(2, trace.splitCount)
         assertEquals(1_000.0 / 300.0, trace.samples[0].metersPerSecond, 0.001)
         assertEquals(1_000.0 / 300.0, trace.samples[1].metersPerSecond, 0.001)
         assertEquals(1_000.0 / 360.0, trace.samples[2].metersPerSecond, 0.001)
         assertEquals(1_000.0 / 360.0, trace.samples[3].metersPerSecond, 0.001)
-        // It steps at the boundary: one instant carrying both speeds.
-        assertEquals(trace.samples[1].time, trace.samples[2].time)
-        assertTrue(trace.samples.first().time.isBefore(trace.samples.last().time))
+        assertTrue(trace.samples.zipWithNext().all { (a, b) -> b.time.isAfter(a.time) })
     }
 
     @Test fun `the average is distance over time, NOT the mean of the plotted points`() {

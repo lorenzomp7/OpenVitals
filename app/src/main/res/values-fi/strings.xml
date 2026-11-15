@@ -3833,4 +3833,7 @@
     <string name="dashboard_edit_page_label">Sivu %1$d</string>
     <string name="dashboard_edit_rings_label">Renkaat ylhäällä</string>
     <string name="dashboard_edit_tiles_label">Ruudut</string>
+    <string name="dashboard_edit_ring_center">Keskellä</string>
+    <string name="dashboard_edit_ring_left">Vasemmalla</string>
+    <string name="dashboard_edit_ring_right">Oikealla</string>
 </resources>

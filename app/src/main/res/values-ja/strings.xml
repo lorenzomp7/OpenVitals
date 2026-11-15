@@ -3901,4 +3901,7 @@
     <string name="dashboard_edit_page_label">%1$d ページ</string>
     <string name="dashboard_edit_rings_label">上部のリング</string>
     <string name="dashboard_edit_tiles_label">タイル</string>
+    <string name="dashboard_edit_ring_center">中央</string>
+    <string name="dashboard_edit_ring_left">左</string>
+    <string name="dashboard_edit_ring_right">右</string>
 </resources>

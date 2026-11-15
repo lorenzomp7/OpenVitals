@@ -103,7 +103,7 @@ internal fun DashboardContent(
     onNextDay: () -> Unit,
     onOpenCalendar: () -> Unit,
     onMoveWidgetToTarget: (DashboardWidgetId, DashboardWidgetId) -> Unit,
-    onMoveWidget: (DashboardWidgetId, DashboardWidgetId) -> Unit = onMoveWidgetToTarget,
+    onMoveWidget: (DashboardWidgetId, DashboardWidgetId, List<DashboardWidgetId>) -> Unit = { a, b, _ -> onMoveWidgetToTarget(a, b) },
     onRemoveWidget: (DashboardWidgetId) -> Unit,
     widgetSizes: Map<DashboardWidgetId, Int> = emptyMap(),
     widgetDetailCounts: Map<DashboardWidgetId, Int> = emptyMap(),

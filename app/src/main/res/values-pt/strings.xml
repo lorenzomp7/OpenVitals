@@ -3860,4 +3860,7 @@
     <string name="dashboard_edit_page_label">Página %1$d</string>
     <string name="dashboard_edit_rings_label">Anéis no topo</string>
     <string name="dashboard_edit_tiles_label">Mosaicos</string>
+    <string name="dashboard_edit_ring_center">Centro</string>
+    <string name="dashboard_edit_ring_left">Esquerda</string>
+    <string name="dashboard_edit_ring_right">Direita</string>
 </resources>

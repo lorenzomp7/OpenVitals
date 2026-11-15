@@ -3893,4 +3893,7 @@
     <string name="dashboard_edit_page_label">Page %1$d</string>
     <string name="dashboard_edit_rings_label">Rings at the top</string>
     <string name="dashboard_edit_tiles_label">Tiles</string>
+    <string name="dashboard_edit_ring_center">Centre</string>
+    <string name="dashboard_edit_ring_left">Left</string>
+    <string name="dashboard_edit_ring_right">Right</string>
 </resources>

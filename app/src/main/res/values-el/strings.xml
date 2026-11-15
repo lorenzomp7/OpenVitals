@@ -518,4 +518,7 @@
     <string name="dashboard_edit_page_label">Σελίδα %1$d</string>
     <string name="dashboard_edit_rings_label">Δαχτυλίδια επάνω</string>
     <string name="dashboard_edit_tiles_label">Πλακίδια</string>
+    <string name="dashboard_edit_ring_center">Κέντρο</string>
+    <string name="dashboard_edit_ring_left">Αριστερά</string>
+    <string name="dashboard_edit_ring_right">Δεξιά</string>
 </resources>

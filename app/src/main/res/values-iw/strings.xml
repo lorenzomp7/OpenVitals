@@ -168,4 +168,7 @@
     <string name="dashboard_edit_page_label">עמוד %1$d</string>
     <string name="dashboard_edit_rings_label">טבעות למעלה</string>
     <string name="dashboard_edit_tiles_label">אריחים</string>
+    <string name="dashboard_edit_ring_center">מרכז</string>
+    <string name="dashboard_edit_ring_left">שמאל</string>
+    <string name="dashboard_edit_ring_right">ימין</string>
 </resources>

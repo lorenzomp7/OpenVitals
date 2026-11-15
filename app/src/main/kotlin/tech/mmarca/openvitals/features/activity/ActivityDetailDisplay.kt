@@ -76,6 +76,8 @@ internal fun splitSpeedTrace(
     if (splits.source == SplitSource.ESTIMATED) return null
 
     val samples = mutableListOf<ActivitySpeedTraceSample>()
+    var splitCount = 0
+    var lastEnd: ActivitySpeedTraceSample? = null
     var meters = 0.0
     var seconds = 0.0
     for (split in splits.splits) {
@@ -85,14 +87,18 @@ internal fun splitSpeedTrace(
         val metersPerSecond = 1.0 / pace
         if (!metersPerSecond.isFinite()) continue
 
-        // The step: this speed held from here to there.
-        samples.add(ActivitySpeedTraceSample(split.startTime, metersPerSecond))
-        samples.add(ActivitySpeedTraceSample(split.endTime, metersPerSecond))
+        // 64: one point per split, at its middle, so the line runs smooth like the heart rate's;
+        // the first and last splits also hold the session's ends, so the line spans it all.
+        if (splitCount == 0) samples.add(ActivitySpeedTraceSample(split.startTime, metersPerSecond))
+        val middle = split.startTime.plusMillis(java.time.Duration.between(split.startTime, split.endTime).toMillis() / 2)
+        samples.add(ActivitySpeedTraceSample(middle, metersPerSecond))
+        lastEnd = ActivitySpeedTraceSample(split.endTime, metersPerSecond)
+        splitCount += 1
         meters += split.distanceMeters
         seconds += split.elapsedMs / 1000.0
     }
 
-    val splitCount = samples.size / 2
+    lastEnd?.let(samples::add)
     if (splitCount < 2 || meters <= 0 || seconds <= 0) return null
     return ActivitySplitSpeedTrace(
         samples = samples,

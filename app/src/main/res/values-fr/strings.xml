@@ -3866,4 +3866,7 @@
     <string name="dashboard_edit_page_label">Page %1$d</string>
     <string name="dashboard_edit_rings_label">Anneaux en haut</string>
     <string name="dashboard_edit_tiles_label">Tuiles</string>
+    <string name="dashboard_edit_ring_center">Centre</string>
+    <string name="dashboard_edit_ring_left">Gauche</string>
+    <string name="dashboard_edit_ring_right">Droite</string>
 </resources>

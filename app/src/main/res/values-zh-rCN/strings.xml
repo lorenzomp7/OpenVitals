@@ -3834,4 +3834,7 @@
     <string name="dashboard_edit_page_label">第 %1$d 页</string>
     <string name="dashboard_edit_rings_label">顶部圆环</string>
     <string name="dashboard_edit_tiles_label">磁贴</string>
+    <string name="dashboard_edit_ring_center">中间</string>
+    <string name="dashboard_edit_ring_left">左侧</string>
+    <string name="dashboard_edit_ring_right">右侧</string>
 </resources>

@@ -129,6 +129,10 @@ fun AppNavigation(
     onOnboardingComplete: () -> Unit = {},
 ) {
     val fluidBrandTimeline = rememberFluidBrandTimeline()
+    // 83: every time the app comes to the front, the animated toggle opens afresh.
+    androidx.lifecycle.compose.LifecycleEventEffect(androidx.lifecycle.Lifecycle.Event.ON_START) {
+        fluidBrandTimeline.restart(android.os.SystemClock.uptimeMillis())
+    }
     val navController = rememberNavController()
     val backDispatcher = LocalOnBackPressedDispatcherOwner.current?.onBackPressedDispatcher
     val liveBackStackEntry by navController.currentBackStackEntryAsState()

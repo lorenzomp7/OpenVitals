@@ -1,5 +1,7 @@
 package tech.mmarca.openvitals.features.dashboard
 
+import tech.mmarca.openvitals.ui.theme.LayoutMetrics
+import androidx.compose.material.icons.automirrored.outlined.List
 import tech.mmarca.openvitals.ui.theme.Spacing
 
 import androidx.compose.animation.AnimatedContent
@@ -364,6 +366,10 @@ internal fun DashboardWidgetTile(
     /** The spaces this tile takes outside edit mode; tapping the button moves to the next size. */
     sizeLabel: String? = null,
     onCycleSize: (() -> Unit)? = null,
+    /** 81: how many values the tile shows; tapping opens the tile's options, as the size does. */
+    detailCount: Int? = null,
+    /** 82: the ring this tile becomes at the top (centre, left, right), if any. */
+    roleLabel: String? = null,
 ) {
     val wiggleRotation = 0f
     val removeWidgetLabel = stringResource(R.string.cd_remove_widget)
@@ -407,9 +413,7 @@ internal fun DashboardWidgetTile(
             .graphicsLayer {
                 alpha = if (hideContent) 0.25f else 1f
                 rotationZ = if (isEditingDashboard && !isDragging) wiggleRotation else 0f
-                scaleX = if (isDragging) 1.02f else 1f
-                scaleY = if (isDragging) 1.02f else 1f
-                shadowElevation = if (isDragging) 12.dp.toPx() else 0f
+                // 80, 50: the held tile keeps its size and casts no shadow.
             }
             .then(editSemanticsModifier)
             .then(dragHandleModifier),
@@ -423,43 +427,89 @@ internal fun DashboardWidgetTile(
             displayedSpec.content(Modifier.fillMaxSize())
         }
         if (isEditingDashboard) {
-            Row(
-                modifier = Modifier.align(Alignment.TopEnd).width(96.dp).height(48.dp),
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                if (sizeLabel != null && onCycleSize != null) {
-                    Box(
-                        contentAlignment = Alignment.Center,
-                        modifier = Modifier.weight(1f).fillMaxHeight().clickable(
-                            onClickLabel = stringResource(R.string.dashboard_widget_size_action),
-                            onClick = onCycleSize,
-                        ),
-                    ) {
-                        Text(
-                            text = sizeLabel,
-                            style = MaterialTheme.typography.labelLarge,
-                            color = MaterialTheme.colorScheme.onPrimary,
-                            modifier = Modifier.background(MaterialTheme.colorScheme.primary, CircleShape)
-                                .padding(horizontal = 12.dp, vertical = 6.dp),
-                        )
-                    }
-                }
-                Box(
-                    contentAlignment = Alignment.Center,
-                    modifier = Modifier.weight(1f).fillMaxHeight().clickable(
-                        onClickLabel = removeWidgetLabel,
-                        onClick = onRemove,
-                    ),
-                ) {
-                    Icon(
-                        imageVector = Icons.Outlined.Close,
-                        contentDescription = null,
-                        tint = MaterialTheme.colorScheme.onSurface,
-                        modifier = Modifier.size(18.dp),
-                    )
-                }
-            }
+            DashboardEditTileControls(
+                sizeLabel = sizeLabel,
+                detailCount = detailCount,
+                roleLabel = roleLabel,
+                onCycleSize = onCycleSize,
+                onRemove = onRemove,
+                removeWidgetLabel = removeWidgetLabel,
+                modifier = Modifier.align(Alignment.TopStart),
+            )
         }
+    }
+}
+
+/** The band above a tile in edit mode: its ring role, its shape and value count, and remove. */
+@Composable
+private fun DashboardEditTileControls(
+    sizeLabel: String?,
+    detailCount: Int?,
+    roleLabel: String?,
+    onCycleSize: (() -> Unit)?,
+    onRemove: () -> Unit,
+    removeWidgetLabel: String,
+    modifier: Modifier = Modifier,
+) {
+    Row(
+        modifier = modifier.fillMaxWidth().height(LayoutMetrics.minTouchTarget),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(Spacing.xs),
+    ) {
+        if (roleLabel != null) {
+            DashboardEditChip(text = roleLabel, onClick = null, emphasized = false)
+        }
+        Spacer(Modifier.weight(1f))
+        if (sizeLabel != null && onCycleSize != null) {
+            DashboardEditChip(text = sizeLabel, onClick = onCycleSize, emphasized = true)
+        }
+        if (detailCount != null && onCycleSize != null) {
+            DashboardEditChip(
+                text = detailCount.toString(),
+                icon = Icons.AutoMirrored.Outlined.List,
+                onClick = onCycleSize,
+                emphasized = false,
+            )
+        }
+        Box(
+            contentAlignment = Alignment.Center,
+            modifier = Modifier.size(LayoutMetrics.minTouchTarget).clickable(
+                onClickLabel = removeWidgetLabel,
+                onClick = onRemove,
+            ),
+        ) {
+            Icon(
+                imageVector = Icons.Outlined.Close,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.onSurface,
+                modifier = Modifier.size(Spacing.lg + Spacing.xs / 2),
+            )
+        }
+    }
+}
+
+@Composable
+private fun DashboardEditChip(
+    text: String,
+    onClick: (() -> Unit)?,
+    emphasized: Boolean,
+    icon: ImageVector? = null,
+) {
+    val container = if (emphasized) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceContainerHigh
+    val content = if (emphasized) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurface
+    Row(
+        modifier = Modifier
+            .clip(CircleShape)
+            .background(container)
+            .then(if (onClick != null) Modifier.clickable(onClick = onClick) else Modifier)
+            .padding(horizontal = Spacing.sm + Spacing.xs, vertical = Spacing.xs + Spacing.xs / 2),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(Spacing.xs),
+    ) {
+        if (icon != null) {
+            Icon(icon, contentDescription = null, tint = content, modifier = Modifier.size(Spacing.lg))
+        }
+        Text(text = text, style = MaterialTheme.typography.labelLarge, color = content)
     }
 }
 

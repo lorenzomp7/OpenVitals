@@ -9,6 +9,11 @@ class FluidBrandTimeline(val initialStartMillis: Long = NotStarted) {
         if (startedAtMillis == NotStarted) startedAtMillis = nowMillis
     }
 
+    /** 83: the app came to the front: the toggle plays its opening again. */
+    fun restart(nowMillis: Long) {
+        startedAtMillis = nowMillis
+    }
+
     fun secondsAt(nowMillis: Long): Float =
         if (startedAtMillis == NotStarted) 0f
         else (nowMillis - startedAtMillis).coerceAtLeast(0L) / 1_000f

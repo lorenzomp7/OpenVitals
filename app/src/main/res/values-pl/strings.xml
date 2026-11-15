@@ -3899,4 +3899,7 @@
     <string name="dashboard_edit_page_label">Strona %1$d</string>
     <string name="dashboard_edit_rings_label">Pierścienie u góry</string>
     <string name="dashboard_edit_tiles_label">Kafelki</string>
+    <string name="dashboard_edit_ring_center">Środek</string>
+    <string name="dashboard_edit_ring_left">Lewo</string>
+    <string name="dashboard_edit_ring_right">Prawo</string>
 </resources>

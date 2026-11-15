@@ -50,8 +50,8 @@ internal fun DashboardWidgetCarousel(
     isEditingDashboard: Boolean,
     onMoveWidgetToTarget: (DashboardWidgetId, DashboardWidgetId) -> Unit,
     onRemoveWidget: (DashboardWidgetId) -> Unit,
-    /** Moves a tile to the target's place, the others shifting by one: what the reorderable grid needs. */
-    onMoveWidget: (DashboardWidgetId, DashboardWidgetId) -> Unit = onMoveWidgetToTarget,
+    /** Moves a tile to the target's place among the tiles on view, the others keeping their slots. */
+    onMoveWidget: (DashboardWidgetId, DashboardWidgetId, List<DashboardWidgetId>) -> Unit = { a, b, _ -> onMoveWidgetToTarget(a, b) },
     widgetSizes: Map<DashboardWidgetId, Int> = emptyMap(),
     pagedLayout: Boolean = false,
     onSetWidgetDetailCount: (DashboardWidgetId, Int) -> Unit = { _, _ -> },
@@ -106,7 +106,7 @@ internal fun DashboardWidgetCarousel(
                 specsById = specsById,
                 sizeOf = sizeOf,
                 pagedLayout = pagedLayout,
-                onMoveWidget = onMoveWidget,
+                onMoveWidget = { widget, target -> onMoveWidget(widget, target, visibleIds) },
                 onRemoveWidget = onRemoveWidget,
                 onCycleWidgetSize = cycleSize,
                 modifier = Modifier.padding(horizontal = DashboardScreenPadding),

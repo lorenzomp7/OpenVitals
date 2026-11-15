@@ -3865,4 +3865,7 @@
     <string name="dashboard_edit_page_label">Pagina %1$d</string>
     <string name="dashboard_edit_rings_label">Anelli in alto</string>
     <string name="dashboard_edit_tiles_label">Riquadri</string>
+    <string name="dashboard_edit_ring_center">Centro</string>
+    <string name="dashboard_edit_ring_left">Sinistra</string>
+    <string name="dashboard_edit_ring_right">Destra</string>
 </resources>
