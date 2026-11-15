@@ -46,7 +46,7 @@ jobs:
           NEXT=$((PREVIOUS + 1))
           if (( NEXT < 1070400000 )); then NEXT=1070400000; fi
           echo "OPENVITALS_VERSION_CODE=$NEXT" >> "$GITHUB_ENV"
-          echo "OPENVITALS_VERSION_NAME=2.17.3-personal-claude-02" >> "$GITHUB_ENV"
+          echo "OPENVITALS_VERSION_NAME=2.17.4-personal-claude-02" >> "$GITHUB_ENV"
       - name: Build the signed personal update
         env:
           OPENVITALS_RELEASE_STORE_FILE: ${{ github.workspace }}/personal/personal.p12
@@ -103,26 +103,27 @@ jobs:
           cat > release-notes.md <<EOF
           Scarica **OpenVitals.apk** dagli allegati e aprilo sul telefono.
 
-          Branch main_claude_02 — quarta tornata: 63, 64, 70, 72, 73, 75, 76, 77, 78:
-          - 63: la barra in alto cambia solo quando la nuova schermata inizia ad apparire e anche la dashboard entra ed esce con la dissolvenza Material: niente più lampo al ritorno.
-          - 64: nessun grafico a linee disegna più i puntini.
-          - 70: Salva/Scarta compare solo se qualcosa è davvero cambiato; se sposti e rimetti com'era, esce senza chiedere (dashboard, "+ log", sezioni).
-          - 72: la mappa piccola ha gli stessi due pulsanti, nella stessa posizione, della mappa a tutto schermo.
-          - 73, 77: l'import screenshot non chiede più "Save changes?"; dopo il salvataggio mostra la conferma e si chiude.
-          - 75: la modifica dei toggle della dashboard usa lo stesso sistema del "+ log": il riquadro segue il dito e gli altri si spostano mentre passi.
-          - 76: logo del README aggiornato con l'icona nuova.
-          - 78: icone profilo, achievement e impostazioni nello stile del toggle animato.
+          Branch main_claude_02 (unito anche in main) — quinta tornata: 64, 70, 73, 78, 80, 81, 82, 83, 84:
+          - 64: "Speed per lap" è una linea morbida come quella dei battiti, senza gradini a 90°.
+          - 70: dashboard e sezioni non chiedono più di salvare se rimetti tutto com'era.
+          - 73: la conferma dell'import screenshot è un riquadro dell'app sotto "Import screenshot".
+          - 78: riaprendo l'import dopo un salvataggio, la revisione si apre normalmente.
+          - 80: il riquadro trascinato non ha più ombra.
+          - 81: in modifica ogni riquadro mostra la forma (2×1, 2×2) e il numero di valori che contiene.
+          - 82: i primi tre riquadri sono indicati come Centro, Sinistra e Destra dell'anello.
+          - 83: il toggle animato riparte ogni volta che riapri l'app.
+          - 84: tutto il lavoro è unito anche nel branch main.
 
           Questa versione aggiorna l'installazione personale compatibile di OpenVitals senza disinstallarla. La revisione ha superato la verifica completa (verify) in questa stessa esecuzione; package e firma coincidono con l'APK pubblicato precedente; installazione, aggiornamento, avvio e import screenshot sono verificati su Android 15.
 
-          Versione: **2.17.3-personal-claude-02**. Version code: **$OPENVITALS_VERSION_CODE**.
+          Versione: **2.17.4-personal-claude-02**. Version code: **$OPENVITALS_VERSION_CODE**.
           Sorgenti: https://github.com/$GH_REPO/commit/$GITHUB_SHA
           Compilazione e verifica aggiornamento: https://github.com/$GH_REPO/actions/runs/$GITHUB_RUN_ID
           EOF
           if gh release view "$TAG" > /dev/null 2>&1; then
             echo "Release already exists; keeping the published APK unchanged."
           else
-            gh release create "$TAG" release/OpenVitals.apk release/SHA256SUMS.txt --target "$GITHUB_SHA" --title "OpenVitals 2.17.3 · main_claude_02" --notes-file release-notes.md --latest
+            gh release create "$TAG" release/OpenVitals.apk release/SHA256SUMS.txt --target "$GITHUB_SHA" --title "OpenVitals 2.17.4 · main_claude_02" --notes-file release-notes.md --latest
           fi
       - uses: actions/upload-artifact@v4
         if: always()
