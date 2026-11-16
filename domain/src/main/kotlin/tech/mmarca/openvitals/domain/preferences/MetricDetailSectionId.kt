@@ -45,6 +45,8 @@ enum class MetricDetailSectionId {
     ACTIVITY_DETAIL_TRAINING_EFFECT,
     ACTIVITY_DETAIL_STRIDE,
     ACTIVITY_DETAIL_LAPS,
+    ACTIVITY_DETAIL_JUMPS,
+    ACTIVITY_DETAIL_RECORDS,
 }
 
 val DefaultMetricDetailSectionOrder: List<MetricDetailSectionId> = listOf(
@@ -76,6 +78,8 @@ val DefaultMetricDetailSectionOrder: List<MetricDetailSectionId> = listOf(
     MetricDetailSectionId.CYCLE_THERMAL,
     MetricDetailSectionId.CYCLE_PATTERNS,
     MetricDetailSectionId.CYCLE_NIGHTLY,
+    // 119: the records first, as a watch's summary shows them.
+    MetricDetailSectionId.ACTIVITY_DETAIL_RECORDS,
     MetricDetailSectionId.ACTIVITY_DETAIL_SPLITS,
     MetricDetailSectionId.ACTIVITY_DETAIL_HEART_RATE,
     MetricDetailSectionId.ACTIVITY_DETAIL_CALORIES,
@@ -90,6 +94,7 @@ val DefaultMetricDetailSectionOrder: List<MetricDetailSectionId> = listOf(
     MetricDetailSectionId.ACTIVITY_DETAIL_TRAINING_EFFECT,
     MetricDetailSectionId.ACTIVITY_DETAIL_STRIDE,
     MetricDetailSectionId.ACTIVITY_DETAIL_LAPS,
+    MetricDetailSectionId.ACTIVITY_DETAIL_JUMPS,
 )
 
 fun metricDetailSectionOrderFromStored(storedIds: List<String>?): List<MetricDetailSectionId> {

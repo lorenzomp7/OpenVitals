@@ -59,9 +59,20 @@ internal fun MetricDetailSectionBuilder.activityDetailChartSections(
     elevationSource: RouteElevationSource,
     unitFormatter: UnitFormatter,
     sessionCardioLoad: Int? = null,
+    personalRecords: List<tech.mmarca.openvitals.domain.insights.PersonalRecord> = emptyList(),
+    recordsComparedWith: Int = 0,
 ) {
     val cardModifier = Modifier.fillMaxWidth().padding(horizontal = Spacing.lg, vertical = Spacing.xs)
     val pauses = workout.segments.toSessionPauses()
+    // 119: the records this activity holds among those of its kind.
+    section(MetricDetailSectionId.ACTIVITY_DETAIL_RECORDS, personalRecords.isNotEmpty()) {
+        ActivityPersonalRecordsCard(personalRecords, recordsComparedWith, unitFormatter, cardModifier)
+    }
+    // 119: a jump rope session's jumps, from its segments.
+    val jumps = tech.mmarca.openvitals.domain.insights.jumpRopeSummary(workout.segments)
+    section(MetricDetailSectionId.ACTIVITY_DETAIL_JUMPS, jumps != null) {
+        jumps?.let { ActivityJumpRopeCard(it, unitFormatter, cardModifier) }
+    }
     section(MetricDetailSectionId.ACTIVITY_DETAIL_SPLITS, splits.isNotEmpty) {
         ActivitySplitsCard(
             splits = splits,

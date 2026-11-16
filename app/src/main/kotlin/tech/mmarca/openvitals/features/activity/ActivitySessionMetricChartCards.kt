@@ -190,8 +190,21 @@ internal fun ActivityElevationChartCard(
         tech.mmarca.openvitals.features.activity.elevation.RouteElevationSource.GPS,
 ) {
     if (samples.isEmpty()) return
+    // 119: the ascent and descent of the profile drawn, filtered of GPS wander as the splits
+    // count them, beside the lowest and highest point.
+    val change = remember(samples) {
+        tech.mmarca.openvitals.domain.insights.RouteElevation.elevationChangeFromAltitudes(samples.map { it.meters })
+    }
+    val low = samples.minOf { it.meters }
+    val high = samples.maxOf { it.meters }
 
     ActivitySessionMetricChartCard(
+        statsOverride = listOf(
+            stringResource(R.string.activity_elevation_ascent) to "↑ ${unitFormatter.elevation(change.gain).text}",
+            stringResource(R.string.activity_elevation_descent) to "↓ ${unitFormatter.elevation(change.loss).text}",
+            stringResource(R.string.summary_range) to
+                activityValueRange(unitFormatter.elevation(low).text, unitFormatter.elevation(high).text),
+        ),
         // 104: where the heights came from: a terrain model, or the GPS, which drifts.
         footnote = stringResource(
             when (source) {

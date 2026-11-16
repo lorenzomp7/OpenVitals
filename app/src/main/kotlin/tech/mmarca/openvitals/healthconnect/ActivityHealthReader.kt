@@ -355,6 +355,8 @@ internal class ActivityHealthReader(
         includeDistance: Boolean,
         includeSpeed: Boolean,
         includeHeartRate: Boolean = false,
+        /** 119: only sessions of this kind, so the per-session aggregates are read for them alone. */
+        exerciseType: Int? = null,
     ): List<ExerciseData> =
         support.withLogging("readExerciseSessionsWithMetrics[$start..$end]", emptyList()) {
             val records = support.client().readRecordsPaged(
@@ -362,7 +364,7 @@ internal class ActivityHealthReader(
                 timeRangeFilter = TimeRangeFilter.between(start, end),
                 ascendingOrder = false,
                 pageSize = 50,
-            )
+            ).filter { exerciseType == null || it.exerciseType == exerciseType }
             val sessions = records.map { record ->
                 readExerciseSessionMetrics(
                     record = record,

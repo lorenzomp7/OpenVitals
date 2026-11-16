@@ -267,6 +267,8 @@ internal fun ActivityDetailScreen(
             onShareWorkoutAsFitWithRoute = { shareWorkout(ActivityWorkoutExportFormat.FIT_WITH_ROUTE) },
             sectionContext = chartOrdering,
             sessionCardioLoad = state.sessionCardioLoad,
+            personalRecords = state.personalRecords,
+            recordsComparedWith = state.recordsComparedWith,
         )
     }
 }
@@ -315,6 +317,8 @@ internal fun ActivityDetailContent(
     onSaveWorkoutAsFitWithRoute: () -> Unit = {},
     onShareWorkoutAsFitWithRoute: () -> Unit = {},
     sessionCardioLoad: Int? = null,
+    personalRecords: List<tech.mmarca.openvitals.domain.insights.PersonalRecord> = emptyList(),
+    recordsComparedWith: Int = 0,
     /** 113: the arrangement of the charts; null shows them in the default order, unarrangeable. */
     sectionContext: tech.mmarca.openvitals.core.presentation.MetricDetailSectionContext? = null,
 ) {
@@ -381,6 +385,8 @@ internal fun ActivityDetailContent(
                 elevationSource = elevationSource,
                 unitFormatter = unitFormatter,
                 sessionCardioLoad = sessionCardioLoad,
+                personalRecords = personalRecords,
+                recordsComparedWith = recordsComparedWith,
             )
         }
         item {

@@ -102,11 +102,20 @@ internal data class ActivityDetailUiState(
     /** 117: the session's cardio load (Banister TRIMP), as the Cardio load screen counts it. */
     val sessionCardioLoad: Int? = null,
 
+    /** 119: the records this session holds among those of its kind in the year up to it. */
+    val personalRecords: List<tech.mmarca.openvitals.domain.insights.PersonalRecord> = emptyList(),
+
+    /** 119: how many earlier sessions of the kind the records were measured against. */
+    val recordsComparedWith: Int = 0,
+
     /** The plan this session was logged against, when it still exists and can be read. */
     val linkedPlan: PlannedExerciseData? = null,
 
     val error: ScreenError? = null,
 )
+
+/** 119: how far back the records look. */
+private const val RecordsWindowDays = 365L
 
 @HiltViewModel
 internal class ActivityDetailViewModel @Inject constructor(
@@ -119,6 +128,7 @@ internal class ActivityDetailViewModel @Inject constructor(
     private val dispatchers: DispatcherProvider = DefaultDispatcherProvider,
     savedStateHandle: SavedStateHandle,
     private val terrainElevation: tech.mmarca.openvitals.features.activity.elevation.RouteTerrainElevation? = null,
+    private val recordsCache: ActivityRecordsCache = ActivityRecordsCache(),
 ) : ViewModel() {
 
     /** The workout the route opened. Blank when it named none: the not-found state. */
@@ -148,6 +158,14 @@ internal class ActivityDetailViewModel @Inject constructor(
                 .onSuccess { loaded ->
                     if (!isCurrent) return@load
                     _uiState.value = loaded
+                    // 119: the records come after, from a year of the kind; the screen does not wait.
+                    loaded.workout?.let { workout ->
+                        runCatchingCancellable { loadRecords(workout) }.getOrNull()?.let { (records, compared) ->
+                            if (isCurrent) {
+                                _uiState.update { it.copy(personalRecords = records, recordsComparedWith = compared) }
+                            }
+                        }
+                    }
                 }
                 .onFailure {
                     if (!isCurrent) return@load
@@ -156,6 +174,26 @@ internal class ActivityDetailViewModel @Inject constructor(
                         error = it.toScreenError(R.string.screen_error_load_activity),
                     )
                 }
+        }
+    }
+
+    /**
+     * 119: the records [workout] holds among the sessions of its kind in the year up to it. A
+     * refused or skipped read leaves the card out, as any other missing figure.
+     */
+    private suspend fun loadRecords(
+        workout: ExerciseData,
+    ): Pair<List<tech.mmarca.openvitals.domain.insights.PersonalRecord>, Int>? {
+        val zone = java.time.ZoneId.systemDefault()
+        val end = workout.endTime.atZone(zone).toLocalDate()
+        val start = end.minusDays(RecordsWindowDays)
+        val sessions = recordsCache.get(workout.exerciseType, start, end)
+            ?: repository.loadWorkoutsOfType(workout.exerciseType, start, end)
+                .also { recordsCache.put(workout.exerciseType, start, end, it) }
+        val earlier = sessions.filter { it.id != workout.id && !it.startTime.isAfter(workout.startTime) }
+        if (earlier.isEmpty()) return null
+        return withContext(dispatchers.default) {
+            tech.mmarca.openvitals.domain.insights.personalRecords(workout, earlier) to earlier.size
         }
     }
 
