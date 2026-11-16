@@ -21,7 +21,7 @@ class WorkoutTypeChartsTest {
     @Test fun `each kind of activity gets its own chart`() {
         assertEquals(WorkoutTypeChart.PACE, workoutTypeChart(ExerciseSessionRecord.EXERCISE_TYPE_RUNNING))
         assertEquals(WorkoutTypeChart.PACE, workoutTypeChart(ExerciseSessionRecord.EXERCISE_TYPE_WALKING))
-        assertNull(workoutTypeChart(ExerciseSessionRecord.EXERCISE_TYPE_RUNNING_TREADMILL))
+        assertEquals(WorkoutTypeChart.PACE, workoutTypeChart(ExerciseSessionRecord.EXERCISE_TYPE_RUNNING_TREADMILL))
         assertEquals(WorkoutTypeChart.ELEVATION_WITH_SPEED, workoutTypeChart(ExerciseSessionRecord.EXERCISE_TYPE_BIKING))
         assertEquals(WorkoutTypeChart.CADENCE_WITH_HEART_RATE, workoutTypeChart(ExerciseSessionRecord.EXERCISE_TYPE_BIKING_STATIONARY))
         assertEquals(WorkoutTypeChart.HEART_RATE_WITH_SETS, workoutTypeChart(ExerciseSessionRecord.EXERCISE_TYPE_STRENGTH_TRAINING))

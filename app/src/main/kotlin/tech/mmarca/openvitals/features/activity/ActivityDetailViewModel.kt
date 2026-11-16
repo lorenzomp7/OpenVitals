@@ -99,6 +99,9 @@ internal data class ActivityDetailUiState(
     /** 103: the rate an estimated recovery falls toward, from the profile. */
     val restingHeartRateBpm: Int? = null,
 
+    /** 117: the session's cardio load (Banister TRIMP), as the Cardio load screen counts it. */
+    val sessionCardioLoad: Int? = null,
+
     /** The plan this session was logged against, when it still exists and can be read. */
     val linkedPlan: PlannedExerciseData? = null,
 
@@ -271,6 +274,19 @@ internal class ActivityDetailViewModel @Inject constructor(
                         profile?.ageYears(),
                     ),
                     restingHeartRateBpm = profile?.restingHeartRateBpm,
+                    sessionCardioLoad = tech.mmarca.openvitals.domain.insights.calculateCardioLoad(
+                        steps = null,
+                        samples = heartRate,
+                        restingHeartRate = profile?.restingHeartRateBpm?.toLong(),
+                        baselineRestingHeartRate = null,
+                        observedMaxHeartRate = null,
+                        activityWindows = listOf(
+                            tech.mmarca.openvitals.domain.insights.CardioLoadTimeWindow(workout.startTime, workout.endTime),
+                        ),
+                        ageYears = profile?.ageYears(),
+                        explicitMaxHeartRate = profile?.maxHeartRateBpm?.toLong(),
+                        sex = profile?.sex,
+                    ).takeIf { it.usedTrimp }?.score,
                     linkedPlan = plan,
                 ).withSplitsCutAt(splitDistanceMeters)
             }

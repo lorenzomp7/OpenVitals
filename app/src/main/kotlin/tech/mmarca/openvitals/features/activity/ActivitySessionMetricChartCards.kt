@@ -17,6 +17,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import java.time.Instant
+import kotlin.math.roundToInt
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
@@ -379,4 +380,29 @@ private fun ActivitySessionMetricChartCard(
             }
         }
     }
+}
+
+/** 117: the length of each step over the session, the speed over the cadence. */
+@Composable
+internal fun ActivityStrideChartCard(
+    stridesMeters: List<Pair<Instant, Double>>,
+    sessionStart: Instant,
+    sessionEnd: Instant,
+    unitFormatter: UnitFormatter,
+    modifier: Modifier = Modifier,
+    pauses: List<SessionPause> = emptyList(),
+) {
+    if (stridesMeters.size < 2) return
+    ActivitySessionMetricChartCard(
+        title = stringResource(R.string.activity_chart_stride_title),
+        sortedValues = stridesMeters.map { (time, meters) -> time to meters * 100.0 },
+        sessionStart = sessionStart,
+        sessionEnd = sessionEnd,
+        unitFormatter = unitFormatter,
+        accentColor = StepsColor,
+        valueFormatter = { "${it.roundToInt()} cm" },
+        footnote = stringResource(R.string.activity_chart_stride_note),
+        modifier = modifier,
+        pauses = pauses,
+    )
 }

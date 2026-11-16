@@ -19,6 +19,8 @@ fun workoutTypeChart(exerciseType: Int): WorkoutTypeChart? = when (exerciseType)
     ExerciseSessionRecord.EXERCISE_TYPE_RUNNING,
     ExerciseSessionRecord.EXERCISE_TYPE_WALKING,
     ExerciseSessionRecord.EXERCISE_TYPE_HIKING,
+    // 117: a treadmill's pace, from the belt's speed or the splits.
+    ExerciseSessionRecord.EXERCISE_TYPE_RUNNING_TREADMILL,
     -> WorkoutTypeChart.PACE
     ExerciseSessionRecord.EXERCISE_TYPE_BIKING -> WorkoutTypeChart.ELEVATION_WITH_SPEED
     ExerciseSessionRecord.EXERCISE_TYPE_BIKING_STATIONARY -> WorkoutTypeChart.CADENCE_WITH_HEART_RATE

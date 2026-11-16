@@ -11,7 +11,15 @@ import sh.calvin.reorderable.ReorderableLazyListState
 import sh.calvin.reorderable.rememberReorderableLazyListState
 import tech.mmarca.openvitals.core.presentation.MetricDetailSectionContext
 import tech.mmarca.openvitals.core.presentation.UnitFormatter
+import tech.mmarca.openvitals.domain.insights.GradePoint
+import tech.mmarca.openvitals.domain.insights.GradientDistribution
+import tech.mmarca.openvitals.domain.insights.gradientDistribution
+import tech.mmarca.openvitals.domain.insights.heartRateZoneSeconds
+import tech.mmarca.openvitals.domain.insights.paceFromRoute
 import tech.mmarca.openvitals.domain.insights.showsSpeedChart
+import tech.mmarca.openvitals.domain.insights.strideLengthSeries
+import tech.mmarca.openvitals.domain.insights.trainingEffect
+import tech.mmarca.openvitals.domain.model.ActivityCadenceKind
 import tech.mmarca.openvitals.domain.model.ExerciseData
 import tech.mmarca.openvitals.domain.insights.ActivitySplits
 import tech.mmarca.openvitals.domain.insights.HeartRateRecoveryReading
@@ -50,6 +58,7 @@ internal fun MetricDetailSectionBuilder.activityDetailChartSections(
     elevationSamples: List<ActivityElevationSample>,
     elevationSource: RouteElevationSource,
     unitFormatter: UnitFormatter,
+    sessionCardioLoad: Int? = null,
 ) {
     val cardModifier = Modifier.fillMaxWidth().padding(horizontal = Spacing.lg, vertical = Spacing.xs)
     val pauses = workout.segments.toSessionPauses()
@@ -151,6 +160,34 @@ internal fun MetricDetailSectionBuilder.activityDetailChartSections(
             modifier = cardModifier,
         )
     }
+    // 117: the time uphill, flat and downhill, from the route and its heights.
+    val gradient = activityGradient(workout, elevationSamples)
+    section(MetricDetailSectionId.ACTIVITY_DETAIL_GRADIENT, gradient != null) {
+        gradient?.let { ActivityGradientCard(it, cardModifier) }
+    }
+    // 117: the aerobic and anaerobic effect from the zones, and the session's load.
+    val effect = if (maxHeartRateBpm != null && heartRateSamples.isNotEmpty()) {
+        trainingEffect(heartRateZoneSeconds(heartRateSamples, workout.startTime, workout.endTime, maxHeartRateBpm))
+    } else {
+        null
+    }
+    section(MetricDetailSectionId.ACTIVITY_DETAIL_TRAINING_EFFECT, effect != null) {
+        effect?.let { ActivityTrainingEffectCard(it, sessionCardioLoad, cardModifier) }
+    }
+    // 117: the length of each step, for the kinds that count steps.
+    val strides = if (workout.exerciseType in tech.mmarca.openvitals.domain.model.stepBasedExercises) {
+        strideLengthSeries(
+            cadence = cadenceSamples.filter { it.kind == ActivityCadenceKind.STEPS }.map { it.time to it.rate },
+            speed = speedSamples.map { it.time to it.metersPerSecond }
+                .ifEmpty { paceFromRoute(workout.route.points).map { (time, pace) -> time to 1_000.0 / pace } }
+                .ifEmpty { splitSpeedTrace?.samples.orEmpty().map { it.time to it.metersPerSecond } },
+        )
+    } else {
+        emptyList()
+    }
+    section(MetricDetailSectionId.ACTIVITY_DETAIL_STRIDE, strides.size >= 2) {
+        ActivityStrideChartCard(strides, workout.startTime, workout.endTime, unitFormatter, cardModifier, pauses)
+    }
     val cadenceKinds = activityCadenceKinds(cadenceSamples, workout.exerciseType)
     section(MetricDetailSectionId.ACTIVITY_DETAIL_CADENCE, cadenceKinds.isNotEmpty()) {
         Column {
@@ -195,4 +232,14 @@ internal fun rememberActivityChartReordering(sections: MetricDetailSectionContex
     }
     SideEffect { listState.reorderableState = reorderable }
     return reorderable
+}
+
+/** 117: the route's points with the heights the chart draws (terrain or GPS), matched by time. */
+private fun activityGradient(workout: ExerciseData, elevation: List<ActivityElevationSample>): GradientDistribution? {
+    if (elevation.size < 2) return null
+    val heights = elevation.associate { it.time to it.meters }
+    val points = workout.route.points.mapNotNull { point ->
+        (heights[point.time] ?: point.altitudeMeters)?.let { GradePoint(point.time, point.latitude, point.longitude, it) }
+    }
+    return gradientDistribution(points)
 }

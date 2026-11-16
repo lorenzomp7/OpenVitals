@@ -39,6 +39,7 @@ import tech.mmarca.openvitals.core.presentation.UnitFormatter
 import tech.mmarca.openvitals.domain.insights.WorkoutTypeChart
 import tech.mmarca.openvitals.domain.insights.averagePaceSecondsPerKm
 import tech.mmarca.openvitals.domain.insights.bestPaceSeries
+import tech.mmarca.openvitals.domain.insights.heartRateZoneBounds
 import tech.mmarca.openvitals.domain.insights.heartRateZoneSeconds
 import tech.mmarca.openvitals.domain.insights.paceFromRoute
 import tech.mmarca.openvitals.domain.insights.paceFromSpeed
@@ -327,7 +328,6 @@ internal fun ActivityHeartRateZonesCard(
     }
     val total = zones.sum()
     if (total <= 0L) return
-    val longest = zones.max().coerceAtLeast(1)
     val title = stringResource(R.string.activity_chart_zones_title)
     ActivityTypeChartFrame(
         title = title,
@@ -336,34 +336,56 @@ internal fun ActivityHeartRateZonesCard(
         modifier = modifier,
         note = stringResource(R.string.activity_chart_zones_note, maxHeartRateBpm),
     ) {
-        val spoken = zones.mapIndexed { index, seconds -> "Z${index + 1} ${formatElapsedChartLabel(Duration.ofSeconds(seconds))}" }
+        val names = listOf(
+            stringResource(R.string.activity_chart_zone_name_1),
+            stringResource(R.string.activity_chart_zone_name_2),
+            stringResource(R.string.activity_chart_zone_name_3),
+            stringResource(R.string.activity_chart_zone_name_4),
+            stringResource(R.string.activity_chart_zone_name_5),
+        )
+        val bounds = remember(maxHeartRateBpm) { heartRateZoneBounds(maxHeartRateBpm) }
+        val spoken = zones.mapIndexed { index, seconds -> "${names[index]} ${formatElapsedChartLabel(Duration.ofSeconds(seconds))}" }
             .joinToString(", ")
+        // 117: as the watches show them: the hardest zone on top, each with its name, its bpm
+        // and the share and time spent in it, over a bar as long as that share.
         Column(
             modifier = Modifier.chartSemantics("$title: $spoken"),
-            verticalArrangement = Arrangement.spacedBy(Spacing.sm),
+            verticalArrangement = Arrangement.spacedBy(Spacing.md),
         ) {
-            zones.forEachIndexed { index, seconds ->
-                Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(Spacing.sm)) {
-                    Text(
-                        stringResource(R.string.activity_chart_zone_label, index + 1),
-                        style = MaterialTheme.typography.labelMedium,
-                        modifier = Modifier.width(Spacing.giant + Spacing.lg),
-                    )
-                    Box(Modifier.weight(1f).height(Spacing.lg)) {
+            zones.indices.reversed().forEach { index ->
+                val seconds = zones[index]
+                val (low, high) = bounds[index]
+                val range = when {
+                    low == null -> "< ${(high ?: 0) + 1} bpm"
+                    high == null -> "≥ $low bpm"
+                    else -> activityValueRange("$low bpm", "$high bpm")
+                }
+                Column(verticalArrangement = Arrangement.spacedBy(Spacing.xs)) {
+                    Row(verticalAlignment = Alignment.Bottom) {
+                        Column(Modifier.weight(1f)) {
+                            Text(names[index], style = MaterialTheme.typography.labelLarge)
+                            Text(range, style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                        }
+                        Text(
+                            "${seconds * 100 / total}%  ${formatElapsedChartLabel(Duration.ofSeconds(seconds))}",
+                            style = MaterialTheme.typography.labelMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            textAlign = TextAlign.End,
+                        )
+                    }
+                    Box(
+                        Modifier
+                            .fillMaxWidth()
+                            .height(Spacing.sm)
+                            .background(ZoneColors[index].copy(alpha = Emphasis.wash), RoundedCornerShape(Spacing.xs)),
+                    ) {
                         Box(
                             Modifier
-                                .fillMaxWidth((seconds.toFloat() / longest).coerceAtLeast(0.01f))
+                                .fillMaxWidth((seconds.toFloat() / total).coerceAtLeast(0.01f))
                                 .fillMaxHeight()
                                 .background(ZoneColors[index], RoundedCornerShape(Spacing.xs)),
                         )
                     }
-                    Text(
-                        "${formatElapsedChartLabel(Duration.ofSeconds(seconds))} · ${seconds * 100 / total}%",
-                        style = MaterialTheme.typography.labelMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        textAlign = TextAlign.End,
-                        modifier = Modifier.width(Spacing.giant * 2),
-                    )
                 }
             }
         }
