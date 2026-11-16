@@ -1380,7 +1380,6 @@
     <string name="message_too_much_data_range">Слишком много данных для построения графика за этот период.</string>
     <string name="message_no_cycle_period">За этот период данные о цикле отсутствуют.</string>
     <string name="message_no_segments">Сегменты не записаны.</string>
-    <string name="message_no_laps">Круги не записаны.</string>
     <string name="message_no_route_points">Точки маршрута не записаны.</string>
     <string name="message_route_consent_required">Данные маршрута доступны, но доступ к маршруту ещё не предоставлен. Откройте разрешения Health Connect в настройках, чтобы включить предварительный просмотр маршрутов.</string>
     <string name="message_no_route_data">Данные маршрута не записаны.</string>
@@ -2630,7 +2629,6 @@
     <string name="detail_length">Длина</string>
     <string name="detail_segments">Сегменты</string>
     <string name="detail_laps">Круги</string>
-    <string name="detail_lap">Круг %1$d</string>
     <string name="detail_route">Маршрут</string>
     <string name="detail_status">Статус</string>
     <string name="detail_status_available">Доступно</string>

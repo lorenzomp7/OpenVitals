@@ -1441,7 +1441,6 @@
     <string name="message_too_much_data_range">Too much data to chart over this range.</string>
     <string name="message_no_cycle_period">No cycle data was recorded for this period.</string>
     <string name="message_no_segments">No segments recorded.</string>
-    <string name="message_no_laps">No laps recorded.</string>
     <string name="message_no_route_points">No route points recorded.</string>
     <string name="message_route_consent_required">Route data is available, but route access has not been granted yet. Open Health Connect permissions from Settings to enable route previews.</string>
     <string name="message_no_route_data">No route data recorded.</string>
@@ -2702,7 +2701,6 @@
     <string name="detail_length">Length</string>
     <string name="detail_segments">Segments</string>
     <string name="detail_laps">Laps</string>
-    <string name="detail_lap">Lap %1$d</string>
     <string name="detail_route">Route</string>
     <string name="detail_status">Status</string>
     <string name="detail_status_available">Available</string>

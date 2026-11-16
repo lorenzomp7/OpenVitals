@@ -1367,7 +1367,6 @@ Sincroniza unha báscula ou un wearable que envíe o peso a Health Connect.</str
     <string name="message_too_much_data_range">Demasiados datos para representar neste intervalo.</string>
     <string name="message_no_cycle_period">Non se rexistraron datos do ciclo neste período.</string>
     <string name="message_no_segments">Non se rexistraron segmentos.</string>
-    <string name="message_no_laps">Non se rexistraron voltas.</string>
     <string name="message_no_route_points">Non se rexistraron puntos de ruta.</string>
     <string name="message_route_consent_required">Hai datos de ruta dispoñibles, pero aínda non se concedeu o acceso ás rutas. Abre os permisos de Health Connect desde Axustes para activar as vistas previas de rutas.</string>
     <string name="message_no_route_data">Non se rexistraron datos de ruta.</string>
@@ -2666,7 +2665,6 @@ Se Acceder a rutas de exercicio non aparece no diálogo de acceso, abre os axust
     <string name="detail_length">Lonxitude</string>
     <string name="detail_segments">Segmentos</string>
     <string name="detail_laps">Voltas</string>
-    <string name="detail_lap">Volta %1$d</string>
     <string name="detail_route">Ruta</string>
     <string name="detail_status">Estado</string>
     <string name="detail_status_available">Dispoñible</string>

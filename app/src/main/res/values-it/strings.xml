@@ -1002,7 +1002,6 @@
     <string name="message_no_readings_period">Nessuna rilevazione in questo periodo.</string>
     <string name="message_no_cycle_period">Nessun dato del ciclo registrato per questo periodo.</string>
     <string name="message_no_segments">Nessun segmento registrato.</string>
-    <string name="message_no_laps">Nessun giro registrato.</string>
     <string name="message_no_route_points">Nessun punto del percorso registrato.</string>
     <string name="message_route_consent_required">I dati del percorso sono disponibili, ma l\'accesso al percorso non è stato ancora autorizzato. Apri le autorizzazioni di Health Connect dalle Impostazioni per abilitare le anteprime del percorso.</string>
     <string name="message_no_route_data">Nessun dato del percorso registrato.</string>
@@ -1804,7 +1803,6 @@
     <string name="detail_length">Lunghezza</string>
     <string name="detail_segments">Segmenti</string>
     <string name="detail_laps">Giri</string>
-    <string name="detail_lap">Giro %1$d</string>
     <string name="detail_route">Percorso</string>
     <string name="detail_status">Stato</string>
     <string name="detail_status_available">Disponibile</string>

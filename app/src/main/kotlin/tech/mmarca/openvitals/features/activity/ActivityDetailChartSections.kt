@@ -188,6 +188,16 @@ internal fun MetricDetailSectionBuilder.activityDetailChartSections(
     section(MetricDetailSectionId.ACTIVITY_DETAIL_STRIDE, strides.size >= 2) {
         ActivityStrideChartCard(strides, workout.startTime, workout.endTime, unitFormatter, cardModifier, pauses)
     }
+    // 118: the laps the watch wrote: a pool swim's lengths, a track's laps.
+    section(MetricDetailSectionId.ACTIVITY_DETAIL_LAPS, workout.laps.isNotEmpty()) {
+        ActivityLapsCard(
+            laps = workout.laps,
+            swim = workout.exerciseType == androidx.health.connect.client.records.ExerciseSessionRecord.EXERCISE_TYPE_SWIMMING_POOL ||
+                workout.exerciseType == androidx.health.connect.client.records.ExerciseSessionRecord.EXERCISE_TYPE_SWIMMING_OPEN_WATER,
+            unitFormatter = unitFormatter,
+            modifier = cardModifier,
+        )
+    }
     val cadenceKinds = activityCadenceKinds(cadenceSamples, workout.exerciseType)
     section(MetricDetailSectionId.ACTIVITY_DETAIL_CADENCE, cadenceKinds.isNotEmpty()) {
         Column {

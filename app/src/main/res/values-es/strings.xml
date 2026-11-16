@@ -1003,7 +1003,6 @@
     <string name="message_no_readings_period">No hay lecturas en este periodo.</string>
     <string name="message_no_cycle_period">No se registraron datos de ciclo en este periodo.</string>
     <string name="message_no_segments">No hay segmentos registrados.</string>
-    <string name="message_no_laps">No hay vueltas registradas.</string>
     <string name="message_no_route_points">No hay puntos de ruta registrados.</string>
     <string name="message_route_consent_required">Los datos de ruta están disponibles, pero aún no se ha concedido acceso a la ruta. Abre los permisos de Health Connect desde Ajustes para activar las vistas previas de ruta.</string>
     <string name="message_no_route_data">No hay datos de ruta registrados.</string>
@@ -1784,7 +1783,6 @@
     <string name="detail_length">Longitud</string>
     <string name="detail_segments">Segmentos</string>
     <string name="detail_laps">Vueltas</string>
-    <string name="detail_lap">Vuelta %1$d</string>
     <string name="detail_route">Ruta</string>
     <string name="detail_status">Estado</string>
     <string name="detail_status_available">Disponible</string>

@@ -999,7 +999,6 @@
     <string name="message_no_readings_period">Sel perioodil näite pole.</string>
     <string name="message_no_cycle_period">Sel perioodil tsükliandmeid ei salvestatud.</string>
     <string name="message_no_segments">Lõike ei salvestatud.</string>
-    <string name="message_no_laps">Ringe ei salvestatud.</string>
     <string name="message_no_route_points">Marsruudi punkte ei salvestatud.</string>
     <string name="message_route_consent_required">Marsruudi andmed on saadaval, kuid marsruudi juurdepääsu ei ole veel antud. Ava Health Connecti load seadetest, et lubada marsruudi eelvaated.</string>
     <string name="message_no_route_data">Marsruudi andmeid ei salvestatud.</string>
@@ -1793,7 +1792,6 @@
     <string name="detail_length">Pikkus</string>
     <string name="detail_segments">Lõigud</string>
     <string name="detail_laps">Ringid</string>
-    <string name="detail_lap">Ring %1$d</string>
     <string name="detail_route">Marsruut</string>
     <string name="detail_status">Olek</string>
     <string name="detail_status_available">Saadaval</string>

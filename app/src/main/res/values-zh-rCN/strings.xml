@@ -1095,7 +1095,6 @@
     <string name="message_too_much_data_range">此范围内数据过多，无法绘图。</string>
     <string name="message_no_cycle_period">此周期内未记录周期数据。</string>
     <string name="message_no_segments">未记录分段。</string>
-    <string name="message_no_laps">未记录圈数。</string>
     <string name="message_no_route_points">未记录路线点。</string>
     <string name="message_route_consent_required">有路线数据，但尚未授予路线访问权限。请从设置打开 Health Connect 权限以启用路线预览。</string>
     <string name="message_no_route_data">未记录路线数据。</string>
@@ -2328,7 +2327,6 @@
     <string name="detail_length">长度</string>
     <string name="detail_segments">分段</string>
     <string name="detail_laps">圈数</string>
-    <string name="detail_lap">第 %1$d 圈</string>
     <string name="detail_route">路线</string>
     <string name="detail_status">状态</string>
     <string name="detail_status_available">可用</string>

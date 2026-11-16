@@ -57,7 +57,7 @@ jobs:
           if (( NEXT < 1070400000 )); then NEXT=1070400000; fi
           echo "OPENVITALS_VERSION_CODE=$NEXT" >> "$GITHUB_ENV"
           echo "code=$NEXT" >> "$GITHUB_OUTPUT"
-          echo "OPENVITALS_VERSION_NAME=2.17.16-personal-claude" >> "$GITHUB_ENV"
+          echo "OPENVITALS_VERSION_NAME=2.17.17-personal-claude" >> "$GITHUB_ENV"
       - name: Build the signed personal update
         env:
           OPENVITALS_RELEASE_STORE_FILE: ${{ github.workspace }}/personal/personal.p12
@@ -138,22 +138,20 @@ jobs:
           cat > release-notes.md <<EOF
           Scarica **OpenVitals.apk** dagli allegati e aprilo sul telefono.
 
-          Branch main_claude — 117 (nuovi grafici nel dettaglio attività):
-          - Distribuzione della pendenza: un anello con il tempo in salita (oltre +2%), in piano e in discesa (oltre −2%), con tempi e percentuali, misurati su ogni tratto di 50 m del percorso con le altezze del grafico Altitudine. Per le attività con percorso.
-          - Effetto allenamento: aerobico e anaerobico da 0 a 5 con il loro significato (Nessun effetto, Minimo, Mantenimento, Miglioramento, Grande miglioramento, Eccessivo), e il carico della sessione. È una stima di OpenVitals dal tempo nelle zone cardiache, tarata sui valori Zepp di tre allenamenti: non è il valore dell'orologio. Il carico è il carico cardio della sessione, contato come nella schermata Carico cardio.
-          - Lunghezza del passo: per corsa, camminata e tapis roulant, la velocità divisa per la cadenza, in cm. Compare se ci sono cadenza e velocità (o percorso).
-          - Tapis roulant: ha il grafico del Passo, dalla velocità del nastro o dai parziali.
-          - Zone cardiache: ognuna con il suo nome (Leggera, Intensiva, Aerobica, Anaerobica, VO₂ max) e l'intervallo in bpm, dalla più intensa in alto, con percentuale, tempo e barra.
-          Come gli altri grafici, si possono riordinare con l'icona dei cursori in alto.
+          Branch main_claude — 118:
+          - Zone cardiache per tutte le attività con battito, non più solo per corsa e bici: tennis, camminata, nuoto e ogni altro sport.
+          - Nuoto (piscina e acque libere): grafico del passo per 100 m, dalle vasche registrate dall'orologio, altrimenti dalla velocità o dal percorso. Media, più veloce e più lento in min:ss /100 m.
+          - Giri / vasche: una scheda con una riga per ogni giro o vasca registrata (lunghezza, tempo, passo; per il nuoto il passo è per 100 m). Prima Health Connect le passava ma non comparivano.
+          Restano esclusi colpi del tennis, SWOLF e frequenza di bracciata: Health Connect non li ha.
 
           Questa versione aggiorna l'installazione personale compatibile di OpenVitals senza disinstallarla. La revisione ha superato la verifica completa (verify) in questa stessa esecuzione; package e firma coincidono con l'APK pubblicato precedente; installazione, aggiornamento, avvio e import screenshot sono verificati su Android 15.
 
-          Versione: **2.17.16-personal-claude**. Version code: **$OPENVITALS_VERSION_CODE**.
+          Versione: **2.17.17-personal-claude**. Version code: **$OPENVITALS_VERSION_CODE**.
           Sorgenti: https://github.com/$GH_REPO/commit/$GITHUB_SHA
           Compilazione e verifica aggiornamento: https://github.com/$GH_REPO/actions/runs/$GITHUB_RUN_ID
           EOF
           if gh release view "$TAG" > /dev/null 2>&1; then
             echo "Release already exists; keeping the published APK unchanged."
           else
-            gh release create "$TAG" release/OpenVitals.apk release/SHA256SUMS.txt --target "$GITHUB_SHA" --title "OpenVitals 2.17.16 · main_claude" --notes-file release-notes.md --latest
+            gh release create "$TAG" release/OpenVitals.apk release/SHA256SUMS.txt --target "$GITHUB_SHA" --title "OpenVitals 2.17.17 · main_claude" --notes-file release-notes.md --latest
           fi

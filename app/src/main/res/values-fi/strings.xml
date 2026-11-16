@@ -1448,7 +1448,6 @@
     <string name="message_too_much_data_range">Liikaa tietoja piirrettäväksi tälle alueelle.</string>
     <string name="message_no_cycle_period">Tälle jaksolle ei tallennettu kiertotietoja.</string>
     <string name="message_no_segments">Ei tallennettuja segmenttejä.</string>
-    <string name="message_no_laps">Ei tallennettuja kierroksia.</string>
     <string name="message_no_route_points">Ei tallennettuja reittipisteitä.</string>
     <string name="message_route_consent_required">Reittitietoja on saatavilla, mutta reittien käyttöoikeutta ei ole vielä myönnetty. Avaa Health Connectin käyttöoikeudet Asetuksista ottaaksesi reittien esikatselut käyttöön.</string>
     <string name="message_no_route_data">Ei tallennettuja reittitietoja.</string>
@@ -2677,7 +2676,6 @@
     <string name="detail_length">Pituus</string>
     <string name="detail_segments">Segmentit</string>
     <string name="detail_laps">Kierrokset</string>
-    <string name="detail_lap">Kierros %1$d</string>
     <string name="detail_route">Reitti</string>
     <string name="detail_status">Tila</string>
     <string name="detail_status_available">Saatavilla</string>

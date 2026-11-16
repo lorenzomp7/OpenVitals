@@ -1364,7 +1364,6 @@
     <string name="message_too_much_data_range">この範囲ではグラフにするデータが多すぎます。</string>
     <string name="message_no_cycle_period">この期間に記録された周期データはありません。</string>
     <string name="message_no_segments">セグメントは記録されていません。</string>
-    <string name="message_no_laps">ラップは記録されていません。</string>
     <string name="message_no_route_points">ルートポイントは記録されていません。</string>
     <string name="message_route_consent_required">ルートデータはありますが、ルートへのアクセスがまだ許可されていません。設定から Health Connect の権限を開いてルートのプレビューを有効にしてください。</string>
     <string name="message_no_route_data">ルートデータは記録されていません。</string>
@@ -2663,7 +2662,6 @@
     <string name="detail_length">長さ</string>
     <string name="detail_segments">セグメント</string>
     <string name="detail_laps">ラップ</string>
-    <string name="detail_lap">ラップ %1$d</string>
     <string name="detail_route">ルート</string>
     <string name="detail_status">状態</string>
     <string name="detail_status_available">利用可能</string>

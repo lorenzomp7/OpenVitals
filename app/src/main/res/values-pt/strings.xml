@@ -1083,7 +1083,6 @@
     <string name="message_too_much_data_range">Demasiados dados para representar em gráfico neste intervalo.</string>
     <string name="message_no_cycle_period">Não foram registados dados do ciclo neste período.</string>
     <string name="message_no_segments">Nenhum segmento registado.</string>
-    <string name="message_no_laps">Nenhuma volta registada.</string>
     <string name="message_no_route_points">Nenhum ponto de rota registado.</string>
     <string name="message_route_consent_required">Os dados de rota estão disponíveis, mas o acesso às rotas ainda não foi concedido. Abra as permissões do Health Connect a partir das Definições para ativar as pré-visualizações de rotas.</string>
     <string name="message_no_route_data">Nenhum dado de rota registado.</string>
@@ -2214,7 +2213,6 @@
     <string name="detail_length">Comprimento</string>
     <string name="detail_segments">Segmentos</string>
     <string name="detail_laps">Voltas</string>
-    <string name="detail_lap">Volta %1$d</string>
     <string name="detail_route">Rota</string>
     <string name="detail_status">Estado</string>
     <string name="detail_status_available">Disponível</string>

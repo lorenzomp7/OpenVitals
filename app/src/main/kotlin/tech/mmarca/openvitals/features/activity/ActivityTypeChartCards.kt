@@ -43,7 +43,8 @@ import tech.mmarca.openvitals.domain.insights.heartRateZoneBounds
 import tech.mmarca.openvitals.domain.insights.heartRateZoneSeconds
 import tech.mmarca.openvitals.domain.insights.paceFromRoute
 import tech.mmarca.openvitals.domain.insights.paceFromSpeed
-import tech.mmarca.openvitals.domain.insights.showsHeartRateZones
+import tech.mmarca.openvitals.domain.insights.paceFromLaps
+import tech.mmarca.openvitals.domain.insights.SlowestSwimPaceSecondsPerKm
 import tech.mmarca.openvitals.domain.insights.workoutTypeChart
 import tech.mmarca.openvitals.domain.insights.RecoveryMark
 import tech.mmarca.openvitals.domain.insights.recoveryChartWindow
@@ -278,13 +279,18 @@ internal fun ActivityPaceChartCard(
     pauses: List<SessionPause>,
     unitFormatter: UnitFormatter,
     modifier: Modifier = Modifier,
+    /** 118: a swim's pace, per 100 m rather than per kilometre. */
+    per100m: Boolean = false,
 ) {
     if (paceSecondsPerKm.size < 2) return
     val axis = remember(sessionStart, sessionEnd, pauses) { SessionAxis(sessionStart, sessionEnd, pauses) }
-    val formatPace: (Double) -> String = { seconds -> unitFormatter.averagePace(1_000.0, (seconds * 1_000).toLong())?.text ?: "–" }
     // 88: the axis has room for the minutes and seconds only; the figures above carry the unit.
     val axisPace: (Double) -> String = { seconds ->
-        unitFormatter.averagePace(1_000.0, (seconds * 1_000).toLong())?.value ?: "–"
+        if (per100m) minutesSeconds(seconds / 10.0) else unitFormatter.averagePace(1_000.0, (seconds * 1_000).toLong())?.value ?: "–"
+    }
+    val formatPace: (Double) -> String = { seconds ->
+        if (per100m) "${minutesSeconds(seconds / 10.0)} /100 m"
+        else unitFormatter.averagePace(1_000.0, (seconds * 1_000).toLong())?.text ?: "–"
     }
     val points = remember(paceSecondsPerKm, axis) { paceSecondsPerKm.across(axis) }
     val title = stringResource(R.string.activity_chart_pace_title)
@@ -308,6 +314,11 @@ internal fun ActivityPaceChartCard(
             keys = paceSecondsPerKm,
         )
     }
+}
+
+private fun minutesSeconds(seconds: Double): String {
+    val whole = seconds.roundToInt().coerceAtLeast(0)
+    return String.format(java.util.Locale.US, "%d:%02d", whole / 60, whole % 60)
 }
 
 private val ZoneColors = listOf(
@@ -570,6 +581,21 @@ internal fun MetricDetailSectionBuilder.activityTypeChartSections(
             }
             ActivityPaceChartCard(pace, workout.startTime, workout.endTime, pauses, unitFormatter, cardModifier)
         }
+        WorkoutTypeChart.SWIM_PACE -> section(TypeChartSection) {
+            // 118: per 100 m, from the laps a pool watch writes, else the speed or the route.
+            val pace = remember(workout.laps, speedSamples, workout.route) {
+                bestPaceSeries(
+                    listOf(
+                        paceFromLaps(workout.laps),
+                        paceFromSpeed(speedSamples, SlowestSwimPaceSecondsPerKm),
+                        paceFromRoute(workout.route.points, SlowestSwimPaceSecondsPerKm),
+                    ),
+                    workout.startTime,
+                    workout.endTime,
+                )
+            }
+            ActivityPaceChartCard(pace, workout.startTime, workout.endTime, pauses, unitFormatter, cardModifier, per100m = true)
+        }
         WorkoutTypeChart.ELEVATION_WITH_SPEED -> section(TypeChartSection) {
             ActivityPairedChartCard(
                 title = stringResource(R.string.activity_chart_climbs_title),
@@ -609,8 +635,8 @@ internal fun MetricDetailSectionBuilder.activityTypeChartSections(
         }
         null -> Unit
     }
-    // 110: running, the treadmill and both bikes also get the time in each zone.
-    if (showsHeartRateZones(workout.exerciseType) && maxHeartRateBpm != null && heartRateSamples.isNotEmpty()) {
+    // 110, 118: every kind with a heart rate gets the time in each zone: tennis, a walk, a swim.
+    if (maxHeartRateBpm != null && heartRateSamples.isNotEmpty()) {
         section(MetricDetailSectionId.ACTIVITY_DETAIL_ZONES) {
             ActivityHeartRateZonesCard(heartRateSamples, workout.startTime, workout.endTime, maxHeartRateBpm, cardModifier)
         }

@@ -1092,7 +1092,6 @@
     <string name="message_too_much_data_range">Trop de données pour tracer un graphique sur cette plage.</string>
     <string name="message_no_cycle_period">Aucune donnée de cycle n\'a été enregistrée sur cette période.</string>
     <string name="message_no_segments">Aucun segment enregistré.</string>
-    <string name="message_no_laps">Aucun tour enregistré.</string>
     <string name="message_no_route_points">Aucun point d\'itinéraire enregistré.</string>
     <string name="message_route_consent_required">Des données d\'itinéraire sont disponibles, mais l\'accès aux itinéraires n\'a pas encore été accordé. Ouvrez les autorisations Santé Connect depuis les Réglages pour activer les aperçus d\'itinéraire.</string>
     <string name="message_no_route_data">Aucune donnée d\'itinéraire enregistrée.</string>
@@ -2333,7 +2332,6 @@
     <string name="detail_length">Longueur</string>
     <string name="detail_segments">Segments</string>
     <string name="detail_laps">Tours</string>
-    <string name="detail_lap">Tour %1$d</string>
     <string name="detail_route">Itinéraire</string>
     <string name="detail_status">État</string>
     <string name="detail_status_available">Disponible</string>

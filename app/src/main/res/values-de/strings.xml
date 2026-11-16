@@ -998,7 +998,6 @@
     <string name="message_no_readings_period">Keine Messwerte in diesem Zeitraum.</string>
     <string name="message_no_cycle_period">Für diesen Zeitraum wurden keine Zyklusdaten aufgezeichnet.</string>
     <string name="message_no_segments">Keine Segmente aufgezeichnet.</string>
-    <string name="message_no_laps">Keine Runden aufgezeichnet.</string>
     <string name="message_no_route_points">Keine Routenpunkte aufgezeichnet.</string>
     <string name="message_route_consent_required">Routendaten sind verfügbar, aber der Routenzugriff wurde noch nicht erteilt. Öffne die Health-Connect-Berechtigungen in den Einstellungen, um Routenvorschauen zu aktivieren.</string>
     <string name="message_no_route_data">Keine Routendaten aufgezeichnet.</string>
@@ -1787,7 +1786,6 @@
     <string name="detail_length">Länge</string>
     <string name="detail_segments">Segmente</string>
     <string name="detail_laps">Runden</string>
-    <string name="detail_lap">Runde %1$d</string>
     <string name="detail_route">Route</string>
     <string name="detail_status">Status</string>
     <string name="detail_status_available">Verfügbar</string>

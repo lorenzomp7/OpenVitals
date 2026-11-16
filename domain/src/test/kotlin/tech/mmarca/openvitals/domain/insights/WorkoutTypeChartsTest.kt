@@ -56,12 +56,8 @@ class WorkoutTypeChartsTest {
         assertEquals(243.0, pace.last().second, 5.0)
     }
 
-    @Test fun `running, the treadmill and both bikes get the zones`() {
-        assertTrue(showsHeartRateZones(ExerciseSessionRecord.EXERCISE_TYPE_RUNNING))
-        assertTrue(showsHeartRateZones(ExerciseSessionRecord.EXERCISE_TYPE_RUNNING_TREADMILL))
-        assertTrue(showsHeartRateZones(ExerciseSessionRecord.EXERCISE_TYPE_BIKING))
-        assertTrue(showsHeartRateZones(ExerciseSessionRecord.EXERCISE_TYPE_BIKING_STATIONARY))
-        assertFalse(showsHeartRateZones(ExerciseSessionRecord.EXERCISE_TYPE_WALKING))
+    @Test fun `a swim's pace is read per 100 m, and a treadmill draws no speed`() {
+        assertEquals(WorkoutTypeChart.SWIM_PACE, workoutTypeChart(ExerciseSessionRecord.EXERCISE_TYPE_SWIMMING_POOL))
         assertFalse(showsSpeedChart(ExerciseSessionRecord.EXERCISE_TYPE_RUNNING_TREADMILL))
         assertTrue(showsSpeedChart(ExerciseSessionRecord.EXERCISE_TYPE_RUNNING))
     }
@@ -79,6 +75,15 @@ class WorkoutTypeChartsTest {
         // 30 s at 4:00/km then 30 s at 6:00/km: 125 m + 83.3 m in 60 s is 4:48/km, not 5:00.
         val series = listOf(at(0) to 240.0, at(30) to 360.0, at(60) to 360.0)
         assertEquals(288.0, averagePaceSecondsPerKm(series)!!, 0.5)
+    }
+
+    @Test fun `a lap's pace is its time over its length, held from start to end`() {
+        val laps = listOf(
+            tech.mmarca.openvitals.domain.model.ExerciseLapData(at(0), at(50), 25.0),
+            tech.mmarca.openvitals.domain.model.ExerciseLapData(at(60), at(70), null),
+        )
+        // 25 m in 50 s: 2:00 per 100 m, 2000 s per km.
+        assertEquals(listOf(at(0) to 2_000.0, at(50) to 2_000.0), paceFromLaps(laps))
     }
 
     @Test fun `sets are the segments that are not rests`() {

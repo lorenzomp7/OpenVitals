@@ -1087,7 +1087,6 @@
     <string name="message_too_much_data_range">Pro toto rozmezí je příliš mnoho dat na vykreslení grafu.</string>
     <string name="message_no_cycle_period">Pro toto období nebyla zaznamenána žádná data o cyklu.</string>
     <string name="message_no_segments">Nebyly zaznamenány žádné segmenty.</string>
-    <string name="message_no_laps">Nebyla zaznamenána žádná kola.</string>
     <string name="message_no_route_points">Nebyly zaznamenány žádné body trasy.</string>
     <string name="message_route_consent_required">Data o trase jsou k dispozici, ale přístup k trasám zatím nebyl udělen. Pro náhledy tras otevřete oprávnění Health Connect z Nastavení.</string>
     <string name="message_no_route_data">Nebyla zaznamenána žádná data o trase.</string>
@@ -2337,7 +2336,6 @@
     <string name="detail_length">Délka</string>
     <string name="detail_segments">Segmenty</string>
     <string name="detail_laps">Kola</string>
-    <string name="detail_lap">Kolo %1$d</string>
     <string name="detail_route">Trasa</string>
     <string name="detail_status">Stav</string>
     <string name="detail_status_available">K dispozici</string>
