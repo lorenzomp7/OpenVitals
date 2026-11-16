@@ -12,6 +12,14 @@ trap 'adb logcat -d -t 3000 > "$OUT/logcat.txt" || true' EXIT
 
 adb install -r "$APK"
 adb install -r "$TEST_APK"
+# The demo looks its best in the evening, with the day's records in: the emulator is put in
+# whatever zone it is about 20:00 in now, so "today" is a full day wherever the build runs.
+OFFSET=$(( (20 - 10#$(date -u +%H) + 36) % 24 - 12 ))
+if (( OFFSET > 0 )); then ZONE="Etc/GMT-$OFFSET"; elif (( OFFSET < 0 )); then ZONE="Etc/GMT+$(( -OFFSET ))"; else ZONE="Etc/GMT"; fi
+adb shell settings put global auto_time_zone 0 || true
+adb shell cmd alarm set-timezone "$ZONE" || adb shell service call alarm 3 s16 "$ZONE" || true
+echo "demo time zone $ZONE: $(adb shell date)"
+
 # WebDemoSeedTest grants the app its permissions, Health Connect's included.
 adb shell cmd locale set-app-locales "$PKG" --locales it-IT || true
 
