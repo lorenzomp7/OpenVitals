@@ -24,12 +24,10 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import tech.mmarca.openvitals.R
-import tech.mmarca.openvitals.ui.components.BrandBlue
+import tech.mmarca.openvitals.domain.preferences.BrandPaletteSource
+import tech.mmarca.openvitals.ui.components.BrandColors
 import tech.mmarca.openvitals.ui.components.BrandDay
-import tech.mmarca.openvitals.ui.components.BrandGreen
-import tech.mmarca.openvitals.ui.components.BrandRed
 import tech.mmarca.openvitals.ui.components.BrandSync
-import tech.mmarca.openvitals.ui.components.BrandYellow
 import tech.mmarca.openvitals.ui.theme.Emphasis
 import tech.mmarca.openvitals.ui.theme.Spacing
 
@@ -44,17 +42,39 @@ internal data class DashboardDayGoal(
     val icon: ImageVector,
 )
 
-/** 94: the toggle's four lobes, in their colours: steps, calories, activity, sleep. */
+/** 94: the toggle's four lobes, in order: steps, calories, activity, sleep. */
 private val DayGoalWidgets = listOf(
-    DashboardWidgetId.STEPS to BrandBlue,
-    DashboardWidgetId.ACTIVE_CALORIES to BrandRed,
-    DashboardWidgetId.WORKOUT to BrandYellow,
-    DashboardWidgetId.SLEEP to BrandGreen,
+    DashboardWidgetId.STEPS,
+    DashboardWidgetId.ACTIVE_CALORIES,
+    DashboardWidgetId.WORKOUT,
+    DashboardWidgetId.SLEEP,
 )
 
+/** 97: the home screen's palette, from the source chosen in Display settings. */
 @Composable
-internal fun dashboardDayGoals(display: DashboardDisplayState): List<DashboardDayGoal> =
-    DayGoalWidgets.map { (id, color) ->
+internal fun dashboardBrandColors(source: BrandPaletteSource, placedInOrder: List<DashboardWidgetId>): List<Color> {
+    val scheme = MaterialTheme.colorScheme
+    val hero = placedInOrder.take(3).map(::dashboardWidgetAccent)
+    val tiles = placedInOrder.drop(3).take(6).map(::dashboardWidgetAccent)
+    val colors = when (source) {
+        BrandPaletteSource.GOOGLE -> BrandColors
+        BrandPaletteSource.PHONE -> listOf(scheme.primary, scheme.tertiary, scheme.secondary, scheme.inversePrimary)
+        BrandPaletteSource.HERO -> hero
+        BrandPaletteSource.TILES -> tiles
+        BrandPaletteSource.HERO_AND_TILES -> hero + tiles
+    }
+    // One colour cannot run round a ring: it pairs with itself.
+    return when (colors.size) {
+        0 -> BrandColors
+        1 -> colors + colors
+        else -> colors
+    }
+}
+
+@Composable
+internal fun dashboardDayGoals(display: DashboardDisplayState, colors: List<Color> = BrandColors): List<DashboardDayGoal> =
+    DayGoalWidgets.mapIndexed { index, id ->
+        val color = colors[index % colors.size]
         val model = display.widgets[id]
         val fraction = model?.sleepScore?.let { it.score / 100f } ?: model?.progress?.fraction ?: 0f
         DashboardDayGoal(

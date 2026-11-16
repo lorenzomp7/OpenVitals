@@ -767,3 +767,6 @@ private fun watchSubtitle(watch: OpenWatchTileDisplay): String? {
 
 /** The icon a widget is drawn with, for lists outside the grid (94). */
 internal fun dashboardWidgetIcon(widgetId: DashboardWidgetId): ImageVector = dashboardWidgetMeta(widgetId).icon
+
+/** The colour a widget is drawn in, for the home screen's palette (97). */
+internal fun dashboardWidgetAccent(widgetId: DashboardWidgetId): Color = dashboardWidgetMeta(widgetId).accentColor

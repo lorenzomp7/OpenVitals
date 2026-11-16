@@ -552,4 +552,13 @@
     <string name="brand_open_summary">Άνοιγμα της σημερινής σύνοψης</string>
     <string name="brand_summary_title">Σήμερα</string>
     <string name="brand_summary_goal">%1$s από %2$s</string>
+    <string name="settings_brand_colors_title">Χρώματα αρχικής οθόνης</string>
+    <string name="settings_brand_colors_body">Τα χρώματα του κινούμενου διακόπτη, των στρογγυλών κουμπιών επάνω και των κουμπιών ενεργειών.</string>
+    <string name="settings_brand_colors_google">Τα τέσσερα χρώματα της Google</string>
+    <string name="settings_brand_colors_phone">Τα χρώματα του τηλεφώνου</string>
+    <string name="settings_brand_colors_hero">Τα χρώματα των τριών δακτυλίων επάνω</string>
+    <string name="settings_brand_colors_tiles">Τα χρώματα των έξι πρώτων πλακιδίων της πρώτης σελίδας</string>
+    <string name="settings_brand_colors_hero_tiles">Και τα δύο: χρώματα δακτυλίων και έξι πρώτων πλακιδίων</string>
+    <string name="settings_brand_animated_title">Κινούμενα</string>
+    <string name="settings_brand_animated_body">Ενεργό: ο διακόπτης και τα κουμπιά κινούνται. Ανενεργό: μένουν ακίνητα στα χρώματά τους.</string>
 </resources>

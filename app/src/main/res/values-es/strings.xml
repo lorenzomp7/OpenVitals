@@ -3900,4 +3900,13 @@
     <string name="brand_open_summary">Abrir el resumen de hoy</string>
     <string name="brand_summary_title">Hoy</string>
     <string name="brand_summary_goal">%1$s de %2$s</string>
+    <string name="settings_brand_colors_title">Colores de la pantalla principal</string>
+    <string name="settings_brand_colors_body">Los colores del interruptor animado, de los botones redondos de arriba y de los botones de acción.</string>
+    <string name="settings_brand_colors_google">Los cuatro colores de Google</string>
+    <string name="settings_brand_colors_phone">Los colores del teléfono</string>
+    <string name="settings_brand_colors_hero">Los colores de los tres anillos de arriba</string>
+    <string name="settings_brand_colors_tiles">Los colores de los seis primeros recuadros de la primera página</string>
+    <string name="settings_brand_colors_hero_tiles">Ambos: los colores de los anillos y de los seis primeros recuadros</string>
+    <string name="settings_brand_animated_title">Animados</string>
+    <string name="settings_brand_animated_body">Activado: el interruptor y los botones se mueven. Desactivado: se quedan quietos con sus colores.</string>
 </resources>

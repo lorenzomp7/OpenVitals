@@ -37,7 +37,7 @@ private const val BrandIconFrameNanos = 33_333_333L
 internal fun rememberBrandClock(timeline: FluidBrandTimeline): State<Long> {
     val frameMillis = remember { mutableLongStateOf(SystemClock.uptimeMillis()) }
     val lifecycle = LocalLifecycleOwner.current.lifecycle
-    val animate = loopingMotionAllowed()
+    val animate = loopingMotionAllowed() && LocalBrandLook.current.animated
     LaunchedEffect(timeline, lifecycle, animate) {
         timeline.start(SystemClock.uptimeMillis())
         if (animate) lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
@@ -67,6 +67,7 @@ fun BrandIconFrame(
     content: @Composable () -> Unit,
 ) {
     val clock = rememberBrandClock(timeline)
+    val colors = LocalBrandLook.current.colors
     Box(
         modifier = modifier
             .size(BrandIconFrameSize)
@@ -76,7 +77,7 @@ fun BrandIconFrame(
                 drawContent()
                 val seconds = timeline.secondsAt(clock.value)
                 val shift = (seconds * 0.11f) % 1f
-                val stops = Array(17) { k -> (k / 16f) to cyclicBrandColor(k / 16f - shift) }
+                val stops = Array(17) { k -> (k / 16f) to cyclicBrandColor(k / 16f - shift, colors) }
                 val ring = Brush.sweepGradient(*stops, center = center)
                 val stroke = Spacing.xs.toPx() / 2f
                 drawCircle(ring, radius = size.minDimension / 2f - stroke * 1.5f, alpha = 0.35f, style = Stroke(stroke * 3f))
@@ -94,7 +95,7 @@ fun BrandIconFrame(
                         val drift = (seconds * 0.15f) % 1f
                         drawRect(
                             brush = Brush.linearGradient(
-                                colors = List(5) { cyclicBrandColor(it / 4f + drift) },
+                                colors = List(5) { cyclicBrandColor(it / 4f + drift, colors) },
                                 start = Offset.Zero,
                                 end = Offset(size.width, size.height),
                             ),
@@ -124,6 +125,7 @@ fun BrandPillButton(
 ) {
     val clockTimeline = timeline ?: remember { FluidBrandTimeline() }
     val clock = rememberBrandClock(clockTimeline)
+    val colors = LocalBrandLook.current.colors
     val shape = androidx.compose.foundation.shape.RoundedCornerShape(percent = 50)
     androidx.compose.foundation.layout.Row(
         modifier = modifier
@@ -134,7 +136,7 @@ fun BrandPillButton(
                 drawContent()
                 val seconds = clockTimeline.secondsAt(clock.value)
                 val shift = (seconds * 0.11f) % 1f
-                val stops = Array(17) { k -> (k / 16f) to cyclicBrandColor(k / 16f - shift) }
+                val stops = Array(17) { k -> (k / 16f) to cyclicBrandColor(k / 16f - shift, colors) }
                 val ring = Brush.sweepGradient(*stops, center = center)
                 val stroke = Spacing.xs.toPx() / 2f
                 val radius = androidx.compose.ui.geometry.CornerRadius(size.height / 2f, size.height / 2f)
@@ -160,7 +162,7 @@ fun BrandPillButton(
                     val drift = (seconds * 0.15f) % 1f
                     drawRect(
                         brush = Brush.linearGradient(
-                            colors = List(5) { cyclicBrandColor(it / 4f + drift) },
+                            colors = List(5) { cyclicBrandColor(it / 4f + drift, colors) },
                             start = Offset.Zero,
                             end = Offset(size.width, size.height),
                         ),

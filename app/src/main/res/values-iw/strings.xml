@@ -202,4 +202,13 @@
     <string name="brand_open_summary">פתיחת הסיכום של היום</string>
     <string name="brand_summary_title">היום</string>
     <string name="brand_summary_goal">%1$s מתוך %2$s</string>
+    <string name="settings_brand_colors_title">צבעי המסך הראשי</string>
+    <string name="settings_brand_colors_body">הצבעים של המתג המונפש, של הכפתורים העגולים למעלה ושל כפתורי הפעולה.</string>
+    <string name="settings_brand_colors_google">ארבעת הצבעים של Google</string>
+    <string name="settings_brand_colors_phone">צבעי הטלפון</string>
+    <string name="settings_brand_colors_hero">צבעי שלוש הטבעות למעלה</string>
+    <string name="settings_brand_colors_tiles">צבעי ששת האריחים הראשונים בעמוד הראשון</string>
+    <string name="settings_brand_colors_hero_tiles">שניהם: צבעי הטבעות וששת האריחים הראשונים</string>
+    <string name="settings_brand_animated_title">מונפשים</string>
+    <string name="settings_brand_animated_body">מופעל: המתג והכפתורים זזים. כבוי: הם נשארים במקום בצבעיהם.</string>
 </resources>

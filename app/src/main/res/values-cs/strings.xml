@@ -3933,4 +3933,13 @@
     <string name="brand_open_summary">Otevřít dnešní přehled</string>
     <string name="brand_summary_title">Dnes</string>
     <string name="brand_summary_goal">%1$s z %2$s</string>
+    <string name="settings_brand_colors_title">Barvy hlavní obrazovky</string>
+    <string name="settings_brand_colors_body">Barvy animovaného přepínače, kulatých tlačítek nahoře a tlačítek akcí.</string>
+    <string name="settings_brand_colors_google">Čtyři barvy Google</string>
+    <string name="settings_brand_colors_phone">Barvy telefonu</string>
+    <string name="settings_brand_colors_hero">Barvy tří kruhů nahoře</string>
+    <string name="settings_brand_colors_tiles">Barvy prvních šesti dlaždic první stránky</string>
+    <string name="settings_brand_colors_hero_tiles">Obojí: barvy kruhů a prvních šesti dlaždic</string>
+    <string name="settings_brand_animated_title">Animované</string>
+    <string name="settings_brand_animated_body">Zapnuto: přepínač a tlačítka se pohybují. Vypnuto: zůstanou nehybné ve svých barvách.</string>
 </resources>

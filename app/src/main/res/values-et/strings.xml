@@ -3867,4 +3867,13 @@
     <string name="brand_open_summary">Ava tänane kokkuvõte</string>
     <string name="brand_summary_title">Täna</string>
     <string name="brand_summary_goal">%1$s / %2$s</string>
+    <string name="settings_brand_colors_title">Avakuva värvid</string>
+    <string name="settings_brand_colors_body">Animeeritud lüliti, ülemiste ümarnuppude ja toimingunuppude värvid.</string>
+    <string name="settings_brand_colors_google">Google\'i neli värvi</string>
+    <string name="settings_brand_colors_phone">Telefoni värvid</string>
+    <string name="settings_brand_colors_hero">Kolme ülemise rõnga värvid</string>
+    <string name="settings_brand_colors_tiles">Esimese lehe kuue esimese paani värvid</string>
+    <string name="settings_brand_colors_hero_tiles">Mõlemad: rõngaste ja kuue esimese paani värvid</string>
+    <string name="settings_brand_animated_title">Animeeritud</string>
+    <string name="settings_brand_animated_body">Sees: lüliti ja nupud liiguvad. Väljas: need jäävad oma värvides paigale.</string>
 </resources>

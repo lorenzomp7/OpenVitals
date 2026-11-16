@@ -73,6 +73,8 @@ private fun LazyListScope.displaySettingsCards(
         )
     }
     item { SettingsCardSpacer() }
+    item { BrandLookCard() }
+    item { SettingsCardSpacer() }
     item {
         DashboardSortEmptyTilesCard(
             enabled = state.dashboardSortEmptyTilesLast,

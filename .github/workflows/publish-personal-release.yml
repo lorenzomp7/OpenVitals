@@ -57,7 +57,7 @@ jobs:
           if (( NEXT < 1070400000 )); then NEXT=1070400000; fi
           echo "OPENVITALS_VERSION_CODE=$NEXT" >> "$GITHUB_ENV"
           echo "code=$NEXT" >> "$GITHUB_OUTPUT"
-          echo "OPENVITALS_VERSION_NAME=2.17.8-personal-claude" >> "$GITHUB_ENV"
+          echo "OPENVITALS_VERSION_NAME=2.17.9-personal-claude" >> "$GITHUB_ENV"
       - name: Build the signed personal update
         env:
           OPENVITALS_RELEASE_STORE_FILE: ${{ github.workspace }}/personal/personal.p12
@@ -138,19 +138,20 @@ jobs:
           cat > release-notes.md <<EOF
           Scarica **OpenVitals.apk** dagli allegati e aprilo sul telefono.
 
-          Branch main_claude — 96:
-          - 96: i pulsanti "Inizia allenamento", "+ Registra" e "Attività" della schermata principale hanno lo stile del toggle animato OpenVitals: pillola scura, anello con i quattro colori che gira sul bordo, icona e testo con i colori che scorrono, in sincronia con il toggle.
-
-          Contiene anche tutto il lavoro della 2.17.7 (grafici per tipo di attività 88–93, toggle che saluta e si riempie con gli obiettivi 94).
+          Branch main_claude — 97–100:
+          - 97: in Impostazioni → Visualizzazione puoi scegliere i colori della schermata principale (toggle, pulsanti rotondi in alto, pulsanti delle azioni): i 4 colori di Google, i colori del telefono, i colori dei 3 anelli in alto, quelli dei primi 6 riquadri della prima pagina, o entrambi; e un interruttore per averli animati o fermi.
+          - 98: il saluto del toggle non è più barrato da una riga, non finisce sotto il puntino della sincronizzazione e si rimpicciolisce se il nome è lungo.
+          - 99: la matita passa dalla dashboard alla modifica (e ritorno) con la stessa dissolvenza delle altre schermate.
+          - 100: il saluto compare solo la prima volta che apri l'app, non quando torni all'app o esci da uno schermo intero.
 
           Questa versione aggiorna l'installazione personale compatibile di OpenVitals senza disinstallarla. La revisione ha superato la verifica completa (verify) in questa stessa esecuzione; package e firma coincidono con l'APK pubblicato precedente; installazione, aggiornamento, avvio e import screenshot sono verificati su Android 15.
 
-          Versione: **2.17.8-personal-claude**. Version code: **$OPENVITALS_VERSION_CODE**.
+          Versione: **2.17.9-personal-claude**. Version code: **$OPENVITALS_VERSION_CODE**.
           Sorgenti: https://github.com/$GH_REPO/commit/$GITHUB_SHA
           Compilazione e verifica aggiornamento: https://github.com/$GH_REPO/actions/runs/$GITHUB_RUN_ID
           EOF
           if gh release view "$TAG" > /dev/null 2>&1; then
             echo "Release already exists; keeping the published APK unchanged."
           else
-            gh release create "$TAG" release/OpenVitals.apk release/SHA256SUMS.txt --target "$GITHUB_SHA" --title "OpenVitals 2.17.8 · main_claude" --notes-file release-notes.md --latest
+            gh release create "$TAG" release/OpenVitals.apk release/SHA256SUMS.txt --target "$GITHUB_SHA" --title "OpenVitals 2.17.9 · main_claude" --notes-file release-notes.md --latest
           fi

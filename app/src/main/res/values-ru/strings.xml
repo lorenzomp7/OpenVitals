@@ -3934,4 +3934,13 @@
     <string name="brand_open_summary">Открыть сводку за сегодня</string>
     <string name="brand_summary_title">Сегодня</string>
     <string name="brand_summary_goal">%1$s из %2$s</string>
+    <string name="settings_brand_colors_title">Цвета главного экрана</string>
+    <string name="settings_brand_colors_body">Цвета анимированного переключателя, круглых кнопок вверху и кнопок действий.</string>
+    <string name="settings_brand_colors_google">Четыре цвета Google</string>
+    <string name="settings_brand_colors_phone">Цвета телефона</string>
+    <string name="settings_brand_colors_hero">Цвета трёх колец вверху</string>
+    <string name="settings_brand_colors_tiles">Цвета первых шести плиток первой страницы</string>
+    <string name="settings_brand_colors_hero_tiles">Оба: цвета колец и первых шести плиток</string>
+    <string name="settings_brand_animated_title">Анимированные</string>
+    <string name="settings_brand_animated_body">Включено: переключатель и кнопки движутся. Выключено: остаются неподвижными в своих цветах.</string>
 </resources>

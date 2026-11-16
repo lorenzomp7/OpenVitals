@@ -64,6 +64,20 @@ data class BrandDay(
     val sync: BrandSync,
 )
 
+/**
+ * 97: the colours the brand pieces of the home screen are painted with (the toggle, the
+ * round header buttons, the action pills), and whether they move or stand still.
+ */
+@androidx.compose.runtime.Immutable
+data class BrandLook(val colors: List<Color>, val animated: Boolean = true)
+
+val LocalBrandLook = androidx.compose.runtime.staticCompositionLocalOf { BrandLook(BrandColors) }
+
+/** 100: the greeting belongs to the app's opening, once per launch, never to a return to it. */
+private object BrandGreetingGate {
+    var greeted = false
+}
+
 /** One spring entrance, then the expressive loop. Navigation never owns or resets the clock. */
 @Composable
 fun AmbientFluidBrand(
@@ -75,8 +89,19 @@ fun AmbientFluidBrand(
 ) {
     var frameMillis by remember { mutableLongStateOf(SystemClock.uptimeMillis()) }
     val lifecycle = LocalLifecycleOwner.current.lifecycle
-    val animate = loopingMotionAllowed()
-    val greeting = day?.let { brandGreeting(it.name) }
+    val look = LocalBrandLook.current
+    val colors = look.colors.ifEmpty { BrandColors }
+    val animate = loopingMotionAllowed() && look.animated
+    // 100: greet only on the first toggle the app draws since it was launched.
+    val greetSince = remember {
+        if (day != null && !BrandGreetingGate.greeted) {
+            BrandGreetingGate.greeted = true
+            SystemClock.uptimeMillis()
+        } else {
+            null
+        }
+    }
+    val greeting = day?.takeIf { greetSince != null }?.let { brandGreeting(it.name) }
     val syncText = day?.let {
         stringResource(
             when (it.sync) {
@@ -89,13 +114,30 @@ fun AmbientFluidBrand(
     val description = listOfNotNull(stringResource(R.string.app_name), syncText).joinToString(". ")
     val measurer = androidx.compose.ui.text.rememberTextMeasurer()
     val greetingStyle = MaterialTheme.typography.titleSmall.copy(color = Color.White)
-    val greetingLayout = remember(greeting, greetingStyle) { greeting?.let { measurer.measure(it, greetingStyle, maxLines = 1) } }
+    val density = androidx.compose.ui.platform.LocalDensity.current
+    val pillWidth = WorkoutActionMetrics.primaryWidth(windowWidth)
+    // 98: the greeting fits the pill left of the sync light, shrinking rather than running under it.
+    val greetingLayout = remember(greeting, greetingStyle, pillWidth, density) {
+        greeting?.let { text ->
+            val room = with(density) { (pillWidth - WorkoutActionMetrics.height * 1.3f).toPx() }.toInt().coerceAtLeast(1)
+            var style = greetingStyle
+            var layout = measurer.measure(text, style, maxLines = 1, softWrap = false)
+            repeat(6) {
+                if (layout.size.width <= room) return@repeat
+                style = style.copy(fontSize = style.fontSize * 0.9f)
+                layout = measurer.measure(text, style, maxLines = 1, softWrap = false)
+            }
+            layout
+        }
+    }
     val fills = remember(day?.fills) { day?.fills?.toFloatArray() }
     LaunchedEffect(timeline, lifecycle, animate) {
         timeline.start(SystemClock.uptimeMillis())
-        if (animate) lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
+        // A still toggle (97) still runs its clock for the opening greeting, then stops.
+        val greetingUntil = greetSince?.plus(GreetingMillis)
+        if (animate || greetingUntil != null) lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
             var previousFrame = 0L
-            while (isActive) withFrameNanos { frame ->
+            while (isActive && (animate || SystemClock.uptimeMillis() < (greetingUntil ?: 0L))) withFrameNanos { frame ->
                 if (frame - previousFrame >= FluidFrameIntervalNanos) {
                     frameMillis = SystemClock.uptimeMillis()
                     previousFrame = frame
@@ -122,14 +164,19 @@ fun AmbientFluidBrand(
         val seconds = if (animate) timeline.secondsAt(frameMillis) else ToggleRestSeconds
         val intro = if (animate) timeline.fillAt(frameMillis) else 1f
         // 94: the greeting holds the pill while the app opens, then gives way to the wave.
-        val greetingAlpha = if (greetingLayout != null && animate) greetingAlphaAt(seconds) else 0f
-        drawOpenVitalsToggle(seconds, intro * (1f - greetingAlpha), FluidBorderWidth.toPx(), fills)
+        val greetingAlpha = if (greetingLayout != null && greetSince != null) {
+            greetingAlphaAt((frameMillis - greetSince).coerceAtLeast(0L) / 1_000f)
+        } else {
+            0f
+        }
+        drawOpenVitalsToggle(seconds, intro * (1f - greetingAlpha), FluidBorderWidth.toPx(), fills, colors)
         if (greetingLayout != null && greetingAlpha > 0f) {
+            val room = size.width - size.height * 1.3f
             drawText(
                 textLayoutResult = greetingLayout,
                 alpha = greetingAlpha,
                 topLeft = Offset(
-                    (size.width - greetingLayout.size.width) / 2f,
+                    size.height * 0.4f + (room - size.height * 0.4f - greetingLayout.size.width).coerceAtLeast(0f) / 2f,
                     (size.height - greetingLayout.size.height) / 2f,
                 ),
             )
@@ -137,6 +184,8 @@ fun AmbientFluidBrand(
         day?.let { drawSyncDot(it.sync, seconds) }
     }
 }
+
+private const val GreetingMillis = 3_600L
 
 /** Fades in, holds, fades out over the opening seconds. */
 private fun greetingAlphaAt(seconds: Float): Float = when {
@@ -176,7 +225,7 @@ internal val BrandBlue = Color(0xFF4285F4)
 internal val BrandRed = Color(0xFFEA4335)
 internal val BrandYellow = Color(0xFFFBBC04)
 internal val BrandGreen = Color(0xFF34A853)
-private val BrandColors = listOf(BrandBlue, BrandRed, BrandYellow, BrandGreen)
+internal val BrandColors = listOf(BrandBlue, BrandRed, BrandYellow, BrandGreen)
 
 /** The night the light is drawn on, as in the Gemini reel the toggle follows. */
 internal val ToggleNight = Color(0xFF0B0F1A)
@@ -219,7 +268,13 @@ private val ToggleSparks = List(14) { index ->
  * colours that runs round the edge. It opens by drawing the wave out from the
  * centre, with the M3 emphasized easing.
  */
-private fun DrawScope.drawOpenVitalsToggle(seconds: Float, intro: Float, borderPx: Float, fills: FloatArray? = null) {
+private fun DrawScope.drawOpenVitalsToggle(
+    seconds: Float,
+    intro: Float,
+    borderPx: Float,
+    fills: FloatArray? = null,
+    colors: List<Color> = BrandColors,
+) {
     val w = size.width
     val h = size.height
     val mid = h / 2f
@@ -227,13 +282,15 @@ private fun DrawScope.drawOpenVitalsToggle(seconds: Float, intro: Float, borderP
     // Soft halo behind the wave.
     drawRect(
         Brush.radialGradient(
-            colors = listOf(BrandBlue.copy(alpha = 0.22f * open), Color.Transparent),
+            colors = listOf(colors.first().copy(alpha = 0.22f * open), Color.Transparent),
             center = Offset(w * (0.5f + sin(seconds * 0.3f) * 0.15f), mid),
             radius = w * 0.45f,
         ),
     )
     // The wave: each lobe a lens above and below the midline, its height breathing.
-    ToggleLobes.forEachIndexed { index, lobe ->
+    // 98: while the greeting holds the pill the wave is flat; a flat lobe's outline would draw a line through it.
+    if (open > 0.02f) ToggleLobes.forEachIndexed { index, lobe ->
+        val lobeColor = colors[index % colors.size]
         // 94: a lobe swells as far as its goal is met; one met in full stands at its full height.
         val goal = fills?.getOrNull(index)?.coerceIn(0f, 1f)?.let { 0.22f + 0.78f * it } ?: 1f
         val drift = sin(seconds * 0.35f * lobe.speed + lobe.phase) * 0.06f
@@ -261,9 +318,9 @@ private fun DrawScope.drawOpenVitalsToggle(seconds: Float, intro: Float, borderP
             path = path,
             brush = Brush.verticalGradient(
                 colors = listOf(
-                    lobe.color.copy(alpha = 0.95f),
-                    lobe.color.copy(alpha = 0.35f),
-                    lobe.color.copy(alpha = 0.95f),
+                    lobeColor.copy(alpha = 0.95f),
+                    lobeColor.copy(alpha = 0.35f),
+                    lobeColor.copy(alpha = 0.95f),
                 ),
                 startY = mid - up,
                 endY = mid + down,
@@ -272,14 +329,14 @@ private fun DrawScope.drawOpenVitalsToggle(seconds: Float, intro: Float, borderP
         )
         drawPath(
             path = path,
-            color = lerpColor(lobe.color, Color.White, 0.3f).copy(alpha = 0.7f),
+            color = lerpColor(lobeColor, Color.White, 0.3f).copy(alpha = 0.7f * open),
             style = Stroke(width = borderPx),
             blendMode = BlendMode.Plus,
         )
     }
     // The bright thread the lobes hang from.
     drawLine(
-        brush = Brush.horizontalGradient(BrandColors.map { it.copy(alpha = 0.55f * open) }),
+        brush = Brush.horizontalGradient(colors.map { it.copy(alpha = 0.55f * open) }.let { if (it.size < 2) it + it else it }),
         start = Offset(w * 0.08f, mid),
         end = Offset(w * 0.92f, mid),
         strokeWidth = borderPx,
@@ -289,7 +346,7 @@ private fun DrawScope.drawOpenVitalsToggle(seconds: Float, intro: Float, borderP
         val x = ((sx + seconds * 0.015f * rate) % 1f) * w
         val y = (((sy - seconds * 0.04f * rate) % 1f + 1f) % 1f) * h
         val twinkle = (0.5f + 0.5f * sin(seconds * rate * 2.2f + tint)).let { it * it }
-        val color = lerpColor(BrandColors[tint.toInt() % BrandColors.size], Color.White, 0.6f)
+        val color = lerpColor(colors[tint.toInt() % colors.size], Color.White, 0.6f)
         drawCircle(color.copy(alpha = 0.25f * twinkle * open), radius = h * 0.06f, center = Offset(x, y))
         drawCircle(color.copy(alpha = 0.95f * twinkle * open), radius = h * 0.018f, center = Offset(x, y))
     }
@@ -297,7 +354,7 @@ private fun DrawScope.drawOpenVitalsToggle(seconds: Float, intro: Float, borderP
     val shift = (seconds * 0.11f) % 1f
     val stops = Array(17) { k ->
         val position = k / 16f
-        position to cyclicBrandColor(position - shift)
+        position to cyclicBrandColor(position - shift, colors)
     }
     val ring = Brush.sweepGradient(*stops, center = Offset(w / 2f, mid))
     val radius = androidx.compose.ui.geometry.CornerRadius(h / 2f, h / 2f)
@@ -306,10 +363,11 @@ private fun DrawScope.drawOpenVitalsToggle(seconds: Float, intro: Float, borderP
 }
 
 /** The four colours around a circle, blended between neighbours; [position] wraps. */
-internal fun cyclicBrandColor(position: Float): Color {
-    val p = ((position % 1f) + 1f) % 1f * BrandColors.size
-    val index = p.toInt() % BrandColors.size
-    return lerpColor(BrandColors[index], BrandColors[(index + 1) % BrandColors.size], p - p.toInt())
+internal fun cyclicBrandColor(position: Float, colors: List<Color> = BrandColors): Color {
+    val palette = colors.ifEmpty { BrandColors }
+    val p = ((position % 1f) + 1f) % 1f * palette.size
+    val index = p.toInt() % palette.size
+    return lerpColor(palette[index], palette[(index + 1) % palette.size], p - p.toInt())
 }
 
 /** M3 emphasized easing, cubic-bezier(0.2, 0, 0, 1). */

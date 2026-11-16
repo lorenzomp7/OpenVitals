@@ -123,7 +123,15 @@ fun DashboardScreen(
     val profilePhoto = remember(profile.photo) { profile.photo?.let { it.asImageBitmap() } }
     val timeline = brandTimeline ?: tech.mmarca.openvitals.ui.components.rememberFluidBrandTimeline()
     // 94: the toggle greets, fills with today's goals, shows the sync, and opens today's summary.
-    val dayGoals = dashboardDayGoals(display)
+    // 97: the palette and motion chosen in Display settings.
+    val brandLookViewModel: tech.mmarca.openvitals.features.settings.BrandLookViewModel = androidx.hilt.navigation.compose.hiltViewModel()
+    val paletteSource by brandLookViewModel.palette.collectAsStateWithLifecycle()
+    val brandAnimated by brandLookViewModel.animated.collectAsStateWithLifecycle()
+    val brandColors = dashboardBrandColors(
+        paletteSource,
+        state.dashboardWidgets.filter { it in state.placedDashboardWidgets },
+    )
+    val dayGoals = dashboardDayGoals(display, brandColors)
     // The shell knows whether sync is paused; it hands that up as it composes.
     var healthConnectPaused by remember { mutableStateOf(false) }
     val day = brandDay(
@@ -144,6 +152,8 @@ fun DashboardScreen(
 
     androidx.compose.runtime.CompositionLocalProvider(
         tech.mmarca.openvitals.ui.components.LocalFluidBrandTimeline provides timeline,
+        tech.mmarca.openvitals.ui.components.LocalBrandLook provides
+            tech.mmarca.openvitals.ui.components.BrandLook(brandColors, brandAnimated),
     ) {
     WithHealthConnectFeatureScreen(
         feature = HealthConnectFeature.DASHBOARD,

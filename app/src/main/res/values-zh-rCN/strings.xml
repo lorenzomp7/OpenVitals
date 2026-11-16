@@ -3868,4 +3868,13 @@
     <string name="brand_open_summary">打开今日总结</string>
     <string name="brand_summary_title">今天</string>
     <string name="brand_summary_goal">%1$s / %2$s</string>
+    <string name="settings_brand_colors_title">主屏幕颜色</string>
+    <string name="settings_brand_colors_body">动画开关、顶部圆形按钮和操作按钮的颜色。</string>
+    <string name="settings_brand_colors_google">Google 四色</string>
+    <string name="settings_brand_colors_phone">手机配色</string>
+    <string name="settings_brand_colors_hero">顶部三个圆环的颜色</string>
+    <string name="settings_brand_colors_tiles">第一页前六个卡片的颜色</string>
+    <string name="settings_brand_colors_hero_tiles">两者：圆环和前六个卡片的颜色</string>
+    <string name="settings_brand_animated_title">动态</string>
+    <string name="settings_brand_animated_body">开启时开关和按钮会动；关闭时保持各自颜色静止。</string>
 </resources>

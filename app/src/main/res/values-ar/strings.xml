@@ -202,4 +202,13 @@
     <string name="brand_open_summary">فتح ملخص اليوم</string>
     <string name="brand_summary_title">اليوم</string>
     <string name="brand_summary_goal">%1$s من %2$s</string>
+    <string name="settings_brand_colors_title">ألوان الشاشة الرئيسية</string>
+    <string name="settings_brand_colors_body">ألوان الزر المتحرك والأزرار الدائرية في الأعلى وأزرار الإجراءات.</string>
+    <string name="settings_brand_colors_google">ألوان Google الأربعة</string>
+    <string name="settings_brand_colors_phone">ألوان الهاتف</string>
+    <string name="settings_brand_colors_hero">ألوان الحلقات الثلاث في الأعلى</string>
+    <string name="settings_brand_colors_tiles">ألوان أول ستة مربعات في الصفحة الأولى</string>
+    <string name="settings_brand_colors_hero_tiles">كلاهما: ألوان الحلقات وأول ستة مربعات</string>
+    <string name="settings_brand_animated_title">متحركة</string>
+    <string name="settings_brand_animated_body">عند التشغيل يتحرك الزر والأزرار؛ وعند الإيقاف تبقى ثابتة بألوانها.</string>
 </resources>

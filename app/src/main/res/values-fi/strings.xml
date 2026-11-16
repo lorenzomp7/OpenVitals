@@ -3867,4 +3867,13 @@
     <string name="brand_open_summary">Avaa tämän päivän yhteenveto</string>
     <string name="brand_summary_title">Tänään</string>
     <string name="brand_summary_goal">%1$s / %2$s</string>
+    <string name="settings_brand_colors_title">Aloitusnäkymän värit</string>
+    <string name="settings_brand_colors_body">Animoidun kytkimen, ylhäällä olevien pyöreiden painikkeiden ja toimintopainikkeiden värit.</string>
+    <string name="settings_brand_colors_google">Googlen neljä väriä</string>
+    <string name="settings_brand_colors_phone">Puhelimen värit</string>
+    <string name="settings_brand_colors_hero">Ylhäällä olevien kolmen renkaan värit</string>
+    <string name="settings_brand_colors_tiles">Ensimmäisen sivun kuuden ensimmäisen ruudun värit</string>
+    <string name="settings_brand_colors_hero_tiles">Molemmat: renkaiden ja kuuden ensimmäisen ruudun värit</string>
+    <string name="settings_brand_animated_title">Animoidut</string>
+    <string name="settings_brand_animated_body">Päällä: kytkin ja painikkeet liikkuvat. Pois: ne pysyvät paikallaan väreissään.</string>
 </resources>

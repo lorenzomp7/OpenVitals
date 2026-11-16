@@ -3927,4 +3927,13 @@
     <string name="brand_open_summary">Open today\'s summary</string>
     <string name="brand_summary_title">Today</string>
     <string name="brand_summary_goal">%1$s of %2$s</string>
+    <string name="settings_brand_colors_title">Home screen colours</string>
+    <string name="settings_brand_colors_body">The colours of the animated toggle, the round buttons at the top and the action buttons.</string>
+    <string name="settings_brand_colors_google">The four Google colours</string>
+    <string name="settings_brand_colors_phone">The phone\'s colours</string>
+    <string name="settings_brand_colors_hero">The colours of the three rings at the top</string>
+    <string name="settings_brand_colors_tiles">The colours of the first six tiles of the first page</string>
+    <string name="settings_brand_colors_hero_tiles">Both: the rings\' colours and the first six tiles\'</string>
+    <string name="settings_brand_animated_title">Animated</string>
+    <string name="settings_brand_animated_body">On, the toggle and the buttons move; off, they stand still in their colours.</string>
 </resources>

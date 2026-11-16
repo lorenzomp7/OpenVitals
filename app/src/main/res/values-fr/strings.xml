@@ -3900,4 +3900,13 @@
     <string name="brand_open_summary">Ouvrir le résumé du jour</string>
     <string name="brand_summary_title">Aujourd\'hui</string>
     <string name="brand_summary_goal">%1$s sur %2$s</string>
+    <string name="settings_brand_colors_title">Couleurs de l\'écran d\'accueil</string>
+    <string name="settings_brand_colors_body">Les couleurs du bouton animé, des boutons ronds en haut et des boutons d\'action.</string>
+    <string name="settings_brand_colors_google">Les quatre couleurs de Google</string>
+    <string name="settings_brand_colors_phone">Les couleurs du téléphone</string>
+    <string name="settings_brand_colors_hero">Les couleurs des trois anneaux en haut</string>
+    <string name="settings_brand_colors_tiles">Les couleurs des six premières tuiles de la première page</string>
+    <string name="settings_brand_colors_hero_tiles">Les deux : couleurs des anneaux et des six premières tuiles</string>
+    <string name="settings_brand_animated_title">Animés</string>
+    <string name="settings_brand_animated_body">Activé : le bouton et les boutons bougent. Désactivé : ils restent immobiles dans leurs couleurs.</string>
 </resources>

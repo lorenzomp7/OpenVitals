@@ -3935,4 +3935,13 @@
     <string name="brand_open_summary">今日のまとめを開く</string>
     <string name="brand_summary_title">今日</string>
     <string name="brand_summary_goal">%2$s 中 %1$s</string>
+    <string name="settings_brand_colors_title">ホーム画面の色</string>
+    <string name="settings_brand_colors_body">アニメーショントグル、上部の丸ボタン、アクションボタンの色。</string>
+    <string name="settings_brand_colors_google">Google の 4 色</string>
+    <string name="settings_brand_colors_phone">スマートフォンの色</string>
+    <string name="settings_brand_colors_hero">上部の 3 つのリングの色</string>
+    <string name="settings_brand_colors_tiles">最初のページの最初の 6 タイルの色</string>
+    <string name="settings_brand_colors_hero_tiles">両方：リングと最初の 6 タイルの色</string>
+    <string name="settings_brand_animated_title">アニメーション</string>
+    <string name="settings_brand_animated_body">オン：トグルとボタンが動きます。オフ：色はそのままで静止します。</string>
 </resources>

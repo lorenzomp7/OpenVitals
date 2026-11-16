@@ -3894,4 +3894,13 @@
     <string name="brand_open_summary">Abrir o resumo de hoje</string>
     <string name="brand_summary_title">Hoje</string>
     <string name="brand_summary_goal">%1$s de %2$s</string>
+    <string name="settings_brand_colors_title">Cores do ecrã principal</string>
+    <string name="settings_brand_colors_body">As cores do botão animado, dos botões redondos no topo e dos botões de ação.</string>
+    <string name="settings_brand_colors_google">As quatro cores da Google</string>
+    <string name="settings_brand_colors_phone">As cores do telemóvel</string>
+    <string name="settings_brand_colors_hero">As cores dos três anéis no topo</string>
+    <string name="settings_brand_colors_tiles">As cores dos seis primeiros blocos da primeira página</string>
+    <string name="settings_brand_colors_hero_tiles">Ambos: as cores dos anéis e dos seis primeiros blocos</string>
+    <string name="settings_brand_animated_title">Animados</string>
+    <string name="settings_brand_animated_body">Ativo: o botão e os botões mexem-se. Inativo: ficam parados nas suas cores.</string>
 </resources>

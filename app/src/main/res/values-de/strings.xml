@@ -3867,4 +3867,13 @@
     <string name="brand_open_summary">Heutige Übersicht öffnen</string>
     <string name="brand_summary_title">Heute</string>
     <string name="brand_summary_goal">%1$s von %2$s</string>
+    <string name="settings_brand_colors_title">Farben des Startbildschirms</string>
+    <string name="settings_brand_colors_body">Die Farben des animierten Schalters, der runden Schaltflächen oben und der Aktionsschaltflächen.</string>
+    <string name="settings_brand_colors_google">Die vier Google-Farben</string>
+    <string name="settings_brand_colors_phone">Die Farben des Telefons</string>
+    <string name="settings_brand_colors_hero">Die Farben der drei Ringe oben</string>
+    <string name="settings_brand_colors_tiles">Die Farben der ersten sechs Kacheln der ersten Seite</string>
+    <string name="settings_brand_colors_hero_tiles">Beides: die Farben der Ringe und der ersten sechs Kacheln</string>
+    <string name="settings_brand_animated_title">Animiert</string>
+    <string name="settings_brand_animated_body">An: Schalter und Schaltflächen bewegen sich. Aus: Sie bleiben still in ihren Farben.</string>
 </resources>

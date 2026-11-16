@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.animation.togetherWith
 import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -242,11 +243,24 @@ internal fun DashboardContent(
 
                 item(key = "widgets") {
                     // Reveal animations play once per day on display.
-                    key(data.date) {
+                    // 99: the pencil moves between the dashboard and its editor as the screens do, by a fade through.
+                    key(data.date) { androidx.compose.animation.AnimatedContent(
+                        targetState = isEditingDashboard,
+                        transitionSpec = {
+                            (
+                                androidx.compose.animation.fadeIn(androidx.compose.animation.core.tween(210, delayMillis = 90)) +
+                                    androidx.compose.animation.scaleIn(
+                                        androidx.compose.animation.core.tween(210, delayMillis = 90),
+                                        initialScale = 0.96f,
+                                    )
+                                ) togetherWith androidx.compose.animation.fadeOut(androidx.compose.animation.core.tween(90))
+                        },
+                        label = "dashboardEditTransition",
+                    ) { editing ->
                         DashboardWidgetCarousel(
                             visibleIds = visibleIds,
                             specsById = specsById,
-                            isEditingDashboard = isEditingDashboard,
+                            isEditingDashboard = editing,
                             onMoveWidgetToTarget = onMoveWidgetToTarget,
                             onReorderWidgets = onReorderWidgets,
                             onRemoveWidget = onRemoveWidget,
@@ -257,7 +271,7 @@ internal fun DashboardContent(
                             onSetPagedLayout = onSetPagedLayout,
                             actionContent = {
                                 DashboardQuickActions(
-                                    isEditingDashboard = isEditingDashboard,
+                                    isEditingDashboard = editing,
                                     onOpenLog = onOpenLog,
                                     onStartActivity = onStartActivity,
                                     onToggleDashboardEdit = onToggleDashboardEdit,
@@ -270,7 +284,7 @@ internal fun DashboardContent(
                                 )
                             },
                             hiddenContent = {
-                                if (isEditingDashboard) {
+                                if (editing) {
                                     DashboardHiddenWidgets(
                                         hiddenSpecs = hiddenSpecs,
                                         onAddWidget = onAddWidget,
@@ -278,7 +292,7 @@ internal fun DashboardContent(
                                 }
                             },
                         )
-                    }
+                    } }
                 }
 
                 // The sensor-status card is absent: the top-bar battery action is the entry point.
