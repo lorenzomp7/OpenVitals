@@ -5,7 +5,6 @@
     <string name="cd_back">Back</string>
     <string name="cd_settings">Settings</string>
     <string name="cd_achievements">Achievements</string>
-    <string name="cd_sensor_battery_status">Sensor battery status</string>
     <string name="cd_edit_dashboard">Edit summary</string>
     <string name="cd_finish_dashboard_editing">Finish editing summary</string>
     <string name="cd_edit_saved_drinks">Edit saved drinks</string>

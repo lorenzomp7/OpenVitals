@@ -4,7 +4,6 @@
     <string name="cd_back">Indietro</string>
     <string name="cd_settings">Impostazioni</string>
     <string name="cd_achievements">Obiettivi</string>
-    <string name="cd_sensor_battery_status">Stato batteria sensore</string>
     <string name="cd_edit_dashboard">Modifica riepilogo</string>
     <string name="cd_finish_dashboard_editing">Termina modifica riepilogo</string>
     <string name="cd_edit_saved_drinks">Modifica bevande salvate</string>

@@ -4,7 +4,6 @@
     <string name="cd_back">Zpět</string>
     <string name="cd_settings">Nastavení</string>
     <string name="cd_achievements">Úspěchy</string>
-    <string name="cd_sensor_battery_status">Stav baterie senzoru</string>
     <string name="cd_edit_dashboard">Upravit přehled</string>
     <string name="cd_finish_dashboard_editing">Dokončit úpravy přehledu</string>
     <string name="cd_edit_saved_drinks">Upravit uložené nápoje</string>

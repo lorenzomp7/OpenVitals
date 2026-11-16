@@ -56,8 +56,9 @@ internal fun LazyListScope.dashboardActivitiesToday(
     onEditActivity: (String) -> Unit,
     onRequestDeleteActivity: (ExerciseData) -> Unit,
 ) {
-    // 109: the kinds of the latest completed activities, newest first, each kind once.
-    val recentKinds = workouts.sortedByDescending { it.endTime }.map { it.exerciseType }.distinct().take(RecentActivityKinds)
+    // 109: always the same four symbols: running, strength training, biking and swimming. They
+    // were the kinds of the day's activities, so a day with two kinds drew two of the four.
+    val recentKinds = ActivityBarKinds
     item(key = "activities_header") {
         DashboardActivitiesSectionHeader(recentKinds = recentKinds, onClick = onOpenActivities)
     }
@@ -192,8 +193,8 @@ internal fun DashboardSwipeToDeleteActivityCard(
 
 /**
  * 109: the Activities bar runs the width of the screen. Its label stays over the left column,
- * centred in it, and the right half shows the kinds of the last activities, dimmed, lighting
- * up one after the other on the toggle's clock.
+ * centred in it, and the right half shows running, strength training, biking and swimming,
+ * dimmed, lighting up one after the other on the toggle's clock.
  */
 @Composable
 private fun DashboardActivitiesSectionHeader(
@@ -237,7 +238,12 @@ private fun DashboardActivitiesSectionHeader(
     }
 }
 
-private const val RecentActivityKinds = 4
+private val ActivityBarKinds = listOf(
+    androidx.health.connect.client.records.ExerciseSessionRecord.EXERCISE_TYPE_RUNNING,
+    androidx.health.connect.client.records.ExerciseSessionRecord.EXERCISE_TYPE_STRENGTH_TRAINING,
+    androidx.health.connect.client.records.ExerciseSessionRecord.EXERCISE_TYPE_BIKING,
+    androidx.health.connect.client.records.ExerciseSessionRecord.EXERCISE_TYPE_SWIMMING_POOL,
+)
 
 /** How long each kind stays lit before the next takes over. */
 private const val RecentKindSeconds = 1.6f

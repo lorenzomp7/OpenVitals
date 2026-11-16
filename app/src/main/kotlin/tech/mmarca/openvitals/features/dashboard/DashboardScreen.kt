@@ -45,7 +45,6 @@ fun DashboardScreen(
     onEditActivity: (String) -> Unit = {},
     onOpenLog: () -> Unit,
     onStartActivity: () -> Unit,
-    onOpenDeviceStatus: () -> Unit,
     onOpenBodyProfile: () -> Unit = {},
     onOpenAchievements: () -> Unit = {},
     onOpenSettings: () -> Unit = {},
@@ -67,6 +66,13 @@ fun DashboardScreen(
         if (viewModel.hasDashboardEdits()) confirmEdit = true else viewModel.finishDashboardEdit(false)
     }
     androidx.activity.compose.BackHandler(enabled = state.isEditingDashboard) { requestFinishEdit() }
+    // 120: leaving the editor, saved or not, lands at the top of the home screen, not where the
+    // editing had scrolled to.
+    var wasEditingDashboard by remember { mutableStateOf(state.isEditingDashboard) }
+    androidx.compose.runtime.LaunchedEffect(state.isEditingDashboard) {
+        if (wasEditingDashboard && !state.isEditingDashboard) listState.scrollToItem(0)
+        wasEditingDashboard = state.isEditingDashboard
+    }
     if (confirmEdit && state.isEditingDashboard) {
         androidx.compose.material3.AlertDialog(
             onDismissRequest = { confirmEdit = false },
@@ -149,8 +155,8 @@ fun DashboardScreen(
         DashboardDaySummarySheet(summaryTitle, dayGoals, onOpenMetric = onOpenMetric, onDismiss = { showDaySummary = false })
     }
     val header: @Composable () -> Unit = {
-        DashboardHeader(timeline, profilePhoto, state.sensorStatus.hasDevices,
-            onOpenBodyProfile, onOpenDeviceStatus, onOpenAchievements, onOpenSettings,
+        DashboardHeader(timeline, profilePhoto,
+            onOpenBodyProfile, onOpenAchievements, onOpenSettings,
             day = day, onOpenDay = { showDaySummary = true },
             isEditingDashboard = state.isEditingDashboard,
             // 106: the pencil lives in the header now; it needs a loaded dashboard to edit.

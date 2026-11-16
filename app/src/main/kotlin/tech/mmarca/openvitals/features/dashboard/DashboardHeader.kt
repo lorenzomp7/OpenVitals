@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.AccountCircle
-import androidx.compose.material.icons.outlined.BatteryChargingFull
 import androidx.compose.material.icons.outlined.Check
 import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material.icons.outlined.Settings
@@ -36,15 +35,14 @@ import tech.mmarca.openvitals.ui.theme.WorkoutActionMetrics
 /**
  * A normal list item: its position is owned only by the dashboard's scroll. 106: profile and
  * achievements on the left, the OpenVitals toggle in the middle, the pencil and settings on the
- * right, every button dressed like the toggle.
+ * right, every button dressed like the toggle. Always these four and the toggle, whatever is
+ * connected or loading: the sensors' battery lives in Settings, Sensors.
  */
 @Composable
 internal fun DashboardHeader(
     timeline: FluidBrandTimeline,
     photo: ImageBitmap?,
-    hasDevices: Boolean,
     onOpenProfile: () -> Unit,
-    onOpenDevices: () -> Unit,
     onOpenAchievements: () -> Unit,
     onOpenSettings: () -> Unit,
     day: tech.mmarca.openvitals.ui.components.BrandDay? = null,
@@ -54,9 +52,8 @@ internal fun DashboardHeader(
 ) {
     BoxWithConstraints(Modifier.fillMaxWidth().testTag("dashboard_header")) {
         val windowWidth = maxWidth
-        // Both sides as wide as the busier one, so the toggle sits in the middle of the screen.
-        val sideButtons = if (hasDevices) 3 else 2
-        val side = HeaderButtonSize * sideButtons
+        // Two buttons each side, so the toggle sits in the middle of the screen.
+        val side = HeaderButtonSize * 2
         val toggleWidth = minOf(
             WorkoutActionMetrics.primaryWidth(windowWidth),
             windowWidth - HeaderGutter * 2 - side * 2 - HeaderGap * 2,
@@ -66,11 +63,6 @@ internal fun DashboardHeader(
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Row(Modifier.weight(1f), verticalAlignment = Alignment.CenterVertically) {
-                if (hasDevices) OpenVitalsIconButton(onClick = onOpenDevices) {
-                    BrandIconFrame(timeline) {
-                        Icon(Icons.Outlined.BatteryChargingFull, stringResource(R.string.cd_sensor_battery_status))
-                    }
-                }
                 // 78: profile, achievements and settings dressed like the animated toggle.
                 OpenVitalsIconButton(onClick = onOpenProfile) {
                     val description = stringResource(R.string.user_profile_title)
@@ -99,7 +91,8 @@ internal fun DashboardHeader(
                 horizontalArrangement = Arrangement.End,
                 verticalAlignment = Alignment.CenterVertically,
             ) {
-                if (onToggleDashboardEdit != null) OpenVitalsIconButton(onClick = onToggleDashboardEdit) {
+                // Always there; before the dashboard has loaded a tap does nothing yet.
+                OpenVitalsIconButton(onClick = { onToggleDashboardEdit?.invoke() }) {
                     BrandIconFrame(timeline) {
                         Icon(
                             imageVector = if (isEditingDashboard) Icons.Outlined.Check else Icons.Outlined.Edit,

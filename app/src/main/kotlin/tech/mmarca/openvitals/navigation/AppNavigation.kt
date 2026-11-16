@@ -263,11 +263,15 @@ fun AppNavigation(
         screenAppBar?.hidesAppBar != true
     val showNavigation =
         topLevelDestinations.size > 1 && currentRoute?.let { it in topLevelRoutes } == true
+    // 63: while the bar fades out with the screen being left, it is still that screen's bar: the
+    // stack has already popped (nothing behind the dashboard), and reading it took the arrow away
+    // at the first frame of the fade.
+    val showingLeavingScreen = navBackStackEntry?.id != liveBackStackEntry?.id
     val canNavigateBack =
         currentRoute != null &&
             currentRoute != Screen.Onboarding.route &&
             currentRoute !in topLevelRoutes &&
-            navController.previousBackStackEntry != null
+            (showingLeavingScreen || navController.previousBackStackEntry != null)
     val navigationSelectedRoute = currentRoute?.takeIf { it in topLevelRoutes }
     val addEntryAction = addEntryActionForCurrentRoute(
         currentRoute = currentRoute,
@@ -488,11 +492,6 @@ fun AppNavigation(
                         navController.navigate(
                             Screen.ActivityEntry.createRoute(mode = Screen.ActivityEntryMode.RECORD),
                         )
-                    },
-                    onOpenDeviceStatus = {
-                        navController.navigate(Screen.SettingsSensors.route) {
-                            launchSingleTop = true
-                        }
                     },
                 )
             }

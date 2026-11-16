@@ -4,7 +4,6 @@
     <string name="cd_back">Назад</string>
     <string name="cd_settings">Настройки</string>
     <string name="cd_achievements">Достижения</string>
-    <string name="cd_sensor_battery_status">Состояние батареи датчика</string>
     <string name="cd_edit_dashboard">Редактировать сводку</string>
     <string name="cd_finish_dashboard_editing">Завершить редактирование сводки</string>
     <string name="cd_edit_saved_drinks">Редактировать сохранённые напитки</string>

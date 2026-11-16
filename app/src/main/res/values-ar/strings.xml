@@ -4,7 +4,6 @@
     <string name="cd_back">رجوع</string>
     <string name="cd_settings">الإعدادات</string>
     <string name="cd_achievements">الإنجازات</string>
-    <string name="cd_sensor_battery_status">حالة بطارية المستشعر</string>
     <string name="cd_edit_dashboard">ملخص التعديل</string>
     <string name="cd_finish_dashboard_editing">الانتهاء من تحرير الملخص</string>
     <string name="cd_edit_saved_drinks">تحرير المشروبات المحفوظة</string>

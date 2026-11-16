@@ -20,9 +20,7 @@ class DashboardHeaderSemanticsTest {
                 DashboardHeader(
                     timeline = rememberFluidBrandTimeline(),
                     photo = null,
-                    hasDevices = false,
                     onOpenProfile = {},
-                    onOpenDevices = {},
                     onOpenAchievements = {},
                     onOpenSettings = {},
                     onToggleDashboardEdit = {},

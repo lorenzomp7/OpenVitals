@@ -4,7 +4,6 @@
     <string name="cd_back">Retour</string>
     <string name="cd_settings">Paramètres</string>
     <string name="cd_achievements">Accomplissements</string>
-    <string name="cd_sensor_battery_status">État de la batterie du capteur</string>
     <string name="cd_edit_dashboard">Modifier le résumé</string>
     <string name="cd_finish_dashboard_editing">Terminer la modification du résumé</string>
     <string name="cd_edit_saved_drinks">Modifier les boissons sauvegardées</string>

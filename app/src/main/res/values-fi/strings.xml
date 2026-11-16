@@ -4,7 +4,6 @@
     <string name="cd_back">Takaisin</string>
     <string name="cd_settings">Asetukset</string>
     <string name="cd_achievements">Saavutukset</string>
-    <string name="cd_sensor_battery_status">Anturin akun tila</string>
     <string name="cd_edit_dashboard">Muokkaa yhteenvetoa</string>
     <string name="cd_finish_dashboard_editing">Viimeistele yhteenvedon muokkaus</string>
     <string name="cd_edit_saved_drinks">Muokkaa tallennettuja juomia</string>

@@ -26,6 +26,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Paint
+import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
 import androidx.compose.ui.graphics.toArgb
@@ -101,6 +102,9 @@ internal fun DashboardMultiRingHero(
             val sideRadius = ringRadius * HeroSideRadiusFactor
             val sideWidth = (maxWidth / 2 - sideRadius - HeroSideStroke).coerceAtLeast(0.dp)
             val glowPaint = remember { Paint() }
+            // 115: the glow and the floor's reflection are light on a dark card; on a light one
+            // they read as a muddy smudge round the arcs, so a light theme draws the rings plain.
+            val glowing = MaterialTheme.colorScheme.surfaceContainer.luminance() < 0.5f
 
             Canvas(modifier = Modifier.fillMaxSize()) {
                 val middle = Offset(size.width / 2f, (size.height - HeroReflectionRoom.toPx()) / 2f)
@@ -126,9 +130,11 @@ internal fun DashboardMultiRingHero(
                     ) else null,
                 )
                 // 108: each ring's light falls on the floor under it, soft and faint.
-                drawReflection(glowPaint, ring, floor, width = ring.radius * 1.3f)
-                sides.forEach { drawReflection(glowPaint, it, floor, width = it.stroke * 3f) }
-                (listOf(ring) + sides).forEach { drawRing(it, glowPaint) }
+                if (glowing) {
+                    drawReflection(glowPaint, ring, floor, width = ring.radius * 1.3f)
+                    sides.forEach { drawReflection(glowPaint, it, floor, width = it.stroke * 3f) }
+                }
+                (listOf(ring) + sides).forEach { drawRing(it, glowPaint, glowing) }
             }
 
             // The numbers sit level with the rings, above the reflection.
@@ -212,7 +218,7 @@ private class HeroRing(
     val color: Color,
 )
 
-private fun DrawScope.drawRing(ring: HeroRing, glowPaint: Paint) {
+private fun DrawScope.drawRing(ring: HeroRing, glowPaint: Paint, glowing: Boolean = true) {
     val topLeft = Offset(ring.center.x - ring.radius, ring.center.y - ring.radius)
     val arcSize = Size(ring.radius * 2f, ring.radius * 2f)
     val arcStyle = Stroke(width = ring.stroke, cap = StrokeCap.Round)
@@ -220,7 +226,7 @@ private fun DrawScope.drawRing(ring: HeroRing, glowPaint: Paint) {
     val filled = ring.sweep * ring.fraction.coerceIn(0f, 1f)
     if (filled == 0f) return
     // 108: the lit part glows, a blurred copy of itself under it.
-    drawIntoCanvas { canvas ->
+    if (glowing) drawIntoCanvas { canvas ->
         glowPaint.asFrameworkPaint().apply {
             reset()
             isAntiAlias = true

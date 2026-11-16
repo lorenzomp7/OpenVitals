@@ -22,6 +22,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.CompositingStrategy
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.graphics.luminance
 import androidx.compose.runtime.withFrameNanos
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LocalLifecycleOwner
@@ -68,11 +69,12 @@ fun BrandIconFrame(
 ) {
     val clock = rememberBrandClock(timeline)
     val colors = LocalBrandLook.current.colors
+    val inkColors = brandInkColors(colors)
     Box(
         modifier = modifier
             .size(BrandIconFrameSize)
             .clip(CircleShape)
-            .background(ToggleNight)
+            .background(brandButtonSurface())
             .drawWithContent {
                 drawContent()
                 val seconds = timeline.secondsAt(clock.value)
@@ -95,7 +97,7 @@ fun BrandIconFrame(
                         val drift = (seconds * 0.15f) % 1f
                         drawRect(
                             brush = Brush.linearGradient(
-                                colors = List(5) { cyclicBrandColor(it / 4f + drift, colors) },
+                                colors = List(5) { cyclicBrandColor(it / 4f + drift, inkColors) },
                                 start = Offset.Zero,
                                 end = Offset(size.width, size.height),
                             ),
@@ -126,11 +128,12 @@ fun BrandPillButton(
     val clockTimeline = timeline ?: remember { FluidBrandTimeline() }
     val clock = rememberBrandClock(clockTimeline)
     val colors = LocalBrandLook.current.colors
+    val inkColors = brandInkColors(colors)
     val shape = androidx.compose.foundation.shape.RoundedCornerShape(percent = 50)
     androidx.compose.foundation.layout.Row(
         modifier = modifier
             .clip(shape)
-            .background(ToggleNight)
+            .background(brandButtonSurface())
             .clickable(role = androidx.compose.ui.semantics.Role.Button, onClick = onClick)
             .drawWithContent {
                 drawContent()
@@ -162,7 +165,7 @@ fun BrandPillButton(
                     val drift = (seconds * 0.15f) % 1f
                     drawRect(
                         brush = Brush.linearGradient(
-                            colors = List(5) { cyclicBrandColor(it / 4f + drift, colors) },
+                            colors = List(5) { cyclicBrandColor(it / 4f + drift, inkColors) },
                             start = Offset.Zero,
                             end = Offset(size.width, size.height),
                         ),
@@ -177,3 +180,31 @@ fun BrandPillButton(
 
 /** The glow under the pill's ring, as the toggle's. */
 private const val PillGlowAlpha = 0.35f
+
+/**
+ * 115: what the brand buttons are painted on: the toggle's night in a dark theme, the theme's
+ * own light surface in a light one, where a row of black pills looked like a mistake.
+ */
+@Composable
+internal fun brandButtonSurface(): androidx.compose.ui.graphics.Color {
+    val scheme = androidx.compose.material3.MaterialTheme.colorScheme
+    return if (isLightBrandTheme()) scheme.surfaceContainerHighest else ToggleNight
+}
+
+/**
+ * 115: the colours an icon or label is painted with. On a light surface they are darkened a
+ * little, or the Google yellow and green would vanish into it.
+ */
+@Composable
+internal fun brandInkColors(colors: List<androidx.compose.ui.graphics.Color>): List<androidx.compose.ui.graphics.Color> {
+    val light = isLightBrandTheme()
+    return remember(colors, light) {
+        if (light) colors.map { androidx.compose.ui.graphics.lerp(it, androidx.compose.ui.graphics.Color.Black, LightInkDarkening) } else colors
+    }
+}
+
+@Composable
+internal fun isLightBrandTheme(): Boolean =
+    androidx.compose.material3.MaterialTheme.colorScheme.background.luminance() > 0.5f
+
+private const val LightInkDarkening = 0.3f

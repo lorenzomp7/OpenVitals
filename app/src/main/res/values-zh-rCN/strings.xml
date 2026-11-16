@@ -4,7 +4,6 @@
     <string name="cd_back">返回</string>
     <string name="cd_settings">设置</string>
     <string name="cd_achievements">成就</string>
-    <string name="cd_sensor_battery_status">传感器电量状态</string>
     <string name="cd_edit_dashboard">编辑概览</string>
     <string name="cd_finish_dashboard_editing">完成概览编辑</string>
     <string name="cd_edit_saved_drinks">编辑已保存的饮品</string>

@@ -4,7 +4,6 @@
     <string name="cd_back">Voltar</string>
     <string name="cd_settings">Definições</string>
     <string name="cd_achievements">Conquistas</string>
-    <string name="cd_sensor_battery_status">Estado da bateria do sensor</string>
     <string name="cd_edit_dashboard">Editar resumo</string>
     <string name="cd_finish_dashboard_editing">Concluir a edição do resumo</string>
     <string name="cd_edit_saved_drinks">Editar bebidas guardadas</string>
