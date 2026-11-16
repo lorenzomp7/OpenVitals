@@ -110,7 +110,12 @@ fun AmbientFluidBrand(
     val greeting = day?.takeIf { greetSince != null }?.let { brandGreeting(it.name) }
     val description = stringResource(R.string.app_name)
     val measurer = androidx.compose.ui.text.rememberTextMeasurer()
-    val greetingStyle = MaterialTheme.typography.titleSmall.copy(color = Color.White)
+    // 115: a light theme draws the toggle on its light surface, with dark writing.
+    val light = isLightBrandTheme()
+    val surface = brandButtonSurface()
+    val greetingStyle = MaterialTheme.typography.titleSmall.copy(
+        color = if (light) MaterialTheme.colorScheme.onSurface else Color.White,
+    )
     val density = androidx.compose.ui.platform.LocalDensity.current
     val pillWidth = width ?: WorkoutActionMetrics.primaryWidth(windowWidth)
     // 98: the greeting fits the pill left of the sync light, shrinking rather than running under it.
@@ -146,7 +151,7 @@ fun AmbientFluidBrand(
         modifier = modifier
             .size(pillWidth, WorkoutActionMetrics.height)
             .clip(CircleShape)
-            .background(ToggleNight)
+            .background(surface)
             .then(
                 if (onClick != null) {
                     Modifier.clickable(onClickLabel = stringResource(R.string.brand_open_summary), onClick = onClick)
@@ -166,7 +171,7 @@ fun AmbientFluidBrand(
         } else {
             0f
         }
-        drawOpenVitalsToggle(seconds, intro * (1f - greetingAlpha), FluidBorderWidth.toPx(), fills, colors)
+        drawOpenVitalsToggle(seconds, intro * (1f - greetingAlpha), FluidBorderWidth.toPx(), fills, colors, light)
         if (greetingLayout != null && greetingAlpha > 0f) {
             // 106: no sync light at the end any more, so the greeting centres in the whole pill.
             val room = size.width - size.height * 0.4f
@@ -254,7 +259,12 @@ private fun DrawScope.drawOpenVitalsToggle(
     borderPx: Float,
     fills: FloatArray? = null,
     colors: List<Color> = BrandColors,
+    /** 115: on a light surface: no additive light, which washes out to white there. */
+    light: Boolean = false,
 ) {
+    val blend = if (light) BlendMode.SrcOver else BlendMode.Plus
+    // Sparks and edges lean to white on the night, to a deeper shade on a light surface.
+    val sheen = if (light) Color.Black else Color.White
     val w = size.width
     val h = size.height
     val mid = h / 2f
@@ -262,7 +272,7 @@ private fun DrawScope.drawOpenVitalsToggle(
     // Soft halo behind the wave.
     drawRect(
         Brush.radialGradient(
-            colors = listOf(colors.first().copy(alpha = 0.22f * open), Color.Transparent),
+            colors = listOf(colors.first().copy(alpha = (if (light) 0.12f else 0.22f) * open), Color.Transparent),
             center = Offset(w * (0.5f + sin(seconds * 0.3f) * 0.15f), mid),
             radius = w * 0.45f,
         ),
@@ -270,7 +280,7 @@ private fun DrawScope.drawOpenVitalsToggle(
     // The wave: each lobe a lens above and below the midline, its height breathing.
     // 98: while the greeting holds the pill the wave is flat; a flat lobe's outline would draw a line through it.
     if (open > 0.02f) ToggleLobes.forEachIndexed { index, lobe ->
-        val lobeColor = colors[index % colors.size]
+        val lobeColor = colors[index % colors.size].let { if (light) lerpColor(it, Color.Black, 0.1f) else it }
         // 94: a lobe swells as far as its goal is met; one met in full stands at its full height.
         val goal = fills?.getOrNull(index)?.coerceIn(0f, 1f)?.let { 0.22f + 0.78f * it } ?: 1f
         val drift = sin(seconds * 0.35f * lobe.speed + lobe.phase) * 0.06f
@@ -298,20 +308,20 @@ private fun DrawScope.drawOpenVitalsToggle(
             path = path,
             brush = Brush.verticalGradient(
                 colors = listOf(
-                    lobeColor.copy(alpha = 0.95f),
-                    lobeColor.copy(alpha = 0.35f),
-                    lobeColor.copy(alpha = 0.95f),
+                    lobeColor.copy(alpha = if (light) 0.75f else 0.95f),
+                    lobeColor.copy(alpha = if (light) 0.25f else 0.35f),
+                    lobeColor.copy(alpha = if (light) 0.75f else 0.95f),
                 ),
                 startY = mid - up,
                 endY = mid + down,
             ),
-            blendMode = BlendMode.Plus,
+            blendMode = blend,
         )
         drawPath(
             path = path,
-            color = lerpColor(lobeColor, Color.White, 0.3f).copy(alpha = 0.7f * open),
+            color = lerpColor(lobeColor, sheen, if (light) 0.15f else 0.3f).copy(alpha = 0.7f * open),
             style = Stroke(width = borderPx),
-            blendMode = BlendMode.Plus,
+            blendMode = blend,
         )
     }
     // The bright thread the lobes hang from.
@@ -326,7 +336,7 @@ private fun DrawScope.drawOpenVitalsToggle(
         val x = ((sx + seconds * 0.015f * rate) % 1f) * w
         val y = (((sy - seconds * 0.04f * rate) % 1f + 1f) % 1f) * h
         val twinkle = (0.5f + 0.5f * sin(seconds * rate * 2.2f + tint)).let { it * it }
-        val color = lerpColor(colors[tint.toInt() % colors.size], Color.White, 0.6f)
+        val color = lerpColor(colors[tint.toInt() % colors.size], sheen, if (light) 0.2f else 0.6f)
         drawCircle(color.copy(alpha = 0.25f * twinkle * open), radius = h * 0.06f, center = Offset(x, y))
         drawCircle(color.copy(alpha = 0.95f * twinkle * open), radius = h * 0.018f, center = Offset(x, y))
     }

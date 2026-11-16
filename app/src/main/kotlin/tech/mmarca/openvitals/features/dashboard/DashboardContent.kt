@@ -208,11 +208,17 @@ internal fun DashboardContent(
                 )
             }
 
+            // 121: a tile carried to the top or bottom edge in the editor scrolls the list.
+            val dragAutoScroll = remember(listState) { tech.mmarca.openvitals.ui.components.DragAutoScroll(listState) }
+            androidx.compose.runtime.CompositionLocalProvider(
+                tech.mmarca.openvitals.ui.components.LocalDragAutoScroll provides dragAutoScroll,
+            ) {
             androidx.compose.foundation.lazy.LazyColumn(
                 state = listState,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .weight(1f),
+                    .weight(1f)
+                    .then(tech.mmarca.openvitals.ui.components.dragAutoScrollViewportModifier(dragAutoScroll)),
                 contentPadding = PaddingValues(
                     top = DashboardScrollTopPadding,
                     bottom = DashboardScrollBottomPadding,
@@ -324,6 +330,7 @@ internal fun DashboardContent(
                     }
                 }
                 item(key = "bottom_spacer") { Spacer(Modifier.height(10.dp)) }
+            }
             }
         }
 

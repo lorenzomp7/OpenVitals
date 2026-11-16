@@ -57,7 +57,7 @@ jobs:
           if (( NEXT < 1070400000 )); then NEXT=1070400000; fi
           echo "OPENVITALS_VERSION_CODE=$NEXT" >> "$GITHUB_ENV"
           echo "code=$NEXT" >> "$GITHUB_OUTPUT"
-          echo "OPENVITALS_VERSION_NAME=2.17.14-personal-claude" >> "$GITHUB_ENV"
+          echo "OPENVITALS_VERSION_NAME=2.17.15-personal-claude" >> "$GITHUB_ENV"
       - name: Build the signed personal update
         env:
           OPENVITALS_RELEASE_STORE_FILE: ${{ github.workspace }}/personal/personal.p12
@@ -138,21 +138,20 @@ jobs:
           cat > release-notes.md <<EOF
           Scarica **OpenVitals.apk** dagli allegati e aprilo sul telefono.
 
-          Branch main_claude — 63, 106, 109, 115, 120:
-          - 63: tornando indietro, la freccia in alto resta visibile finché la barra non è sparita insieme alla schermata che lasci: prima spariva al primo fotogramma.
-          - 106: in alto ci sono sempre e solo profilo, obiettivi, toggle OpenVitals, matita e impostazioni. Niente più icona della batteria (lo stato dei sensori resta in Impostazioni → Sensori), e la matita c'è anche mentre la schermata si carica.
-          - 109: la barra "Attività" mostra sempre i quattro simboli: corsa, allenamento con i pesi, bicicletta e nuoto, che si illuminano a turno.
-          - 115: con il tema chiaro i pulsanti rotondi in alto, "Avvia allenamento", "+ Registra" e la barra "Attività" sono chiari come il tema, con i colori scuriti quanto basta per leggerli. Gli anelli non hanno più alone e riflesso, che sul fondo chiaro sembravano una macchia. Il toggle OpenVitals resta scuro in entrambi i temi.
-          - 120: chiudendo la modifica della schermata principale (salvando o no) si torna in cima alla schermata, non dove si era scorso.
+          Branch main_claude — 114, 115, 116, 121:
+          - 114: in tutti i grafici delle attività le tre cifre in alto stanno a sinistra, al centro e a destra (per esempio Media, Intervallo, Campioni), e gli intervalli scrivono l'unità una volta sola: "77 – 156 bpm" invece di "77 bpm-156 bpm", così non vanno più a capo.
+          - 115: con il tema chiaro anche il toggle OpenVitals è chiaro: onde a colori pieni, scintille più scure e saluto in testo scuro.
+          - 116: in modifica della schermata principale il numero dei dettagli (≡) di ogni riquadro è quello che il riquadro mostra davvero: 1 per i riquadri 1×1 e per gli anelli, come nella finestra delle opzioni.
+          - 121: in modifica della schermata principale, portando un riquadro vicino al bordo in alto o in basso la schermata scorre da sola, più veloce quanto più sei vicino al bordo, e il riquadro resta sotto il dito.
 
           Questa versione aggiorna l'installazione personale compatibile di OpenVitals senza disinstallarla. La revisione ha superato la verifica completa (verify) in questa stessa esecuzione; package e firma coincidono con l'APK pubblicato precedente; installazione, aggiornamento, avvio e import screenshot sono verificati su Android 15.
 
-          Versione: **2.17.14-personal-claude**. Version code: **$OPENVITALS_VERSION_CODE**.
+          Versione: **2.17.15-personal-claude**. Version code: **$OPENVITALS_VERSION_CODE**.
           Sorgenti: https://github.com/$GH_REPO/commit/$GITHUB_SHA
           Compilazione e verifica aggiornamento: https://github.com/$GH_REPO/actions/runs/$GITHUB_RUN_ID
           EOF
           if gh release view "$TAG" > /dev/null 2>&1; then
             echo "Release already exists; keeping the published APK unchanged."
           else
-            gh release create "$TAG" release/OpenVitals.apk release/SHA256SUMS.txt --target "$GITHUB_SHA" --title "OpenVitals 2.17.14 · main_claude" --notes-file release-notes.md --latest
+            gh release create "$TAG" release/OpenVitals.apk release/SHA256SUMS.txt --target "$GITHUB_SHA" --title "OpenVitals 2.17.15 · main_claude" --notes-file release-notes.md --latest
           fi

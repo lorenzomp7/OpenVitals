@@ -257,14 +257,8 @@ private fun ActivityTypeChartFrame(
     OpenVitalsCard(modifier = modifier) {
         Column(Modifier.padding(Spacing.lg), verticalArrangement = Arrangement.spacedBy(Spacing.md)) {
             Text(title, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
-            if (figures.isNotEmpty()) Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(Spacing.lg)) {
-                figures.forEach { (label, value) ->
-                    Column(Modifier.weight(1f)) {
-                        Text(value, style = MaterialTheme.typography.titleMedium, color = accent)
-                        Text(label, style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                    }
-                }
-            }
+            // 114: left, middle and right, as on every activity chart.
+            ActivityChartFigures(figures, accent)
             chart()
             note?.let { Text(it, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant) }
         }

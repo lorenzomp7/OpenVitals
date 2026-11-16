@@ -318,43 +318,16 @@ private fun ActivitySessionMetricChartCard(
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold,
             )
-            if (statsOverride != null) {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(16.dp),
-                ) {
-                    statsOverride.forEach { (label, value) ->
-                        ActivitySessionMetricStat(
-                            label = label,
-                            value = value,
-                            accentColor = accentColor,
-                            modifier = Modifier.weight(1f),
-                        )
-                    }
-                }
-            } else Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(16.dp),
-            ) {
-                ActivitySessionMetricStat(
-                    label = stringResource(R.string.summary_average),
-                    value = valueFormatter(avgValue),
-                    accentColor = accentColor,
-                    modifier = Modifier.weight(1f),
-                )
-                ActivitySessionMetricStat(
-                    label = stringResource(R.string.summary_range),
-                    value = "${valueFormatter(minValue)}-${valueFormatter(maxValue)}",
-                    accentColor = accentColor,
-                    modifier = Modifier.weight(1f),
-                )
-                ActivitySessionMetricStat(
-                    label = countLabel ?: stringResource(R.string.summary_samples),
-                    value = countText ?: unitFormatter.count(sortedValues.size),
-                    accentColor = accentColor,
-                    modifier = Modifier.weight(1f),
-                )
-            }
+            // 114: left, middle and right, the range's unit said once.
+            ActivityChartFigures(
+                figures = statsOverride ?: listOf(
+                    stringResource(R.string.summary_average) to valueFormatter(avgValue),
+                    stringResource(R.string.summary_range) to activityValueRange(valueFormatter(minValue), valueFormatter(maxValue)),
+                    (countLabel ?: stringResource(R.string.summary_samples)) to
+                        (countText ?: unitFormatter.count(sortedValues.size)),
+                ),
+                accent = accentColor,
+            )
             // Plot and elapsed row share the one viewport.
             ChartZoom(
                 sessionStart, sessionEnd, sortedValues,
@@ -405,26 +378,5 @@ private fun ActivitySessionMetricChartCard(
                 )
             }
         }
-    }
-}
-
-@Composable
-private fun ActivitySessionMetricStat(
-    label: String,
-    value: String,
-    accentColor: Color,
-    modifier: Modifier = Modifier,
-) {
-    Column(modifier = modifier) {
-        Text(
-            text = value,
-            style = MaterialTheme.typography.titleMedium,
-            color = accentColor,
-        )
-        Text(
-            text = label,
-            style = MaterialTheme.typography.labelSmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-        )
     }
 }

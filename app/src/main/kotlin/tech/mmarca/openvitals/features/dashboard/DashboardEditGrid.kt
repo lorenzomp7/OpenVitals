@@ -24,12 +24,16 @@ import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.foundation.gestures.scrollBy
 import androidx.compose.ui.layout.Layout
+import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.layout.positionInWindow
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.Constraints
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.round
 import androidx.compose.ui.zIndex
 import tech.mmarca.openvitals.R
@@ -138,6 +142,10 @@ internal fun dashboardEditPlan(
 
 private val DashboardEditLabelHeight = Spacing.xl + Spacing.md
 
+/** 121: how near the list's edge a held tile starts the scroll, and its fastest step per frame. */
+private val AutoScrollEdge = 72.dp
+private val AutoScrollMaxStep = 14.dp
+
 /**
  * 75: the dashboard's edit sheet. Hold a tile and it follows the finger; the others make
  * room as it passes over them, sliding to their new places.
@@ -166,6 +174,12 @@ internal fun DashboardReorderableEditGrid(
     var dragStart by remember { mutableStateOf(Rect.Zero) }
     var dragAmount by remember { mutableStateOf(Offset.Zero) }
     var lastTarget by remember { mutableStateOf<DashboardWidgetId?>(null) }
+    // 121: where the finger holds the tile, and where the grid sits on the window, so the held
+    // tile carried to the top or bottom edge scrolls the dashboard and keeps under the finger.
+    var grab by remember { mutableStateOf(Offset.Zero) }
+    var gridTopInWindow by remember { mutableStateOf(0f) }
+    val autoScroll = tech.mmarca.openvitals.ui.components.LocalDragAutoScroll.current
+    val density = androidx.compose.ui.platform.LocalDensity.current
 
     fun followFinger(id: DashboardWidgetId) {
         val centre = dragStart.center + dragAmount
@@ -182,9 +196,31 @@ internal fun DashboardReorderableEditGrid(
         latestReorder(heroDisplayOrder(order))
     }
 
+    val heldTile = dragging
+    androidx.compose.runtime.LaunchedEffect(heldTile, autoScroll) {
+        if (heldTile == null || autoScroll == null) return@LaunchedEffect
+        val edge = with(density) { AutoScrollEdge.toPx() }
+        val maxStep = with(density) { AutoScrollMaxStep.toPx() }
+        while (dragging == heldTile) {
+            androidx.compose.runtime.withFrameNanos { }
+            val fingerY = gridTopInWindow + dragStart.top + dragAmount.y + grab.y
+            val step = autoScroll.stepFor(fingerY, edge, maxStep)
+            if (step == 0f) continue
+            val moved = autoScroll.listState.scrollBy(step)
+            if (moved != 0f) {
+                // The grid moved by [moved] under the finger: the tile follows the finger, not the grid.
+                dragAmount += Offset(0f, moved)
+                gridTopInWindow -= moved
+                followFinger(heldTile)
+            }
+        }
+    }
+
     val rowHeight = dashboardWidgetRowHeight() + LayoutMetrics.minTouchTarget
     Layout(
-        modifier = modifier,
+        modifier = modifier.then(
+            androidx.compose.ui.Modifier.onGloballyPositioned { gridTopInWindow = it.positionInWindow().y },
+        ),
         content = {
             plan.cells.forEach { cell ->
                 key(cell.key) {
@@ -214,7 +250,8 @@ internal fun DashboardReorderableEditGrid(
                                 isDragging = held,
                                 dragHandleModifier = Modifier.pointerInput(cell.id) {
                                     detectDragGesturesAfterLongPress(
-                                        onDragStart = {
+                                        onDragStart = { at ->
+                                            grab = at
                                             bounds[cell.id]?.let { start ->
                                                 haptics.performHapticFeedback(HapticFeedbackType.LongPress)
                                                 dragStart = start
@@ -240,7 +277,9 @@ internal fun DashboardReorderableEditGrid(
                                 // 81: the shape, not a count of spaces. A ring has no shape of its own.
                                 sizeLabel = if (cell.ring) null else "${cell.size.columns}×${cell.size.rows}",
                                 onCycleSize = { onCycleWidgetSize(cell.id) },
-                                detailCount = spec.detailCount,
+                                // 116: the values the tile shows now, as the options dialog counts them:
+                                // a 1×1 tile and a ring show their main value only.
+                                detailCount = if (cell.ring) 1 else dashboardDetailCount(cell.size, spec.detailCount),
                                 modifier = if (held) {
                                     // The held tile is drawn under the finger, not in its slot.
                                     Modifier.zIndex(1f).offset {
