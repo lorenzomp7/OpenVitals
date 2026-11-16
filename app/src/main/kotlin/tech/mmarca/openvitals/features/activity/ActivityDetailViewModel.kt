@@ -224,11 +224,12 @@ internal class ActivityDetailViewModel @Inject constructor(
             }.getOrNull().orEmpty()
             val plan = linkedPlan.await()
             // 104: the heights from a terrain model when one covers the route; the GPS drifts.
-            val terrain = if (workout.route.status == tech.mmarca.openvitals.domain.model.ExerciseRouteStatus.DATA) {
+            val terrainRead = if (workout.route.status == tech.mmarca.openvitals.domain.model.ExerciseRouteStatus.DATA) {
                 runCatchingCancellable { terrainElevation?.altitudes(workout.route.points) }.getOrNull()
             } else {
                 null
             }
+            val terrain = terrainRead?.second?.let { heights -> terrainRead.first to heights }
             // Backfill, height profile and splits walk every sample.
             val profile = runCatchingCancellable { bodyProfilePreferences.bodyProfile() }.getOrNull()
             withContext(dispatchers.default) {
@@ -261,7 +262,7 @@ internal class ActivityDetailViewModel @Inject constructor(
                         workout.route.points.zip(heights) { point, meters -> ActivityElevationSample(point.time, meters) }
                             .sortedBy { it.time }
                     } ?: elevationProfile(backfilledWorkout.route),
-                    elevationSource = terrain?.first
+                    elevationSource = terrainRead?.first
                         ?: tech.mmarca.openvitals.features.activity.elevation.RouteElevationSource.GPS,
                     heartRateRecovery = recovery,
                     recoverySamples = recoverySamples,

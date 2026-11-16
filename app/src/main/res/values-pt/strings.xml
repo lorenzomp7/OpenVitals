@@ -3882,18 +3882,12 @@
     <string name="activity_chart_recovery_end">No fim</string>
     <string name="activity_chart_recovery_one">Após 1 min</string>
     <string name="activity_chart_recovery_two">Após 2 min</string>
-    <string name="brand_greeting_morning_name">Bom dia, %1$s</string>
-    <string name="brand_greeting_afternoon_name">Boa tarde, %1$s</string>
-    <string name="brand_greeting_evening_name">Boa noite, %1$s</string>
-    <string name="brand_greeting_morning">Bom dia</string>
-    <string name="brand_greeting_afternoon">Boa tarde</string>
-    <string name="brand_greeting_evening">Boa noite</string>
-    <string name="brand_sync_up_to_date">Health Connect atualizado</string>
-    <string name="brand_sync_syncing">A ler o Health Connect</string>
-    <string name="brand_sync_paused">Sincronização com o Health Connect em pausa</string>
-    <string name="brand_open_summary">Abrir o resumo de hoje</string>
-    <string name="brand_summary_title">Hoje</string>
+    <string name="brand_open_summary">Abrir o resumo do período</string>
     <string name="brand_summary_goal">%1$s de %2$s</string>
+    <string name="brand_welcome_back_name">Bem-vindo de volta, %1$s</string>
+    <string name="brand_welcome_back">Bem-vindo de volta</string>
+    <string name="brand_summary_workout_yes">Sim</string>
+    <string name="brand_summary_workout_no">Não</string>
     <string name="settings_brand_colors_title">Cores do ecrã principal</string>
     <string name="settings_brand_colors_body">As cores do botão animado, dos botões redondos no topo e dos botões de ação.</string>
     <string name="settings_brand_colors_google">As quatro cores da Google</string>
@@ -3908,4 +3902,5 @@
     <string name="activity_elevation_source_tiles">Altitude do modelo de terreno (mosaicos de elevação importados).</string>
     <string name="activity_elevation_source_mapbox">Altitude do modelo de terreno do Mapbox.</string>
     <string name="activity_elevation_source_gps">Altitude GPS não corrigida, que deriva: inicia sessão no Mapbox ou importa mosaicos de elevação para a corrigir.</string>
+    <string name="activity_elevation_source_mapbox_failed">Altitude GPS, que deriva: o Mapbox tem sessão iniciada, mas o seu modelo do terreno não pôde ser carregado (sem ligação, ou o Mapbox recusou o pedido). Abra novamente a atividade para tentar de novo.</string>
 </resources>

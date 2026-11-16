@@ -96,10 +96,12 @@ def signature(root):
 
 
 def foreground_package(root):
-    for node in root.iter("node"):
-        if node.get("package"):
-            return node.get("package")
-    return ""
+    """The app's package when any of its nodes is on screen. The first node can be the status
+    bar or a system overlay, which made a cold start read as "the app did not open"."""
+    packages = [node.get("package") for node in root.iter("node") if node.get("package")]
+    if PKG in packages:
+        return PKG
+    return packages[0] if packages else ""
 
 
 def settle():
@@ -157,10 +159,19 @@ def back():
 
 
 def restart():
-    adb("shell", "am", "force-stop", PKG)
-    adb("shell", "am", "start", "-W", "-n", ACTIVITY)
-    time.sleep(3)
-    return settle()
+    # A cold start on a freshly resized screen can take longer than one wait; try a few times.
+    root = None
+    for attempt in range(4):
+        adb("shell", "am", "force-stop", PKG)
+        adb("shell", "input", "keyevent", "224")  # wake
+        adb("shell", "wm", "dismiss-keyguard", check=False)
+        adb("shell", "am", "start", "-W", "-n", ACTIVITY)
+        time.sleep(3 + attempt * 3)
+        root = settle()
+        if foreground_package(root) == PKG:
+            return root
+        print(f"the app is not in front yet (attempt {attempt + 1})", flush=True)
+    return root
 
 
 def replay(path):
@@ -176,7 +187,7 @@ def main():
     width, height = screen_size()
     screens, order = {}, []
 
-    def record(root, path, depth):
+    def record(root, path, depth, parent=None):
         sig = signature(root)
         if sig in screens:
             return sig
@@ -185,7 +196,7 @@ def main():
             png.write(adb("exec-out", "screencap", "-p", binary=True))
         bottom, bar_top = layout(root, height)
         screens[sig] = {
-            "id": name, "path": path, "depth": depth, "links": [],
+            "id": name, "path": path, "depth": depth, "links": [], "parent": parent,
             "taps": tappables(root, width, height), "contentBottom": bottom, "barTop": bar_top,
         }
         order.append(sig)
@@ -217,10 +228,16 @@ def main():
                 back()
                 after = settle()
             elif signature(after) != sig:
-                landed = record(after, screen["path"] + [target["bounds"]], screen["depth"] + 1)
-                screen["links"].append({"bounds": target["bounds"], "to": screens[landed]["id"], "label": target["label"]})
-                back()
-                after = settle()
+                after_sig = signature(after)
+                # 86: the app's own back arrow lands on the screen this one was opened from:
+                # in the web copy it goes back, as the arrow does, instead of opening it anew.
+                if after_sig == screen.get("parent"):
+                    screen["links"].append({"bounds": target["bounds"], "to": "back", "label": target["label"]})
+                else:
+                    landed = record(after, screen["path"] + [target["bounds"]], screen["depth"] + 1, parent=sig)
+                    screen["links"].append({"bounds": target["bounds"], "to": screens[landed]["id"], "label": target["label"]})
+                    back()
+                    after = settle()
             if signature(after) != sig:
                 after = replay(screen["path"])
                 if signature(after) != sig:

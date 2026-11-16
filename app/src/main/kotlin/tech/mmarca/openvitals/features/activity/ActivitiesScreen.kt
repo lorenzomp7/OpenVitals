@@ -3,7 +3,9 @@ package tech.mmarca.openvitals.features.activity
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.Lifecycle
@@ -40,6 +42,11 @@ fun ActivitiesScreen(
     val chartDaySelection = rememberChartDaySelection(state.selectedRange, state.selectedDate)
     // A swipe only asks. The dashboard already did; this list deleted at once, with no undo.
     var workoutToDelete by remember { mutableStateOf<ExerciseData?>(null) }
+    // 111: the rows "Load more" showed stay shown after opening an activity and coming back.
+    // A new period, range or filter starts from one page again.
+    var visibleWorkoutCount by rememberSaveable(state.selectedRange, state.selectedDate, state.selectedActivityType) {
+        mutableIntStateOf(ActivityWorkoutListPageSize)
+    }
 
     LifecycleEventEffect(Lifecycle.Event.ON_RESUME) {
         viewModel.resumeCurrentPeriod(refreshCurrent = false)
@@ -97,6 +104,8 @@ fun ActivitiesScreen(
                 onOpenHrv = onOpenHrv,
                 onDecreaseGoal = viewModel::decreaseDailyGoal,
                 onIncreaseGoal = viewModel::increaseDailyGoal,
+                visibleWorkoutCount = visibleWorkoutCount,
+                onShowMoreWorkouts = { visibleWorkoutCount += ActivityWorkoutListPageSize },
             )
         }
     }

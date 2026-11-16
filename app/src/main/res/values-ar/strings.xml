@@ -190,18 +190,12 @@
     <string name="activity_chart_recovery_end">عند النهاية</string>
     <string name="activity_chart_recovery_one">بعد دقيقة</string>
     <string name="activity_chart_recovery_two">بعد دقيقتين</string>
-    <string name="brand_greeting_morning_name">صباح الخير، %1$s</string>
-    <string name="brand_greeting_afternoon_name">مساء الخير، %1$s</string>
-    <string name="brand_greeting_evening_name">مساء الخير، %1$s</string>
-    <string name="brand_greeting_morning">صباح الخير</string>
-    <string name="brand_greeting_afternoon">مساء الخير</string>
-    <string name="brand_greeting_evening">مساء الخير</string>
-    <string name="brand_sync_up_to_date">Health Connect محدّث</string>
-    <string name="brand_sync_syncing">جارٍ القراءة من Health Connect</string>
-    <string name="brand_sync_paused">المزامنة مع Health Connect متوقفة مؤقتًا</string>
-    <string name="brand_open_summary">فتح ملخص اليوم</string>
-    <string name="brand_summary_title">اليوم</string>
+    <string name="brand_open_summary">فتح ملخص الفترة</string>
     <string name="brand_summary_goal">%1$s من %2$s</string>
+    <string name="brand_welcome_back_name">مرحبًا بعودتك، %1$s</string>
+    <string name="brand_welcome_back">مرحبًا بعودتك</string>
+    <string name="brand_summary_workout_yes">نعم</string>
+    <string name="brand_summary_workout_no">لا</string>
     <string name="settings_brand_colors_title">ألوان الشاشة الرئيسية</string>
     <string name="settings_brand_colors_body">ألوان الزر المتحرك والأزرار الدائرية في الأعلى وأزرار الإجراءات.</string>
     <string name="settings_brand_colors_google">ألوان Google الأربعة</string>
@@ -216,4 +210,5 @@
     <string name="activity_elevation_source_tiles">الارتفاع من نموذج التضاريس (مربعات الارتفاع المستوردة).</string>
     <string name="activity_elevation_source_mapbox">الارتفاع من نموذج التضاريس في Mapbox.</string>
     <string name="activity_elevation_source_gps">ارتفاع GPS غير مصحح ويتغير: سجّل الدخول إلى Mapbox أو استورد مربعات الارتفاع لتصحيحه.</string>
+    <string name="activity_elevation_source_mapbox_failed">ارتفاع GPS، وهو ينحرف: تم تسجيل الدخول إلى Mapbox لكن تعذّر تحميل نموذج التضاريس (لا يوجد اتصال، أو رفض Mapbox الطلب). افتح النشاط مرة أخرى لإعادة المحاولة.</string>
 </resources>

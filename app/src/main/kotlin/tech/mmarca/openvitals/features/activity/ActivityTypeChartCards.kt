@@ -38,9 +38,12 @@ import kotlin.math.roundToInt
 import tech.mmarca.openvitals.R
 import tech.mmarca.openvitals.core.presentation.UnitFormatter
 import tech.mmarca.openvitals.domain.insights.WorkoutTypeChart
+import tech.mmarca.openvitals.domain.insights.averagePaceSecondsPerKm
+import tech.mmarca.openvitals.domain.insights.bestPaceSeries
 import tech.mmarca.openvitals.domain.insights.heartRateZoneSeconds
 import tech.mmarca.openvitals.domain.insights.paceFromRoute
 import tech.mmarca.openvitals.domain.insights.paceFromSpeed
+import tech.mmarca.openvitals.domain.insights.showsHeartRateZones
 import tech.mmarca.openvitals.domain.insights.workoutTypeChart
 import tech.mmarca.openvitals.domain.insights.RecoveryMark
 import tech.mmarca.openvitals.domain.insights.recoveryChartWindow
@@ -76,6 +79,8 @@ internal data class OverlaySeries(
     val inverted: Boolean = false,
     /** Drawn dashed: an estimate, not a reading (103). */
     val dashed: Boolean = false,
+    /** A shorter form for the axis, where the unit would not fit (88). */
+    val axisFormat: ((Double) -> String)? = null,
 )
 
 private val OverlayChartHeight = Spacing.giant * 4
@@ -171,7 +176,7 @@ private fun AxisLabels(scale: OverlayScale, series: OverlaySeries, align: TextAl
     ) {
         listOf(top, (top + bottom) / 2, bottom).forEach { value ->
             Text(
-                text = series.format(value),
+                text = (series.axisFormat ?: series.format)(value),
                 style = MaterialTheme.typography.labelSmall,
                 color = series.color,
                 textAlign = align,
@@ -281,13 +286,18 @@ internal fun ActivityPaceChartCard(
     if (paceSecondsPerKm.size < 2) return
     val axis = remember(sessionStart, sessionEnd, pauses) { SessionAxis(sessionStart, sessionEnd, pauses) }
     val formatPace: (Double) -> String = { seconds -> unitFormatter.averagePace(1_000.0, (seconds * 1_000).toLong())?.text ?: "–" }
+    // 88: the axis has room for the minutes and seconds only; the figures above carry the unit.
+    val axisPace: (Double) -> String = { seconds ->
+        unitFormatter.averagePace(1_000.0, (seconds * 1_000).toLong())?.value ?: "–"
+    }
     val points = remember(paceSecondsPerKm, axis) { paceSecondsPerKm.across(axis) }
     val title = stringResource(R.string.activity_chart_pace_title)
     val values = remember(paceSecondsPerKm) { paceSecondsPerKm.map { it.second } }
+    val average = remember(paceSecondsPerKm) { averagePaceSecondsPerKm(paceSecondsPerKm) ?: values.average() }
     ActivityTypeChartFrame(
         title = title,
         figures = listOf(
-            stringResource(R.string.summary_average) to formatPace(values.average()),
+            stringResource(R.string.summary_average) to formatPace(average),
             stringResource(R.string.activity_chart_fastest) to formatPace(values.min()),
             stringResource(R.string.activity_chart_slowest) to formatPace(values.max()),
         ),
@@ -296,7 +306,7 @@ internal fun ActivityPaceChartCard(
     ) {
         ActivityOverlayChart(
             title = title,
-            primary = OverlaySeries(points, DistanceColor, title, formatPace, inverted = true),
+            primary = OverlaySeries(points, DistanceColor, title, formatPace, inverted = true, axisFormat = axisPace),
             secondary = null,
             xLabel = { f -> formatElapsedChartLabel(axis.elapsedAt(f)) },
             keys = paceSecondsPerKm,
@@ -524,13 +534,21 @@ internal fun LazyListScope.activityTypeChartItems(
     }
     when (workoutTypeChart(workout.exerciseType)) {
         WorkoutTypeChart.PACE -> item(key = "type-chart-pace") {
-            val pace = remember(speedSamples, workout.route) {
-                paceFromSpeed(speedSamples).ifEmpty { paceFromRoute(workout.route.points) }
+            // 88: whichever of the recorded speed, the route and the splits covers the session.
+            val pace = remember(speedSamples, workout.route, splitSpeedTrace) {
+                bestPaceSeries(
+                    listOf(
+                        paceFromSpeed(speedSamples),
+                        paceFromRoute(workout.route.points),
+                        splitSpeedTrace?.samples.orEmpty()
+                            .filter { it.metersPerSecond > 0.0 }
+                            .map { it.time to 1_000.0 / it.metersPerSecond },
+                    ),
+                    workout.startTime,
+                    workout.endTime,
+                )
             }
             ActivityPaceChartCard(pace, workout.startTime, workout.endTime, pauses, unitFormatter, cardModifier)
-        }
-        WorkoutTypeChart.HEART_RATE_ZONES -> if (maxHeartRateBpm != null) item(key = "type-chart-zones") {
-            ActivityHeartRateZonesCard(heartRateSamples, workout.startTime, workout.endTime, maxHeartRateBpm, cardModifier)
         }
         WorkoutTypeChart.ELEVATION_WITH_SPEED -> item(key = "type-chart-climbs") {
             ActivityPairedChartCard(
@@ -570,6 +588,12 @@ internal fun LazyListScope.activityTypeChartItems(
             )
         }
         null -> Unit
+    }
+    // 110: running, the treadmill and both bikes also get the time in each zone.
+    if (showsHeartRateZones(workout.exerciseType) && maxHeartRateBpm != null && heartRateSamples.isNotEmpty()) {
+        item(key = "type-chart-zones") {
+            ActivityHeartRateZonesCard(heartRateSamples, workout.startTime, workout.endTime, maxHeartRateBpm, cardModifier)
+        }
     }
     if (heartRateSamples.isNotEmpty()) item(key = "type-chart-recovery") {
         ActivityRecoveryChartCard(recoverySamples, heartRateSamples, workout.endTime, restingHeartRateBpm, cardModifier)

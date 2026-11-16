@@ -3922,18 +3922,12 @@
     <string name="activity_chart_recovery_end">В конце</string>
     <string name="activity_chart_recovery_one">Через 1 мин</string>
     <string name="activity_chart_recovery_two">Через 2 мин</string>
-    <string name="brand_greeting_morning_name">Доброе утро, %1$s</string>
-    <string name="brand_greeting_afternoon_name">Добрый день, %1$s</string>
-    <string name="brand_greeting_evening_name">Добрый вечер, %1$s</string>
-    <string name="brand_greeting_morning">Доброе утро</string>
-    <string name="brand_greeting_afternoon">Добрый день</string>
-    <string name="brand_greeting_evening">Добрый вечер</string>
-    <string name="brand_sync_up_to_date">Health Connect обновлён</string>
-    <string name="brand_sync_syncing">Чтение Health Connect</string>
-    <string name="brand_sync_paused">Синхронизация с Health Connect приостановлена</string>
-    <string name="brand_open_summary">Открыть сводку за сегодня</string>
-    <string name="brand_summary_title">Сегодня</string>
+    <string name="brand_open_summary">Открыть сводку за период</string>
     <string name="brand_summary_goal">%1$s из %2$s</string>
+    <string name="brand_welcome_back_name">С возвращением, %1$s</string>
+    <string name="brand_welcome_back">С возвращением</string>
+    <string name="brand_summary_workout_yes">Да</string>
+    <string name="brand_summary_workout_no">Нет</string>
     <string name="settings_brand_colors_title">Цвета главного экрана</string>
     <string name="settings_brand_colors_body">Цвета анимированного переключателя, круглых кнопок вверху и кнопок действий.</string>
     <string name="settings_brand_colors_google">Четыре цвета Google</string>
@@ -3948,4 +3942,5 @@
     <string name="activity_elevation_source_tiles">Высота по модели рельефа (импортированные тайлы высот).</string>
     <string name="activity_elevation_source_mapbox">Высота по модели рельефа Mapbox.</string>
     <string name="activity_elevation_source_gps">Нескорректированная высота GPS, которая дрейфует: войдите в Mapbox или импортируйте тайлы высот, чтобы её исправить.</string>
+    <string name="activity_elevation_source_mapbox_failed">Высота по GPS, которая дрейфует: вход в Mapbox выполнен, но модель рельефа не загрузилась (нет соединения или Mapbox отклонил запрос). Откройте активность снова, чтобы повторить.</string>
 </resources>

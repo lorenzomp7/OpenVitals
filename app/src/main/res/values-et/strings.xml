@@ -3855,18 +3855,12 @@
     <string name="activity_chart_recovery_end">Lõpus</string>
     <string name="activity_chart_recovery_one">1 min pärast</string>
     <string name="activity_chart_recovery_two">2 min pärast</string>
-    <string name="brand_greeting_morning_name">Tere hommikust, %1$s</string>
-    <string name="brand_greeting_afternoon_name">Tere päevast, %1$s</string>
-    <string name="brand_greeting_evening_name">Tere õhtust, %1$s</string>
-    <string name="brand_greeting_morning">Tere hommikust</string>
-    <string name="brand_greeting_afternoon">Tere päevast</string>
-    <string name="brand_greeting_evening">Tere õhtust</string>
-    <string name="brand_sync_up_to_date">Health Connect on ajakohane</string>
-    <string name="brand_sync_syncing">Health Connecti lugemine</string>
-    <string name="brand_sync_paused">Health Connecti sünkroonimine on peatatud</string>
-    <string name="brand_open_summary">Ava tänane kokkuvõte</string>
-    <string name="brand_summary_title">Täna</string>
+    <string name="brand_open_summary">Ava perioodi kokkuvõte</string>
     <string name="brand_summary_goal">%1$s / %2$s</string>
+    <string name="brand_welcome_back_name">Tere tulemast tagasi, %1$s</string>
+    <string name="brand_welcome_back">Tere tulemast tagasi</string>
+    <string name="brand_summary_workout_yes">Jah</string>
+    <string name="brand_summary_workout_no">Ei</string>
     <string name="settings_brand_colors_title">Avakuva värvid</string>
     <string name="settings_brand_colors_body">Animeeritud lüliti, ülemiste ümarnuppude ja toimingunuppude värvid.</string>
     <string name="settings_brand_colors_google">Google\'i neli värvi</string>
@@ -3881,4 +3875,5 @@
     <string name="activity_elevation_source_tiles">Kõrgus maastikumudelist (imporditud kõrgusruudud).</string>
     <string name="activity_elevation_source_mapbox">Kõrgus Mapboxi maastikumudelist.</string>
     <string name="activity_elevation_source_gps">Parandamata GPS-kõrgus, mis triivib: logi Mapboxi sisse või impordi kõrgusruudud, et seda parandada.</string>
+    <string name="activity_elevation_source_mapbox_failed">GPS-kõrgus, mis triivib: Mapbox on sisse logitud, kuid selle maastikumudelit ei õnnestunud laadida (ühendus puudub või Mapbox keeldus päringust). Uuesti proovimiseks ava tegevus uuesti.</string>
 </resources>

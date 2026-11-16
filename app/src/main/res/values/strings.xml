@@ -3915,18 +3915,12 @@
     <string name="activity_chart_recovery_end">At the end</string>
     <string name="activity_chart_recovery_one">After 1 min</string>
     <string name="activity_chart_recovery_two">After 2 min</string>
-    <string name="brand_greeting_morning_name">Good morning, %1$s</string>
-    <string name="brand_greeting_afternoon_name">Good afternoon, %1$s</string>
-    <string name="brand_greeting_evening_name">Good evening, %1$s</string>
-    <string name="brand_greeting_morning">Good morning</string>
-    <string name="brand_greeting_afternoon">Good afternoon</string>
-    <string name="brand_greeting_evening">Good evening</string>
-    <string name="brand_sync_up_to_date">Health Connect up to date</string>
-    <string name="brand_sync_syncing">Reading Health Connect</string>
-    <string name="brand_sync_paused">Health Connect sync paused</string>
-    <string name="brand_open_summary">Open today\'s summary</string>
-    <string name="brand_summary_title">Today</string>
+    <string name="brand_open_summary">Open the summary of the period</string>
     <string name="brand_summary_goal">%1$s of %2$s</string>
+    <string name="brand_welcome_back_name">Welcome back, %1$s</string>
+    <string name="brand_welcome_back">Welcome back</string>
+    <string name="brand_summary_workout_yes">Yes</string>
+    <string name="brand_summary_workout_no">No</string>
     <string name="settings_brand_colors_title">Home screen colours</string>
     <string name="settings_brand_colors_body">The colours of the animated toggle, the round buttons at the top and the action buttons.</string>
     <string name="settings_brand_colors_google">The four Google colours</string>
@@ -3941,4 +3935,5 @@
     <string name="activity_elevation_source_tiles">Altitude from the terrain model (imported elevation tiles).</string>
     <string name="activity_elevation_source_mapbox">Altitude from Mapbox\'s terrain model.</string>
     <string name="activity_elevation_source_gps">Uncorrected GPS altitude, which drifts: sign in to Mapbox or import elevation tiles to correct it.</string>
+    <string name="activity_elevation_source_mapbox_failed">GPS altitude, which drifts: Mapbox is signed in but its terrain could not be loaded (no connection, or Mapbox refused the request). Open the activity again to retry.</string>
 </resources>

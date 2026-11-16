@@ -3926,18 +3926,12 @@ Se Acceder a rutas de exercicio non aparece no diálogo de acceso, abre os axust
     <string name="activity_chart_recovery_end">Ao final</string>
     <string name="activity_chart_recovery_one">Tras 1 min</string>
     <string name="activity_chart_recovery_two">Tras 2 min</string>
-    <string name="brand_greeting_morning_name">Bos días, %1$s</string>
-    <string name="brand_greeting_afternoon_name">Boas tardes, %1$s</string>
-    <string name="brand_greeting_evening_name">Boas noites, %1$s</string>
-    <string name="brand_greeting_morning">Bos días</string>
-    <string name="brand_greeting_afternoon">Boas tardes</string>
-    <string name="brand_greeting_evening">Boas noites</string>
-    <string name="brand_sync_up_to_date">Health Connect ao día</string>
-    <string name="brand_sync_syncing">Lendo Health Connect</string>
-    <string name="brand_sync_paused">Sincronización con Health Connect en pausa</string>
-    <string name="brand_open_summary">Abrir o resumo de hoxe</string>
-    <string name="brand_summary_title">Hoxe</string>
+    <string name="brand_open_summary">Abrir o resumo do período</string>
     <string name="brand_summary_goal">%1$s de %2$s</string>
+    <string name="brand_welcome_back_name">Benvido de novo, %1$s</string>
+    <string name="brand_welcome_back">Benvido de novo</string>
+    <string name="brand_summary_workout_yes">Si</string>
+    <string name="brand_summary_workout_no">Non</string>
     <string name="settings_brand_colors_title">Cores da pantalla principal</string>
     <string name="settings_brand_colors_body">As cores do interruptor animado, dos botóns redondos de arriba e dos botóns de acción.</string>
     <string name="settings_brand_colors_google">As catro cores de Google</string>
@@ -3952,4 +3946,5 @@ Se Acceder a rutas de exercicio non aparece no diálogo de acceso, abre os axust
     <string name="activity_elevation_source_tiles">Altitude do modelo do terreo (teselas de elevación importadas).</string>
     <string name="activity_elevation_source_mapbox">Altitude do modelo do terreo de Mapbox.</string>
     <string name="activity_elevation_source_gps">Altitude GPS sen corrixir, que deriva: inicia sesión en Mapbox ou importa teselas de elevación para corrixila.</string>
+    <string name="activity_elevation_source_mapbox_failed">Altitude GPS, que deriva: Mapbox ten a sesión iniciada pero o seu modelo do terreo non se puido cargar (sen conexión, ou Mapbox rexeitou a solicitude). Volve abrir a actividade para tentalo de novo.</string>
 </resources>

@@ -540,18 +540,12 @@
     <string name="activity_chart_recovery_end">Στο τέλος</string>
     <string name="activity_chart_recovery_one">Μετά από 1 λ.</string>
     <string name="activity_chart_recovery_two">Μετά από 2 λ.</string>
-    <string name="brand_greeting_morning_name">Καλημέρα, %1$s</string>
-    <string name="brand_greeting_afternoon_name">Καλό απόγευμα, %1$s</string>
-    <string name="brand_greeting_evening_name">Καλησπέρα, %1$s</string>
-    <string name="brand_greeting_morning">Καλημέρα</string>
-    <string name="brand_greeting_afternoon">Καλό απόγευμα</string>
-    <string name="brand_greeting_evening">Καλησπέρα</string>
-    <string name="brand_sync_up_to_date">Το Health Connect είναι ενημερωμένο</string>
-    <string name="brand_sync_syncing">Ανάγνωση από το Health Connect</string>
-    <string name="brand_sync_paused">Ο συγχρονισμός με το Health Connect έχει παύσει</string>
-    <string name="brand_open_summary">Άνοιγμα της σημερινής σύνοψης</string>
-    <string name="brand_summary_title">Σήμερα</string>
+    <string name="brand_open_summary">Άνοιγμα της σύνοψης της περιόδου</string>
     <string name="brand_summary_goal">%1$s από %2$s</string>
+    <string name="brand_welcome_back_name">Καλώς ήρθες ξανά, %1$s</string>
+    <string name="brand_welcome_back">Καλώς ήρθες ξανά</string>
+    <string name="brand_summary_workout_yes">Ναι</string>
+    <string name="brand_summary_workout_no">Όχι</string>
     <string name="settings_brand_colors_title">Χρώματα αρχικής οθόνης</string>
     <string name="settings_brand_colors_body">Τα χρώματα του κινούμενου διακόπτη, των στρογγυλών κουμπιών επάνω και των κουμπιών ενεργειών.</string>
     <string name="settings_brand_colors_google">Τα τέσσερα χρώματα της Google</string>
@@ -566,4 +560,5 @@
     <string name="activity_elevation_source_tiles">Υψόμετρο από το μοντέλο εδάφους (εισαγόμενα πλακίδια υψομέτρου).</string>
     <string name="activity_elevation_source_mapbox">Υψόμετρο από το μοντέλο εδάφους του Mapbox.</string>
     <string name="activity_elevation_source_gps">Μη διορθωμένο υψόμετρο GPS, που αποκλίνει: συνδέσου στο Mapbox ή εισήγαγε πλακίδια υψομέτρου για να διορθωθεί.</string>
+    <string name="activity_elevation_source_mapbox_failed">Υψόμετρο GPS, που ολισθαίνει: το Mapbox είναι συνδεδεμένο, αλλά το μοντέλο εδάφους του δεν φορτώθηκε (χωρίς σύνδεση ή το Mapbox απέρριψε το αίτημα). Ανοίξτε ξανά τη δραστηριότητα για νέα προσπάθεια.</string>
 </resources>

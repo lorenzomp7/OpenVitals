@@ -4,6 +4,7 @@ import androidx.health.connect.client.records.ExerciseSegment
 import androidx.health.connect.client.records.ExerciseSessionRecord
 import java.time.Instant
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
@@ -20,7 +21,7 @@ class WorkoutTypeChartsTest {
     @Test fun `each kind of activity gets its own chart`() {
         assertEquals(WorkoutTypeChart.PACE, workoutTypeChart(ExerciseSessionRecord.EXERCISE_TYPE_RUNNING))
         assertEquals(WorkoutTypeChart.PACE, workoutTypeChart(ExerciseSessionRecord.EXERCISE_TYPE_WALKING))
-        assertEquals(WorkoutTypeChart.HEART_RATE_ZONES, workoutTypeChart(ExerciseSessionRecord.EXERCISE_TYPE_RUNNING_TREADMILL))
+        assertNull(workoutTypeChart(ExerciseSessionRecord.EXERCISE_TYPE_RUNNING_TREADMILL))
         assertEquals(WorkoutTypeChart.ELEVATION_WITH_SPEED, workoutTypeChart(ExerciseSessionRecord.EXERCISE_TYPE_BIKING))
         assertEquals(WorkoutTypeChart.CADENCE_WITH_HEART_RATE, workoutTypeChart(ExerciseSessionRecord.EXERCISE_TYPE_BIKING_STATIONARY))
         assertEquals(WorkoutTypeChart.HEART_RATE_WITH_SETS, workoutTypeChart(ExerciseSessionRecord.EXERCISE_TYPE_STRENGTH_TRAINING))
@@ -53,6 +54,31 @@ class WorkoutTypeChartsTest {
         val pace = paceFromRoute(points)
         assertTrue(pace.isNotEmpty())
         assertEquals(243.0, pace.last().second, 5.0)
+    }
+
+    @Test fun `running, the treadmill and both bikes get the zones`() {
+        assertTrue(showsHeartRateZones(ExerciseSessionRecord.EXERCISE_TYPE_RUNNING))
+        assertTrue(showsHeartRateZones(ExerciseSessionRecord.EXERCISE_TYPE_RUNNING_TREADMILL))
+        assertTrue(showsHeartRateZones(ExerciseSessionRecord.EXERCISE_TYPE_BIKING))
+        assertTrue(showsHeartRateZones(ExerciseSessionRecord.EXERCISE_TYPE_BIKING_STATIONARY))
+        assertFalse(showsHeartRateZones(ExerciseSessionRecord.EXERCISE_TYPE_WALKING))
+        assertFalse(showsSpeedChart(ExerciseSessionRecord.EXERCISE_TYPE_RUNNING_TREADMILL))
+        assertTrue(showsSpeedChart(ExerciseSessionRecord.EXERCISE_TYPE_RUNNING))
+    }
+
+    @Test fun `the pace series that covers the session wins over a few readings at the end`() {
+        val speedAtEnd = listOf(at(590) to 300.0, at(600) to 295.0)
+        val route = (0..60).map { at(it * 10L) to 297.0 }
+        assertEquals(route, bestPaceSeries(listOf(speedAtEnd, route), start, at(600)))
+        // At par the first, recorded, series stays.
+        val speedWhole = (0..60).map { at(it * 10L) to 296.0 }
+        assertEquals(speedWhole, bestPaceSeries(listOf(speedWhole, route), start, at(600)))
+    }
+
+    @Test fun `the average pace is time over distance, not the mean of the paces`() {
+        // 30 s at 4:00/km then 30 s at 6:00/km: 125 m + 83.3 m in 60 s is 4:48/km, not 5:00.
+        val series = listOf(at(0) to 240.0, at(30) to 360.0, at(60) to 360.0)
+        assertEquals(288.0, averagePaceSecondsPerKm(series)!!, 0.5)
     }
 
     @Test fun `sets are the segments that are not rests`() {

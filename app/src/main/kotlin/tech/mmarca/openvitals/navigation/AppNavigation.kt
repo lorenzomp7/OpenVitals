@@ -8,8 +8,6 @@ import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.systemBars
 import tech.mmarca.openvitals.ui.components.OpenVitalsTopBarHeight
 import androidx.compose.animation.core.tween
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
 import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
@@ -96,7 +94,7 @@ import tech.mmarca.openvitals.ui.components.LocalAppBarState
 import tech.mmarca.openvitals.ui.components.OpenWatchMoveNoticePrompt
 import tech.mmarca.openvitals.ui.components.PrivacyReconsentPrompt
 
-private const val NavTransitionMillis = 240
+private const val NavTransitionMillis = tech.mmarca.openvitals.ui.theme.ScreenMotion.DurationMillis
 
 /**
  * 63: a screen opening fades and grows in over the one it leaves, which stays drawn underneath;
@@ -104,16 +102,12 @@ private const val NavTransitionMillis = 240
  * Every destination is opaque ([opaqueComposable]), so no frame is ever empty: the old fade
  * through emptied the screen between the two halves, a black page with only a title.
  */
-private fun navOpenEnter(): EnterTransition =
-    fadeIn(tween(NavTransitionMillis)) +
-        androidx.compose.animation.scaleIn(tween(NavTransitionMillis), initialScale = 0.96f)
+private fun navOpenEnter(): EnterTransition = tech.mmarca.openvitals.ui.theme.ScreenMotion.openEnter()
 
 /** The screen being covered stays as it is until the one opening has covered it. */
-private fun navOpenExit(): ExitTransition = fadeOut(tween(durationMillis = 1, delayMillis = NavTransitionMillis))
+private fun navOpenExit(): ExitTransition = tech.mmarca.openvitals.ui.theme.ScreenMotion.openExit()
 
-private fun navBackExit(): ExitTransition =
-    fadeOut(tween(NavTransitionMillis)) +
-        androidx.compose.animation.scaleOut(tween(NavTransitionMillis), targetScale = 0.96f)
+private fun navBackExit(): ExitTransition = tech.mmarca.openvitals.ui.theme.ScreenMotion.closeExit()
 
 /** Destinations drawn without the app bar: the dashboard carries its own header. */
 private fun hasAppBarRoute(entry: androidx.navigation.NavBackStackEntry?): Boolean {

@@ -40,10 +40,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -120,7 +116,7 @@ private val ActivityOverviewCardHeight = 132.dp
 private val ActivityOverviewChartWidth = 152.dp
 private val ActivityOverviewChartHeight = 58.dp
 private val ActivityOverviewMarkerSize = 38.dp
-private const val ActivityWorkoutListPageSize = 10
+internal const val ActivityWorkoutListPageSize = 10
 
 @Composable
 internal fun activityPeriodTitle(
@@ -147,10 +143,10 @@ internal fun ActivityPeriodSummaryCard(
     onEditActivity: (String) -> Unit,
     onDeleteActivity: (String) -> Unit,
     showEmptyState: Boolean,
+    /** 111: how many rows show; held by the screen, so it survives opening an activity. */
+    visibleCount: Int = ActivityWorkoutListPageSize,
+    onShowMore: () -> Unit = {},
 ) {
-    var visibleCount by remember(workouts) {
-        mutableIntStateOf(workouts.size.coerceAtMost(ActivityWorkoutListPageSize))
-    }
     val boundedVisibleCount = visibleCount.coerceAtMost(workouts.size)
     val visibleWorkouts = workouts.take(boundedVisibleCount)
     val stripBuckets = activityOverviewStripBuckets(days, selectedRange)
@@ -208,10 +204,7 @@ internal fun ActivityPeriodSummaryCard(
                 }
                 if (boundedVisibleCount < workouts.size) {
                     OpenVitalsOutlinedButton(
-                        onClick = {
-                            visibleCount = (boundedVisibleCount + ActivityWorkoutListPageSize)
-                                .coerceAtMost(workouts.size)
-                        },
+                        onClick = onShowMore,
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(horizontal = 16.dp, vertical = 12.dp),

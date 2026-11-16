@@ -3921,18 +3921,12 @@
     <string name="activity_chart_recovery_end">Na końcu</string>
     <string name="activity_chart_recovery_one">Po 1 min</string>
     <string name="activity_chart_recovery_two">Po 2 min</string>
-    <string name="brand_greeting_morning_name">Dzień dobry, %1$s</string>
-    <string name="brand_greeting_afternoon_name">Dzień dobry, %1$s</string>
-    <string name="brand_greeting_evening_name">Dobry wieczór, %1$s</string>
-    <string name="brand_greeting_morning">Dzień dobry</string>
-    <string name="brand_greeting_afternoon">Dzień dobry</string>
-    <string name="brand_greeting_evening">Dobry wieczór</string>
-    <string name="brand_sync_up_to_date">Health Connect jest aktualny</string>
-    <string name="brand_sync_syncing">Odczyt z Health Connect</string>
-    <string name="brand_sync_paused">Synchronizacja z Health Connect wstrzymana</string>
-    <string name="brand_open_summary">Otwórz dzisiejsze podsumowanie</string>
-    <string name="brand_summary_title">Dziś</string>
+    <string name="brand_open_summary">Otwórz podsumowanie okresu</string>
     <string name="brand_summary_goal">%1$s z %2$s</string>
+    <string name="brand_welcome_back_name">Witaj ponownie, %1$s</string>
+    <string name="brand_welcome_back">Witaj ponownie</string>
+    <string name="brand_summary_workout_yes">Tak</string>
+    <string name="brand_summary_workout_no">Nie</string>
     <string name="settings_brand_colors_title">Kolory ekranu głównego</string>
     <string name="settings_brand_colors_body">Kolory animowanego przełącznika, okrągłych przycisków u góry i przycisków akcji.</string>
     <string name="settings_brand_colors_google">Cztery kolory Google</string>
@@ -3947,4 +3941,5 @@
     <string name="activity_elevation_source_tiles">Wysokość z modelu terenu (zaimportowane kafelki wysokości).</string>
     <string name="activity_elevation_source_mapbox">Wysokość z modelu terenu Mapbox.</string>
     <string name="activity_elevation_source_gps">Nieskorygowana wysokość GPS, która dryfuje: zaloguj się do Mapbox lub zaimportuj kafelki wysokości, aby ją poprawić.</string>
+    <string name="activity_elevation_source_mapbox_failed">Wysokość z GPS, która dryfuje: Mapbox jest zalogowany, ale nie udało się wczytać jego modelu terenu (brak połączenia lub Mapbox odrzucił żądanie). Otwórz aktywność ponownie, aby spróbować jeszcze raz.</string>
 </resources>

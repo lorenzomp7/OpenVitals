@@ -200,6 +200,8 @@ internal fun ActivityElevationChartCard(
                     R.string.activity_elevation_source_mapbox
                 tech.mmarca.openvitals.features.activity.elevation.RouteElevationSource.GPS ->
                     R.string.activity_elevation_source_gps
+                tech.mmarca.openvitals.features.activity.elevation.RouteElevationSource.GPS_MAPBOX_FAILED ->
+                    R.string.activity_elevation_source_mapbox_failed
             },
         ),
         title = stringResource(R.string.metric_elevation),

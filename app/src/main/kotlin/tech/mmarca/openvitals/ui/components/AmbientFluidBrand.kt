@@ -49,19 +49,15 @@ fun rememberFluidBrandTimeline(): FluidBrandTimeline = rememberSaveable(
     saver = Saver<FluidBrandTimeline, Long>(save = { it.startedAtMillis }, restore = { FluidBrandTimeline(it) }),
 ) { FluidBrandTimeline() }
 
-/** Where Health Connect's data stands, as the toggle's dot shows it. */
-enum class BrandSync { UP_TO_DATE, SYNCING, PAUSED }
-
 /**
- * 94: what the toggle says about today. [fills] are the four goals in the lobes' colours, each
- * `0..1`: blue the steps, red the calories, yellow the activity, green the sleep. [name] is
- * who it greets when the app opens; null greets no one by name.
+ * 94: what the toggle says about the selected period. [fills] are the four goals in the lobes'
+ * colours, each `0..1`: the steps, the active calories, the workout (all or nothing) and the
+ * sleep. [name] is who it welcomes back when the app opens; null welcomes no one by name.
  */
 @androidx.compose.runtime.Immutable
 data class BrandDay(
     val name: String?,
     val fills: List<Float>,
-    val sync: BrandSync,
 )
 
 /**
@@ -73,9 +69,19 @@ data class BrandLook(val colors: List<Color>, val animated: Boolean = true)
 
 val LocalBrandLook = androidx.compose.runtime.staticCompositionLocalOf { BrandLook(BrandColors) }
 
-/** 100: the greeting belongs to the app's opening, once per launch, never to a return to it. */
+/**
+ * 100: the greeting belongs to the app's opening, once per launch, never to a return to it. It
+ * keeps the moment it began rather than a flag: the loading screen's header draws a toggle first
+ * and the loaded dashboard draws another, and with a flag the first took the greeting with it
+ * when it left, so the dashboard never showed it.
+ */
 private object BrandGreetingGate {
-    var greeted = false
+    var startedAt: Long? = null
+
+    fun since(now: Long): Long? {
+        val started = startedAt ?: now.also { startedAt = it }
+        return started.takeIf { now - it < GreetingMillis }
+    }
 }
 
 /** One spring entrance, then the expressive loop. Navigation never owns or resets the clock. */
@@ -95,26 +101,14 @@ fun AmbientFluidBrand(
     val colors = look.colors.ifEmpty { BrandColors }
     // 97: the OpenVitals toggle always moves; the Animated switch is for the buttons around it.
     val animate = loopingMotionAllowed()
-    // 100: greet only on the first toggle the app draws since it was launched.
-    val greetSince = remember {
-        if (day != null && !BrandGreetingGate.greeted) {
-            BrandGreetingGate.greeted = true
-            SystemClock.uptimeMillis()
-        } else {
-            null
-        }
+    // 100: greet only on the first toggle the app draws since it was launched. Keyed on the day
+    // arriving: the first frames draw before the dashboard has loaded, and the welcome waited
+    // for nothing then, so it never showed.
+    val greetSince = remember(day != null) {
+        if (day != null) BrandGreetingGate.since(SystemClock.uptimeMillis()) else null
     }
     val greeting = day?.takeIf { greetSince != null }?.let { brandGreeting(it.name) }
-    val syncText = day?.let {
-        stringResource(
-            when (it.sync) {
-                BrandSync.UP_TO_DATE -> R.string.brand_sync_up_to_date
-                BrandSync.SYNCING -> R.string.brand_sync_syncing
-                BrandSync.PAUSED -> R.string.brand_sync_paused
-            },
-        )
-    }
-    val description = listOfNotNull(stringResource(R.string.app_name), syncText).joinToString(". ")
+    val description = stringResource(R.string.app_name)
     val measurer = androidx.compose.ui.text.rememberTextMeasurer()
     val greetingStyle = MaterialTheme.typography.titleSmall.copy(color = Color.White)
     val density = androidx.compose.ui.platform.LocalDensity.current
@@ -199,15 +193,11 @@ private fun greetingAlphaAt(seconds: Float): Float = when {
     else -> 0f
 }
 
+/** 100: "Welcome back, name" as the app opens; without a name, "Welcome back". */
 @Composable
 private fun brandGreeting(name: String?): String {
-    val hour = java.time.LocalTime.now().hour
     val first = name?.trim()?.substringBefore(' ')?.takeIf { it.isNotBlank() }
-    return when {
-        hour in 5..11 -> if (first != null) stringResource(R.string.brand_greeting_morning_name, first) else stringResource(R.string.brand_greeting_morning)
-        hour in 12..17 -> if (first != null) stringResource(R.string.brand_greeting_afternoon_name, first) else stringResource(R.string.brand_greeting_afternoon)
-        else -> if (first != null) stringResource(R.string.brand_greeting_evening_name, first) else stringResource(R.string.brand_greeting_evening)
-    }
+    return if (first != null) stringResource(R.string.brand_welcome_back_name, first) else stringResource(R.string.brand_welcome_back)
 }
 
 /** 35, 37: the four Google colours of the icon. */

@@ -57,7 +57,7 @@ jobs:
           if (( NEXT < 1070400000 )); then NEXT=1070400000; fi
           echo "OPENVITALS_VERSION_CODE=$NEXT" >> "$GITHUB_ENV"
           echo "code=$NEXT" >> "$GITHUB_OUTPUT"
-          echo "OPENVITALS_VERSION_NAME=2.17.12-personal-claude" >> "$GITHUB_ENV"
+          echo "OPENVITALS_VERSION_NAME=2.17.13-personal-claude" >> "$GITHUB_ENV"
       - name: Build the signed personal update
         env:
           OPENVITALS_RELEASE_STORE_FILE: ${{ github.workspace }}/personal/personal.p12
@@ -138,25 +138,25 @@ jobs:
           cat > release-notes.md <<EOF
           Scarica **OpenVitals.apk** dagli allegati e aprilo sul telefono.
 
-          Branch main_claude — 63, 78, 85, 97, 105–109:
-          - 63: tornando alla schermata principale (tasto indietro o freccia in alto) non c'è più il fotogramma nero col solo titolo: la schermata principale è già sotto e quella che lasci sfuma sopra. Aprendo una schermata, la nuova compare sopra la vecchia.
-          - 78: ogni screenshot importato apre una revisione nuova, indipendente dalla precedente: puoi importarne un altro subito, anche col banner "Salvato" ancora visibile. Il banner riparte a ogni salvataggio.
-          - 85: toccando con due dita e poi lasciando, la pagina non viene più lanciata in cima o in fondo (effetto fionda). Il motivo: quando un dito si alza, Android passa all'altro dito e legge il salto tra le due dita come uno scorrimento velocissimo. Ora, dopo un gesto a due dita, la pagina si ferma dov'è.
-          - 97: l'interruttore "Animati" rende statici o animati pulsanti e icone, ma non il toggle OpenVitals, che si muove sempre.
-          - 105: "Battito e serie" conta almeno 1 serie, di più se l'orologio ne ha registrate.
-          - 106: in alto, da sinistra: profilo, obiettivi, toggle OpenVitals al centro, matita (nello stesso stile delle altre icone) e impostazioni.
-          - 107: "Avvia allenamento" e "+ Registra" hanno la stessa larghezza, uno a sinistra e uno a destra.
-          - 108: gli anelli hanno più spazio tra l'anello centrale e gli archi laterali, un alone luminoso e un riflesso morbido sotto, come nell'immagine.
-          - 109: il pulsante "Attività" occupa tutta la larghezza: la scritta resta a sinistra, centrata sulla colonna sinistra; a destra ci sono le icone delle ultime 4 attività diverse, leggermente spente, che si illuminano a turno.
+          Branch main_claude — 86, 88, 94, 99, 100, 104, 110–112:
+          - 86: la copia web (PWA) torna indietro sempre: il pulsante "Indietro", il tasto Esc e la freccia in alto nelle schermate tornano alla schermata precedente (anche aprendo un link diretto a una schermata), i pulsanti piccoli dentro le schede si toccano senza che la scheda li copra, e senza connessione appare un messaggio invece di una pagina nera. La cattura delle schermate non si ferma più con "the app did not open".
+          - 88: il grafico "Passo" usa la fonte che copre davvero l'attività (velocità registrata, percorso GPS o parziali): se l'orologio scrive la velocità solo negli ultimi secondi, il grafico usa il percorso. Il passo medio è tempo diviso distanza, e l'asse mostra solo minuti e secondi, senza "min/" tagliato.
+          - 94: toccando il toggle OpenVitals si apre il riepilogo del periodo selezionato (giorno, settimana, mese, anno), con il suo titolo: sonno, passi, allenamento (sì o no) e calorie attive. Le onde crescono con questi valori. Non c'è più lo stato di Health Connect.
+          - 99: la matita apre la modifica come si apre una schermata (compare sopra, sfumando e crescendo) e la chiude come si torna indietro (sfuma e si rimpicciolisce sopra la schermata principale): la stessa transizione in entrata e in uscita.
+          - 100: alla prima apertura dell'app il toggle mostra "Bentornato, nome" con una dissolvenza, poi parte l'animazione. Prima il saluto non compariva se la schermata non era ancora caricata.
+          - 104: l'altitudine da Mapbox non si arrende più sulle uscite lunghe (passa a uno zoom più largo), riprova un tile che non risponde, legge l'altezza tra i pixel invece che a gradini e la smussa leggermente. Se Mapbox è collegato ma il terreno non si carica, la nota sotto il grafico lo dice.
+          - 110: Corsa, tapis roulant, bicicletta e bici da camera hanno il grafico del tempo in ciascuna zona cardiaca (1–5), se ci sono battiti e un battito massimo (dal profilo o dall'età).
+          - 111: in Attività, dopo "Carica altri 10", aprendo un'attività e tornando indietro restano visibili tutte quelle caricate.
+          - 112: il tapis roulant non mostra più il grafico "Velocità".
 
           Questa versione aggiorna l'installazione personale compatibile di OpenVitals senza disinstallarla. La revisione ha superato la verifica completa (verify) in questa stessa esecuzione; package e firma coincidono con l'APK pubblicato precedente; installazione, aggiornamento, avvio e import screenshot sono verificati su Android 15.
 
-          Versione: **2.17.12-personal-claude**. Version code: **$OPENVITALS_VERSION_CODE**.
+          Versione: **2.17.13-personal-claude**. Version code: **$OPENVITALS_VERSION_CODE**.
           Sorgenti: https://github.com/$GH_REPO/commit/$GITHUB_SHA
           Compilazione e verifica aggiornamento: https://github.com/$GH_REPO/actions/runs/$GITHUB_RUN_ID
           EOF
           if gh release view "$TAG" > /dev/null 2>&1; then
             echo "Release already exists; keeping the published APK unchanged."
           else
-            gh release create "$TAG" release/OpenVitals.apk release/SHA256SUMS.txt --target "$GITHUB_SHA" --title "OpenVitals 2.17.12 · main_claude" --notes-file release-notes.md --latest
+            gh release create "$TAG" release/OpenVitals.apk release/SHA256SUMS.txt --target "$GITHUB_SHA" --title "OpenVitals 2.17.13 · main_claude" --notes-file release-notes.md --latest
           fi

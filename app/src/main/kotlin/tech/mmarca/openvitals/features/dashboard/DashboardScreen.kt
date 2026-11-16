@@ -30,6 +30,7 @@ import tech.mmarca.openvitals.ui.components.WithHealthConnectFeatureScreen
 import tech.mmarca.openvitals.ui.components.rememberHealthConnectPermissionLauncher
 import tech.mmarca.openvitals.ui.components.shouldShowDashboardHealthConnectPromo
 import java.time.LocalDate
+import tech.mmarca.openvitals.domain.preferences.toWeekPeriodMode
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -131,18 +132,21 @@ fun DashboardScreen(
         paletteSource,
         state.dashboardWidgets.filter { it in state.placedDashboardWidgets },
     )
-    val dayGoals = dashboardDayGoals(display, brandColors)
-    // The shell knows whether sync is paused; it hands that up as it composes.
-    var healthConnectPaused by remember { mutableStateOf(false) }
-    val day = brandDay(
-        name = profile.name,
-        goals = dayGoals,
-        syncPaused = healthConnectPaused || state.rateLimitDeadlineEpochMillis != null,
-        refreshing = state.isRefreshing,
-    )
+    // 94: the toggle follows the selected period: its sleep, steps, active calories, and
+    // whether it holds a workout.
+    val hadWorkout = loadedData?.let { it.workouts.isNotEmpty() || it.workout != null }
+    val dayGoals = dashboardDayGoals(display, brandColors, hadWorkout)
+    val day = brandDay(name = profile.name, goals = dayGoals)
     var showDaySummary by remember { mutableStateOf(false) }
     if (showDaySummary) {
-        DashboardDaySummarySheet(dayGoals, day.sync, onOpenMetric = onOpenMetric, onDismiss = { showDaySummary = false })
+        val period = state.dashboardPeriod()
+        val summaryTitle = state.customPeriod?.let { "${it.start} – ${it.end}" }
+            ?: tech.mmarca.openvitals.ui.components.localizedPeriodTitle(
+                range = state.selectedRange,
+                period = period,
+                weekPeriodMode = state.activityWeekMode.toWeekPeriodMode(),
+            )
+        DashboardDaySummarySheet(summaryTitle, dayGoals, onOpenMetric = onOpenMetric, onDismiss = { showDaySummary = false })
     }
     val header: @Composable () -> Unit = {
         DashboardHeader(timeline, profilePhoto, state.sensorStatus.hasDevices,
@@ -171,7 +175,6 @@ fun DashboardScreen(
         // The body renders the sync banner itself; the shell must not add a second.
         showInlineSyncBanner = false,
     ) { hcUx ->
-        androidx.compose.runtime.SideEffect { healthConnectPaused = hcUx.syncPaused }
         // One reload, one indicator: the spinner answers the pull only.
         var pullRefreshRequested by remember { mutableStateOf(false) }
         androidx.compose.runtime.LaunchedEffect(state.isRefreshing) {

@@ -243,17 +243,19 @@ internal fun DashboardContent(
 
                 item(key = "widgets") {
                     // Reveal animations play once per day on display.
-                    // 99: the pencil moves between the dashboard and its editor as the screens do, by a fade through.
+                    // 99: the pencil opens the editor as a screen opens, over the dashboard, and closes
+                    // it as a screen goes back, fading away over the dashboard: one motion both ways.
                     key(data.date) { androidx.compose.animation.AnimatedContent(
                         targetState = isEditingDashboard,
                         transitionSpec = {
-                            (
-                                androidx.compose.animation.fadeIn(androidx.compose.animation.core.tween(210, delayMillis = 90)) +
-                                    androidx.compose.animation.scaleIn(
-                                        androidx.compose.animation.core.tween(210, delayMillis = 90),
-                                        initialScale = 0.96f,
-                                    )
-                                ) togetherWith androidx.compose.animation.fadeOut(androidx.compose.animation.core.tween(90))
+                            val motion = tech.mmarca.openvitals.ui.theme.ScreenMotion
+                            val transform = if (targetState) {
+                                (motion.openEnter() togetherWith motion.openExit()).apply { targetContentZIndex = 1f }
+                            } else {
+                                (androidx.compose.animation.EnterTransition.None togetherWith motion.closeExit())
+                                    .apply { targetContentZIndex = -1f }
+                            }
+                            transform using androidx.compose.animation.SizeTransform(clip = false)
                         },
                         label = "dashboardEditTransition",
                     ) { editing ->

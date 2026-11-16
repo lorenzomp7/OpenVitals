@@ -420,8 +420,9 @@ internal fun ActivityDetailContent(
             unitFormatter = unitFormatter,
             restingHeartRateBpm = restingHeartRateBpm,
         )
-        // Recorded speed, or the split-derived reconstruction, never both.
-        if (speedSamples.isNotEmpty()) {
+        // Recorded speed, or the split-derived reconstruction, never both. 112: not on a treadmill.
+        val speedChartShown = tech.mmarca.openvitals.domain.insights.showsSpeedChart(workout.exerciseType)
+        if (speedChartShown && speedSamples.isNotEmpty()) {
             item {
                 ActivitySpeedChartCard(
                     samples = speedSamples,
@@ -434,7 +435,7 @@ internal fun ActivityDetailContent(
                         .padding(horizontal = 16.dp, vertical = 4.dp),
                 )
             }
-        } else if (splitSpeedTrace != null) {
+        } else if (speedChartShown && splitSpeedTrace != null) {
             item {
                 ActivitySplitSpeedChartCard(
                     trace = splitSpeedTrace,

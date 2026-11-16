@@ -190,18 +190,12 @@
     <string name="activity_chart_recovery_end">בסיום</string>
     <string name="activity_chart_recovery_one">אחרי דקה</string>
     <string name="activity_chart_recovery_two">אחרי 2 דקות</string>
-    <string name="brand_greeting_morning_name">בוקר טוב, %1$s</string>
-    <string name="brand_greeting_afternoon_name">צהריים טובים, %1$s</string>
-    <string name="brand_greeting_evening_name">ערב טוב, %1$s</string>
-    <string name="brand_greeting_morning">בוקר טוב</string>
-    <string name="brand_greeting_afternoon">צהריים טובים</string>
-    <string name="brand_greeting_evening">ערב טוב</string>
-    <string name="brand_sync_up_to_date">Health Connect מעודכן</string>
-    <string name="brand_sync_syncing">קורא מ־Health Connect</string>
-    <string name="brand_sync_paused">הסנכרון עם Health Connect מושהה</string>
-    <string name="brand_open_summary">פתיחת הסיכום של היום</string>
-    <string name="brand_summary_title">היום</string>
+    <string name="brand_open_summary">פתיחת סיכום התקופה</string>
     <string name="brand_summary_goal">%1$s מתוך %2$s</string>
+    <string name="brand_welcome_back_name">ברוך שובך, %1$s</string>
+    <string name="brand_welcome_back">ברוך שובך</string>
+    <string name="brand_summary_workout_yes">כן</string>
+    <string name="brand_summary_workout_no">לא</string>
     <string name="settings_brand_colors_title">צבעי המסך הראשי</string>
     <string name="settings_brand_colors_body">הצבעים של המתג המונפש, של הכפתורים העגולים למעלה ושל כפתורי הפעולה.</string>
     <string name="settings_brand_colors_google">ארבעת הצבעים של Google</string>
@@ -216,4 +210,5 @@
     <string name="activity_elevation_source_tiles">גובה ממודל השטח (אריחי גובה מיובאים).</string>
     <string name="activity_elevation_source_mapbox">גובה ממודל השטח של Mapbox.</string>
     <string name="activity_elevation_source_gps">גובה GPS לא מתוקן, שנסחף: התחבר ל-Mapbox או ייבא אריחי גובה כדי לתקן אותו.</string>
+    <string name="activity_elevation_source_mapbox_failed">גובה GPS, שסוטה: Mapbox מחובר אך לא ניתן היה לטעון את מודל פני השטח שלו (אין חיבור, או ש-Mapbox דחה את הבקשה). פתחו שוב את הפעילות כדי לנסות שוב.</string>
 </resources>

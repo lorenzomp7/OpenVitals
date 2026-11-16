@@ -12,7 +12,7 @@ import tech.mmarca.openvitals.domain.model.HeartRateSample
 import tech.mmarca.openvitals.domain.model.SpeedSample
 
 /** The extra chart an activity gets for its kind (88–92); the recovery chart (93) is for any with a heart rate. */
-enum class WorkoutTypeChart { PACE, HEART_RATE_ZONES, ELEVATION_WITH_SPEED, CADENCE_WITH_HEART_RATE, HEART_RATE_WITH_SETS }
+enum class WorkoutTypeChart { PACE, ELEVATION_WITH_SPEED, CADENCE_WITH_HEART_RATE, HEART_RATE_WITH_SETS }
 
 /** Which kind-specific chart a session of [exerciseType] gets, if any. */
 fun workoutTypeChart(exerciseType: Int): WorkoutTypeChart? = when (exerciseType) {
@@ -20,7 +20,6 @@ fun workoutTypeChart(exerciseType: Int): WorkoutTypeChart? = when (exerciseType)
     ExerciseSessionRecord.EXERCISE_TYPE_WALKING,
     ExerciseSessionRecord.EXERCISE_TYPE_HIKING,
     -> WorkoutTypeChart.PACE
-    ExerciseSessionRecord.EXERCISE_TYPE_RUNNING_TREADMILL -> WorkoutTypeChart.HEART_RATE_ZONES
     ExerciseSessionRecord.EXERCISE_TYPE_BIKING -> WorkoutTypeChart.ELEVATION_WITH_SPEED
     ExerciseSessionRecord.EXERCISE_TYPE_BIKING_STATIONARY -> WorkoutTypeChart.CADENCE_WITH_HEART_RATE
     ExerciseSessionRecord.EXERCISE_TYPE_STRENGTH_TRAINING,
@@ -29,6 +28,20 @@ fun workoutTypeChart(exerciseType: Int): WorkoutTypeChart? = when (exerciseType)
     -> WorkoutTypeChart.HEART_RATE_WITH_SETS
     else -> null
 }
+
+/** 110: the kinds that get the time-in-zone chart, besides their own. */
+private val heartRateZoneExercises: Set<Int> = setOf(
+    ExerciseSessionRecord.EXERCISE_TYPE_RUNNING,
+    ExerciseSessionRecord.EXERCISE_TYPE_RUNNING_TREADMILL,
+    ExerciseSessionRecord.EXERCISE_TYPE_BIKING,
+    ExerciseSessionRecord.EXERCISE_TYPE_BIKING_STATIONARY,
+)
+
+/** 110: whether a session of [exerciseType] gets the time in each heart rate zone. */
+fun showsHeartRateZones(exerciseType: Int): Boolean = exerciseType in heartRateZoneExercises
+
+/** 112: a treadmill's speed is the belt's setting, not a reading worth a chart. */
+fun showsSpeedChart(exerciseType: Int): Boolean = exerciseType != ExerciseSessionRecord.EXERCISE_TYPE_RUNNING_TREADMILL
 
 /** The heart rate a zone is a share of: the one the profile names, else Tanaka's 208 − 0.7 × age. */
 fun workoutMaxHeartRate(explicitBpm: Int?, ageYears: Int?): Int? =
@@ -91,6 +104,55 @@ fun paceFromRoute(points: List<ExerciseRoutePoint>): List<Pair<Instant, Double>>
         if (pace <= SlowestPaceSecondsPerKm) raw += sorted[i].time to pace
     }
     return raw
+}
+
+/**
+ * 88: of the pace series a session has, the one that covers most of it. A watch can write its
+ * speed only for the last seconds while the route or the splits run the whole way: drawing the
+ * speed then put the whole line at the end. A recorded series wins a tie.
+ */
+fun bestPaceSeries(
+    candidates: List<List<Pair<Instant, Double>>>,
+    sessionStart: Instant,
+    sessionEnd: Instant,
+): List<Pair<Instant, Double>> {
+    val sessionMillis = Duration.between(sessionStart, sessionEnd).toMillis().coerceAtLeast(1)
+    fun coverage(series: List<Pair<Instant, Double>>): Double {
+        val inside = series.filter { !it.first.isBefore(sessionStart) && !it.first.isAfter(sessionEnd) }
+        if (inside.size < 2) return 0.0
+        return Duration.between(inside.first().first, inside.last().first).toMillis().toDouble() / sessionMillis
+    }
+    var best: List<Pair<Instant, Double>> = emptyList()
+    var bestCoverage = 0.0
+    candidates.forEach { series ->
+        val sorted = series.sortedBy { it.first }
+        val covered = coverage(sorted)
+        // A later candidate must cover clearly more: a recorded speed beats a reconstruction at par.
+        if (covered > bestCoverage + 0.1 || best.isEmpty() && sorted.size >= 2) {
+            best = sorted
+            bestCoverage = covered
+        }
+    }
+    return best
+}
+
+/**
+ * 88: the average pace of a series, as time over distance: the time-weighted mean speed,
+ * inverted. The mean of the paces themselves leans toward the slow stretches.
+ */
+fun averagePaceSecondsPerKm(series: List<Pair<Instant, Double>>): Double? {
+    if (series.isEmpty()) return null
+    if (series.size == 1) return series.single().second
+    var seconds = 0.0
+    var meters = 0.0
+    for (i in 0 until series.lastIndex) {
+        val dt = Duration.between(series[i].first, series[i + 1].first).toMillis() / 1_000.0
+        if (dt <= 0.0 || series[i].second <= 0.0) continue
+        val step = dt.coerceAtMost(paceSmoothing.seconds.toDouble() * 2)
+        seconds += step
+        meters += step * 1_000.0 / series[i].second
+    }
+    return if (meters > 0.0) seconds / meters * 1_000.0 else series.map { it.second }.average()
 }
 
 private fun smoothed(values: List<Pair<Instant, Double>>): List<Pair<Instant, Double>> {

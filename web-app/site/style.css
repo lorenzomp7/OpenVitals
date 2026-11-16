@@ -15,3 +15,4 @@ body { display: flex; flex-direction: column; align-items: center; }
 .controls button { background: #1c2333; color: #e6e9f0; border: 0; border-radius: 999px; padding: 8px 14px; font-size: 14px; }
 .controls button:disabled { opacity: 0.4; }
 .info { margin-left: auto; font-size: 11px; opacity: 0.6; text-align: right; }
+.empty { padding: 32px 20px; text-align: center; opacity: 0.8; }
