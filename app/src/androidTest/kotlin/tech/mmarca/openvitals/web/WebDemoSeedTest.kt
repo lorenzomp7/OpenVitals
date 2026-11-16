@@ -46,6 +46,10 @@ class WebDemoSeedTest {
     private val zone = ZoneId.systemDefault()
     private val watch = Device(type = Device.TYPE_WATCH, manufacturer = "Demo", model = "Watch")
 
+    /** Health Connect refuses a record from the future: today stops at the present hour. */
+    private val now = Instant.now()
+    private fun past(end: Instant) = !end.isAfter(now)
+
     @Test
     fun seedTheWebDemo() {
         PreferencesRepository(context).apply {
@@ -74,12 +78,12 @@ class WebDemoSeedTest {
 
     private fun day(date: LocalDate, back: Long): List<Record> = buildList {
         val activity = 0.55 + 0.45 * wave(back, 7.0)
-        val lastHour = if (back == 0L) java.time.LocalTime.now(zone).hour.coerceAtLeast(8) else 22
         // Steps hour by hour, busiest at lunch and in the evening.
-        for (hour in 7 until lastHour) {
+        for (hour in 7 until 22) {
             val shape = when (hour) { in 12..13 -> 1.6; in 18..19 -> 1.9; else -> 0.7 }
             val count = (500 * shape * activity).roundToLong().coerceAtLeast(30)
             val start = at(date, hour.toDouble())
+            if (!past(start.plusSeconds(3_000))) break
             add(StepsRecord(start, offset(start), start.plusSeconds(3_000), offset(start), count, meta()))
             add(
                 DistanceRecord(
@@ -103,18 +107,20 @@ class WebDemoSeedTest {
         // Last night's sleep, from about 23:15 to 7:00, in stages.
         val bed = at(date.minusDays(1), 23.25 + 0.5 * wave(back, 5.0))
         val wake = at(date, 6.75 + 0.5 * wave(back, 6.0, 1.0))
-        add(SleepSessionRecord(bed, offset(bed), wake, offset(wake), meta(), stages = stages(bed, wake)))
+        if (past(wake)) add(SleepSessionRecord(bed, offset(bed), wake, offset(wake), meta(), stages = stages(bed, wake)))
         val morning = at(date, 7.5)
-        add(RestingHeartRateRecord(morning, offset(morning), (56 + 5 * wave(back, 9.0)).roundToLong(), meta()))
-        add(OxygenSaturationRecord(morning, offset(morning), Percentage(96.0 + 2 * wave(back, 4.0)), meta()))
+        if (past(morning)) {
+            add(RestingHeartRateRecord(morning, offset(morning), (56 + 5 * wave(back, 9.0)).roundToLong(), meta()))
+            add(OxygenSaturationRecord(morning, offset(morning), Percentage(96.0 + 2 * wave(back, 4.0)), meta()))
+        }
         for (drink in listOf(8.0, 11.0, 14.0, 17.0, 20.0)) {
             val time = at(date, drink)
-            if (back == 0L && drink > lastHour) continue
+            if (!past(time.plusSeconds(60))) break
             add(HydrationRecord(time, offset(time), time.plusSeconds(60), offset(time), Volume.liters(0.35), meta()))
         }
-        if (back % 3 == 0L) {
-            val time = at(date, 7.25)
-            add(WeightRecord(time, offset(time), Mass.kilograms(74.0 - back * 0.04 + 0.4 * wave(back, 6.0)), meta()))
+        val weighed = at(date, 7.25)
+        if (back % 3 == 0L && past(weighed)) {
+            add(WeightRecord(weighed, offset(weighed), Mass.kilograms(74.0 - back * 0.04 + 0.4 * wave(back, 6.0)), meta()))
         }
         // A run every three days, a ride every five.
         if (back % 3 == 1L) addAll(workout(date, ExerciseSessionRecord.EXERCISE_TYPE_RUNNING, "Corsa", 18.5, 42, 7_800.0))
@@ -144,6 +150,7 @@ class WebDemoSeedTest {
     private fun workout(date: LocalDate, type: Int, title: String, hour: Double, minutes: Long, meters: Double): List<Record> {
         val start = at(date, hour)
         val end = start.plusSeconds(minutes * 60)
+        if (!past(end)) return emptyList()
         val beats = (0 until minutes).map { minute ->
             HeartRateRecord.Sample(start.plusSeconds(minute * 60), (125 + 30 * sin(minute / 9.0).let { it * it }).roundToLong())
         }
