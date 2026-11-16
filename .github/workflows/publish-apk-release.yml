@@ -44,7 +44,9 @@ jobs:
               gh api --method PATCH "repos/$GH_REPO/releases/assets/$old_id" -f name=OpenVitals.apk > /dev/null
             fi
             gh release upload "$tag" "$temp_dir/SHA256SUMS.txt" --clobber
-            printf '%s' "$entry" | jq '{body: ((.body // "") | gsub("OpenVitals-personal\\.apk"; "OpenVitals.apk"))}' > "$temp_dir/body.json"
+            printf '%s' "$entry" | jq '{body: ((.body // "") | gsub("OpenVitals-personal\\.apk"; "OpenVitals.apk")), make_latest: "false"}' > "$temp_dir/body.json"
+            # An edit through the API marks the release "latest" unless told otherwise: this loop
+            # once left an old build marked latest, and the next build was numbered from it.
             gh api --method PATCH "repos/$GH_REPO/releases/$release_id" --input "$temp_dir/body.json" > /dev/null
             rm -rf "$temp_dir"
           done < releases.txt
