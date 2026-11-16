@@ -185,7 +185,7 @@
     <string name="activity_chart_sets_title">דופק וסטים</string>
     <string name="activity_chart_sets_count">סטים</string>
     <string name="activity_chart_sets_legend">סט</string>
-    <string name="activity_chart_sets_none">לא נרשמו סטים באימון הזה, ולכן אף סט אינו מודגש.</string>
+    <string name="activity_chart_sets_none">השעון לא רשם סטים נפרדים, ולכן האימון נספר כסט אחד ואף סט לא מודגש.</string>
     <string name="activity_chart_recovery_title">התאוששות לאחר הסיום</string>
     <string name="activity_chart_recovery_end">בסיום</string>
     <string name="activity_chart_recovery_one">אחרי דקה</string>
@@ -210,7 +210,7 @@
     <string name="settings_brand_colors_tiles">צבעי ששת האריחים הראשונים בעמוד הראשון</string>
     <string name="settings_brand_colors_hero_tiles">שניהם: צבעי הטבעות וששת האריחים הראשונים</string>
     <string name="settings_brand_animated_title">מונפשים</string>
-    <string name="settings_brand_animated_body">מופעל: המתג והכפתורים זזים. כבוי: הם נשארים במקום בצבעיהם.</string>
+    <string name="settings_brand_animated_body">מופעל: הכפתורים והסמלים במסך הראשי זזים; כבוי: הם נשארים במקום בצבעיהם. מתג OpenVitals זז תמיד.</string>
     <string name="activity_chart_recovery_estimate">הערכה</string>
     <string name="activity_chart_recovery_estimate_note">לא נרשם דופק אחרי %1$s: השאר הוא הערכה היורדת לעבר דופק המנוחה שלך, %2$d פעימות לדקה.</string>
     <string name="activity_elevation_source_tiles">גובה ממודל השטח (אריחי גובה מיובאים).</string>

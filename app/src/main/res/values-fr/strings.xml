@@ -3883,7 +3883,7 @@
     <string name="activity_chart_sets_title">Fréquence cardiaque et séries</string>
     <string name="activity_chart_sets_count">Séries</string>
     <string name="activity_chart_sets_legend">Série</string>
-    <string name="activity_chart_sets_none">Aucune série n\'a été enregistrée pour cette séance, aucune n\'est donc mise en évidence.</string>
+    <string name="activity_chart_sets_none">La montre n\'a enregistré aucune série distincte : la séance compte pour une et aucune n\'est surlignée.</string>
     <string name="activity_chart_recovery_title">Récupération après la fin</string>
     <string name="activity_chart_recovery_end">À la fin</string>
     <string name="activity_chart_recovery_one">Après 1 min</string>
@@ -3908,7 +3908,7 @@
     <string name="settings_brand_colors_tiles">Les couleurs des six premières tuiles de la première page</string>
     <string name="settings_brand_colors_hero_tiles">Les deux : couleurs des anneaux et des six premières tuiles</string>
     <string name="settings_brand_animated_title">Animés</string>
-    <string name="settings_brand_animated_body">Activé : le bouton et les boutons bougent. Désactivé : ils restent immobiles dans leurs couleurs.</string>
+    <string name="settings_brand_animated_body">Activé : les boutons et icônes de l\'écran d\'accueil bougent ; désactivé : ils restent immobiles dans leurs couleurs. Le bouton OpenVitals bouge toujours.</string>
     <string name="activity_chart_recovery_estimate">Estimation</string>
     <string name="activity_chart_recovery_estimate_note">Aucune fréquence cardiaque enregistrée après %1$s : la suite est estimée, en baisse vers ta fréquence de repos de %2$d bpm.</string>
     <string name="activity_elevation_source_tiles">Altitude issue du modèle de terrain (tuiles d\'altitude importées).</string>

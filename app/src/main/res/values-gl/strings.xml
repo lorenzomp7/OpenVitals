@@ -3921,7 +3921,7 @@ Se Acceder a rutas de exercicio non aparece no diálogo de acceso, abre os axust
     <string name="activity_chart_sets_title">Frecuencia cardíaca e series</string>
     <string name="activity_chart_sets_count">Series</string>
     <string name="activity_chart_sets_legend">Serie</string>
-    <string name="activity_chart_sets_none">Non se rexistraron series nesta sesión, así que non hai ningunha destacada.</string>
+    <string name="activity_chart_sets_none">O reloxo non rexistrou series separadas: a sesión conta como unha e ningunha se resalta.</string>
     <string name="activity_chart_recovery_title">Recuperación tras o final</string>
     <string name="activity_chart_recovery_end">Ao final</string>
     <string name="activity_chart_recovery_one">Tras 1 min</string>
@@ -3946,7 +3946,7 @@ Se Acceder a rutas de exercicio non aparece no diálogo de acceso, abre os axust
     <string name="settings_brand_colors_tiles">As cores dos seis primeiros recadros da primeira páxina</string>
     <string name="settings_brand_colors_hero_tiles">Ambos: as cores dos aneis e dos seis primeiros recadros</string>
     <string name="settings_brand_animated_title">Animados</string>
-    <string name="settings_brand_animated_body">Activado: o interruptor e os botóns móvense. Desactivado: quedan quietos coas súas cores.</string>
+    <string name="settings_brand_animated_body">Activado: os botóns e iconas da pantalla principal móvense; desactivado: quedan quietos nas súas cores. O botón OpenVitals móvese sempre.</string>
     <string name="activity_chart_recovery_estimate">Estimación</string>
     <string name="activity_chart_recovery_estimate_note">Non hai frecuencia cardíaca rexistrada despois de %1$s: o resto é unha estimación que baixa cara á túa frecuencia en repouso de %2$d ppm.</string>
     <string name="activity_elevation_source_tiles">Altitude do modelo do terreo (teselas de elevación importadas).</string>

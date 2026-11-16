@@ -32,7 +32,7 @@ class AmbientFluidBrandTest {
                     val timeline = rememberFluidBrandTimeline()
                     Column(Modifier.width(393.dp)) {
                         AmbientFluidBrand(timeline, 393.dp)
-                        DashboardQuickActions(false, {}, {}, {}, Modifier.padding(horizontal = DashboardScreenPadding))
+                        DashboardQuickActions({}, {}, Modifier.padding(horizontal = DashboardScreenPadding))
                     }
                 }
             }

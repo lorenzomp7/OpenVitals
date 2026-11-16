@@ -147,7 +147,13 @@ fun DashboardScreen(
     val header: @Composable () -> Unit = {
         DashboardHeader(timeline, profilePhoto, state.sensorStatus.hasDevices,
             onOpenBodyProfile, onOpenDeviceStatus, onOpenAchievements, onOpenSettings,
-            day = day, onOpenDay = { showDaySummary = true })
+            day = day, onOpenDay = { showDaySummary = true },
+            isEditingDashboard = state.isEditingDashboard,
+            // 106: the pencil lives in the header now; it needs a loaded dashboard to edit.
+            onToggleDashboardEdit = if (loadedData != null) {
+                { if (state.isEditingDashboard) requestFinishEdit() else viewModel.toggleDashboardEdit() }
+            } else null,
+        )
     }
 
     androidx.compose.runtime.CompositionLocalProvider(

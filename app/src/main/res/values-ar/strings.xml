@@ -185,7 +185,7 @@
     <string name="activity_chart_sets_title">معدل ضربات القلب والمجموعات</string>
     <string name="activity_chart_sets_count">المجموعات</string>
     <string name="activity_chart_sets_legend">مجموعة</string>
-    <string name="activity_chart_sets_none">لم تُسجَّل مجموعات في هذه الجلسة، لذا لا توجد مجموعات مظللة.</string>
+    <string name="activity_chart_sets_none">لم تسجّل الساعة مجموعات منفصلة، لذا تُحتسب الجلسة مجموعة واحدة ولا يُظلَّل شيء.</string>
     <string name="activity_chart_recovery_title">التعافي بعد النهاية</string>
     <string name="activity_chart_recovery_end">عند النهاية</string>
     <string name="activity_chart_recovery_one">بعد دقيقة</string>
@@ -210,7 +210,7 @@
     <string name="settings_brand_colors_tiles">ألوان أول ستة مربعات في الصفحة الأولى</string>
     <string name="settings_brand_colors_hero_tiles">كلاهما: ألوان الحلقات وأول ستة مربعات</string>
     <string name="settings_brand_animated_title">متحركة</string>
-    <string name="settings_brand_animated_body">عند التشغيل يتحرك الزر والأزرار؛ وعند الإيقاف تبقى ثابتة بألوانها.</string>
+    <string name="settings_brand_animated_body">عند التشغيل تتحرك الأزرار والأيقونات في الشاشة الرئيسية، وعند الإيقاف تبقى ثابتة بألوانها. زر OpenVitals يتحرك دائمًا.</string>
     <string name="activity_chart_recovery_estimate">تقدير</string>
     <string name="activity_chart_recovery_estimate_note">لم يُسجَّل معدل ضربات القلب بعد %1$s: الباقي تقديري، ينخفض نحو معدل الراحة لديك %2$d نبضة/دقيقة.</string>
     <string name="activity_elevation_source_tiles">الارتفاع من نموذج التضاريس (مربعات الارتفاع المستوردة).</string>

@@ -2,6 +2,11 @@ package tech.mmarca.openvitals.navigation
 
 import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.EnterTransition
+import androidx.compose.foundation.layout.asPaddingValues
+import androidx.compose.foundation.layout.calculateEndPadding
+import androidx.compose.foundation.layout.calculateStartPadding
+import androidx.compose.foundation.layout.systemBars
+import tech.mmarca.openvitals.ui.components.OpenVitalsTopBarHeight
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -91,16 +96,31 @@ import tech.mmarca.openvitals.ui.components.LocalAppBarState
 import tech.mmarca.openvitals.ui.components.OpenWatchMoveNoticePrompt
 import tech.mmarca.openvitals.ui.components.PrivacyReconsentPrompt
 
-private const val NavFadeOutMillis = 90
-private const val NavFadeInMillis = 210
+private const val NavTransitionMillis = 240
 
-/** M3 fade through, incoming half: waits for the outgoing screen, then fades and scales up from 92%. */
-private fun navFadeThroughEnter(): EnterTransition =
-    fadeIn(tween(NavFadeInMillis, delayMillis = NavFadeOutMillis)) +
-        androidx.compose.animation.scaleIn(tween(NavFadeInMillis, delayMillis = NavFadeOutMillis), initialScale = 0.92f)
+/**
+ * 63: a screen opening fades and grows in over the one it leaves, which stays drawn underneath;
+ * going back, the screen returned to is there at once and the one left fades away over it.
+ * Every destination is opaque ([opaqueComposable]), so no frame is ever empty: the old fade
+ * through emptied the screen between the two halves, a black page with only a title.
+ */
+private fun navOpenEnter(): EnterTransition =
+    fadeIn(tween(NavTransitionMillis)) +
+        androidx.compose.animation.scaleIn(tween(NavTransitionMillis), initialScale = 0.96f)
 
-/** M3 fade through, outgoing half. */
-private fun navFadeThroughExit(): ExitTransition = fadeOut(tween(NavFadeOutMillis))
+/** The screen being covered stays as it is until the one opening has covered it. */
+private fun navOpenExit(): ExitTransition = fadeOut(tween(durationMillis = 1, delayMillis = NavTransitionMillis))
+
+private fun navBackExit(): ExitTransition =
+    fadeOut(tween(NavTransitionMillis)) +
+        androidx.compose.animation.scaleOut(tween(NavTransitionMillis), targetScale = 0.96f)
+
+/** Destinations drawn without the app bar: the dashboard carries its own header. */
+private fun hasAppBarRoute(entry: androidx.navigation.NavBackStackEntry?): Boolean {
+    val route = entry?.destination?.route?.substringBefore('?') ?: return false
+    return route != Screen.Dashboard.route && route != Screen.Onboarding.route
+}
+
 internal const val CardioLoadDetailRoute = "activity/cardio_load"
 internal const val SleepEfficiencyDetailRoute = "recovery/sleep_efficiency"
 internal const val SleepScoreDetailRoute = "recovery/sleep_score"
@@ -136,26 +156,31 @@ fun AppNavigation(
     val navController = rememberNavController()
     val backDispatcher = LocalOnBackPressedDispatcherOwner.current?.onBackPressedDispatcher
     val liveBackStackEntry by navController.currentBackStackEntryAsState()
-    // 63: the app bar, its title and the content padding follow the screen that is on view. They
-    // switch when the outgoing screen has faded out, not the instant the route changes: switching at
-    // once dropped or added the bar under a screen still fading, which jumped and flashed.
+    // 63: the app bar and its title follow the screen on view. The content no longer takes its
+    // padding from the bar (each destination pads itself), so switching the bar moves nothing.
+    // Going back to a screen without a bar, the bar fades out with the screen it belongs to;
+    // opening a screen with a bar from one without, it fades in with it.
     var navBackStackEntry by remember { mutableStateOf(liveBackStackEntry) }
-    LaunchedEffect(liveBackStackEntry) {
-        if (navBackStackEntry != null && liveBackStackEntry != null) {
-            kotlinx.coroutines.delay(NavFadeOutMillis.toLong())
+    val topBarAlpha = remember { androidx.compose.animation.core.Animatable(1f) }
+    LaunchedEffect(liveBackStackEntry?.id) {
+        val live = liveBackStackEntry
+        val previous = navBackStackEntry
+        if (previous == null || live == null || previous.id == live.id) {
+            navBackStackEntry = live
+            return@LaunchedEffect
         }
-        navBackStackEntry = liveBackStackEntry
+        if (!hasAppBarRoute(live) && hasAppBarRoute(previous)) {
+            topBarAlpha.animateTo(0f, tween(NavTransitionMillis))
+            navBackStackEntry = live
+            topBarAlpha.snapTo(1f)
+        } else {
+            navBackStackEntry = live
+            if (!hasAppBarRoute(previous)) {
+                topBarAlpha.snapTo(0f)
+                topBarAlpha.animateTo(1f, tween(NavTransitionMillis))
+            }
+        }
     }
-    // 63: while the outgoing screen fades, its bar fades with it: a bar left standing over the
-    // emptied screen read as a black page with only a title, before the next screen came in.
-    val chromeSettled = liveBackStackEntry?.id == navBackStackEntry?.id
-    val topBarAlpha by androidx.compose.animation.core.animateFloatAsState(
-        targetValue = if (chromeSettled) 1f else 0f,
-        animationSpec = tween(
-            durationMillis = if (chromeSettled) NavFadeInMillis else NavFadeOutMillis,
-        ),
-        label = "topBarAlpha",
-    )
     val currentDestination = navBackStackEntry?.destination
     // Day-accepting destinations register with a query pattern appended; compare
     // against the bare route or nothing matches.
@@ -328,7 +353,7 @@ fun AppNavigation(
         navigationContentDescription = stringResource(R.string.cd_back),
         action = addEntryAction,
         containerColor = screenAppBar?.containerColor,
-        topBarAlpha = { topBarAlpha },
+        topBarAlpha = { topBarAlpha.value },
         topBarActions = {
             // The hydration screen's app-bar add-drink shortcut.
             if (currentRoute == Screen.Metric.route &&
@@ -394,20 +419,33 @@ fun AppNavigation(
             }
         },
     ) { innerPadding ->
+        // 63: the top is padded by each destination for itself (opaqueComposable), from whether it
+        // has the bar, so the bar coming or going during a transition shifts neither screen.
+        val layoutDirection = androidx.compose.ui.platform.LocalLayoutDirection.current
+        val barTop = androidx.compose.foundation.layout.WindowInsets.systemBars
+            .asPaddingValues().calculateTopPadding() + OpenVitalsTopBarHeight
+        val destinationTopPadding: (androidx.navigation.NavBackStackEntry) -> androidx.compose.ui.unit.Dp = { entry ->
+            if (hasAppBarRoute(entry) && appBarState.of(entry)?.hidesAppBar != true) barTop else 0.dp
+        }
+        androidx.compose.runtime.CompositionLocalProvider(LocalDestinationTopPadding provides destinationTopPadding) {
         NavHost(
             navController = navController,
             startDestination = startDestination,
-            modifier = Modifier.padding(innerPadding),
+            modifier = Modifier.padding(
+                start = innerPadding.calculateStartPadding(layoutDirection),
+                end = innerPadding.calculateEndPadding(layoutDirection),
+                bottom = innerPadding.calculateBottomPadding(),
+            ),
             // 63: Material "fade through" for every screen, the dashboard included: the screen being
             // left fades out first, then the new one fades and scales in. The screens draw no background
             // of their own, so a cross-fade showed both at once. The system's predictive back is off
             // (manifest): it drew the dashboard over the screen being left mid-gesture.
-            enterTransition = { navFadeThroughEnter() },
-            exitTransition = { navFadeThroughExit() },
-            popEnterTransition = { navFadeThroughEnter() },
-            popExitTransition = { navFadeThroughExit() },
+            enterTransition = { navOpenEnter() },
+            exitTransition = { navOpenExit() },
+            popEnterTransition = { EnterTransition.None },
+            popExitTransition = { navBackExit() },
         ) {
-            composable(Screen.Onboarding.route) {
+            opaqueComposable(Screen.Onboarding.route) {
                 val onboardingViewModel = hiltViewModel<OnboardingViewModel>()
                 OnboardingScreen(
                     viewModel = onboardingViewModel,
@@ -421,7 +459,7 @@ fun AppNavigation(
                 )
             }
 
-            composable(Screen.Dashboard.route) {
+            opaqueComposable(Screen.Dashboard.route) {
                 val dashboardViewModel = hiltViewModel<DashboardViewModel>()
                 DashboardScreen(
                     brandTimeline = fluidBrandTimeline,
@@ -465,7 +503,7 @@ fun AppNavigation(
                 )
             }
 
-            composable(
+            opaqueComposable(
                 route = Screen.BodyEnergyDetails.route,
                 arguments = listOf(navArgument(BODY_ENERGY_DATE_ARG) { type = NavType.StringType }),
             ) { entry ->
@@ -489,7 +527,7 @@ fun AppNavigation(
                 )
             }
 
-            composable(
+            opaqueComposable(
                 route = Screen.TrainingReadinessDetails.route,
                 arguments = listOf(navArgument(TRAINING_READINESS_DATE_ARG) { type = NavType.StringType }),
             ) { entry ->
@@ -504,7 +542,7 @@ fun AppNavigation(
                 )
             }
 
-            composable(
+            opaqueComposable(
                 route = Screen.StressDetails.route,
                 arguments = listOf(navArgument(STRESS_DATE_ARG) { type = NavType.StringType }),
             ) { entry ->
@@ -519,7 +557,7 @@ fun AppNavigation(
                 )
             }
 
-            composable(
+            opaqueComposable(
                 route = CardioLoadDetailRoute + SELECTED_DAY_QUERY_PATTERN,
                 arguments = listOf(navArgument(SELECTED_DAY_ARG) { type = NavType.StringType; nullable = true; defaultValue = null }),
             ) {
@@ -530,7 +568,7 @@ fun AppNavigation(
                 )
             }
 
-            composable(SleepEfficiencyDetailRoute) {
+            opaqueComposable(SleepEfficiencyDetailRoute) {
                 val recoveryViewModel = hiltViewModel<RecoveryViewModel>()
                 SleepEfficiencyDetailScreen(
                     viewModel = recoveryViewModel,
@@ -539,7 +577,7 @@ fun AppNavigation(
                 )
             }
 
-            composable(SleepScoreDetailRoute) {
+            opaqueComposable(SleepScoreDetailRoute) {
                 val recoveryViewModel = hiltViewModel<RecoveryViewModel>()
                 SleepScoreDetailScreen(
                     viewModel = recoveryViewModel,
@@ -548,7 +586,7 @@ fun AppNavigation(
                 )
             }
 
-            composable(HeartRecoveryDetailRoute) {
+            opaqueComposable(HeartRecoveryDetailRoute) {
                 val heartRateRecoveryViewModel = hiltViewModel<HeartRateRecoveryViewModel>()
                 HeartRateRecoveryScreen(
                     viewModel = heartRateRecoveryViewModel,
@@ -575,7 +613,7 @@ fun AppNavigation(
                 onActivityEntrySaved = ::finishActivityEntrySave,
             )
 
-            composable(
+            opaqueComposable(
                 route = Screen.Metric.route + SELECTED_DAY_QUERY_PATTERN,
                 arguments = listOf(
                     navArgument(METRIC_ID_ARG) { type = NavType.StringType },
@@ -678,7 +716,7 @@ fun AppNavigation(
                 )
             }
 
-            composable(
+            opaqueComposable(
                 route = Screen.CaffeineDrink.route + SELECTED_DAY_QUERY_PATTERN,
                 arguments = listOf(
                     navArgument(CAFFEINE_ENTRY_ID_ARG) { type = NavType.StringType },
@@ -694,7 +732,7 @@ fun AppNavigation(
                 )
             }
 
-            composable(
+            opaqueComposable(
                 route = Screen.Calories.route + SELECTED_DAY_QUERY_PATTERN,
                 arguments = listOf(navArgument(SELECTED_DAY_ARG) { type = NavType.StringType; nullable = true; defaultValue = null }),
             ) {
@@ -706,7 +744,7 @@ fun AppNavigation(
                 )
             }
 
-            composable(
+            opaqueComposable(
                 route = Screen.Nutrition.route + SELECTED_DAY_QUERY_PATTERN,
                 arguments = listOf(navArgument(SELECTED_DAY_ARG) { type = NavType.StringType; nullable = true; defaultValue = null }),
             ) {
@@ -724,7 +762,7 @@ fun AppNavigation(
                 )
             }
 
-            composable(
+            opaqueComposable(
                 route = Screen.Activity.route + SELECTED_DAY_QUERY_PATTERN + "&range={range}",
                 arguments = listOf(navArgument(SELECTED_DAY_ARG) { type = NavType.StringType; nullable = true; defaultValue = null },
                     navArgument("range") { type = NavType.StringType; nullable = true; defaultValue = null }),
@@ -766,7 +804,7 @@ fun AppNavigation(
                 )
             }
 
-            composable(
+            opaqueComposable(
                 route = Screen.ActivityDetail.route,
                 arguments = listOf(navArgument(ACTIVITY_DETAIL_ID_ARG) { type = NavType.StringType }),
             ) {
@@ -788,7 +826,7 @@ fun AppNavigation(
                 )
             }
 
-            composable(
+            opaqueComposable(
                 route = Screen.Sleep.route + SELECTED_DAY_QUERY_PATTERN,
                 arguments = listOf(navArgument(SELECTED_DAY_ARG) { type = NavType.StringType; nullable = true; defaultValue = null }),
             ) {
@@ -809,7 +847,7 @@ fun AppNavigation(
                 )
             }
 
-            composable(
+            opaqueComposable(
                 route = Screen.SleepDetail.route,
                 arguments = listOf(navArgument(SLEEP_DETAIL_ID_ARG) { type = NavType.StringType }),
             ) {
@@ -821,7 +859,7 @@ fun AppNavigation(
                 )
             }
 
-            composable(Screen.Achievements.route) {
+            opaqueComposable(Screen.Achievements.route) {
                 val achievementsViewModel = hiltViewModel<AchievementsViewModel>()
                 AchievementsScreen(
                     viewModel = achievementsViewModel,
@@ -847,6 +885,7 @@ fun AppNavigation(
                 onRouteFilesImported = ::markDashboardDirty,
             )
             medicalRecordsRoutes(navController, dateTimeFormatterProvider)
+        }
         }
     }
     HealthConnectNewPermissionsPrompt()

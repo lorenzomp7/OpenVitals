@@ -57,7 +57,7 @@ jobs:
           if (( NEXT < 1070400000 )); then NEXT=1070400000; fi
           echo "OPENVITALS_VERSION_CODE=$NEXT" >> "$GITHUB_ENV"
           echo "code=$NEXT" >> "$GITHUB_OUTPUT"
-          echo "OPENVITALS_VERSION_NAME=2.17.11-personal-claude" >> "$GITHUB_ENV"
+          echo "OPENVITALS_VERSION_NAME=2.17.12-personal-claude" >> "$GITHUB_ENV"
       - name: Build the signed personal update
         env:
           OPENVITALS_RELEASE_STORE_FILE: ${{ github.workspace }}/personal/personal.p12
@@ -138,22 +138,25 @@ jobs:
           cat > release-notes.md <<EOF
           Scarica **OpenVitals.apk** dagli allegati e aprilo sul telefono.
 
-          Branch main_claude — 101–106:
-          - 101: i grafici si possono ingrandire con due dita, ma solo a schermo intero (lì non c'è una pagina da trascinare). Un pulsante riporta il grafico intero.
-          - 102: "Battito e serie" non ha più lo sfondo opaco: Zepp registra un segmento grande quanto tutto l'allenamento, che veniva preso per una serie. Ora si evidenziano solo le serie vere.
-          - 103: se dopo la fine non ci sono battiti registrati, il recupero viene stimato (linea tratteggiata, valori con "≈"), in discesa verso il battito a riposo del profilo (60 se non è impostato).
-          - 104: l'altitudine non usa più quella del GPS dell'orologio, che deriva di decine di metri: prende l'altezza del terreno sotto ogni punto del percorso, dai tile di elevazione importati o, se hai fatto l'accesso a Mapbox, dal modello del terreno di Mapbox (si scaricano i tile, mai il percorso). Una nota sotto il grafico dice da dove arriva.
-          - 105: la scheda "Colori della schermata principale" ha lo stesso stile delle altre: margini, icona, scelte a chip e interruttore come le schede accanto.
-          - 106: tolto il puntino verde in fondo al toggle OpenVitals; lo stato della sincronizzazione resta nel riepilogo che si apre toccandolo.
+          Branch main_claude — 63, 78, 85, 97, 105–109:
+          - 63: tornando alla schermata principale (tasto indietro o freccia in alto) non c'è più il fotogramma nero col solo titolo: la schermata principale è già sotto e quella che lasci sfuma sopra. Aprendo una schermata, la nuova compare sopra la vecchia.
+          - 78: ogni screenshot importato apre una revisione nuova, indipendente dalla precedente: puoi importarne un altro subito, anche col banner "Salvato" ancora visibile. Il banner riparte a ogni salvataggio.
+          - 85: toccando con due dita e poi lasciando, la pagina non viene più lanciata in cima o in fondo (effetto fionda). Il motivo: quando un dito si alza, Android passa all'altro dito e legge il salto tra le due dita come uno scorrimento velocissimo. Ora, dopo un gesto a due dita, la pagina si ferma dov'è.
+          - 97: l'interruttore "Animati" rende statici o animati pulsanti e icone, ma non il toggle OpenVitals, che si muove sempre.
+          - 105: "Battito e serie" conta almeno 1 serie, di più se l'orologio ne ha registrate.
+          - 106: in alto, da sinistra: profilo, obiettivi, toggle OpenVitals al centro, matita (nello stesso stile delle altre icone) e impostazioni.
+          - 107: "Avvia allenamento" e "+ Registra" hanno la stessa larghezza, uno a sinistra e uno a destra.
+          - 108: gli anelli hanno più spazio tra l'anello centrale e gli archi laterali, un alone luminoso e un riflesso morbido sotto, come nell'immagine.
+          - 109: il pulsante "Attività" occupa tutta la larghezza: la scritta resta a sinistra, centrata sulla colonna sinistra; a destra ci sono le icone delle ultime 4 attività diverse, leggermente spente, che si illuminano a turno.
 
           Questa versione aggiorna l'installazione personale compatibile di OpenVitals senza disinstallarla. La revisione ha superato la verifica completa (verify) in questa stessa esecuzione; package e firma coincidono con l'APK pubblicato precedente; installazione, aggiornamento, avvio e import screenshot sono verificati su Android 15.
 
-          Versione: **2.17.11-personal-claude**. Version code: **$OPENVITALS_VERSION_CODE**.
+          Versione: **2.17.12-personal-claude**. Version code: **$OPENVITALS_VERSION_CODE**.
           Sorgenti: https://github.com/$GH_REPO/commit/$GITHUB_SHA
           Compilazione e verifica aggiornamento: https://github.com/$GH_REPO/actions/runs/$GITHUB_RUN_ID
           EOF
           if gh release view "$TAG" > /dev/null 2>&1; then
             echo "Release already exists; keeping the published APK unchanged."
           else
-            gh release create "$TAG" release/OpenVitals.apk release/SHA256SUMS.txt --target "$GITHUB_SHA" --title "OpenVitals 2.17.11 · main_claude" --notes-file release-notes.md --latest
+            gh release create "$TAG" release/OpenVitals.apk release/SHA256SUMS.txt --target "$GITHUB_SHA" --title "OpenVitals 2.17.12 · main_claude" --notes-file release-notes.md --latest
           fi

@@ -3916,7 +3916,7 @@
     <string name="activity_chart_sets_title">Tep a série</string>
     <string name="activity_chart_sets_count">Série</string>
     <string name="activity_chart_sets_legend">Série</string>
-    <string name="activity_chart_sets_none">U této aktivity nebyly zaznamenány žádné série, proto není nic zvýrazněno.</string>
+    <string name="activity_chart_sets_none">Hodinky nezaznamenaly samostatné série, takže se trénink počítá jako jedna a žádná není zvýrazněna.</string>
     <string name="activity_chart_recovery_title">Zotavení po skončení</string>
     <string name="activity_chart_recovery_end">Na konci</string>
     <string name="activity_chart_recovery_one">Po 1 min</string>
@@ -3941,7 +3941,7 @@
     <string name="settings_brand_colors_tiles">Barvy prvních šesti dlaždic první stránky</string>
     <string name="settings_brand_colors_hero_tiles">Obojí: barvy kruhů a prvních šesti dlaždic</string>
     <string name="settings_brand_animated_title">Animované</string>
-    <string name="settings_brand_animated_body">Zapnuto: přepínač a tlačítka se pohybují. Vypnuto: zůstanou nehybné ve svých barvách.</string>
+    <string name="settings_brand_animated_body">Zapnuto: tlačítka a ikony na hlavní obrazovce se pohybují; vypnuto: stojí ve svých barvách. Přepínač OpenVitals se pohybuje vždy.</string>
     <string name="activity_chart_recovery_estimate">Odhad</string>
     <string name="activity_chart_recovery_estimate_note">Po %1$s nebyl zaznamenán tep: zbytek je odhad klesající k vašemu klidovému tepu %2$d tepů/min.</string>
     <string name="activity_elevation_source_tiles">Nadmořská výška z modelu terénu (importované výškové dlaždice).</string>

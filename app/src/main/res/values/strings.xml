@@ -3910,7 +3910,7 @@
     <string name="activity_chart_sets_title">Heart rate and sets</string>
     <string name="activity_chart_sets_count">Sets</string>
     <string name="activity_chart_sets_legend">Set</string>
-    <string name="activity_chart_sets_none">No sets were recorded for this session, so none are shaded.</string>
+    <string name="activity_chart_sets_none">The watch recorded no separate sets, so the session counts as one and none are shaded.</string>
     <string name="activity_chart_recovery_title">Recovery after the end</string>
     <string name="activity_chart_recovery_end">At the end</string>
     <string name="activity_chart_recovery_one">After 1 min</string>
@@ -3935,7 +3935,7 @@
     <string name="settings_brand_colors_tiles">The colours of the first six tiles of the first page</string>
     <string name="settings_brand_colors_hero_tiles">Both: the rings\' colours and the first six tiles\'</string>
     <string name="settings_brand_animated_title">Animated</string>
-    <string name="settings_brand_animated_body">On, the toggle and the buttons move; off, they stand still in their colours.</string>
+    <string name="settings_brand_animated_body">On, the buttons and icons on the home screen move; off, they stand still in their colours. The OpenVitals toggle always moves.</string>
     <string name="activity_chart_recovery_estimate">Estimate</string>
     <string name="activity_chart_recovery_estimate_note">No heart rate was recorded after %1$s: the rest is estimated, falling toward your resting rate of %2$d bpm.</string>
     <string name="activity_elevation_source_tiles">Altitude from the terrain model (imported elevation tiles).</string>

@@ -3917,7 +3917,7 @@
     <string name="activity_chart_sets_title">Пульс и подходы</string>
     <string name="activity_chart_sets_count">Подходы</string>
     <string name="activity_chart_sets_legend">Подход</string>
-    <string name="activity_chart_sets_none">Для этой тренировки подходы не записаны, поэтому ничего не выделено.</string>
+    <string name="activity_chart_sets_none">Часы не записали отдельные подходы, поэтому тренировка считается одним подходом и ничего не выделено.</string>
     <string name="activity_chart_recovery_title">Восстановление после окончания</string>
     <string name="activity_chart_recovery_end">В конце</string>
     <string name="activity_chart_recovery_one">Через 1 мин</string>
@@ -3942,7 +3942,7 @@
     <string name="settings_brand_colors_tiles">Цвета первых шести плиток первой страницы</string>
     <string name="settings_brand_colors_hero_tiles">Оба: цвета колец и первых шести плиток</string>
     <string name="settings_brand_animated_title">Анимированные</string>
-    <string name="settings_brand_animated_body">Включено: переключатель и кнопки движутся. Выключено: остаются неподвижными в своих цветах.</string>
+    <string name="settings_brand_animated_body">Вкл.: кнопки и значки на главном экране движутся; выкл.: они неподвижны в своих цветах. Переключатель OpenVitals движется всегда.</string>
     <string name="activity_chart_recovery_estimate">Оценка</string>
     <string name="activity_chart_recovery_estimate_note">После %1$s пульс не записан: остальное — оценка, снижающаяся к пульсу покоя %2$d уд/мин.</string>
     <string name="activity_elevation_source_tiles">Высота по модели рельефа (импортированные тайлы высот).</string>

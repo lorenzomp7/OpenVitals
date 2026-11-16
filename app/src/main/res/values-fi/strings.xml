@@ -3850,7 +3850,7 @@
     <string name="activity_chart_sets_title">Syke ja sarjat</string>
     <string name="activity_chart_sets_count">Sarjat</string>
     <string name="activity_chart_sets_legend">Sarja</string>
-    <string name="activity_chart_sets_none">Tälle harjoitukselle ei tallennettu sarjoja, joten mitään ei ole korostettu.</string>
+    <string name="activity_chart_sets_none">Kello ei tallentanut erillisiä sarjoja, joten harjoitus lasketaan yhdeksi eikä yhtään ole korostettu.</string>
     <string name="activity_chart_recovery_title">Palautuminen lopun jälkeen</string>
     <string name="activity_chart_recovery_end">Lopussa</string>
     <string name="activity_chart_recovery_one">1 min jälkeen</string>
@@ -3875,7 +3875,7 @@
     <string name="settings_brand_colors_tiles">Ensimmäisen sivun kuuden ensimmäisen ruudun värit</string>
     <string name="settings_brand_colors_hero_tiles">Molemmat: renkaiden ja kuuden ensimmäisen ruudun värit</string>
     <string name="settings_brand_animated_title">Animoidut</string>
-    <string name="settings_brand_animated_body">Päällä: kytkin ja painikkeet liikkuvat. Pois: ne pysyvät paikallaan väreissään.</string>
+    <string name="settings_brand_animated_body">Päällä: aloitusnäytön painikkeet ja kuvakkeet liikkuvat; pois: ne pysyvät paikallaan väreissään. OpenVitals-kytkin liikkuu aina.</string>
     <string name="activity_chart_recovery_estimate">Arvio</string>
     <string name="activity_chart_recovery_estimate_note">Sykettä ei tallennettu kohdan %1$s jälkeen: loppu on arvio, joka laskee kohti leposykettäsi %2$d bpm.</string>
     <string name="activity_elevation_source_tiles">Korkeus maastomallista (tuodut korkeustiilet).</string>

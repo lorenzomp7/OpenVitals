@@ -80,9 +80,6 @@ class DashboardSemanticsTest {
         composeRule.onNodeWithText(string(R.string.dashboard_action_start_workout))
             .assertIsDisplayed()
             .assertHasClickAction()
-
-        // The icon-only affordance carries a description rather than reading as "button".
-        composeRule.onNodeWithContentDescription(string(R.string.cd_edit_dashboard))
-            .assertHasClickAction()
+        // 106: the pencil moved to the header, beside settings; DashboardHeaderSemanticsTest covers it.
     }
 }

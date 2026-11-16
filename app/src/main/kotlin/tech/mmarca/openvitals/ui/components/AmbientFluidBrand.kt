@@ -86,12 +86,15 @@ fun AmbientFluidBrand(
     modifier: Modifier = Modifier,
     day: BrandDay? = null,
     onClick: (() -> Unit)? = null,
+    /** 106: the pill's width when the header has less room than the action row; else as wide as an action. */
+    width: Dp? = null,
 ) {
     var frameMillis by remember { mutableLongStateOf(SystemClock.uptimeMillis()) }
     val lifecycle = LocalLifecycleOwner.current.lifecycle
     val look = LocalBrandLook.current
     val colors = look.colors.ifEmpty { BrandColors }
-    val animate = loopingMotionAllowed() && look.animated
+    // 97: the OpenVitals toggle always moves; the Animated switch is for the buttons around it.
+    val animate = loopingMotionAllowed()
     // 100: greet only on the first toggle the app draws since it was launched.
     val greetSince = remember {
         if (day != null && !BrandGreetingGate.greeted) {
@@ -115,7 +118,7 @@ fun AmbientFluidBrand(
     val measurer = androidx.compose.ui.text.rememberTextMeasurer()
     val greetingStyle = MaterialTheme.typography.titleSmall.copy(color = Color.White)
     val density = androidx.compose.ui.platform.LocalDensity.current
-    val pillWidth = WorkoutActionMetrics.primaryWidth(windowWidth)
+    val pillWidth = width ?: WorkoutActionMetrics.primaryWidth(windowWidth)
     // 98: the greeting fits the pill left of the sync light, shrinking rather than running under it.
     val greetingLayout = remember(greeting, greetingStyle, pillWidth, density) {
         greeting?.let { text ->
@@ -147,7 +150,7 @@ fun AmbientFluidBrand(
     }
     Canvas(
         modifier = modifier
-            .size(WorkoutActionMetrics.primaryWidth(windowWidth), WorkoutActionMetrics.height)
+            .size(pillWidth, WorkoutActionMetrics.height)
             .clip(CircleShape)
             .background(ToggleNight)
             .then(

@@ -3850,7 +3850,7 @@
     <string name="activity_chart_sets_title">Herzfrequenz und Sätze</string>
     <string name="activity_chart_sets_count">Sätze</string>
     <string name="activity_chart_sets_legend">Satz</string>
-    <string name="activity_chart_sets_none">Für diese Einheit wurden keine Sätze aufgezeichnet, daher ist keiner markiert.</string>
+    <string name="activity_chart_sets_none">Die Uhr hat keine einzelnen Sätze aufgezeichnet, daher zählt die Einheit als einer und keiner ist hervorgehoben.</string>
     <string name="activity_chart_recovery_title">Erholung nach dem Ende</string>
     <string name="activity_chart_recovery_end">Am Ende</string>
     <string name="activity_chart_recovery_one">Nach 1 Min.</string>
@@ -3875,7 +3875,7 @@
     <string name="settings_brand_colors_tiles">Die Farben der ersten sechs Kacheln der ersten Seite</string>
     <string name="settings_brand_colors_hero_tiles">Beides: die Farben der Ringe und der ersten sechs Kacheln</string>
     <string name="settings_brand_animated_title">Animiert</string>
-    <string name="settings_brand_animated_body">An: Schalter und Schaltflächen bewegen sich. Aus: Sie bleiben still in ihren Farben.</string>
+    <string name="settings_brand_animated_body">An: Die Schaltflächen und Symbole auf dem Startbildschirm bewegen sich; aus: Sie stehen still in ihren Farben. Der OpenVitals-Schalter bewegt sich immer.</string>
     <string name="activity_chart_recovery_estimate">Schätzung</string>
     <string name="activity_chart_recovery_estimate_note">Nach %1$s wurde keine Herzfrequenz aufgezeichnet: Der Rest ist geschätzt und fällt Richtung Ruhepuls von %2$d bpm.</string>
     <string name="activity_elevation_source_tiles">Höhe aus dem Geländemodell (importierte Höhenkacheln).</string>

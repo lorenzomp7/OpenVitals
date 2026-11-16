@@ -20,7 +20,7 @@ internal fun NavGraphBuilder.medicalRecordsRoutes(
     navController: NavHostController,
     dateTimeFormatterProvider: DateTimeFormatterProvider,
 ) {
-    composable(Screen.MedicalRecords.route) {
+    opaqueComposable(Screen.MedicalRecords.route) {
         MedicalRecordsHomeScreen(
             viewModel = hiltViewModel(),
             exportViewModel = hiltViewModel(),
@@ -34,7 +34,7 @@ internal fun NavGraphBuilder.medicalRecordsRoutes(
         )
     }
 
-    composable(
+    opaqueComposable(
         route = Screen.MedicalRecordEntry.routePattern,
         arguments = listOf(
             navArgument(MEDICAL_ENTRY_KIND_ARG) { type = NavType.StringType },
@@ -44,16 +44,16 @@ internal fun NavGraphBuilder.medicalRecordsRoutes(
         MedicalRecordEntryScreen(viewModel = hiltViewModel(), onDone = { navController.popBackStack() })
     }
 
-    composable(Screen.MedicalSources.route) {
+    opaqueComposable(Screen.MedicalSources.route) {
         MedicalSourcesScreen(viewModel = hiltViewModel())
     }
 
-    composable(Screen.MedicalDocuments.route) {
+    opaqueComposable(Screen.MedicalDocuments.route) {
         MedicalDocumentsScreen(viewModel = hiltViewModel())
     }
 
     // Reached from the records home and from Settings, Import & export.
-    composable(
+    opaqueComposable(
         route = Screen.SettingsMedicalImport.routePattern,
         arguments = listOf(navArgument(MEDICAL_IMPORT_URI_ARG) { type = NavType.StringType; nullable = true; defaultValue = null }),
     ) { entry ->
@@ -63,7 +63,7 @@ internal fun NavGraphBuilder.medicalRecordsRoutes(
         )
     }
 
-    composable(
+    opaqueComposable(
         route = Screen.MedicalRecordCategory.route,
         arguments = listOf(navArgument(MEDICAL_CATEGORY_ARG) { type = NavType.StringType }),
     ) {
@@ -76,7 +76,7 @@ internal fun NavGraphBuilder.medicalRecordsRoutes(
         )
     }
 
-    composable(
+    opaqueComposable(
         route = Screen.MedicalRecordDetail.route,
         arguments = listOf(MEDICAL_SOURCE_ARG, MEDICAL_TYPE_ARG, MEDICAL_ID_ARG).map { name ->
             navArgument(name) { type = NavType.StringType }

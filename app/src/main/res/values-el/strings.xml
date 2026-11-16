@@ -535,7 +535,7 @@
     <string name="activity_chart_sets_title">Παλμοί και σετ</string>
     <string name="activity_chart_sets_count">Σετ</string>
     <string name="activity_chart_sets_legend">Σετ</string>
-    <string name="activity_chart_sets_none">Δεν καταγράφηκαν σετ σε αυτή τη συνεδρία, οπότε κανένα δεν επισημαίνεται.</string>
+    <string name="activity_chart_sets_none">Το ρολόι δεν κατέγραψε ξεχωριστά σετ, οπότε η προπόνηση μετρά ως ένα και κανένα δεν επισημαίνεται.</string>
     <string name="activity_chart_recovery_title">Αποκατάσταση μετά το τέλος</string>
     <string name="activity_chart_recovery_end">Στο τέλος</string>
     <string name="activity_chart_recovery_one">Μετά από 1 λ.</string>
@@ -560,7 +560,7 @@
     <string name="settings_brand_colors_tiles">Τα χρώματα των έξι πρώτων πλακιδίων της πρώτης σελίδας</string>
     <string name="settings_brand_colors_hero_tiles">Και τα δύο: χρώματα δακτυλίων και έξι πρώτων πλακιδίων</string>
     <string name="settings_brand_animated_title">Κινούμενα</string>
-    <string name="settings_brand_animated_body">Ενεργό: ο διακόπτης και τα κουμπιά κινούνται. Ανενεργό: μένουν ακίνητα στα χρώματά τους.</string>
+    <string name="settings_brand_animated_body">Ενεργό: τα κουμπιά και τα εικονίδια της αρχικής οθόνης κινούνται· ανενεργό: μένουν ακίνητα στα χρώματά τους. Ο διακόπτης OpenVitals κινείται πάντα.</string>
     <string name="activity_chart_recovery_estimate">Εκτίμηση</string>
     <string name="activity_chart_recovery_estimate_note">Δεν καταγράφηκαν παλμοί μετά το %1$s: το υπόλοιπο είναι εκτίμηση που πέφτει προς τους παλμούς ηρεμίας σου, %2$d bpm.</string>
     <string name="activity_elevation_source_tiles">Υψόμετρο από το μοντέλο εδάφους (εισαγόμενα πλακίδια υψομέτρου).</string>

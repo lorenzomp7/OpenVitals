@@ -3851,7 +3851,7 @@
     <string name="activity_chart_sets_title">心率与组</string>
     <string name="activity_chart_sets_count">组数</string>
     <string name="activity_chart_sets_legend">组</string>
-    <string name="activity_chart_sets_none">此训练未记录组，因此没有高亮显示。</string>
+    <string name="activity_chart_sets_none">手表没有记录单独的组，因此本次训练计为 1 组，且没有高亮。</string>
     <string name="activity_chart_recovery_title">结束后的恢复</string>
     <string name="activity_chart_recovery_end">结束时</string>
     <string name="activity_chart_recovery_one">1 分钟后</string>
@@ -3876,7 +3876,7 @@
     <string name="settings_brand_colors_tiles">第一页前六个卡片的颜色</string>
     <string name="settings_brand_colors_hero_tiles">两者：圆环和前六个卡片的颜色</string>
     <string name="settings_brand_animated_title">动态</string>
-    <string name="settings_brand_animated_body">开启时开关和按钮会动；关闭时保持各自颜色静止。</string>
+    <string name="settings_brand_animated_body">开启时，主屏幕上的按钮和图标会动；关闭时，它们保持各自颜色静止。OpenVitals 开关始终会动。</string>
     <string name="activity_chart_recovery_estimate">估算</string>
     <string name="activity_chart_recovery_estimate_note">%1$s 之后没有记录心率：其余部分为估算，逐渐降至你的静息心率 %2$d bpm。</string>
     <string name="activity_elevation_source_tiles">海拔来自地形模型（已导入的高程瓦片）。</string>

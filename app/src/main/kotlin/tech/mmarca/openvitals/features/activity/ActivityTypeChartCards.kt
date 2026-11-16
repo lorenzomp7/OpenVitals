@@ -424,7 +424,8 @@ internal fun ActivityStrengthSetsChartCard(
     ActivityTypeChartFrame(
         title = title,
         figures = listOf(
-            stringResource(R.string.activity_chart_sets_count) to unitFormatter.count(sets.size),
+            // 105: a strength session is at least one set, recorded or not.
+            stringResource(R.string.activity_chart_sets_count) to unitFormatter.count(maxOf(1, sets.size)),
             stringResource(R.string.summary_average) to bpm(points.map { it.second }.average()),
         ),
         accent = HeartColor,

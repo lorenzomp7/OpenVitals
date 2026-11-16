@@ -1,7 +1,6 @@
 package tech.mmarca.openvitals.features.dashboard
 
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -11,7 +10,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.DirectionsRun
 import androidx.compose.material.icons.outlined.Add
-import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -23,15 +21,12 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import tech.mmarca.openvitals.R
 import tech.mmarca.openvitals.ui.components.BrandPillButton
-import tech.mmarca.openvitals.ui.components.OpenVitalsIconButton
-import tech.mmarca.openvitals.ui.theme.WorkoutActionMetrics
 
+/** 107: "Start workout" on the left and "+ Log" on the right, each half the row. The pencil is in the header (106). */
 @Composable
 internal fun DashboardQuickActions(
-    isEditingDashboard: Boolean,
     onOpenLog: () -> Unit,
     onStartActivity: () -> Unit,
-    onToggleDashboardEdit: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Row(
@@ -43,7 +38,7 @@ internal fun DashboardQuickActions(
         BrandPillButton(
             onClick = onStartActivity,
             modifier = Modifier
-                .weight(WorkoutActionMetrics.primaryWeight)
+                .weight(1f)
                 .testTag("start_workout_action")
                 .height(DashboardQuickActionHeight),
         ) {
@@ -63,7 +58,7 @@ internal fun DashboardQuickActions(
         BrandPillButton(
             onClick = onOpenLog,
             modifier = Modifier
-                .weight(WorkoutActionMetrics.secondaryWeight)
+                .weight(1f)
                 .height(DashboardQuickActionHeight),
         ) {
             Icon(
@@ -77,22 +72,6 @@ internal fun DashboardQuickActions(
                 maxLines = 1,
                 softWrap = false,
                 overflow = TextOverflow.Ellipsis,
-            )
-        }
-        OpenVitalsIconButton(
-            onClick = onToggleDashboardEdit,
-            modifier = Modifier.size(WorkoutActionMetrics.editSize),
-        ) {
-            Icon(
-                imageVector = Icons.Outlined.Edit,
-                contentDescription = stringResource(
-                    if (isEditingDashboard) {
-                        R.string.cd_finish_dashboard_editing
-                    } else {
-                        R.string.cd_edit_dashboard
-                    }
-                ),
-                modifier = Modifier.size(18.dp),
             )
         }
     }

@@ -3916,7 +3916,7 @@
     <string name="activity_chart_sets_title">Tętno i serie</string>
     <string name="activity_chart_sets_count">Serie</string>
     <string name="activity_chart_sets_legend">Seria</string>
-    <string name="activity_chart_sets_none">W tej sesji nie zapisano serii, więc żadna nie jest wyróżniona.</string>
+    <string name="activity_chart_sets_none">Zegarek nie zapisał osobnych serii, więc trening liczy się jako jedna i żadna nie jest wyróżniona.</string>
     <string name="activity_chart_recovery_title">Regeneracja po zakończeniu</string>
     <string name="activity_chart_recovery_end">Na końcu</string>
     <string name="activity_chart_recovery_one">Po 1 min</string>
@@ -3941,7 +3941,7 @@
     <string name="settings_brand_colors_tiles">Kolory pierwszych sześciu kafelków pierwszej strony</string>
     <string name="settings_brand_colors_hero_tiles">Oba: kolory pierścieni i pierwszych sześciu kafelków</string>
     <string name="settings_brand_animated_title">Animowane</string>
-    <string name="settings_brand_animated_body">Włączone: przełącznik i przyciski się poruszają. Wyłączone: pozostają nieruchome w swoich kolorach.</string>
+    <string name="settings_brand_animated_body">Włączone: przyciski i ikony na ekranie głównym się poruszają; wyłączone: stoją w swoich kolorach. Przełącznik OpenVitals porusza się zawsze.</string>
     <string name="activity_chart_recovery_estimate">Szacunek</string>
     <string name="activity_chart_recovery_estimate_note">Po %1$s nie zapisano tętna: reszta to szacunek spadający w kierunku tętna spoczynkowego %2$d bpm.</string>
     <string name="activity_elevation_source_tiles">Wysokość z modelu terenu (zaimportowane kafelki wysokości).</string>

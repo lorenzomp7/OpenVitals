@@ -25,7 +25,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Paint
 import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.text.font.FontWeight
@@ -39,12 +42,23 @@ import tech.mmarca.openvitals.ui.components.OpenVitalsCard
 import tech.mmarca.openvitals.ui.theme.Radii
 
 private val HeroPadding = 10.dp
-private val HeroRingStroke = 14.dp
+private val HeroRingStroke = 12.dp
 private val HeroSideStroke = 10.dp
 private val HeroValueFloor = 13.sp
 
-/** How far the side arcs sit outside the centre ring, as a multiple of its radius. */
-private const val HeroSideRadiusFactor = 1.28f
+/** 108: room under the rings for their reflection, as on a glossy floor. */
+private val HeroReflectionRoom = 22.dp
+
+/** 108: how far the glow spreads round a lit arc. */
+private val HeroGlowBlur = 7.dp
+private const val HeroGlowAlpha = 0.55f
+private const val HeroReflectionAlpha = 0.30f
+
+/**
+ * How far the side arcs sit outside the centre ring, as a multiple of its radius. 108: wider,
+ * so a clear band of dark runs between each arc and the ring.
+ */
+private const val HeroSideRadiusFactor = 1.42f
 
 /** Each side arc spans this many degrees, centred on the horizontal. */
 private const val HeroSideSweep = 100f
@@ -81,52 +95,44 @@ internal fun DashboardMultiRingHero(
             val hasSides = left != null || right != null
             // The centre ring is as large as the height allows, less when the
             // sides need room for their arcs and numbers.
-            val byHeight = maxHeight / 2 - HeroRingStroke / 2
+            val byHeight = (maxHeight - HeroReflectionRoom) / 2 - HeroRingStroke / 2
             val byWidth = if (hasSides) (maxWidth / 2 - 62.dp) / HeroSideRadiusFactor else maxWidth / 2
             val ringRadius: Dp = minOf(byHeight, byWidth)
             val sideRadius = ringRadius * HeroSideRadiusFactor
             val sideWidth = (maxWidth / 2 - sideRadius - HeroSideStroke).coerceAtLeast(0.dp)
+            val glowPaint = remember { Paint() }
 
             Canvas(modifier = Modifier.fillMaxSize()) {
-                val middle = Offset(size.width / 2f, size.height / 2f)
-                drawRing(
+                val middle = Offset(size.width / 2f, (size.height - HeroReflectionRoom.toPx()) / 2f)
+                val floor = size.height - HeroReflectionRoom.toPx() / 2f
+                val ring = HeroRing(
                     center = middle,
                     radius = ringRadius.toPx(),
                     stroke = HeroRingStroke.toPx(),
                     startAngle = -90f,
                     sweep = 360f,
                     fraction = centerFraction,
-                    track = centerColors.ring.copy(alpha = 0.22f),
-                    fill = centerColors.ring,
+                    color = centerColors.ring,
                 )
-                if (left != null && leftColors != null) {
+                val sides = listOfNotNull(
                     // Fills from the bottom of the arc upwards.
-                    drawRing(
-                        center = middle,
-                        radius = sideRadius.toPx(),
-                        stroke = HeroSideStroke.toPx(),
-                        startAngle = 180f - HeroSideSweep / 2f,
-                        sweep = HeroSideSweep,
-                        fraction = leftFraction,
-                        track = leftColors.ring.copy(alpha = 0.22f),
-                        fill = leftColors.ring,
-                    )
-                }
-                if (right != null && rightColors != null) {
-                    drawRing(
-                        center = middle,
-                        radius = sideRadius.toPx(),
-                        stroke = HeroSideStroke.toPx(),
-                        startAngle = HeroSideSweep / 2f,
-                        sweep = -HeroSideSweep,
-                        fraction = rightFraction,
-                        track = rightColors.ring.copy(alpha = 0.22f),
-                        fill = rightColors.ring,
-                    )
-                }
+                    if (left != null && leftColors != null) HeroRing(
+                        middle, sideRadius.toPx(), HeroSideStroke.toPx(),
+                        180f - HeroSideSweep / 2f, HeroSideSweep, leftFraction, leftColors.ring,
+                    ) else null,
+                    if (right != null && rightColors != null) HeroRing(
+                        middle, sideRadius.toPx(), HeroSideStroke.toPx(),
+                        HeroSideSweep / 2f, -HeroSideSweep, rightFraction, rightColors.ring,
+                    ) else null,
+                )
+                // 108: each ring's light falls on the floor under it, soft and faint.
+                drawReflection(glowPaint, ring, floor, width = ring.radius * 1.3f)
+                sides.forEach { drawReflection(glowPaint, it, floor, width = it.stroke * 3f) }
+                (listOf(ring) + sides).forEach { drawRing(it, glowPaint) }
             }
 
-            Row(modifier = Modifier.fillMaxSize()) {
+            // The numbers sit level with the rings, above the reflection.
+            Row(modifier = Modifier.fillMaxSize().padding(bottom = HeroReflectionRoom)) {
                 HeroLabel(
                     ring = left,
                     color = leftColors?.ring,
@@ -196,22 +202,59 @@ private fun HeroLabel(
     }
 }
 
-private fun DrawScope.drawRing(
-    center: Offset,
-    radius: Float,
-    stroke: Float,
-    startAngle: Float,
-    sweep: Float,
-    fraction: Float,
-    track: Color,
-    fill: Color,
-) {
-    val topLeft = Offset(center.x - radius, center.y - radius)
-    val arcSize = Size(radius * 2f, radius * 2f)
-    val style = Stroke(width = stroke, cap = StrokeCap.Round)
-    drawArc(track, startAngle, sweep, useCenter = false, topLeft = topLeft, size = arcSize, style = style)
-    val filled = sweep * fraction.coerceIn(0f, 1f)
-    if (filled != 0f) {
-        drawArc(fill, startAngle, filled, useCenter = false, topLeft = topLeft, size = arcSize, style = style)
+private class HeroRing(
+    val center: Offset,
+    val radius: Float,
+    val stroke: Float,
+    val startAngle: Float,
+    val sweep: Float,
+    val fraction: Float,
+    val color: Color,
+)
+
+private fun DrawScope.drawRing(ring: HeroRing, glowPaint: Paint) {
+    val topLeft = Offset(ring.center.x - ring.radius, ring.center.y - ring.radius)
+    val arcSize = Size(ring.radius * 2f, ring.radius * 2f)
+    val arcStyle = Stroke(width = ring.stroke, cap = StrokeCap.Round)
+    drawArc(ring.color.copy(alpha = 0.22f), ring.startAngle, ring.sweep, useCenter = false, topLeft = topLeft, size = arcSize, style = arcStyle)
+    val filled = ring.sweep * ring.fraction.coerceIn(0f, 1f)
+    if (filled == 0f) return
+    // 108: the lit part glows, a blurred copy of itself under it.
+    drawIntoCanvas { canvas ->
+        glowPaint.asFrameworkPaint().apply {
+            reset()
+            isAntiAlias = true
+            style = android.graphics.Paint.Style.STROKE
+            strokeWidth = ring.stroke
+            strokeCap = android.graphics.Paint.Cap.ROUND
+            color = ring.color.copy(alpha = HeroGlowAlpha).toArgb()
+            maskFilter = android.graphics.BlurMaskFilter(HeroGlowBlur.toPx(), android.graphics.BlurMaskFilter.Blur.NORMAL)
+        }
+        canvas.drawArc(
+            topLeft.x, topLeft.y, topLeft.x + arcSize.width, topLeft.y + arcSize.height,
+            ring.startAngle, filled, false, glowPaint,
+        )
+    }
+    drawArc(ring.color, ring.startAngle, filled, useCenter = false, topLeft = topLeft, size = arcSize, style = arcStyle)
+}
+
+/** 108: a soft oval of the ring's colour on the floor under the lowest point of its arc. */
+private fun DrawScope.drawReflection(paint: Paint, ring: HeroRing, floor: Float, width: Float) {
+    val end = ring.startAngle + ring.sweep
+    // The lowest point the ring reaches: its bottom, or the arc's lower end.
+    val lowest = if (ring.sweep >= 360f) 90.0 else {
+        listOf(ring.startAngle, end).maxBy { kotlin.math.sin(Math.toRadians(it.toDouble())) }.toDouble()
+    }
+    val x = ring.center.x + ring.radius * kotlin.math.cos(Math.toRadians(lowest)).toFloat()
+    val height = HeroReflectionRoom.toPx() * 0.6f
+    drawIntoCanvas { canvas ->
+        paint.asFrameworkPaint().apply {
+            reset()
+            isAntiAlias = true
+            style = android.graphics.Paint.Style.FILL
+            color = ring.color.copy(alpha = HeroReflectionAlpha * (0.4f + 0.6f * ring.fraction.coerceIn(0f, 1f))).toArgb()
+            maskFilter = android.graphics.BlurMaskFilter(height, android.graphics.BlurMaskFilter.Blur.NORMAL)
+        }
+        canvas.drawOval(x - width / 2f, floor - height / 2f, x + width / 2f, floor + height / 2f, paint)
     }
 }

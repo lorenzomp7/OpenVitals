@@ -47,7 +47,7 @@ internal fun NavGraphBuilder.manualEntryRoutes(
     onEntrySavedAndPopBack: () -> Unit,
     onActivityEntrySaved: () -> Unit,
 ) {
-    composable(Screen.ManualEntry.route) {
+    opaqueComposable(Screen.ManualEntry.route) {
         val manualEntryViewModel = hiltViewModel<ManualEntryViewModel>()
         WithHealthConnectFeatureScreen(
             feature = HealthConnectFeature.MANUAL_ENTRY,
@@ -89,7 +89,7 @@ internal fun NavGraphBuilder.manualEntryRoutes(
         }
     }
 
-    composable(Screen.WorkoutPlans.route) {
+    opaqueComposable(Screen.WorkoutPlans.route) {
         WorkoutPlanListScreen(
             dateTimeFormatterProvider = dateTimeFormatterProvider,
             onOpenBuilder = { planId ->
@@ -106,7 +106,7 @@ internal fun NavGraphBuilder.manualEntryRoutes(
         )
     }
 
-    composable(
+    opaqueComposable(
         route = Screen.WorkoutPlanBuilder.route,
         arguments = listOf(
             navArgument(WORKOUT_PLAN_ID_ARG) {
@@ -125,7 +125,7 @@ internal fun NavGraphBuilder.manualEntryRoutes(
         )
     }
 
-    composable(Screen.HydrationEntry.route) {
+    opaqueComposable(Screen.HydrationEntry.route) {
         val hydrationViewModel = hiltViewModel<HydrationEntryViewModel>()
         HydrationEntryScreen(
             viewModel = hydrationViewModel,
@@ -134,7 +134,7 @@ internal fun NavGraphBuilder.manualEntryRoutes(
         )
     }
 
-    composable(
+    opaqueComposable(
         route = Screen.HydrationEntryLogDrink.route,
         arguments = listOf(navArgument(HYDRATION_DRINK_ID_ARG) { type = NavType.StringType }),
     ) { backStackEntry ->
@@ -147,7 +147,7 @@ internal fun NavGraphBuilder.manualEntryRoutes(
         )
     }
 
-    composable(
+    opaqueComposable(
         route = Screen.HydrationEntryEdit.route,
         arguments = listOf(navArgument(HYDRATION_ENTRY_ID_ARG) { type = NavType.StringType }),
     ) {
@@ -159,7 +159,7 @@ internal fun NavGraphBuilder.manualEntryRoutes(
         )
     }
 
-    composable(Screen.NutritionEntry.route) {
+    opaqueComposable(Screen.NutritionEntry.route) {
         val nutritionEntryViewModel = hiltViewModel<NutritionEntryViewModel>()
         NutritionEntryScreen(
             viewModel = nutritionEntryViewModel,
@@ -167,7 +167,7 @@ internal fun NavGraphBuilder.manualEntryRoutes(
         )
     }
 
-    composable(
+    opaqueComposable(
         route = Screen.NutritionEntryEdit.route,
         arguments = listOf(navArgument(NUTRITION_ENTRY_ID_ARG) { type = NavType.StringType }),
     ) {
@@ -178,7 +178,7 @@ internal fun NavGraphBuilder.manualEntryRoutes(
         )
     }
 
-    composable(Screen.FoodEntry.route) {
+    opaqueComposable(Screen.FoodEntry.route) {
         val foodEntryViewModel = hiltViewModel<FoodEntryViewModel>()
         FoodEntryScreen(
             viewModel = foodEntryViewModel,
@@ -187,7 +187,7 @@ internal fun NavGraphBuilder.manualEntryRoutes(
         )
     }
 
-    composable(
+    opaqueComposable(
         route = Screen.ActivityEntry.route,
         arguments = listOf(
             navArgument(ACTIVITY_ENTRY_MODE_ARG) {
@@ -229,7 +229,7 @@ internal fun NavGraphBuilder.manualEntryRoutes(
         )
     }
 
-    composable(
+    opaqueComposable(
         route = Screen.ActivityEntryEdit.route,
         arguments = listOf(navArgument(ACTIVITY_ENTRY_ID_ARG) { type = NavType.StringType }),
     ) { backStackEntry ->
@@ -252,7 +252,7 @@ internal fun NavGraphBuilder.manualEntryRoutes(
         )
     }
 
-    composable(Screen.MindfulnessEntry.route) {
+    opaqueComposable(Screen.MindfulnessEntry.route) {
         val mindfulnessEntryViewModel = hiltViewModel<MindfulnessEntryViewModel>()
         MindfulnessEntryScreen(
             viewModel = mindfulnessEntryViewModel,
@@ -260,7 +260,7 @@ internal fun NavGraphBuilder.manualEntryRoutes(
         )
     }
 
-    composable(
+    opaqueComposable(
         route = Screen.MindfulnessEntryEdit.route,
         arguments = listOf(navArgument(MINDFULNESS_ENTRY_ID_ARG) { type = NavType.StringType }),
     ) {
@@ -272,7 +272,7 @@ internal fun NavGraphBuilder.manualEntryRoutes(
     }
 
     // What to log. A card opens the day log on one section; the full log stays one tap away.
-    composable(Screen.CycleEntryChooser.route) {
+    opaqueComposable(Screen.CycleEntryChooser.route) {
         CycleEntryChooserScreen(
             onChoose = { section -> navController.navigate(Screen.CycleEntry.createRoute(section = section.routeValue)) },
             onOpenFullDayLog = { navController.navigate(Screen.CycleEntry.createRoute()) },
@@ -280,7 +280,7 @@ internal fun NavGraphBuilder.manualEntryRoutes(
     }
 
     // A day log is one save per day, so the route returns to the caller once it lands.
-    composable(
+    opaqueComposable(
         route = Screen.CycleEntry.route + CYCLE_ENTRY_QUERY_PATTERN,
         arguments = listOf(
             navArgument(CYCLE_ENTRY_DATE_ARG) { type = NavType.StringType; nullable = true; defaultValue = null },
@@ -297,7 +297,7 @@ internal fun NavGraphBuilder.manualEntryRoutes(
     }
 
     // A weigh-in is saved once, so the form closes on save, as the cycle day log does.
-    composable(Screen.BodyCompositionEntry.route) {
+    opaqueComposable(Screen.BodyCompositionEntry.route) {
         val bodyMeasurementViewModel = hiltViewModel<BodyMeasurementEntryViewModel>()
         BodyMeasurementEntryScreen(
             viewModel = bodyMeasurementViewModel,
@@ -306,7 +306,7 @@ internal fun NavGraphBuilder.manualEntryRoutes(
         )
     }
 
-    composable(
+    opaqueComposable(
         route = Screen.BodyMeasurementEntry.route,
         arguments = listOf(navArgument(BODY_MEASUREMENT_TYPE_ARG) { type = NavType.StringType }),
     ) {
@@ -318,7 +318,7 @@ internal fun NavGraphBuilder.manualEntryRoutes(
         )
     }
 
-    composable(
+    opaqueComposable(
         route = Screen.BodyMeasurementEntryEdit.route,
         arguments = listOf(
             navArgument(BODY_MEASUREMENT_TYPE_ARG) { type = NavType.StringType },
@@ -333,7 +333,7 @@ internal fun NavGraphBuilder.manualEntryRoutes(
         )
     }
 
-    composable(
+    opaqueComposable(
         route = Screen.VitalsMeasurementEntry.route,
         arguments = listOf(navArgument(VITALS_MEASUREMENT_TYPE_ARG) { type = NavType.StringType }),
     ) { backStackEntry ->
@@ -350,7 +350,7 @@ internal fun NavGraphBuilder.manualEntryRoutes(
         )
     }
 
-    composable(
+    opaqueComposable(
         route = Screen.VitalsMeasurementEntryEdit.route,
         arguments = listOf(
             navArgument(VITALS_MEASUREMENT_TYPE_ARG) { type = NavType.StringType },

@@ -271,10 +271,8 @@ internal fun DashboardContent(
                             onSetPagedLayout = onSetPagedLayout,
                             actionContent = {
                                 DashboardQuickActions(
-                                    isEditingDashboard = editing,
                                     onOpenLog = onOpenLog,
                                     onStartActivity = onStartActivity,
-                                    onToggleDashboardEdit = onToggleDashboardEdit,
                                     // 14dp under the rings; the divider carries its own air.
                                     modifier = Modifier.padding(
                                         start = DashboardScreenPadding,

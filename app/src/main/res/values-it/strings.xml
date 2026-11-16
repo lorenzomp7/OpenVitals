@@ -3882,7 +3882,7 @@
     <string name="activity_chart_sets_title">Battito e serie</string>
     <string name="activity_chart_sets_count">Serie</string>
     <string name="activity_chart_sets_legend">Serie</string>
-    <string name="activity_chart_sets_none">Per questa sessione non sono state registrate serie, quindi nessuna è evidenziata.</string>
+    <string name="activity_chart_sets_none">L\'orologio non ha registrato serie separate: la sessione conta come una e nessuna è evidenziata.</string>
     <string name="activity_chart_recovery_title">Recupero dopo la fine</string>
     <string name="activity_chart_recovery_end">Alla fine</string>
     <string name="activity_chart_recovery_one">Dopo 1 min</string>
@@ -3907,7 +3907,7 @@
     <string name="settings_brand_colors_tiles">I colori dei primi 6 riquadri della prima pagina</string>
     <string name="settings_brand_colors_hero_tiles">Entrambi: i colori degli anelli e dei primi 6 riquadri</string>
     <string name="settings_brand_animated_title">Animati</string>
-    <string name="settings_brand_animated_body">Attivo: il toggle e i pulsanti si muovono. Disattivo: restano fermi nei loro colori.</string>
+    <string name="settings_brand_animated_body">Attivo: i pulsanti e le icone della schermata principale si muovono. Disattivo: restano fermi nei loro colori. Il toggle OpenVitals si muove sempre.</string>
     <string name="activity_chart_recovery_estimate">Stima</string>
     <string name="activity_chart_recovery_estimate_note">Dopo %1$s non ci sono battiti registrati: il resto è stimato, in discesa verso il battito a riposo di %2$d bpm.</string>
     <string name="activity_elevation_source_tiles">Altitudine dal modello del terreno (tile di elevazione importati).</string>

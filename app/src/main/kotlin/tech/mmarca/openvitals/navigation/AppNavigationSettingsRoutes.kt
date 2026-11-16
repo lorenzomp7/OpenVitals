@@ -33,7 +33,7 @@ internal fun NavGraphBuilder.settingsRoutes(
     onImportFitFile: (Uri) -> Unit = {},
     onRouteFilesImported: () -> Unit = {},
 ) {
-    composable(Screen.Settings.route) {
+    opaqueComposable(Screen.Settings.route) {
         SettingsScreen(
             viewModel = hiltViewModel(),
             onOpenSection = { section ->
@@ -44,56 +44,56 @@ internal fun NavGraphBuilder.settingsRoutes(
         )
     }
 
-    composable(Screen.SettingsDisplay.route) {
+    opaqueComposable(Screen.SettingsDisplay.route) {
         DisplaySettingsScreen(viewModel = hiltViewModel())
     }
 
-    composable(Screen.SettingsActivities.route) {
+    opaqueComposable(Screen.SettingsActivities.route) {
         ActivitiesSettingsScreen(viewModel = hiltViewModel())
     }
 
-    composable(Screen.SettingsSensors.route) {
+    opaqueComposable(Screen.SettingsSensors.route) {
         SensorsSettingsScreen()
     }
 
     // Three routes, one screen: the metric screens link to the section by what they show.
-    composable(Screen.SettingsNutrition.route) {
+    opaqueComposable(Screen.SettingsNutrition.route) {
         NutritionSettingsScreen(viewModel = hiltViewModel())
     }
 
-    composable(Screen.SettingsCalories.route) {
+    opaqueComposable(Screen.SettingsCalories.route) {
         NutritionSettingsScreen(viewModel = hiltViewModel())
     }
 
-    composable(Screen.SettingsCaffeine.route) {
+    opaqueComposable(Screen.SettingsCaffeine.route) {
         NutritionSettingsScreen(viewModel = hiltViewModel())
     }
 
-    composable(Screen.SettingsBodyProfile.route) {
+    opaqueComposable(Screen.SettingsBodyProfile.route) {
         BodyProfileSettingsScreen(viewModel = hiltViewModel())
     }
 
-    composable(Screen.SettingsVitals.route) {
+    opaqueComposable(Screen.SettingsVitals.route) {
         SettingsSectionScreen(SettingsSection.VITALS)
     }
 
-    composable(Screen.SettingsRecovery.route) {
+    opaqueComposable(Screen.SettingsRecovery.route) {
         RecoverySettingsScreen(viewModel = hiltViewModel())
     }
 
-    composable(Screen.SettingsCycle.route) {
+    opaqueComposable(Screen.SettingsCycle.route) {
         CycleSettingsScreen(viewModel = hiltViewModel())
     }
 
-    composable(Screen.SettingsSleep.route) {
+    opaqueComposable(Screen.SettingsSleep.route) {
         RecoverySettingsScreen(viewModel = hiltViewModel())
     }
 
-    composable(Screen.SettingsBodyEnergy.route) {
+    opaqueComposable(Screen.SettingsBodyEnergy.route) {
         RecoverySettingsScreen(viewModel = hiltViewModel())
     }
 
-    composable(Screen.SettingsBackup.route) {
+    opaqueComposable(Screen.SettingsBackup.route) {
         SettingsBackupScreen(viewModel = hiltViewModel(), onImported = {
             navController.navigate(Screen.Dashboard.route) {
                 popUpTo(navController.graph.id) { inclusive = true }
@@ -102,7 +102,7 @@ internal fun NavGraphBuilder.settingsRoutes(
         })
     }
 
-    composable(Screen.SettingsDataImport.route) {
+    opaqueComposable(Screen.SettingsDataImport.route) {
         DataImportScreen(
             viewModel = hiltViewModel(),
             onImportRouteFileSelected = onImportRouteFile,
@@ -124,33 +124,33 @@ internal fun NavGraphBuilder.settingsRoutes(
         )
     }
 
-    composable(Screen.SettingsCsvImport.route) {
+    opaqueComposable(Screen.SettingsCsvImport.route) {
         CsvImportScreen(onDone = { navController.popBackStack() })
     }
 
-    composable(Screen.SettingsReportExport.route) {
+    opaqueComposable(Screen.SettingsReportExport.route) {
         ReportBuilderScreen(onDone = { navController.popBackStack() })
     }
 
     // A bespoke wizard, not a settings card list.
-    composable(Screen.SettingsDeviceSync.route) {
+    opaqueComposable(Screen.SettingsDeviceSync.route) {
         DeviceSyncScreen(onDone = { navController.popBackStack() })
     }
 
-    composable(Screen.SettingsOpenWatch.route) {
+    opaqueComposable(Screen.SettingsOpenWatch.route) {
         OpenWatchSettingsScreen(viewModel = hiltViewModel())
     }
 
-    composable(Screen.SettingsHealthConnect.route) {
+    opaqueComposable(Screen.SettingsHealthConnect.route) {
         SettingsSectionScreen(SettingsSection.HEALTH_CONNECT)
     }
 
-    composable(Screen.SettingsPermissions.route) {
+    opaqueComposable(Screen.SettingsPermissions.route) {
         SettingsSectionScreen(SettingsSection.HEALTH_CONNECT)
     }
 
     if (BuildConfig.OPENVITALS_DIAGNOSTICS) {
-        composable(Screen.SettingsDebugDiagnostics.route) {
+        opaqueComposable(Screen.SettingsDebugDiagnostics.route) {
             SettingsSectionScreen(SettingsSection.DEBUG_DIAGNOSTICS)
         }
     }

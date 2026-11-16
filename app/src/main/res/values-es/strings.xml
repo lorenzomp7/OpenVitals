@@ -3883,7 +3883,7 @@
     <string name="activity_chart_sets_title">Frecuencia cardiaca y series</string>
     <string name="activity_chart_sets_count">Series</string>
     <string name="activity_chart_sets_legend">Serie</string>
-    <string name="activity_chart_sets_none">No se registraron series en esta sesión, así que no hay ninguna resaltada.</string>
+    <string name="activity_chart_sets_none">El reloj no registró series separadas: la sesión cuenta como una y ninguna se resalta.</string>
     <string name="activity_chart_recovery_title">Recuperación tras el final</string>
     <string name="activity_chart_recovery_end">Al final</string>
     <string name="activity_chart_recovery_one">Tras 1 min</string>
@@ -3908,7 +3908,7 @@
     <string name="settings_brand_colors_tiles">Los colores de los seis primeros recuadros de la primera página</string>
     <string name="settings_brand_colors_hero_tiles">Ambos: los colores de los anillos y de los seis primeros recuadros</string>
     <string name="settings_brand_animated_title">Animados</string>
-    <string name="settings_brand_animated_body">Activado: el interruptor y los botones se mueven. Desactivado: se quedan quietos con sus colores.</string>
+    <string name="settings_brand_animated_body">Activado: los botones e iconos de la pantalla principal se mueven; desactivado: se quedan quietos en sus colores. El botón OpenVitals siempre se mueve.</string>
     <string name="activity_chart_recovery_estimate">Estimación</string>
     <string name="activity_chart_recovery_estimate_note">No hay frecuencia cardiaca registrada después de %1$s: el resto es una estimación que baja hacia tu frecuencia en reposo de %2$d ppm.</string>
     <string name="activity_elevation_source_tiles">Altitud del modelo del terreno (teselas de elevación importadas).</string>

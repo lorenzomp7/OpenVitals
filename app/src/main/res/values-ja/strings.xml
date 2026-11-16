@@ -3918,7 +3918,7 @@
     <string name="activity_chart_sets_title">心拍数とセット</string>
     <string name="activity_chart_sets_count">セット数</string>
     <string name="activity_chart_sets_legend">セット</string>
-    <string name="activity_chart_sets_none">このセッションにはセットが記録されていないため、強調表示はありません。</string>
+    <string name="activity_chart_sets_none">ウォッチが個別のセットを記録しなかったため、セッションは 1 セットとして数え、強調表示はありません。</string>
     <string name="activity_chart_recovery_title">終了後の回復</string>
     <string name="activity_chart_recovery_end">終了時</string>
     <string name="activity_chart_recovery_one">1分後</string>
@@ -3943,7 +3943,7 @@
     <string name="settings_brand_colors_tiles">最初のページの最初の 6 タイルの色</string>
     <string name="settings_brand_colors_hero_tiles">両方：リングと最初の 6 タイルの色</string>
     <string name="settings_brand_animated_title">アニメーション</string>
-    <string name="settings_brand_animated_body">オン：トグルとボタンが動きます。オフ：色はそのままで静止します。</string>
+    <string name="settings_brand_animated_body">オン：ホーム画面のボタンとアイコンが動きます。オフ：色はそのままで静止します。OpenVitals トグルは常に動きます。</string>
     <string name="activity_chart_recovery_estimate">推定</string>
     <string name="activity_chart_recovery_estimate_note">%1$s 以降の心拍数は記録されていません。残りは安静時心拍数 %2$d bpm に向かって下がる推定値です。</string>
     <string name="activity_elevation_source_tiles">地形モデルの標高（インポートした標高タイル）。</string>
