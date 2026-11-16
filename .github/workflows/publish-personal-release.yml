@@ -57,7 +57,7 @@ jobs:
           if (( NEXT < 1070400000 )); then NEXT=1070400000; fi
           echo "OPENVITALS_VERSION_CODE=$NEXT" >> "$GITHUB_ENV"
           echo "code=$NEXT" >> "$GITHUB_OUTPUT"
-          echo "OPENVITALS_VERSION_NAME=2.17.7-personal-claude" >> "$GITHUB_ENV"
+          echo "OPENVITALS_VERSION_NAME=2.17.8-personal-claude" >> "$GITHUB_ENV"
       - name: Build the signed personal update
         env:
           OPENVITALS_RELEASE_STORE_FILE: ${{ github.workspace }}/personal/personal.p12
@@ -138,24 +138,19 @@ jobs:
           cat > release-notes.md <<EOF
           Scarica **OpenVitals.apk** dagli allegati e aprilo sul telefono.
 
-          Branch main_claude — settima tornata: 88–95:
-          - 88: corsa e camminata all'aperto hanno il grafico del passo (min/km) nel tempo, dalla velocità o, se manca, dal percorso.
-          - 89: il tapis roulant mostra il tempo passato in ciascuna zona cardiaca (1–5), in percentuale della frequenza massima del profilo o stimata dall'età.
-          - 90: la bici all'aperto mostra altitudine e velocità sullo stesso grafico, ognuna con la sua scala.
-          - 91: la bici da camera mostra cadenza e battito sullo stesso grafico.
-          - 92: le attività di forza mostrano il battito con le serie evidenziate, per vedere il recupero tra una serie e l'altra.
-          - 93: ogni attività con battito mostra il recupero nei 2 minuti dopo la fine, con il calo dopo 1 e 2 minuti.
-          - 94: il toggle animato ti saluta per nome quando apri l'app; le quattro forme si riempiono con gli obiettivi di oggi (passi, calorie, attività, sonno); un puntino mostra lo stato di Health Connect; toccandolo si apre il riepilogo di oggi.
-          - 95: la release è più veloce: build e controlli sul dispositivo girano insieme alla verifica completa invece che dopo.
+          Branch main_claude — 96:
+          - 96: i pulsanti "Inizia allenamento", "+ Registra" e "Attività" della schermata principale hanno lo stile del toggle animato OpenVitals: pillola scura, anello con i quattro colori che gira sul bordo, icona e testo con i colori che scorrono, in sincronia con il toggle.
+
+          Contiene anche tutto il lavoro della 2.17.7 (grafici per tipo di attività 88–93, toggle che saluta e si riempie con gli obiettivi 94).
 
           Questa versione aggiorna l'installazione personale compatibile di OpenVitals senza disinstallarla. La revisione ha superato la verifica completa (verify) in questa stessa esecuzione; package e firma coincidono con l'APK pubblicato precedente; installazione, aggiornamento, avvio e import screenshot sono verificati su Android 15.
 
-          Versione: **2.17.7-personal-claude**. Version code: **$OPENVITALS_VERSION_CODE**.
+          Versione: **2.17.8-personal-claude**. Version code: **$OPENVITALS_VERSION_CODE**.
           Sorgenti: https://github.com/$GH_REPO/commit/$GITHUB_SHA
           Compilazione e verifica aggiornamento: https://github.com/$GH_REPO/actions/runs/$GITHUB_RUN_ID
           EOF
           if gh release view "$TAG" > /dev/null 2>&1; then
             echo "Release already exists; keeping the published APK unchanged."
           else
-            gh release create "$TAG" release/OpenVitals.apk release/SHA256SUMS.txt --target "$GITHUB_SHA" --title "OpenVitals 2.17.7 · main_claude" --notes-file release-notes.md --latest
+            gh release create "$TAG" release/OpenVitals.apk release/SHA256SUMS.txt --target "$GITHUB_SHA" --title "OpenVitals 2.17.8 · main_claude" --notes-file release-notes.md --latest
           fi

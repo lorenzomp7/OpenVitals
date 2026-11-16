@@ -5,7 +5,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.width
-import tech.mmarca.openvitals.ui.components.OpenVitalsButton
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -193,9 +192,8 @@ private fun DashboardActivitiesSectionHeader(
     onClick: () -> Unit,
 ) {
     BoxWithConstraints(Modifier.fillMaxWidth().padding(start = DashboardScreenPadding, end = DashboardScreenPadding, top = DashboardSectionGap, bottom = Spacing.md / 2)) {
-        OpenVitalsButton(
+        tech.mmarca.openvitals.ui.components.BrandPillButton(
             onClick = onClick,
-            contentPadding = DashboardQuickActionContentPadding,
             modifier = Modifier.width((maxWidth - DashboardTileGap) / 2).height(DashboardQuickActionHeight),
         ) {
             Icon(Icons.AutoMirrored.Outlined.DirectionsRun, null, Modifier.size(DashboardQuickActionIconSize))

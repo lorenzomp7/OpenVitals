@@ -142,6 +142,9 @@ fun DashboardScreen(
             day = day, onOpenDay = { showDaySummary = true })
     }
 
+    androidx.compose.runtime.CompositionLocalProvider(
+        tech.mmarca.openvitals.ui.components.LocalFluidBrandTimeline provides timeline,
+    ) {
     WithHealthConnectFeatureScreen(
         feature = HealthConnectFeature.DASHBOARD,
         accessGateHeader = {
@@ -225,6 +228,7 @@ fun DashboardScreen(
                 else -> DashboardPlaceholder(header) { ErrorMessage(stringResource(R.string.message_no_dashboard_data)) }
             }
         }
+    }
     }
 
     if (showDatePicker) {

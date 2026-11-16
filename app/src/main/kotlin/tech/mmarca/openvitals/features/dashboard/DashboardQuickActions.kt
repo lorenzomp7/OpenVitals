@@ -22,9 +22,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import tech.mmarca.openvitals.R
-import tech.mmarca.openvitals.ui.components.OpenVitalsButton
+import tech.mmarca.openvitals.ui.components.BrandPillButton
 import tech.mmarca.openvitals.ui.components.OpenVitalsIconButton
-import tech.mmarca.openvitals.ui.components.OpenVitalsTonalButton
 import tech.mmarca.openvitals.ui.theme.WorkoutActionMetrics
 
 @Composable
@@ -40,9 +39,9 @@ internal fun DashboardQuickActions(
         horizontalArrangement = Arrangement.spacedBy(DashboardActionsSpacing),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        OpenVitalsButton(
+        // 96: the actions dressed like the animated toggle.
+        BrandPillButton(
             onClick = onStartActivity,
-            contentPadding = DashboardQuickActionContentPadding,
             modifier = Modifier
                 .weight(WorkoutActionMetrics.primaryWeight)
                 .testTag("start_workout_action")
@@ -61,9 +60,8 @@ internal fun DashboardQuickActions(
                 overflow = TextOverflow.Ellipsis,
             )
         }
-        OpenVitalsTonalButton(
+        BrandPillButton(
             onClick = onOpenLog,
-            contentPadding = DashboardQuickActionContentPadding,
             modifier = Modifier
                 .weight(WorkoutActionMetrics.secondaryWeight)
                 .height(DashboardQuickActionHeight),

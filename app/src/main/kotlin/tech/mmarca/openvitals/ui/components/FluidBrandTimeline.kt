@@ -28,3 +28,6 @@ class FluidBrandTimeline(val initialStartMillis: Long = NotStarted) {
         private const val FillSeconds = 2.8f
     }
 }
+
+/** The shell's timeline, for brand-styled pieces deep in a screen (96). */
+val LocalFluidBrandTimeline = androidx.compose.runtime.staticCompositionLocalOf<FluidBrandTimeline?> { null }

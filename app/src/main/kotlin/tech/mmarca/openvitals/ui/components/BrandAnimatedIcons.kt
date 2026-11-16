@@ -2,6 +2,8 @@ package tech.mmarca.openvitals.ui.components
 
 import android.os.SystemClock
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
@@ -107,3 +109,69 @@ fun BrandIconFrame(
 }
 
 private val BrandIconFrameSize = Spacing.xl + Spacing.md + Spacing.xs
+
+/**
+ * 96: a button in the style of the animated OpenVitals toggle: a night pill with the four
+ * Google colours running round its edge, and its icon and label painted with the same
+ * colours, drifting. It shares the toggle's clock, so the two move as one.
+ */
+@Composable
+fun BrandPillButton(
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    timeline: FluidBrandTimeline? = LocalFluidBrandTimeline.current,
+    content: @Composable androidx.compose.foundation.layout.RowScope.() -> Unit,
+) {
+    val clockTimeline = timeline ?: remember { FluidBrandTimeline() }
+    val clock = rememberBrandClock(clockTimeline)
+    val shape = androidx.compose.foundation.shape.RoundedCornerShape(percent = 50)
+    androidx.compose.foundation.layout.Row(
+        modifier = modifier
+            .clip(shape)
+            .background(ToggleNight)
+            .clickable(role = androidx.compose.ui.semantics.Role.Button, onClick = onClick)
+            .drawWithContent {
+                drawContent()
+                val seconds = clockTimeline.secondsAt(clock.value)
+                val shift = (seconds * 0.11f) % 1f
+                val stops = Array(17) { k -> (k / 16f) to cyclicBrandColor(k / 16f - shift) }
+                val ring = Brush.sweepGradient(*stops, center = center)
+                val stroke = Spacing.xs.toPx() / 2f
+                val radius = androidx.compose.ui.geometry.CornerRadius(size.height / 2f, size.height / 2f)
+                drawRoundRect(ring, alpha = PillGlowAlpha, style = Stroke(stroke * 3f), cornerRadius = radius)
+                drawRoundRect(
+                    ring,
+                    topLeft = Offset(stroke / 2f, stroke / 2f),
+                    size = androidx.compose.ui.geometry.Size(size.width - stroke, size.height - stroke),
+                    style = Stroke(stroke),
+                    cornerRadius = radius,
+                )
+            }
+            .padding(horizontal = Spacing.md),
+        horizontalArrangement = androidx.compose.foundation.layout.Arrangement.Center,
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        androidx.compose.foundation.layout.Row(
+            modifier = Modifier
+                .graphicsLayer { compositingStrategy = CompositingStrategy.Offscreen }
+                .drawWithContent {
+                    drawContent()
+                    val seconds = clockTimeline.secondsAt(clock.value)
+                    val drift = (seconds * 0.15f) % 1f
+                    drawRect(
+                        brush = Brush.linearGradient(
+                            colors = List(5) { cyclicBrandColor(it / 4f + drift) },
+                            start = Offset.Zero,
+                            end = Offset(size.width, size.height),
+                        ),
+                        blendMode = BlendMode.SrcIn,
+                    )
+                },
+            verticalAlignment = Alignment.CenterVertically,
+            content = content,
+        )
+    }
+}
+
+/** The glow under the pill's ring, as the toggle's. */
+private const val PillGlowAlpha = 0.35f
