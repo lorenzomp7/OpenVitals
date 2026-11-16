@@ -12,11 +12,7 @@ trap 'adb logcat -d -t 3000 > "$OUT/logcat.txt" || true' EXIT
 
 adb install -r "$APK"
 adb install -r "$TEST_APK"
-# Every runtime permission the app asks for, Health Connect's included: no grant dialogs.
-adb shell dumpsys package "$PKG" \
-  | sed -n '/requested permissions:/,/install permissions:/p' \
-  | grep -oE 'android\.permission\.[A-Za-z_.]+' | sort -u \
-  | while read -r permission; do adb shell pm grant "$PKG" "$permission" >/dev/null 2>&1 || true; done
+# WebDemoSeedTest grants the app its permissions, Health Connect's included.
 adb shell cmd locale set-app-locales "$PKG" --locales it-IT || true
 
 adb shell am instrument -w -r -e class tech.mmarca.openvitals.web.WebDemoSeedTest \

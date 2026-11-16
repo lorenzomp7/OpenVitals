@@ -1,5 +1,6 @@
 package tech.mmarca.openvitals.web
 
+import android.content.pm.PackageManager
 import androidx.health.connect.client.HealthConnectClient
 import androidx.health.connect.client.records.ActiveCaloriesBurnedRecord
 import androidx.health.connect.client.records.DistanceRecord
@@ -58,10 +59,24 @@ class WebDemoSeedTest {
             acceptedPrivacyPolicyVersion = PreferencesRepository.CURRENT_PRIVACY_POLICY_VERSION
             appLanguage = AppLanguage.ITALIAN
         }
+        grantEveryRequestedPermission()
         val client = HealthConnectClient.getOrCreate(context)
         val today = LocalDate.now(zone)
         val records = (0L until DemoDays).flatMap { back -> day(today.minusDays(back), back) } + profile(today)
         runBlocking { records.chunked(InsertChunk).forEach { client.insertRecords(it) } }
+    }
+
+    /** Every runtime permission the app asks for, Health Connect's included: no grant dialog on the tour. */
+    private fun grantEveryRequestedPermission() {
+        val automation = InstrumentationRegistry.getInstrumentation().uiAutomation
+        @Suppress("DEPRECATION")
+        val requested = context.packageManager
+            .getPackageInfo(context.packageName, PackageManager.GET_PERMISSIONS)
+            .requestedPermissions.orEmpty()
+        val granted = requested.count { permission ->
+            runCatching { automation.grantRuntimePermission(context.packageName, permission) }.isSuccess
+        }
+        println("WebDemoSeed: granted $granted of ${requested.size} requested permissions")
     }
 
     private var serial = 0
