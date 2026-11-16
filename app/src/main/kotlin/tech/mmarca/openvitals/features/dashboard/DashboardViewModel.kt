@@ -146,7 +146,6 @@ class DashboardViewModel @Inject constructor(
     private var lastSettledAt = 0L
     private var lastForegroundEpoch = foregroundGate?.foregroundEpoch ?: 0
 
-
     init {
         observeOpenWatch()
         observeSensorStatus()

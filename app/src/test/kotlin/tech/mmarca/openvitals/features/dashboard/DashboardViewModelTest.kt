@@ -4,6 +4,7 @@ import tech.mmarca.openvitals.R
 import tech.mmarca.openvitals.core.presentation.ScreenError
 import tech.mmarca.openvitals.domain.insights.MetricDailyGoalKey
 import tech.mmarca.openvitals.domain.preferences.ActivityWeekMode
+import tech.mmarca.openvitals.domain.preferences.BloodPressureGuideline
 import tech.mmarca.openvitals.domain.preferences.BodyEnergyCalibration
 import tech.mmarca.openvitals.domain.preferences.SleepWindow
 import tech.mmarca.openvitals.domain.model.BleConnectionStatus
@@ -101,6 +102,7 @@ class DashboardViewModelTest {
         every { it.setDashboardKnownWidgetIds(any()) } returns Unit
         every { it.healthConnectSyncEnabled } returns true
         every { it.bodyEnergyCalibration() } returns BodyEnergyCalibration.Automatic
+        every { it.bloodPressureGuideline } returns BloodPressureGuideline.ACC_AHA_2017
     }
 
     @Test fun `tile detail choice is restored saved and invalid counts are ignored`() = runTest {
