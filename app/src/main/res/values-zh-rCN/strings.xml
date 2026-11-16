@@ -3879,4 +3879,7 @@
     <string name="settings_brand_animated_body">开启时开关和按钮会动；关闭时保持各自颜色静止。</string>
     <string name="activity_chart_recovery_estimate">估算</string>
     <string name="activity_chart_recovery_estimate_note">%1$s 之后没有记录心率：其余部分为估算，逐渐降至你的静息心率 %2$d bpm。</string>
+    <string name="activity_elevation_source_tiles">海拔来自地形模型（已导入的高程瓦片）。</string>
+    <string name="activity_elevation_source_mapbox">海拔来自 Mapbox 地形模型。</string>
+    <string name="activity_elevation_source_gps">未校正的 GPS 海拔会漂移：登录 Mapbox 或导入高程瓦片即可校正。</string>
 </resources>

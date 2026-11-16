@@ -230,6 +230,7 @@ internal fun ActivityDetailScreen(
             fastestSplitPaceSeconds = state.fastestSplitPaceSeconds,
             splitSpeedTrace = state.splitSpeedTrace,
             elevationSamples = state.elevationSamples,
+            elevationSource = state.elevationSource,
             isDeleting = state.isDeleting,
             unitFormatter = unitFormatter,
             dateTimeFormatterProvider = dateTimeFormatterProvider,
@@ -286,6 +287,8 @@ internal fun ActivityDetailContent(
     fastestSplitPaceSeconds: Double?,
     splitSpeedTrace: ActivitySplitSpeedTrace?,
     elevationSamples: List<ActivityElevationSample>,
+    elevationSource: tech.mmarca.openvitals.features.activity.elevation.RouteElevationSource =
+        tech.mmarca.openvitals.features.activity.elevation.RouteElevationSource.GPS,
     isDeleting: Boolean,
     unitFormatter: UnitFormatter,
     dateTimeFormatterProvider: DateTimeFormatterProvider,
@@ -451,6 +454,7 @@ internal fun ActivityDetailContent(
             item {
                 ActivityElevationChartCard(
                     samples = elevationSamples,
+                    source = elevationSource,
                     sessionStart = workout.startTime,
                     sessionEnd = workout.endTime,
                     pauses = workout.segments.toSessionPauses(),

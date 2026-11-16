@@ -3905,4 +3905,7 @@
     <string name="settings_brand_animated_body">Ativo: o botão e os botões mexem-se. Inativo: ficam parados nas suas cores.</string>
     <string name="activity_chart_recovery_estimate">Estimativa</string>
     <string name="activity_chart_recovery_estimate_note">Não há frequência cardíaca registada depois de %1$s: o resto é estimado, a descer para a tua frequência em repouso de %2$d bpm.</string>
+    <string name="activity_elevation_source_tiles">Altitude do modelo de terreno (mosaicos de elevação importados).</string>
+    <string name="activity_elevation_source_mapbox">Altitude do modelo de terreno do Mapbox.</string>
+    <string name="activity_elevation_source_gps">Altitude GPS não corrigida, que deriva: inicia sessão no Mapbox ou importa mosaicos de elevação para a corrigir.</string>
 </resources>

@@ -213,4 +213,7 @@
     <string name="settings_brand_animated_body">מופעל: המתג והכפתורים זזים. כבוי: הם נשארים במקום בצבעיהם.</string>
     <string name="activity_chart_recovery_estimate">הערכה</string>
     <string name="activity_chart_recovery_estimate_note">לא נרשם דופק אחרי %1$s: השאר הוא הערכה היורדת לעבר דופק המנוחה שלך, %2$d פעימות לדקה.</string>
+    <string name="activity_elevation_source_tiles">גובה ממודל השטח (אריחי גובה מיובאים).</string>
+    <string name="activity_elevation_source_mapbox">גובה ממודל השטח של Mapbox.</string>
+    <string name="activity_elevation_source_gps">גובה GPS לא מתוקן, שנסחף: התחבר ל-Mapbox או ייבא אריחי גובה כדי לתקן אותו.</string>
 </resources>

@@ -563,4 +563,7 @@
     <string name="settings_brand_animated_body">Ενεργό: ο διακόπτης και τα κουμπιά κινούνται. Ανενεργό: μένουν ακίνητα στα χρώματά τους.</string>
     <string name="activity_chart_recovery_estimate">Εκτίμηση</string>
     <string name="activity_chart_recovery_estimate_note">Δεν καταγράφηκαν παλμοί μετά το %1$s: το υπόλοιπο είναι εκτίμηση που πέφτει προς τους παλμούς ηρεμίας σου, %2$d bpm.</string>
+    <string name="activity_elevation_source_tiles">Υψόμετρο από το μοντέλο εδάφους (εισαγόμενα πλακίδια υψομέτρου).</string>
+    <string name="activity_elevation_source_mapbox">Υψόμετρο από το μοντέλο εδάφους του Mapbox.</string>
+    <string name="activity_elevation_source_gps">Μη διορθωμένο υψόμετρο GPS, που αποκλίνει: συνδέσου στο Mapbox ή εισήγαγε πλακίδια υψομέτρου για να διορθωθεί.</string>
 </resources>

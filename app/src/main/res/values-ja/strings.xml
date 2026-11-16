@@ -3946,4 +3946,7 @@
     <string name="settings_brand_animated_body">オン：トグルとボタンが動きます。オフ：色はそのままで静止します。</string>
     <string name="activity_chart_recovery_estimate">推定</string>
     <string name="activity_chart_recovery_estimate_note">%1$s 以降の心拍数は記録されていません。残りは安静時心拍数 %2$d bpm に向かって下がる推定値です。</string>
+    <string name="activity_elevation_source_tiles">地形モデルの標高（インポートした標高タイル）。</string>
+    <string name="activity_elevation_source_mapbox">Mapbox の地形モデルの標高。</string>
+    <string name="activity_elevation_source_gps">補正されていない GPS 標高はずれます。Mapbox にサインインするか標高タイルをインポートすると補正されます。</string>
 </resources>

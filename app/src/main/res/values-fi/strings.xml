@@ -3878,4 +3878,7 @@
     <string name="settings_brand_animated_body">Päällä: kytkin ja painikkeet liikkuvat. Pois: ne pysyvät paikallaan väreissään.</string>
     <string name="activity_chart_recovery_estimate">Arvio</string>
     <string name="activity_chart_recovery_estimate_note">Sykettä ei tallennettu kohdan %1$s jälkeen: loppu on arvio, joka laskee kohti leposykettäsi %2$d bpm.</string>
+    <string name="activity_elevation_source_tiles">Korkeus maastomallista (tuodut korkeustiilet).</string>
+    <string name="activity_elevation_source_mapbox">Korkeus Mapboxin maastomallista.</string>
+    <string name="activity_elevation_source_gps">Korjaamaton GPS-korkeus, joka ajelehtii: kirjaudu Mapboxiin tai tuo korkeustiilet korjataksesi sen.</string>
 </resources>

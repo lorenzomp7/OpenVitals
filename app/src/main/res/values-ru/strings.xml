@@ -3945,4 +3945,7 @@
     <string name="settings_brand_animated_body">Включено: переключатель и кнопки движутся. Выключено: остаются неподвижными в своих цветах.</string>
     <string name="activity_chart_recovery_estimate">Оценка</string>
     <string name="activity_chart_recovery_estimate_note">После %1$s пульс не записан: остальное — оценка, снижающаяся к пульсу покоя %2$d уд/мин.</string>
+    <string name="activity_elevation_source_tiles">Высота по модели рельефа (импортированные тайлы высот).</string>
+    <string name="activity_elevation_source_mapbox">Высота по модели рельефа Mapbox.</string>
+    <string name="activity_elevation_source_gps">Нескорректированная высота GPS, которая дрейфует: войдите в Mapbox или импортируйте тайлы высот, чтобы её исправить.</string>
 </resources>

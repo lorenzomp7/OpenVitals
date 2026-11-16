@@ -1,14 +1,20 @@
 package tech.mmarca.openvitals.features.settings
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.selection.selectable
-import androidx.compose.foundation.selection.selectableGroup
+import androidx.compose.foundation.layout.size
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.AutoAwesome
+import androidx.compose.material.icons.outlined.Palette
+import androidx.compose.material3.FilterChip
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -16,7 +22,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.semantics.Role
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -37,46 +42,62 @@ class BrandLookViewModel @Inject constructor(private val preferences: BrandLookP
     fun setAnimated(animated: Boolean) = preferences.setAnimated(animated)
 }
 
-/** 97: which colours the home screen's toggle, header buttons and action pills use, and whether they move. */
+/**
+ * 97: which colours the home screen's toggle, header buttons and action pills use, and whether they move.
+ * 105: built as the cards around it are: chips for the choice, as the chart grouping card, and an
+ * icon, title and switch row for the motion, as the empty-tiles card.
+ */
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 internal fun BrandLookCard(modifier: Modifier = Modifier, viewModel: BrandLookViewModel = hiltViewModel()) {
     val palette by viewModel.palette.collectAsStateWithLifecycle()
     val animated by viewModel.animated.collectAsStateWithLifecycle()
     OpenVitalsCard(modifier = modifier.fillMaxWidth()) {
         Column(Modifier.padding(Spacing.lg)) {
-            Text(stringResource(R.string.settings_brand_colors_title), style = MaterialTheme.typography.titleSmall)
-            Text(
-                stringResource(R.string.settings_brand_colors_body),
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier.padding(top = Spacing.xs),
-            )
-            Column(Modifier.padding(top = Spacing.sm).selectableGroup()) {
-                BrandPaletteSource.entries.forEach { source ->
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .selectable(selected = palette == source, role = Role.RadioButton) { viewModel.selectPalette(source) }
-                            .padding(vertical = Spacing.xs),
-                        verticalAlignment = Alignment.CenterVertically,
-                    ) {
-                        RadioButton(selected = palette == source, onClick = null)
-                        Text(
-                            stringResource(source.labelRes()),
-                            style = MaterialTheme.typography.bodyMedium,
-                            modifier = Modifier.padding(start = Spacing.md),
-                        )
-                    }
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Icon(
+                    imageVector = Icons.Outlined.Palette,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.size(Spacing.xl),
+                )
+                Column(Modifier.padding(horizontal = Spacing.md).weight(1f)) {
+                    Text(stringResource(R.string.settings_brand_colors_title), style = MaterialTheme.typography.titleSmall)
+                    Text(
+                        stringResource(R.string.settings_brand_colors_body),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.padding(top = Spacing.xs),
+                    )
                 }
             }
-            HorizontalDivider(Modifier.padding(vertical = Spacing.sm))
+            FlowRow(
+                horizontalArrangement = Arrangement.spacedBy(Spacing.sm),
+                modifier = Modifier.fillMaxWidth().padding(top = Spacing.sm),
+            ) {
+                BrandPaletteSource.entries.forEach { source ->
+                    FilterChip(
+                        selected = palette == source,
+                        onClick = { viewModel.selectPalette(source) },
+                        label = { Text(stringResource(source.labelRes())) },
+                    )
+                }
+            }
+            HorizontalDivider(Modifier.padding(vertical = Spacing.md))
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Column(Modifier.weight(1f)) {
+                Icon(
+                    imageVector = Icons.Outlined.AutoAwesome,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.size(Spacing.xl),
+                )
+                Column(Modifier.padding(horizontal = Spacing.md).weight(1f)) {
                     Text(stringResource(R.string.settings_brand_animated_title), style = MaterialTheme.typography.titleSmall)
                     Text(
                         stringResource(R.string.settings_brand_animated_body),
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.padding(top = Spacing.xs),
                     )
                 }
                 Switch(checked = animated, onCheckedChange = viewModel::setAnimated)

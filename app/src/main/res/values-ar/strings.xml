@@ -213,4 +213,7 @@
     <string name="settings_brand_animated_body">عند التشغيل يتحرك الزر والأزرار؛ وعند الإيقاف تبقى ثابتة بألوانها.</string>
     <string name="activity_chart_recovery_estimate">تقدير</string>
     <string name="activity_chart_recovery_estimate_note">لم يُسجَّل معدل ضربات القلب بعد %1$s: الباقي تقديري، ينخفض نحو معدل الراحة لديك %2$d نبضة/دقيقة.</string>
+    <string name="activity_elevation_source_tiles">الارتفاع من نموذج التضاريس (مربعات الارتفاع المستوردة).</string>
+    <string name="activity_elevation_source_mapbox">الارتفاع من نموذج التضاريس في Mapbox.</string>
+    <string name="activity_elevation_source_gps">ارتفاع GPS غير مصحح ويتغير: سجّل الدخول إلى Mapbox أو استورد مربعات الارتفاع لتصحيحه.</string>
 </resources>

@@ -3878,4 +3878,7 @@
     <string name="settings_brand_animated_body">Sees: lüliti ja nupud liiguvad. Väljas: need jäävad oma värvides paigale.</string>
     <string name="activity_chart_recovery_estimate">Hinnang</string>
     <string name="activity_chart_recovery_estimate_note">Pärast %1$s pulssi ei salvestatud: ülejäänu on hinnang, mis langeb sinu puhkepulsi %2$d lööki/min suunas.</string>
+    <string name="activity_elevation_source_tiles">Kõrgus maastikumudelist (imporditud kõrgusruudud).</string>
+    <string name="activity_elevation_source_mapbox">Kõrgus Mapboxi maastikumudelist.</string>
+    <string name="activity_elevation_source_gps">Parandamata GPS-kõrgus, mis triivib: logi Mapboxi sisse või impordi kõrgusruudud, et seda parandada.</string>
 </resources>

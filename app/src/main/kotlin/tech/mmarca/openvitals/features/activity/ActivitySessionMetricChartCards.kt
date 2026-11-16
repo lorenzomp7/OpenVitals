@@ -185,10 +185,23 @@ internal fun ActivityElevationChartCard(
     unitFormatter: UnitFormatter,
     modifier: Modifier = Modifier,
     pauses: List<SessionPause> = emptyList(),
+    source: tech.mmarca.openvitals.features.activity.elevation.RouteElevationSource =
+        tech.mmarca.openvitals.features.activity.elevation.RouteElevationSource.GPS,
 ) {
     if (samples.isEmpty()) return
 
     ActivitySessionMetricChartCard(
+        // 104: where the heights came from: a terrain model, or the GPS, which drifts.
+        footnote = stringResource(
+            when (source) {
+                tech.mmarca.openvitals.features.activity.elevation.RouteElevationSource.TERRAIN_TILES ->
+                    R.string.activity_elevation_source_tiles
+                tech.mmarca.openvitals.features.activity.elevation.RouteElevationSource.MAPBOX_TERRAIN ->
+                    R.string.activity_elevation_source_mapbox
+                tech.mmarca.openvitals.features.activity.elevation.RouteElevationSource.GPS ->
+                    R.string.activity_elevation_source_gps
+            },
+        ),
         title = stringResource(R.string.metric_elevation),
         sortedValues = remember(samples) { samples.map { it.time to it.meters } },
         sessionStart = sessionStart,

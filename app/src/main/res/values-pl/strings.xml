@@ -3944,4 +3944,7 @@
     <string name="settings_brand_animated_body">Włączone: przełącznik i przyciski się poruszają. Wyłączone: pozostają nieruchome w swoich kolorach.</string>
     <string name="activity_chart_recovery_estimate">Szacunek</string>
     <string name="activity_chart_recovery_estimate_note">Po %1$s nie zapisano tętna: reszta to szacunek spadający w kierunku tętna spoczynkowego %2$d bpm.</string>
+    <string name="activity_elevation_source_tiles">Wysokość z modelu terenu (zaimportowane kafelki wysokości).</string>
+    <string name="activity_elevation_source_mapbox">Wysokość z modelu terenu Mapbox.</string>
+    <string name="activity_elevation_source_gps">Nieskorygowana wysokość GPS, która dryfuje: zaloguj się do Mapbox lub zaimportuj kafelki wysokości, aby ją poprawić.</string>
 </resources>

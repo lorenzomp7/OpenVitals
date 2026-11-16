@@ -3944,4 +3944,7 @@
     <string name="settings_brand_animated_body">Zapnuto: přepínač a tlačítka se pohybují. Vypnuto: zůstanou nehybné ve svých barvách.</string>
     <string name="activity_chart_recovery_estimate">Odhad</string>
     <string name="activity_chart_recovery_estimate_note">Po %1$s nebyl zaznamenán tep: zbytek je odhad klesající k vašemu klidovému tepu %2$d tepů/min.</string>
+    <string name="activity_elevation_source_tiles">Nadmořská výška z modelu terénu (importované výškové dlaždice).</string>
+    <string name="activity_elevation_source_mapbox">Nadmořská výška z modelu terénu Mapbox.</string>
+    <string name="activity_elevation_source_gps">Neopravená výška z GPS, která se odchyluje: přihlas se k Mapboxu nebo importuj výškové dlaždice a oprav ji.</string>
 </resources>

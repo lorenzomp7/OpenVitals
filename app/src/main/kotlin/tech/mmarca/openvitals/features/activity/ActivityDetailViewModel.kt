@@ -83,6 +83,10 @@ internal data class ActivityDetailUiState(
     /** The height profile of the session, oldest first. */
     val elevationSamples: List<ActivityElevationSample> = emptyList(),
 
+    /** 104: where [elevationSamples] came from. */
+    val elevationSource: tech.mmarca.openvitals.features.activity.elevation.RouteElevationSource =
+        tech.mmarca.openvitals.features.activity.elevation.RouteElevationSource.GPS,
+
     /** How the heart rate fell after the effort stopped, for a session that carries a stop mark. */
     val heartRateRecovery: HeartRateRecoveryReading? = null,
 
@@ -111,6 +115,7 @@ internal class ActivityDetailViewModel @Inject constructor(
     private val coMapsNavigationRepository: CoMapsNavigationRepository? = null,
     private val dispatchers: DispatcherProvider = DefaultDispatcherProvider,
     savedStateHandle: SavedStateHandle,
+    private val terrainElevation: tech.mmarca.openvitals.features.activity.elevation.RouteTerrainElevation? = null,
 ) : ViewModel() {
 
     /** The workout the route opened. Blank when it named none: the not-found state. */
@@ -218,6 +223,12 @@ internal class ActivityDetailViewModel @Inject constructor(
                 )
             }.getOrNull().orEmpty()
             val plan = linkedPlan.await()
+            // 104: the heights from a terrain model when one covers the route; the GPS drifts.
+            val terrain = if (workout.route.status == tech.mmarca.openvitals.domain.model.ExerciseRouteStatus.DATA) {
+                runCatchingCancellable { terrainElevation?.altitudes(workout.route.points) }.getOrNull()
+            } else {
+                null
+            }
             // Backfill, height profile and splits walk every sample.
             val profile = runCatchingCancellable { bodyProfilePreferences.bodyProfile() }.getOrNull()
             withContext(dispatchers.default) {
@@ -246,7 +257,12 @@ internal class ActivityDetailViewModel @Inject constructor(
                     heartRateAccessMissing = heartRate.isEmpty() && !hasHeartRateAccess,
                     markers = loadedMarkers,
                     coMapsSamples = loadedCoMapsSamples,
-                    elevationSamples = elevationProfile(backfilledWorkout.route),
+                    elevationSamples = terrain?.let { (_, heights) ->
+                        workout.route.points.zip(heights) { point, meters -> ActivityElevationSample(point.time, meters) }
+                            .sortedBy { it.time }
+                    } ?: elevationProfile(backfilledWorkout.route),
+                    elevationSource = terrain?.first
+                        ?: tech.mmarca.openvitals.features.activity.elevation.RouteElevationSource.GPS,
                     heartRateRecovery = recovery,
                     recoverySamples = recoverySamples,
                     maxHeartRateBpm = tech.mmarca.openvitals.domain.insights.workoutMaxHeartRate(

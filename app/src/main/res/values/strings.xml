@@ -3938,4 +3938,7 @@
     <string name="settings_brand_animated_body">On, the toggle and the buttons move; off, they stand still in their colours.</string>
     <string name="activity_chart_recovery_estimate">Estimate</string>
     <string name="activity_chart_recovery_estimate_note">No heart rate was recorded after %1$s: the rest is estimated, falling toward your resting rate of %2$d bpm.</string>
+    <string name="activity_elevation_source_tiles">Altitude from the terrain model (imported elevation tiles).</string>
+    <string name="activity_elevation_source_mapbox">Altitude from Mapbox\'s terrain model.</string>
+    <string name="activity_elevation_source_gps">Uncorrected GPS altitude, which drifts: sign in to Mapbox or import elevation tiles to correct it.</string>
 </resources>

@@ -3910,4 +3910,7 @@
     <string name="settings_brand_animated_body">Attivo: il toggle e i pulsanti si muovono. Disattivo: restano fermi nei loro colori.</string>
     <string name="activity_chart_recovery_estimate">Stima</string>
     <string name="activity_chart_recovery_estimate_note">Dopo %1$s non ci sono battiti registrati: il resto è stimato, in discesa verso il battito a riposo di %2$d bpm.</string>
+    <string name="activity_elevation_source_tiles">Altitudine dal modello del terreno (tile di elevazione importati).</string>
+    <string name="activity_elevation_source_mapbox">Altitudine dal modello del terreno di Mapbox.</string>
+    <string name="activity_elevation_source_gps">Altitudine GPS non corretta, che deriva: accedi a Mapbox o importa i tile di elevazione per correggerla.</string>
 </resources>

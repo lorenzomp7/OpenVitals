@@ -119,7 +119,7 @@ fun AmbientFluidBrand(
     // 98: the greeting fits the pill left of the sync light, shrinking rather than running under it.
     val greetingLayout = remember(greeting, greetingStyle, pillWidth, density) {
         greeting?.let { text ->
-            val room = with(density) { (pillWidth - WorkoutActionMetrics.height * 1.3f).toPx() }.toInt().coerceAtLeast(1)
+            val room = with(density) { (pillWidth - WorkoutActionMetrics.height * 0.8f).toPx() }.toInt().coerceAtLeast(1)
             var style = greetingStyle
             var layout = measurer.measure(text, style, maxLines = 1, softWrap = false)
             repeat(6) {
@@ -171,7 +171,8 @@ fun AmbientFluidBrand(
         }
         drawOpenVitalsToggle(seconds, intro * (1f - greetingAlpha), FluidBorderWidth.toPx(), fills, colors)
         if (greetingLayout != null && greetingAlpha > 0f) {
-            val room = size.width - size.height * 1.3f
+            // 106: no sync light at the end any more, so the greeting centres in the whole pill.
+            val room = size.width - size.height * 0.4f
             drawText(
                 textLayoutResult = greetingLayout,
                 alpha = greetingAlpha,
@@ -181,7 +182,6 @@ fun AmbientFluidBrand(
                 ),
             )
         }
-        day?.let { drawSyncDot(it.sync, seconds) }
     }
 }
 
@@ -205,19 +205,6 @@ private fun brandGreeting(name: String?): String {
         hour in 12..17 -> if (first != null) stringResource(R.string.brand_greeting_afternoon_name, first) else stringResource(R.string.brand_greeting_afternoon)
         else -> if (first != null) stringResource(R.string.brand_greeting_evening_name, first) else stringResource(R.string.brand_greeting_evening)
     }
-}
-
-/** 94: a small light at the end of the pill: green up to date, blue breathing while syncing, amber paused. */
-private fun DrawScope.drawSyncDot(sync: BrandSync, seconds: Float) {
-    val color = when (sync) {
-        BrandSync.UP_TO_DATE -> BrandGreen
-        BrandSync.SYNCING -> BrandBlue
-        BrandSync.PAUSED -> BrandYellow
-    }
-    val pulse = if (sync == BrandSync.SYNCING) 0.55f + 0.45f * sin(seconds * 4f) else 1f
-    val center = Offset(size.width - size.height * 0.42f, size.height * 0.5f)
-    drawCircle(color.copy(alpha = tech.mmarca.openvitals.ui.theme.Emphasis.subtle * pulse), radius = size.height * 0.14f, center = center)
-    drawCircle(color.copy(alpha = pulse), radius = size.height * 0.07f, center = center)
 }
 
 /** 35, 37: the four Google colours of the icon. */

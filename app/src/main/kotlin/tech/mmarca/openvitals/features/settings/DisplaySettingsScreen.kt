@@ -73,7 +73,7 @@ private fun LazyListScope.displaySettingsCards(
         )
     }
     item { SettingsCardSpacer() }
-    item { BrandLookCard() }
+    item { BrandLookCard(Modifier.padding(horizontal = LayoutMetrics.screenGutter)) }
     item { SettingsCardSpacer() }
     item {
         DashboardSortEmptyTilesCard(

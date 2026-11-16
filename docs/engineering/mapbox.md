@@ -22,6 +22,10 @@ The map follows the app background brightness, uses Mapbox Light/Dark, an azure 
 
 Mapbox manages its normal on-device resource cache. This is not a downloaded offline region or a promise that a previously viewed map remains cached. When a map style or tiles fail to load, the locally stored GPS preview remains visible. No additional route data is fetched or written.
 
+## Terrain heights for the elevation chart
+
+A watch's GPS altitude drifts tens of metres over a session, so the elevation chart reads the height under each route point from a terrain model instead (`features/activity/elevation/RouteTerrainElevation`). The imported elevation tiles come first when correction is on and they cover the whole route. Otherwise, when Mapbox is signed in, the app requests the Mapbox Terrain-DEM tiles (zoom 14, about ten metres a pixel) that the route crosses, by tile coordinate, exactly as the map requests its own tiles: the route, its points and its times are never sent. The tiles are cached in the app's cache directory; a route crossing more than 80 tiles, or any failed tile, keeps its GPS heights. The chart's footnote names which source drew it.
+
 ## Verification
 
 The consolidated `verify` workflow build an APK, install and launch it, and collect screenshot, UI hierarchy, activity state and logcat. A successful launch is not proof that Mapbox cartography works: this requires a successful on-device Mapbox login, an activity containing GPS samples, network availability and visual inspection. CI deliberately has no personal login and verifies the fallback path, protocol helpers and encrypted token storage; online tests skip explicitly.

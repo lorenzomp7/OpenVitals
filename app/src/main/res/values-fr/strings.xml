@@ -3911,4 +3911,7 @@
     <string name="settings_brand_animated_body">Activé : le bouton et les boutons bougent. Désactivé : ils restent immobiles dans leurs couleurs.</string>
     <string name="activity_chart_recovery_estimate">Estimation</string>
     <string name="activity_chart_recovery_estimate_note">Aucune fréquence cardiaque enregistrée après %1$s : la suite est estimée, en baisse vers ta fréquence de repos de %2$d bpm.</string>
+    <string name="activity_elevation_source_tiles">Altitude issue du modèle de terrain (tuiles d\'altitude importées).</string>
+    <string name="activity_elevation_source_mapbox">Altitude issue du modèle de terrain de Mapbox.</string>
+    <string name="activity_elevation_source_gps">Altitude GPS non corrigée, qui dérive : connecte-toi à Mapbox ou importe des tuiles d\'altitude pour la corriger.</string>
 </resources>

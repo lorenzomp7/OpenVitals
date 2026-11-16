@@ -3949,4 +3949,7 @@ Se Acceder a rutas de exercicio non aparece no diálogo de acceso, abre os axust
     <string name="settings_brand_animated_body">Activado: o interruptor e os botóns móvense. Desactivado: quedan quietos coas súas cores.</string>
     <string name="activity_chart_recovery_estimate">Estimación</string>
     <string name="activity_chart_recovery_estimate_note">Non hai frecuencia cardíaca rexistrada despois de %1$s: o resto é unha estimación que baixa cara á túa frecuencia en repouso de %2$d ppm.</string>
+    <string name="activity_elevation_source_tiles">Altitude do modelo do terreo (teselas de elevación importadas).</string>
+    <string name="activity_elevation_source_mapbox">Altitude do modelo do terreo de Mapbox.</string>
+    <string name="activity_elevation_source_gps">Altitude GPS sen corrixir, que deriva: inicia sesión en Mapbox ou importa teselas de elevación para corrixila.</string>
 </resources>

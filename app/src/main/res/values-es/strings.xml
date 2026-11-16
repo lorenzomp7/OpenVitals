@@ -3911,4 +3911,7 @@
     <string name="settings_brand_animated_body">Activado: el interruptor y los botones se mueven. Desactivado: se quedan quietos con sus colores.</string>
     <string name="activity_chart_recovery_estimate">Estimación</string>
     <string name="activity_chart_recovery_estimate_note">No hay frecuencia cardiaca registrada después de %1$s: el resto es una estimación que baja hacia tu frecuencia en reposo de %2$d ppm.</string>
+    <string name="activity_elevation_source_tiles">Altitud del modelo del terreno (teselas de elevación importadas).</string>
+    <string name="activity_elevation_source_mapbox">Altitud del modelo del terreno de Mapbox.</string>
+    <string name="activity_elevation_source_gps">Altitud GPS sin corregir, que deriva: inicia sesión en Mapbox o importa teselas de elevación para corregirla.</string>
 </resources>
