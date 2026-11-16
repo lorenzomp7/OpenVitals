@@ -793,6 +793,7 @@ class DashboardViewModel @Inject constructor(
             includeUnsupported = _uiState.value.isEditingDashboard,
             medicalRecordsAvailable = medicalRecords?.isAvailable() == true,
             openWatch = _uiState.value.openWatch,
+            bloodPressureGuideline = prefs.bloodPressureGuideline,
         )
             // A reload marks every tile loading. Without the last answers, the sort would reshuffle.
             .withLastDemoted(_uiState.value.display.lastDemoted)

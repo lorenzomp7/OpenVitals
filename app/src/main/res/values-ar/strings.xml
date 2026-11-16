@@ -244,4 +244,13 @@
     <string name="activity_elevation_source_mapbox">الارتفاع من نموذج التضاريس في Mapbox.</string>
     <string name="activity_elevation_source_gps">ارتفاع GPS غير مصحح ويتغير: سجّل الدخول إلى Mapbox أو استورد مربعات الارتفاع لتصحيحه.</string>
     <string name="activity_elevation_source_mapbox_failed">ارتفاع GPS، وهو ينحرف: تم تسجيل الدخول إلى Mapbox لكن تعذّر تحميل نموذج التضاريس (لا يوجد اتصال، أو رفض Mapbox الطلب). افتح النشاط مرة أخرى لإعادة المحاولة.</string>
+    <string name="dashboard_detail_fat_mass">كتلة الدهون: %1$s</string>
+    <string name="dashboard_detail_share_of_weight">%1$s من وزن الجسم</string>
+    <string name="dashboard_detail_macro_energy">%1$s، %2$s من المتناول</string>
+    <string name="dashboard_detail_label_total_calories">الإجمالي</string>
+    <string name="dashboard_detail_label_active_calories">النشطة</string>
+    <string name="dashboard_detail_label_floors">الطوابق</string>
+    <string name="dashboard_detail_label_avg_heart_rate">متوسط النبض</string>
+    <string name="dashboard_detail_label_respiratory_rate">معدل التنفس</string>
+    <string name="dashboard_detail_label_skin_temperature">حرارة الجلد</string>
 </resources>

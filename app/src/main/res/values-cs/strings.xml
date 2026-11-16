@@ -3973,4 +3973,13 @@
     <string name="activity_elevation_source_mapbox">Nadmořská výška z modelu terénu Mapbox.</string>
     <string name="activity_elevation_source_gps">Neopravená výška z GPS, která se odchyluje: přihlas se k Mapboxu nebo importuj výškové dlaždice a oprav ji.</string>
     <string name="activity_elevation_source_mapbox_failed">Nadmořská výška z GPS, která se posouvá: Mapbox je přihlášen, ale jeho model terénu se nepodařilo načíst (bez připojení nebo Mapbox požadavek odmítl). Otevřete aktivitu znovu a zkuste to znovu.</string>
+    <string name="dashboard_detail_fat_mass">Tuková hmota: %1$s</string>
+    <string name="dashboard_detail_share_of_weight">%1$s tělesné hmotnosti</string>
+    <string name="dashboard_detail_macro_energy">%1$s, %2$s příjmu</string>
+    <string name="dashboard_detail_label_total_calories">Celkem</string>
+    <string name="dashboard_detail_label_active_calories">Aktivní</string>
+    <string name="dashboard_detail_label_floors">Patra</string>
+    <string name="dashboard_detail_label_avg_heart_rate">Prům. TF</string>
+    <string name="dashboard_detail_label_respiratory_rate">Dech. frekv.</string>
+    <string name="dashboard_detail_label_skin_temperature">Tepl. kůže</string>
 </resources>

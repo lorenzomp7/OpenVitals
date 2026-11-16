@@ -3973,4 +3973,13 @@
     <string name="activity_elevation_source_mapbox">Wysokość z modelu terenu Mapbox.</string>
     <string name="activity_elevation_source_gps">Nieskorygowana wysokość GPS, która dryfuje: zaloguj się do Mapbox lub zaimportuj kafelki wysokości, aby ją poprawić.</string>
     <string name="activity_elevation_source_mapbox_failed">Wysokość z GPS, która dryfuje: Mapbox jest zalogowany, ale nie udało się wczytać jego modelu terenu (brak połączenia lub Mapbox odrzucił żądanie). Otwórz aktywność ponownie, aby spróbować jeszcze raz.</string>
+    <string name="dashboard_detail_fat_mass">Masa tłuszczu: %1$s</string>
+    <string name="dashboard_detail_share_of_weight">%1$s masy ciała</string>
+    <string name="dashboard_detail_macro_energy">%1$s, %2$s spożycia</string>
+    <string name="dashboard_detail_label_total_calories">Łącznie</string>
+    <string name="dashboard_detail_label_active_calories">Aktywne</string>
+    <string name="dashboard_detail_label_floors">Piętra</string>
+    <string name="dashboard_detail_label_avg_heart_rate">Śr. tętno</string>
+    <string name="dashboard_detail_label_respiratory_rate">Częst. odd.</string>
+    <string name="dashboard_detail_label_skin_temperature">Temp. skóry</string>
 </resources>

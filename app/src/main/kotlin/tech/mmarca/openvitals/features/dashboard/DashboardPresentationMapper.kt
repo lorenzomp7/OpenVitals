@@ -9,6 +9,7 @@ import tech.mmarca.openvitals.domain.model.DashboardData
 import tech.mmarca.openvitals.domain.model.DashboardMetric
 import tech.mmarca.openvitals.domain.model.NutritionNutrient
 import tech.mmarca.openvitals.domain.model.asleepDurationMs
+import tech.mmarca.openvitals.domain.preferences.BloodPressureGuideline
 import tech.mmarca.openvitals.features.cycle.cycleSecondaryLine
 import tech.mmarca.openvitals.features.nutrition.displayValue
 import java.time.ZoneId
@@ -47,6 +48,8 @@ object DashboardPresentationMapper {
         openWatch: tech.mmarca.openvitals.openwatch.OpenWatchTileDisplay? = null,
         /** Tiles whose last read Health Connect refused. They are not sorted as empty. */
         degradedWidgets: Set<DashboardWidgetId> = emptySet(),
+        /** The guideline that names a blood pressure reading's category. */
+        bloodPressureGuideline: BloodPressureGuideline = BloodPressureGuideline.ACC_AHA_2017,
     ): DashboardDisplayState {
         val sleepGoalMs = (dailyGoals.sleepHours * 60.0 * 60.0 * 1000.0).toLong()
         val supportedMetrics = data.supportedMetrics
@@ -69,7 +72,13 @@ object DashboardPresentationMapper {
                     openWatch = openWatch,
                 ) ?: return@forEach
                 if (!isSupported) unsupportedIds += widgetId
-                put(widgetId, widget.copy(degraded = widgetId in degradedWidgets, periodLabel = data.period?.let { "${it.start} – ${it.end}" } ?: data.date.format(dateTimeFormatterProvider.mediumDate())))
+                put(
+                    widgetId,
+                    widget.copy(
+                        degraded = widgetId in degradedWidgets,
+                        facts = dashboardWidgetFacts(widgetId, widget, data, dailyGoals, unitFormatter, bloodPressureGuideline),
+                    ),
+                )
             }
         }
 

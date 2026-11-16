@@ -57,7 +57,7 @@ jobs:
           if (( NEXT < 1070400000 )); then NEXT=1070400000; fi
           echo "OPENVITALS_VERSION_CODE=$NEXT" >> "$GITHUB_ENV"
           echo "code=$NEXT" >> "$GITHUB_OUTPUT"
-          echo "OPENVITALS_VERSION_NAME=2.17.18-personal-claude" >> "$GITHUB_ENV"
+          echo "OPENVITALS_VERSION_NAME=2.17.19-personal-claude" >> "$GITHUB_ENV"
       - name: Build the signed personal update
         env:
           OPENVITALS_RELEASE_STORE_FILE: ${{ github.workspace }}/personal/personal.p12
@@ -138,19 +138,19 @@ jobs:
           cat > release-notes.md <<EOF
           Scarica **OpenVitals.apk** dagli allegati e aprilo sul telefono.
 
-          Branch main_claude — 119:
-          - Altitudine: in alto il grafico mostra Salita, Discesa e Intervallo (minimo – massimo), calcolati sul profilo disegnato con lo stesso filtro dei parziali. Prima la discesa compariva solo per ogni parziale.
-          - Salto con la corda: una scheda con salti totali, frequenza media (salti/min) e serie, ricavati dai segmenti "salto con la corda" che l'orologio scrive in Health Connect. Se l'orologio non li scrive, la scheda non compare. Il grafico della frequenza nel tempo non è possibile: Health Connect non ha questo dato.
-          - Record personali: una scheda in cima al dettaglio (spostabile come le altre) con i record che l'attività detiene fra quelle dello stesso tipo nell'anno precedente: distanza più lunga, allenamento più lungo, passo più veloce (o velocità media più alta) su almeno 1 km, più salti. Un pareggio non è un record. Si caricano dopo il resto della schermata, leggendo solo le attività di quel tipo, e restano in memoria dieci minuti.
+          Branch main_claude — 122:
+          - Toggle con anello (2x2): il testo ora sta sempre dentro il cerchio interno dell'anello e non passa più sopra la traccia; le righe lunghe si rimpiccioliscono per entrarci.
+          - "Periodo selezionato" non compare più tra i dettagli.
+          - Ogni toggle mostra dettagli legati a ciò che misura. Cibo (Calorie assunte, Proteine, Carboidrati, Grassi): obiettivo anche senza dati registrati, ripartizione P · C · G, kcal portate dal macronutriente e quota dell'apporto. Caffeina: mg assunti oggi e bevande. BMI e FFMI: categoria. Massa grassa in kg per il grasso corporeo; quota sul peso per massa magra, ossea e acqua. FC a riposo e HRV: valore di riferimento personale. Pressione: categoria secondo la linea guida scelta. Gli altri: le metriche collegate (es. SpO2 con frequenza respiratoria e FC a riposo, glicemia con carboidrati e calorie).
 
           Questa versione aggiorna l'installazione personale compatibile di OpenVitals senza disinstallarla. La revisione ha superato la verifica completa (verify) in questa stessa esecuzione; package e firma coincidono con l'APK pubblicato precedente; installazione, aggiornamento, avvio e import screenshot sono verificati su Android 15.
 
-          Versione: **2.17.18-personal-claude**. Version code: **$OPENVITALS_VERSION_CODE**.
+          Versione: **2.17.19-personal-claude**. Version code: **$OPENVITALS_VERSION_CODE**.
           Sorgenti: https://github.com/$GH_REPO/commit/$GITHUB_SHA
           Compilazione e verifica aggiornamento: https://github.com/$GH_REPO/actions/runs/$GITHUB_RUN_ID
           EOF
           if gh release view "$TAG" > /dev/null 2>&1; then
             echo "Release already exists; keeping the published APK unchanged."
           else
-            gh release create "$TAG" release/OpenVitals.apk release/SHA256SUMS.txt --target "$GITHUB_SHA" --title "OpenVitals 2.17.18 · main_claude" --notes-file release-notes.md --latest
+            gh release create "$TAG" release/OpenVitals.apk release/SHA256SUMS.txt --target "$GITHUB_SHA" --title "OpenVitals 2.17.19 · main_claude" --notes-file release-notes.md --latest
           fi

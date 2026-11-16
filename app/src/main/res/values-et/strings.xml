@@ -3907,4 +3907,13 @@
     <string name="activity_elevation_source_mapbox">Kõrgus Mapboxi maastikumudelist.</string>
     <string name="activity_elevation_source_gps">Parandamata GPS-kõrgus, mis triivib: logi Mapboxi sisse või impordi kõrgusruudud, et seda parandada.</string>
     <string name="activity_elevation_source_mapbox_failed">GPS-kõrgus, mis triivib: Mapbox on sisse logitud, kuid selle maastikumudelit ei õnnestunud laadida (ühendus puudub või Mapbox keeldus päringust). Uuesti proovimiseks ava tegevus uuesti.</string>
+    <string name="dashboard_detail_fat_mass">Rasvamass: %1$s</string>
+    <string name="dashboard_detail_share_of_weight">%1$s kehakaalust</string>
+    <string name="dashboard_detail_macro_energy">%1$s, %2$s tarbitust</string>
+    <string name="dashboard_detail_label_total_calories">Kokku</string>
+    <string name="dashboard_detail_label_active_calories">Aktiivsed</string>
+    <string name="dashboard_detail_label_floors">Korrused</string>
+    <string name="dashboard_detail_label_avg_heart_rate">Kesk. pulss</string>
+    <string name="dashboard_detail_label_respiratory_rate">Hingamissag.</string>
+    <string name="dashboard_detail_label_skin_temperature">Nahatemp.</string>
 </resources>

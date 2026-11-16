@@ -3939,4 +3939,13 @@
     <string name="activity_elevation_source_mapbox">Altitudine dal modello del terreno di Mapbox.</string>
     <string name="activity_elevation_source_gps">Altitudine GPS non corretta, che deriva: accedi a Mapbox o importa i tile di elevazione per correggerla.</string>
     <string name="activity_elevation_source_mapbox_failed">Altitudine GPS, che deriva: Mapbox è collegato ma il suo modello del terreno non si è caricato (nessuna connessione, o Mapbox ha rifiutato la richiesta). Riapri l\'attività per riprovare.</string>
+    <string name="dashboard_detail_fat_mass">Massa grassa: %1$s</string>
+    <string name="dashboard_detail_share_of_weight">%1$s del peso</string>
+    <string name="dashboard_detail_macro_energy">%1$s, %2$s dell\'apporto</string>
+    <string name="dashboard_detail_label_total_calories">Totali</string>
+    <string name="dashboard_detail_label_active_calories">Attive</string>
+    <string name="dashboard_detail_label_floors">Piani</string>
+    <string name="dashboard_detail_label_avg_heart_rate">FC media</string>
+    <string name="dashboard_detail_label_respiratory_rate">Freq. resp.</string>
+    <string name="dashboard_detail_label_skin_temperature">Temp. cutanea</string>
 </resources>

@@ -3974,4 +3974,13 @@
     <string name="activity_elevation_source_mapbox">Высота по модели рельефа Mapbox.</string>
     <string name="activity_elevation_source_gps">Нескорректированная высота GPS, которая дрейфует: войдите в Mapbox или импортируйте тайлы высот, чтобы её исправить.</string>
     <string name="activity_elevation_source_mapbox_failed">Высота по GPS, которая дрейфует: вход в Mapbox выполнен, но модель рельефа не загрузилась (нет соединения или Mapbox отклонил запрос). Откройте активность снова, чтобы повторить.</string>
+    <string name="dashboard_detail_fat_mass">Жировая масса: %1$s</string>
+    <string name="dashboard_detail_share_of_weight">%1$s массы тела</string>
+    <string name="dashboard_detail_macro_energy">%1$s, %2$s потребления</string>
+    <string name="dashboard_detail_label_total_calories">Всего</string>
+    <string name="dashboard_detail_label_active_calories">Активные</string>
+    <string name="dashboard_detail_label_floors">Этажи</string>
+    <string name="dashboard_detail_label_avg_heart_rate">Ср. ЧСС</string>
+    <string name="dashboard_detail_label_respiratory_rate">Част. дых.</string>
+    <string name="dashboard_detail_label_skin_temperature">Темп. кожи</string>
 </resources>

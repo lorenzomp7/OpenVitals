@@ -3907,4 +3907,13 @@
     <string name="activity_elevation_source_mapbox">Höhe aus dem Geländemodell von Mapbox.</string>
     <string name="activity_elevation_source_gps">Unkorrigierte GPS-Höhe, die driftet: Melde dich bei Mapbox an oder importiere Höhenkacheln, um sie zu korrigieren.</string>
     <string name="activity_elevation_source_mapbox_failed">GPS-Höhe, die driftet: Mapbox ist angemeldet, aber sein Geländemodell ließ sich nicht laden (keine Verbindung oder Mapbox hat die Anfrage abgelehnt). Öffne die Aktivität erneut, um es noch einmal zu versuchen.</string>
+    <string name="dashboard_detail_fat_mass">Fettmasse: %1$s</string>
+    <string name="dashboard_detail_share_of_weight">%1$s des Körpergewichts</string>
+    <string name="dashboard_detail_macro_energy">%1$s, %2$s der Aufnahme</string>
+    <string name="dashboard_detail_label_total_calories">Gesamt</string>
+    <string name="dashboard_detail_label_active_calories">Aktiv</string>
+    <string name="dashboard_detail_label_floors">Etagen</string>
+    <string name="dashboard_detail_label_avg_heart_rate">Ø HF</string>
+    <string name="dashboard_detail_label_respiratory_rate">Atemfreq.</string>
+    <string name="dashboard_detail_label_skin_temperature">Hauttemp.</string>
 </resources>

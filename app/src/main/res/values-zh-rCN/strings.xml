@@ -3908,4 +3908,13 @@
     <string name="activity_elevation_source_mapbox">海拔来自 Mapbox 地形模型。</string>
     <string name="activity_elevation_source_gps">未校正的 GPS 海拔会漂移：登录 Mapbox 或导入高程瓦片即可校正。</string>
     <string name="activity_elevation_source_mapbox_failed">GPS 海拔，会产生漂移：已登录 Mapbox，但无法加载其地形模型（无网络连接，或 Mapbox 拒绝了请求）。重新打开该活动即可重试。</string>
+    <string name="dashboard_detail_fat_mass">脂肪量：%1$s</string>
+    <string name="dashboard_detail_share_of_weight">占体重 %1$s</string>
+    <string name="dashboard_detail_macro_energy">%1$s，占摄入 %2$s</string>
+    <string name="dashboard_detail_label_total_calories">总计</string>
+    <string name="dashboard_detail_label_active_calories">活动</string>
+    <string name="dashboard_detail_label_floors">楼层</string>
+    <string name="dashboard_detail_label_avg_heart_rate">平均心率</string>
+    <string name="dashboard_detail_label_respiratory_rate">呼吸频率</string>
+    <string name="dashboard_detail_label_skin_temperature">皮肤温度</string>
 </resources>

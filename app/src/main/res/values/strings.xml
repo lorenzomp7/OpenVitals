@@ -1414,6 +1414,15 @@
     <string name="dashboard_cardio_load_percent">%1$d%% load</string>
     <string name="dashboard_caffeine_today_subtitle">%1$d mg today</string>
     <string name="dashboard_body_energy_subtitle">Start %1$d  +%2$d / -%3$d</string>
+    <string name="dashboard_detail_fat_mass">Fat mass: %1$s</string>
+    <string name="dashboard_detail_share_of_weight">%1$s of body weight</string>
+    <string name="dashboard_detail_macro_energy">%1$s, %2$s of intake</string>
+    <string name="dashboard_detail_label_total_calories">Total</string>
+    <string name="dashboard_detail_label_active_calories">Active</string>
+    <string name="dashboard_detail_label_floors">Floors</string>
+    <string name="dashboard_detail_label_avg_heart_rate">Avg HR</string>
+    <string name="dashboard_detail_label_respiratory_rate">Resp. rate</string>
+    <string name="dashboard_detail_label_skin_temperature">Skin temp</string>
     <string name="dashboard_cardio_load_today_delta">+%1$d%% today</string>
     <string name="message_no_activities_period">No activities in the selected period.</string>
     <string name="planned_workout_completed">Completed</string>

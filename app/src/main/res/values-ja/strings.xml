@@ -3975,4 +3975,13 @@
     <string name="activity_elevation_source_mapbox">Mapbox の地形モデルの標高。</string>
     <string name="activity_elevation_source_gps">補正されていない GPS 標高はずれます。Mapbox にサインインするか標高タイルをインポートすると補正されます。</string>
     <string name="activity_elevation_source_mapbox_failed">ずれが生じる GPS の高度です。Mapbox にはサインインしていますが、地形モデルを読み込めませんでした（接続がないか、Mapbox がリクエストを拒否しました）。もう一度試すにはアクティビティを開き直してください。</string>
+    <string name="dashboard_detail_fat_mass">体脂肪量: %1$s</string>
+    <string name="dashboard_detail_share_of_weight">体重の %1$s</string>
+    <string name="dashboard_detail_macro_energy">%1$s、摂取の %2$s</string>
+    <string name="dashboard_detail_label_total_calories">合計</string>
+    <string name="dashboard_detail_label_active_calories">アクティブ</string>
+    <string name="dashboard_detail_label_floors">階数</string>
+    <string name="dashboard_detail_label_avg_heart_rate">平均心拍</string>
+    <string name="dashboard_detail_label_respiratory_rate">呼吸数</string>
+    <string name="dashboard_detail_label_skin_temperature">皮膚温</string>
 </resources>
