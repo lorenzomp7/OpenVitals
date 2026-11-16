@@ -208,6 +208,8 @@ internal fun ActivityDetailScreen(
             workout = workout,
             heartRateSamples = state.heartRateSamples,
             heartRateRecovery = state.heartRateRecovery,
+            recoverySamples = state.recoverySamples,
+            maxHeartRateBpm = state.maxHeartRateBpm,
             speedSamples = state.speedSamples,
             cadenceSamples = state.cadenceSamples,
             sessionCalories = state.sessionCalories,
@@ -267,6 +269,8 @@ internal fun ActivityDetailContent(
     workout: ExerciseData,
     heartRateSamples: List<HeartRateSample>,
     heartRateRecovery: HeartRateRecoveryReading?,
+    recoverySamples: List<tech.mmarca.openvitals.domain.model.HeartRateSample> = emptyList(),
+    maxHeartRateBpm: Int? = null,
     speedSamples: List<SpeedSample>,
     cadenceSamples: List<ActivityCadenceSample>,
     markers: List<ActivityRecordingMarker>,
@@ -398,6 +402,18 @@ internal fun ActivityDetailContent(
                 )
             }
         }
+        // 88–93: the chart each kind of activity gets, and the recovery after any with a heart rate.
+        activityTypeChartItems(
+            workout = workout,
+            heartRateSamples = heartRateSamples,
+            speedSamples = speedSamples,
+            splitSpeedTrace = splitSpeedTrace,
+            cadenceSamples = cadenceSamples,
+            elevationSamples = elevationSamples,
+            recoverySamples = recoverySamples,
+            maxHeartRateBpm = maxHeartRateBpm,
+            unitFormatter = unitFormatter,
+        )
         // Recorded speed, or the split-derived reconstruction, never both.
         if (speedSamples.isNotEmpty()) {
             item {

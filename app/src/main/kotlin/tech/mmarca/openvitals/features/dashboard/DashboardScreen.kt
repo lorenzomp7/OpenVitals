@@ -122,9 +122,24 @@ fun DashboardScreen(
     LifecycleEventEffect(Lifecycle.Event.ON_RESUME) { profileViewModel.refresh() }
     val profilePhoto = remember(profile.photo) { profile.photo?.let { it.asImageBitmap() } }
     val timeline = brandTimeline ?: tech.mmarca.openvitals.ui.components.rememberFluidBrandTimeline()
+    // 94: the toggle greets, fills with today's goals, shows the sync, and opens today's summary.
+    val dayGoals = dashboardDayGoals(display)
+    // The shell knows whether sync is paused; it hands that up as it composes.
+    var healthConnectPaused by remember { mutableStateOf(false) }
+    val day = brandDay(
+        name = profile.name,
+        goals = dayGoals,
+        syncPaused = healthConnectPaused || state.rateLimitDeadlineEpochMillis != null,
+        refreshing = state.isRefreshing,
+    )
+    var showDaySummary by remember { mutableStateOf(false) }
+    if (showDaySummary) {
+        DashboardDaySummarySheet(dayGoals, day.sync, onOpenMetric = onOpenMetric, onDismiss = { showDaySummary = false })
+    }
     val header: @Composable () -> Unit = {
         DashboardHeader(timeline, profilePhoto, state.sensorStatus.hasDevices,
-            onOpenBodyProfile, onOpenDeviceStatus, onOpenAchievements, onOpenSettings)
+            onOpenBodyProfile, onOpenDeviceStatus, onOpenAchievements, onOpenSettings,
+            day = day, onOpenDay = { showDaySummary = true })
     }
 
     WithHealthConnectFeatureScreen(
@@ -137,6 +152,7 @@ fun DashboardScreen(
         // The body renders the sync banner itself; the shell must not add a second.
         showInlineSyncBanner = false,
     ) { hcUx ->
+        androidx.compose.runtime.SideEffect { healthConnectPaused = hcUx.syncPaused }
         // One reload, one indicator: the spinner answers the pull only.
         var pullRefreshRequested by remember { mutableStateOf(false) }
         androidx.compose.runtime.LaunchedEffect(state.isRefreshing) {

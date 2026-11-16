@@ -3,6 +3,7 @@ package tech.mmarca.openvitals.ui.components
 import android.os.SystemClock
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.MaterialTheme
@@ -24,6 +25,7 @@ import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.DrawScope
+import androidx.compose.ui.text.drawText
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
@@ -47,13 +49,48 @@ fun rememberFluidBrandTimeline(): FluidBrandTimeline = rememberSaveable(
     saver = Saver<FluidBrandTimeline, Long>(save = { it.startedAtMillis }, restore = { FluidBrandTimeline(it) }),
 ) { FluidBrandTimeline() }
 
+/** Where Health Connect's data stands, as the toggle's dot shows it. */
+enum class BrandSync { UP_TO_DATE, SYNCING, PAUSED }
+
+/**
+ * 94: what the toggle says about today. [fills] are the four goals in the lobes' colours, each
+ * `0..1`: blue the steps, red the calories, yellow the activity, green the sleep. [name] is
+ * who it greets when the app opens; null greets no one by name.
+ */
+@androidx.compose.runtime.Immutable
+data class BrandDay(
+    val name: String?,
+    val fills: List<Float>,
+    val sync: BrandSync,
+)
+
 /** One spring entrance, then the expressive loop. Navigation never owns or resets the clock. */
 @Composable
-fun AmbientFluidBrand(timeline: FluidBrandTimeline, windowWidth: Dp, modifier: Modifier = Modifier) {
+fun AmbientFluidBrand(
+    timeline: FluidBrandTimeline,
+    windowWidth: Dp,
+    modifier: Modifier = Modifier,
+    day: BrandDay? = null,
+    onClick: (() -> Unit)? = null,
+) {
     var frameMillis by remember { mutableLongStateOf(SystemClock.uptimeMillis()) }
     val lifecycle = LocalLifecycleOwner.current.lifecycle
     val animate = loopingMotionAllowed()
-    val description = stringResource(R.string.app_name)
+    val greeting = day?.let { brandGreeting(it.name) }
+    val syncText = day?.let {
+        stringResource(
+            when (it.sync) {
+                BrandSync.UP_TO_DATE -> R.string.brand_sync_up_to_date
+                BrandSync.SYNCING -> R.string.brand_sync_syncing
+                BrandSync.PAUSED -> R.string.brand_sync_paused
+            },
+        )
+    }
+    val description = listOfNotNull(stringResource(R.string.app_name), syncText).joinToString(". ")
+    val measurer = androidx.compose.ui.text.rememberTextMeasurer()
+    val greetingStyle = MaterialTheme.typography.titleSmall.copy(color = Color.White)
+    val greetingLayout = remember(greeting, greetingStyle) { greeting?.let { measurer.measure(it, greetingStyle, maxLines = 1) } }
+    val fills = remember(day?.fills) { day?.fills?.toFloatArray() }
     LaunchedEffect(timeline, lifecycle, animate) {
         timeline.start(SystemClock.uptimeMillis())
         if (animate) lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
@@ -71,14 +108,67 @@ fun AmbientFluidBrand(timeline: FluidBrandTimeline, windowWidth: Dp, modifier: M
             .size(WorkoutActionMetrics.primaryWidth(windowWidth), WorkoutActionMetrics.height)
             .clip(CircleShape)
             .background(ToggleNight)
+            .then(
+                if (onClick != null) {
+                    Modifier.clickable(onClickLabel = stringResource(R.string.brand_open_summary), onClick = onClick)
+                } else {
+                    Modifier
+                },
+            )
             .semantics { contentDescription = description }
             .testTag("ambient_fluid_brand"),
     ) {
         // Reading the frame only in DrawScope invalidates this tiny canvas, not the screen composition.
         val seconds = if (animate) timeline.secondsAt(frameMillis) else ToggleRestSeconds
         val intro = if (animate) timeline.fillAt(frameMillis) else 1f
-        drawOpenVitalsToggle(seconds, intro, FluidBorderWidth.toPx())
+        // 94: the greeting holds the pill while the app opens, then gives way to the wave.
+        val greetingAlpha = if (greetingLayout != null && animate) greetingAlphaAt(seconds) else 0f
+        drawOpenVitalsToggle(seconds, intro * (1f - greetingAlpha), FluidBorderWidth.toPx(), fills)
+        if (greetingLayout != null && greetingAlpha > 0f) {
+            drawText(
+                textLayoutResult = greetingLayout,
+                alpha = greetingAlpha,
+                topLeft = Offset(
+                    (size.width - greetingLayout.size.width) / 2f,
+                    (size.height - greetingLayout.size.height) / 2f,
+                ),
+            )
+        }
+        day?.let { drawSyncDot(it.sync, seconds) }
     }
+}
+
+/** Fades in, holds, fades out over the opening seconds. */
+private fun greetingAlphaAt(seconds: Float): Float = when {
+    seconds < 0.2f -> 0f
+    seconds < 0.7f -> (seconds - 0.2f) / 0.5f
+    seconds < 2.9f -> 1f
+    seconds < 3.5f -> 1f - (seconds - 2.9f) / 0.6f
+    else -> 0f
+}
+
+@Composable
+private fun brandGreeting(name: String?): String {
+    val hour = java.time.LocalTime.now().hour
+    val first = name?.trim()?.substringBefore(' ')?.takeIf { it.isNotBlank() }
+    return when {
+        hour in 5..11 -> if (first != null) stringResource(R.string.brand_greeting_morning_name, first) else stringResource(R.string.brand_greeting_morning)
+        hour in 12..17 -> if (first != null) stringResource(R.string.brand_greeting_afternoon_name, first) else stringResource(R.string.brand_greeting_afternoon)
+        else -> if (first != null) stringResource(R.string.brand_greeting_evening_name, first) else stringResource(R.string.brand_greeting_evening)
+    }
+}
+
+/** 94: a small light at the end of the pill: green up to date, blue breathing while syncing, amber paused. */
+private fun DrawScope.drawSyncDot(sync: BrandSync, seconds: Float) {
+    val color = when (sync) {
+        BrandSync.UP_TO_DATE -> BrandGreen
+        BrandSync.SYNCING -> BrandBlue
+        BrandSync.PAUSED -> BrandYellow
+    }
+    val pulse = if (sync == BrandSync.SYNCING) 0.55f + 0.45f * sin(seconds * 4f) else 1f
+    val center = Offset(size.width - size.height * 0.42f, size.height * 0.5f)
+    drawCircle(color.copy(alpha = tech.mmarca.openvitals.ui.theme.Emphasis.subtle * pulse), radius = size.height * 0.14f, center = center)
+    drawCircle(color.copy(alpha = pulse), radius = size.height * 0.07f, center = center)
 }
 
 /** 35, 37: the four Google colours of the icon. */
@@ -129,7 +219,7 @@ private val ToggleSparks = List(14) { index ->
  * colours that runs round the edge. It opens by drawing the wave out from the
  * centre, with the M3 emphasized easing.
  */
-private fun DrawScope.drawOpenVitalsToggle(seconds: Float, intro: Float, borderPx: Float) {
+private fun DrawScope.drawOpenVitalsToggle(seconds: Float, intro: Float, borderPx: Float, fills: FloatArray? = null) {
     val w = size.width
     val h = size.height
     val mid = h / 2f
@@ -143,13 +233,15 @@ private fun DrawScope.drawOpenVitalsToggle(seconds: Float, intro: Float, borderP
         ),
     )
     // The wave: each lobe a lens above and below the midline, its height breathing.
-    ToggleLobes.forEach { lobe ->
+    ToggleLobes.forEachIndexed { index, lobe ->
+        // 94: a lobe swells as far as its goal is met; one met in full stands at its full height.
+        val goal = fills?.getOrNull(index)?.coerceIn(0f, 1f)?.let { 0.22f + 0.78f * it } ?: 1f
         val drift = sin(seconds * 0.35f * lobe.speed + lobe.phase) * 0.06f
         val cx = (0.5f + (lobe.center + drift - 0.5f) * open) * w
         val halfWidth = lobe.width * w * (0.4f + 0.6f * open)
         val breath = 0.55f + 0.45f * sin(seconds * lobe.speed * 1.6f + lobe.phase)
-        val up = lobe.up * h * breath * open
-        val down = lobe.down * h * (1.1f - breath * 0.6f) * open
+        val up = lobe.up * h * breath * open * goal
+        val down = lobe.down * h * (1.1f - breath * 0.6f) * open * goal
         val path = Path().apply {
             val steps = 28
             moveTo(cx - halfWidth * 2.2f, mid)

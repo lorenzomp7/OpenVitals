@@ -764,3 +764,6 @@ private fun watchSubtitle(watch: OpenWatchTileDisplay): String? {
     }
     return parts.joinToString(" · ").ifBlank { null }
 }
+
+/** The icon a widget is drawn with, for lists outside the grid (94). */
+internal fun dashboardWidgetIcon(widgetId: DashboardWidgetId): ImageVector = dashboardWidgetMeta(widgetId).icon

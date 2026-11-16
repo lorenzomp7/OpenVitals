@@ -39,6 +39,8 @@ internal fun DashboardHeader(
     onOpenDevices: () -> Unit,
     onOpenAchievements: () -> Unit,
     onOpenSettings: () -> Unit,
+    day: tech.mmarca.openvitals.ui.components.BrandDay? = null,
+    onOpenDay: (() -> Unit)? = null,
 ) {
     BoxWithConstraints(Modifier.fillMaxWidth().testTag("dashboard_header")) {
         val windowWidth = maxWidth
@@ -46,7 +48,7 @@ internal fun DashboardHeader(
             Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            Box(Modifier.weight(1f)) { AmbientFluidBrand(timeline, windowWidth) }
+            Box(Modifier.weight(1f)) { AmbientFluidBrand(timeline, windowWidth, day = day, onClick = onOpenDay) }
             if (hasDevices) OpenVitalsIconButton(onClick = onOpenDevices) {
                 Icon(Icons.Outlined.BatteryChargingFull, stringResource(R.string.cd_sensor_battery_status))
             }

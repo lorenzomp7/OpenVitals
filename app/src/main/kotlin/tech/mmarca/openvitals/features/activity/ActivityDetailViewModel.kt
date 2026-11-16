@@ -86,6 +86,12 @@ internal data class ActivityDetailUiState(
     /** How the heart rate fell after the effort stopped, for a session that carries a stop mark. */
     val heartRateRecovery: HeartRateRecoveryReading? = null,
 
+    /** 93: the heart rate read around the end, for the recovery chart. */
+    val recoverySamples: List<tech.mmarca.openvitals.domain.model.HeartRateSample> = emptyList(),
+
+    /** 89: the heart rate the zones are shares of, from the profile or the age. */
+    val maxHeartRateBpm: Int? = null,
+
     /** The plan this session was logged against, when it still exists and can be read. */
     val linkedPlan: PlannedExerciseData? = null,
 
@@ -201,6 +207,13 @@ internal class ActivityDetailViewModel @Inject constructor(
             val loadedMarkers = markers.await()
             val loadedCoMapsSamples = coMapsSamples.await()
             val recovery = heartRateRecovery.await()
+            // 93: the two minutes after the end, read only for a session with a heart rate.
+            val recoverySamples = if (heartRate.isEmpty()) emptyList() else runCatchingCancellable {
+                heartRepository?.loadHeartRateSamples(
+                    workout.endTime.minusSeconds(15),
+                    workout.endTime.plus(tech.mmarca.openvitals.domain.insights.recoveryChartWindow).plusSeconds(10),
+                )
+            }.getOrNull().orEmpty()
             val plan = linkedPlan.await()
             // Backfill, height profile and splits walk every sample.
             val profile = runCatchingCancellable { bodyProfilePreferences.bodyProfile() }.getOrNull()
@@ -232,6 +245,11 @@ internal class ActivityDetailViewModel @Inject constructor(
                     coMapsSamples = loadedCoMapsSamples,
                     elevationSamples = elevationProfile(backfilledWorkout.route),
                     heartRateRecovery = recovery,
+                    recoverySamples = recoverySamples,
+                    maxHeartRateBpm = tech.mmarca.openvitals.domain.insights.workoutMaxHeartRate(
+                        profile?.maxHeartRateBpm,
+                        profile?.ageYears(),
+                    ),
                     linkedPlan = plan,
                 ).withSplitsCutAt(splitDistanceMeters)
             }
