@@ -14,7 +14,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -56,7 +55,9 @@ import tech.mmarca.openvitals.domain.model.ExerciseData
 import tech.mmarca.openvitals.domain.model.ExerciseSegmentData
 import tech.mmarca.openvitals.domain.model.SpeedSample
 import tech.mmarca.openvitals.domain.model.HeartRateSample
+import tech.mmarca.openvitals.domain.preferences.MetricDetailSectionId
 import tech.mmarca.openvitals.ui.components.ChartZoom
+import tech.mmarca.openvitals.ui.components.MetricDetailSectionBuilder
 import tech.mmarca.openvitals.ui.components.OpenVitalsCard
 import tech.mmarca.openvitals.ui.components.SessionAxis
 import tech.mmarca.openvitals.ui.components.SessionPause
@@ -513,8 +514,11 @@ internal fun ActivityRecoveryChartCard(
     }
 }
 
-/** 88–93: the kind-specific chart of [workout], and the recovery chart, as list items. */
-internal fun LazyListScope.activityTypeChartItems(
+/**
+ * 88–93: the kind-specific chart of [workout], the zones and the recovery chart, as sections the
+ * detail screen arranges (113).
+ */
+internal fun MetricDetailSectionBuilder.activityTypeChartSections(
     workout: ExerciseData,
     heartRateSamples: List<HeartRateSample>,
     speedSamples: List<SpeedSample>,
@@ -533,7 +537,7 @@ internal fun LazyListScope.activityTypeChartItems(
         splitSpeedTrace?.samples.orEmpty().map { it.time to it.metersPerSecond }
     }
     when (workoutTypeChart(workout.exerciseType)) {
-        WorkoutTypeChart.PACE -> item(key = "type-chart-pace") {
+        WorkoutTypeChart.PACE -> section(TypeChartSection) {
             // 88: whichever of the recorded speed, the route and the splits covers the session.
             val pace = remember(speedSamples, workout.route, splitSpeedTrace) {
                 bestPaceSeries(
@@ -550,7 +554,7 @@ internal fun LazyListScope.activityTypeChartItems(
             }
             ActivityPaceChartCard(pace, workout.startTime, workout.endTime, pauses, unitFormatter, cardModifier)
         }
-        WorkoutTypeChart.ELEVATION_WITH_SPEED -> item(key = "type-chart-climbs") {
+        WorkoutTypeChart.ELEVATION_WITH_SPEED -> section(TypeChartSection) {
             ActivityPairedChartCard(
                 title = stringResource(R.string.activity_chart_climbs_title),
                 primary = stringResource(R.string.metric_elevation) to elevationSamples.map { it.time to it.meters },
@@ -565,7 +569,7 @@ internal fun LazyListScope.activityTypeChartItems(
                 modifier = cardModifier,
             )
         }
-        WorkoutTypeChart.CADENCE_WITH_HEART_RATE -> item(key = "type-chart-cadence-heart") {
+        WorkoutTypeChart.CADENCE_WITH_HEART_RATE -> section(TypeChartSection) {
             ActivityPairedChartCard(
                 title = stringResource(R.string.activity_chart_cadence_heart_title),
                 primary = stringResource(R.string.activity_recording_live_heart_rate) to heartRate,
@@ -582,7 +586,7 @@ internal fun LazyListScope.activityTypeChartItems(
                 modifier = cardModifier,
             )
         }
-        WorkoutTypeChart.HEART_RATE_WITH_SETS -> item(key = "type-chart-sets") {
+        WorkoutTypeChart.HEART_RATE_WITH_SETS -> section(TypeChartSection) {
             ActivityStrengthSetsChartCard(
                 heartRateSamples, workout.segments, workout.startTime, workout.endTime, pauses, unitFormatter, cardModifier,
             )
@@ -591,11 +595,13 @@ internal fun LazyListScope.activityTypeChartItems(
     }
     // 110: running, the treadmill and both bikes also get the time in each zone.
     if (showsHeartRateZones(workout.exerciseType) && maxHeartRateBpm != null && heartRateSamples.isNotEmpty()) {
-        item(key = "type-chart-zones") {
+        section(MetricDetailSectionId.ACTIVITY_DETAIL_ZONES) {
             ActivityHeartRateZonesCard(heartRateSamples, workout.startTime, workout.endTime, maxHeartRateBpm, cardModifier)
         }
     }
-    if (heartRateSamples.isNotEmpty()) item(key = "type-chart-recovery") {
+    if (heartRateSamples.isNotEmpty()) section(MetricDetailSectionId.ACTIVITY_DETAIL_RECOVERY) {
         ActivityRecoveryChartCard(recoverySamples, heartRateSamples, workout.endTime, restingHeartRateBpm, cardModifier)
     }
 }
+
+private val TypeChartSection = MetricDetailSectionId.ACTIVITY_DETAIL_TYPE_CHART

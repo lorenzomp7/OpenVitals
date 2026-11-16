@@ -30,6 +30,17 @@ enum class MetricDetailSectionId {
     CYCLE_THERMAL,
     CYCLE_PATTERNS,
     CYCLE_NIGHTLY,
+    // 113: the charts of one activity's detail, arranged like a metric screen's sections.
+    ACTIVITY_DETAIL_SPLITS,
+    ACTIVITY_DETAIL_HEART_RATE,
+    ACTIVITY_DETAIL_CALORIES,
+    ACTIVITY_DETAIL_HEART_RATE_DROP,
+    ACTIVITY_DETAIL_TYPE_CHART,
+    ACTIVITY_DETAIL_ZONES,
+    ACTIVITY_DETAIL_RECOVERY,
+    ACTIVITY_DETAIL_SPEED,
+    ACTIVITY_DETAIL_ELEVATION,
+    ACTIVITY_DETAIL_CADENCE,
 }
 
 val DefaultMetricDetailSectionOrder: List<MetricDetailSectionId> = listOf(
@@ -61,6 +72,16 @@ val DefaultMetricDetailSectionOrder: List<MetricDetailSectionId> = listOf(
     MetricDetailSectionId.CYCLE_THERMAL,
     MetricDetailSectionId.CYCLE_PATTERNS,
     MetricDetailSectionId.CYCLE_NIGHTLY,
+    MetricDetailSectionId.ACTIVITY_DETAIL_SPLITS,
+    MetricDetailSectionId.ACTIVITY_DETAIL_HEART_RATE,
+    MetricDetailSectionId.ACTIVITY_DETAIL_CALORIES,
+    MetricDetailSectionId.ACTIVITY_DETAIL_HEART_RATE_DROP,
+    MetricDetailSectionId.ACTIVITY_DETAIL_TYPE_CHART,
+    MetricDetailSectionId.ACTIVITY_DETAIL_ZONES,
+    MetricDetailSectionId.ACTIVITY_DETAIL_RECOVERY,
+    MetricDetailSectionId.ACTIVITY_DETAIL_SPEED,
+    MetricDetailSectionId.ACTIVITY_DETAIL_ELEVATION,
+    MetricDetailSectionId.ACTIVITY_DETAIL_CADENCE,
 )
 
 fun metricDetailSectionOrderFromStored(storedIds: List<String>?): List<MetricDetailSectionId> {

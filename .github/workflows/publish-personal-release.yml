@@ -138,7 +138,7 @@ jobs:
           cat > release-notes.md <<EOF
           Scarica **OpenVitals.apk** dagli allegati e aprilo sul telefono.
 
-          Branch main_claude — 86, 88, 94, 99, 100, 104, 110–112:
+          Branch main_claude — 86, 88, 94, 99, 100, 104, 110–113:
           - 86: la copia web (PWA) torna indietro sempre: il pulsante "Indietro", il tasto Esc e la freccia in alto nelle schermate tornano alla schermata precedente (anche aprendo un link diretto a una schermata), i pulsanti piccoli dentro le schede si toccano senza che la scheda li copra, e senza connessione appare un messaggio invece di una pagina nera. La cattura delle schermate non si ferma più con "the app did not open".
           - 88: il grafico "Passo" usa la fonte che copre davvero l'attività (velocità registrata, percorso GPS o parziali): se l'orologio scrive la velocità solo negli ultimi secondi, il grafico usa il percorso. Il passo medio è tempo diviso distanza, e l'asse mostra solo minuti e secondi, senza "min/" tagliato.
           - 94: toccando il toggle OpenVitals si apre il riepilogo del periodo selezionato (giorno, settimana, mese, anno), con il suo titolo: sonno, passi, allenamento (sì o no) e calorie attive. Le onde crescono con questi valori. Non c'è più lo stato di Health Connect.
@@ -148,6 +148,7 @@ jobs:
           - 110: Corsa, tapis roulant, bicicletta e bici da camera hanno il grafico del tempo in ciascuna zona cardiaca (1–5), se ci sono battiti e un battito massimo (dal profilo o dall'età).
           - 111: in Attività, dopo "Carica altri 10", aprendo un'attività e tornando indietro restano visibili tutte quelle caricate.
           - 112: il tapis roulant non mostra più il grafico "Velocità".
+          - 113: nel dettaglio di un'attività i grafici si riordinano come nelle schermate delle metriche: icona con i cursori in alto a destra, poi tieni premuto e trascina (o usa le frecce dell'accessibilità), e conferma con ✓ → Salva. Riepilogo in alto e dettagli, esportazione e percorso in fondo restano al loro posto. L'ordine vale per tutte le attività.
 
           Questa versione aggiorna l'installazione personale compatibile di OpenVitals senza disinstallarla. La revisione ha superato la verifica completa (verify) in questa stessa esecuzione; package e firma coincidono con l'APK pubblicato precedente; installazione, aggiornamento, avvio e import screenshot sono verificati su Android 15.
 
