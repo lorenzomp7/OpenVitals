@@ -3936,4 +3936,6 @@
     <string name="settings_brand_colors_hero_tiles">Both: the rings\' colours and the first six tiles\'</string>
     <string name="settings_brand_animated_title">Animated</string>
     <string name="settings_brand_animated_body">On, the toggle and the buttons move; off, they stand still in their colours.</string>
+    <string name="activity_chart_recovery_estimate">Estimate</string>
+    <string name="activity_chart_recovery_estimate_note">No heart rate was recorded after %1$s: the rest is estimated, falling toward your resting rate of %2$d bpm.</string>
 </resources>

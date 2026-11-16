@@ -61,7 +61,38 @@ class WorkoutTypeChartsTest {
             ExerciseSegmentData(at(40), at(120), ExerciseSegment.EXERCISE_SEGMENT_TYPE_REST, 0),
             ExerciseSegmentData(at(120), at(160), ExerciseSegment.EXERCISE_SEGMENT_TYPE_BENCH_PRESS, 10),
         )
-        assertEquals(listOf(at(0) to at(40), at(120) to at(160)), strengthSetSpans(segments))
+        assertEquals(listOf(at(0) to at(40), at(120) to at(160)), strengthSetSpans(segments, at(0), at(600)))
+    }
+
+    @Test fun `a segment covering the workout is not a set`() {
+        val whole = listOf(ExerciseSegmentData(at(0), at(3_600), ExerciseSegment.EXERCISE_SEGMENT_TYPE_UNKNOWN, 0))
+        assertTrue(strengthSetSpans(whole, at(0), at(3_660)).isEmpty())
+    }
+
+    @Test fun `recovery is estimated past the last reading, falling toward rest`() {
+        val curve = recoveryCurve(listOf(0L to 105L, 5L to 109L), lastSessionBpm = 105, restingBpm = 60)!!
+        assertEquals(105.0, curve.endBpm, 0.0)
+        assertTrue(curve.estimated.isNotEmpty())
+        assertEquals(5L, curve.estimated.first().first)
+        assertEquals(109.0, curve.estimated.first().second, 0.01)
+        val oneMinute = curve.oneMinute!!
+        assertTrue(oneMinute.estimated)
+        assertTrue(oneMinute.bpm < 109.0 && oneMinute.bpm > 60.0)
+        assertTrue(curve.twoMinutes!!.bpm < oneMinute.bpm)
+    }
+
+    @Test fun `a recorded recovery needs no estimate`() {
+        val trace = listOf(0L to 150L, 60L to 128L, 120L to 112L)
+        val curve = recoveryCurve(trace, lastSessionBpm = 150, restingBpm = 55)!!
+        assertTrue(curve.estimated.isEmpty())
+        assertEquals(RecoveryMark(128.0, estimated = false), curve.oneMinute)
+    }
+
+    @Test fun `with no reading after the end the last one of the session starts the estimate`() {
+        val curve = recoveryCurve(emptyList(), lastSessionBpm = 120, restingBpm = null)!!
+        assertEquals(120.0, curve.endBpm, 0.0)
+        assertEquals(0L, curve.estimated.first().first)
+        assertNull(recoveryCurve(emptyList(), lastSessionBpm = null, restingBpm = null))
     }
 
     @Test fun `recovery follows the heart for two minutes after the end`() {

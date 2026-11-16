@@ -3909,4 +3909,6 @@
     <string name="settings_brand_colors_hero_tiles">Ambos: los colores de los anillos y de los seis primeros recuadros</string>
     <string name="settings_brand_animated_title">Animados</string>
     <string name="settings_brand_animated_body">Activado: el interruptor y los botones se mueven. Desactivado: se quedan quietos con sus colores.</string>
+    <string name="activity_chart_recovery_estimate">Estimación</string>
+    <string name="activity_chart_recovery_estimate_note">No hay frecuencia cardiaca registrada después de %1$s: el resto es una estimación que baja hacia tu frecuencia en reposo de %2$d ppm.</string>
 </resources>

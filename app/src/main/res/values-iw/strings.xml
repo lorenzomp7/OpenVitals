@@ -211,4 +211,6 @@
     <string name="settings_brand_colors_hero_tiles">שניהם: צבעי הטבעות וששת האריחים הראשונים</string>
     <string name="settings_brand_animated_title">מונפשים</string>
     <string name="settings_brand_animated_body">מופעל: המתג והכפתורים זזים. כבוי: הם נשארים במקום בצבעיהם.</string>
+    <string name="activity_chart_recovery_estimate">הערכה</string>
+    <string name="activity_chart_recovery_estimate_note">לא נרשם דופק אחרי %1$s: השאר הוא הערכה היורדת לעבר דופק המנוחה שלך, %2$d פעימות לדקה.</string>
 </resources>

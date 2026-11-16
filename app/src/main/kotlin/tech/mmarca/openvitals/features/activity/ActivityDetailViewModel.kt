@@ -92,6 +92,9 @@ internal data class ActivityDetailUiState(
     /** 89: the heart rate the zones are shares of, from the profile or the age. */
     val maxHeartRateBpm: Int? = null,
 
+    /** 103: the rate an estimated recovery falls toward, from the profile. */
+    val restingHeartRateBpm: Int? = null,
+
     /** The plan this session was logged against, when it still exists and can be read. */
     val linkedPlan: PlannedExerciseData? = null,
 
@@ -250,6 +253,7 @@ internal class ActivityDetailViewModel @Inject constructor(
                         profile?.maxHeartRateBpm,
                         profile?.ageYears(),
                     ),
+                    restingHeartRateBpm = profile?.restingHeartRateBpm,
                     linkedPlan = plan,
                 ).withSplitsCutAt(splitDistanceMeters)
             }

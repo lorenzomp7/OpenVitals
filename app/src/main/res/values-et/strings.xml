@@ -3876,4 +3876,6 @@
     <string name="settings_brand_colors_hero_tiles">Mõlemad: rõngaste ja kuue esimese paani värvid</string>
     <string name="settings_brand_animated_title">Animeeritud</string>
     <string name="settings_brand_animated_body">Sees: lüliti ja nupud liiguvad. Väljas: need jäävad oma värvides paigale.</string>
+    <string name="activity_chart_recovery_estimate">Hinnang</string>
+    <string name="activity_chart_recovery_estimate_note">Pärast %1$s pulssi ei salvestatud: ülejäänu on hinnang, mis langeb sinu puhkepulsi %2$d lööki/min suunas.</string>
 </resources>

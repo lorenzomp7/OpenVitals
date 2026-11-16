@@ -3942,4 +3942,6 @@
     <string name="settings_brand_colors_hero_tiles">Oba: kolory pierścieni i pierwszych sześciu kafelków</string>
     <string name="settings_brand_animated_title">Animowane</string>
     <string name="settings_brand_animated_body">Włączone: przełącznik i przyciski się poruszają. Wyłączone: pozostają nieruchome w swoich kolorach.</string>
+    <string name="activity_chart_recovery_estimate">Szacunek</string>
+    <string name="activity_chart_recovery_estimate_note">Po %1$s nie zapisano tętna: reszta to szacunek spadający w kierunku tętna spoczynkowego %2$d bpm.</string>
 </resources>

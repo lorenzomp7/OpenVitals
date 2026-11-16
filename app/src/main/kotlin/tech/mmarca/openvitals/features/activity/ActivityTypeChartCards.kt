@@ -28,11 +28,13 @@ import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.graphics.drawscope.clipRect
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import java.time.Duration
 import java.time.Instant
+import kotlin.math.roundToInt
 import tech.mmarca.openvitals.R
 import tech.mmarca.openvitals.core.presentation.UnitFormatter
 import tech.mmarca.openvitals.domain.insights.WorkoutTypeChart
@@ -40,7 +42,9 @@ import tech.mmarca.openvitals.domain.insights.heartRateZoneSeconds
 import tech.mmarca.openvitals.domain.insights.paceFromRoute
 import tech.mmarca.openvitals.domain.insights.paceFromSpeed
 import tech.mmarca.openvitals.domain.insights.workoutTypeChart
+import tech.mmarca.openvitals.domain.insights.RecoveryMark
 import tech.mmarca.openvitals.domain.insights.recoveryChartWindow
+import tech.mmarca.openvitals.domain.insights.recoveryCurve
 import tech.mmarca.openvitals.domain.insights.recoveryTrace
 import tech.mmarca.openvitals.domain.insights.strengthSetSpans
 import tech.mmarca.openvitals.domain.model.ActivityCadenceKind
@@ -70,6 +74,8 @@ internal data class OverlaySeries(
     val format: (Double) -> String,
     /** Smaller is better and drawn higher, as a pace is. */
     val inverted: Boolean = false,
+    /** Drawn dashed: an estimate, not a reading (103). */
+    val dashed: Boolean = false,
 )
 
 private val OverlayChartHeight = Spacing.giant * 4
@@ -85,18 +91,26 @@ internal fun ActivityOverlayChart(
     title: String,
     primary: OverlaySeries,
     secondary: OverlaySeries?,
-    xLabels: List<String>,
+    xLabel: (Float) -> String,
     keys: Any,
     modifier: Modifier = Modifier,
     spans: List<ClosedFloatingPointRange<Float>> = emptyList(),
     spanColor: Color = MaterialTheme.colorScheme.primary,
     spanLabel: String? = null,
+    /** The second series continues the first, on the first's scale (103). */
+    sharedScale: Boolean = false,
 ) {
-    val first = remember(primary.points) { overlayScale(primary.points) }
-    val second = remember(secondary?.points) { secondary?.let { overlayScale(it.points) } }
+    val first = remember(primary.points, secondary?.points, sharedScale) {
+        overlayScale(if (sharedScale && secondary != null) primary.points + secondary.points else primary.points)
+    }
+    val second = remember(secondary?.points, sharedScale, first) {
+        secondary?.let { if (sharedScale) first else overlayScale(it.points) }
+    }
+    val rightAxis = secondary != null && !sharedScale
     val described = "$title: ${primary.label} ${primary.format(first.low)}–${primary.format(first.high)}" +
         (secondary?.let { s -> second?.let { "; ${s.label} ${s.format(it.low)}–${s.format(it.high)}" } } ?: "")
-    ChartZoom(keys, modifier = modifier) { _ ->
+    ChartZoom(keys, modifier = modifier) { zoom ->
+        val viewport = zoom.viewport
         Column(verticalArrangement = Arrangement.spacedBy(Spacing.xs)) {
             Row(Modifier.fillMaxWidth().height(OverlayChartHeight)) {
                 AxisLabels(first, primary, TextAlign.End)
@@ -107,20 +121,25 @@ internal fun ActivityOverlayChart(
                         .padding(horizontal = Spacing.xs)
                         .chartSemantics(described),
                 ) {
-                    spans.forEach { span ->
-                        drawRect(
-                            color = spanColor.copy(alpha = Emphasis.wash),
-                            topLeft = Offset(span.start * size.width, 0f),
-                            size = androidx.compose.ui.geometry.Size((span.endInclusive - span.start) * size.width, size.height),
-                        )
+                    // 101: in full screen the viewport is what the fingers zoomed to.
+                    clipRect {
+                        spans.forEach { span ->
+                            val from = viewport.visibleFraction(span.start)
+                            val to = viewport.visibleFraction(span.endInclusive)
+                            drawRect(
+                                color = spanColor.copy(alpha = Emphasis.wash),
+                                topLeft = Offset(from * size.width, 0f),
+                                size = androidx.compose.ui.geometry.Size((to - from) * size.width, size.height),
+                            )
+                        }
+                        if (secondary != null && second != null) drawSmoothLine(secondary, second, filled = false, viewport)
+                        drawSmoothLine(primary, first, filled = true, viewport)
                     }
-                    if (secondary != null && second != null) drawSmoothLine(secondary, second, filled = false)
-                    drawSmoothLine(primary, first, filled = true)
                 }
-                if (secondary != null && second != null) AxisLabels(second, secondary, TextAlign.Start) else Box(Modifier.width(Spacing.xs))
+                if (rightAxis && second != null) AxisLabels(second, secondary!!, TextAlign.Start) else Box(Modifier.width(Spacing.xs))
             }
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                xLabels.forEach {
+                listOf(0f, 0.5f, 1f).map { xLabel(viewport.dataFraction(it)) }.forEach {
                     Text(it, style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                 }
             }
@@ -171,7 +190,12 @@ private fun LegendDot(color: Color, label: String) {
     }
 }
 
-private fun DrawScope.drawSmoothLine(series: OverlaySeries, scale: OverlayScale, filled: Boolean) {
+private fun DrawScope.drawSmoothLine(
+    series: OverlaySeries,
+    scale: OverlayScale,
+    filled: Boolean,
+    viewport: tech.mmarca.openvitals.ui.components.ChartViewport,
+) {
     val step = (series.points.size / MaxDrawnPoints).coerceAtLeast(1)
     val drawn = series.points.filterIndexed { index, _ -> index % step == 0 || index == series.points.lastIndex }
     if (drawn.isEmpty()) return
@@ -179,7 +203,7 @@ private fun DrawScope.drawSmoothLine(series: OverlaySeries, scale: OverlayScale,
     val offsets = drawn.map { (x, value) ->
         val share = ((value - scale.low) / span).toFloat().coerceIn(0f, 1f)
         val y = if (series.inverted) share * size.height else (1f - share) * size.height
-        Offset(x.coerceIn(0f, 1f) * size.width, y)
+        Offset(viewport.visibleFraction(x.coerceIn(0f, 1f)) * size.width, y)
     }
     val line = Path().apply {
         moveTo(offsets.first().x, offsets.first().y)
@@ -199,7 +223,19 @@ private fun DrawScope.drawSmoothLine(series: OverlaySeries, scale: OverlayScale,
         }
         drawPath(area, Brush.verticalGradient(listOf(series.color.copy(alpha = Emphasis.subtle), Color.Transparent)))
     }
-    drawPath(line, series.color, style = Stroke(width = Spacing.xs.toPx() / 2 * if (filled) 1.25f else 1f, cap = StrokeCap.Round))
+    drawPath(
+        line,
+        series.color,
+        style = Stroke(
+            width = Spacing.xs.toPx() / 2 * if (filled) 1.25f else 1f,
+            cap = StrokeCap.Round,
+            pathEffect = if (series.dashed) {
+                androidx.compose.ui.graphics.PathEffect.dashPathEffect(floatArrayOf(Spacing.sm.toPx(), Spacing.xs.toPx()))
+            } else {
+                null
+            },
+        ),
+    )
 }
 
 /** The frame every card here shares: title, a row of figures, the chart, and a note. */
@@ -228,9 +264,6 @@ private fun ActivityTypeChartFrame(
         }
     }
 }
-
-private fun sessionXLabels(axis: SessionAxis): List<String> =
-    listOf(0f, 0.5f, 1f).map { formatElapsedChartLabel(axis.elapsedAt(it)) }
 
 private fun List<Pair<Instant, Double>>.across(axis: SessionAxis): List<Pair<Float, Double>> =
     map { (time, value) -> axis.fractionOf(time) to value }
@@ -265,7 +298,7 @@ internal fun ActivityPaceChartCard(
             title = title,
             primary = OverlaySeries(points, DistanceColor, title, formatPace, inverted = true),
             secondary = null,
-            xLabels = sessionXLabels(axis),
+            xLabel = { f -> formatElapsedChartLabel(axis.elapsedAt(f)) },
             keys = paceSecondsPerKm,
         )
     }
@@ -365,7 +398,7 @@ internal fun ActivityPairedChartCard(
             title = title,
             primary = OverlaySeries(first, primaryColor, primary.first, primaryFormat),
             secondary = OverlaySeries(second, secondaryColor, secondary.first, secondaryFormat),
-            xLabels = sessionXLabels(axis),
+            xLabel = { f -> formatElapsedChartLabel(axis.elapsedAt(f)) },
             keys = primary.second to secondary.second,
         )
     }
@@ -385,7 +418,7 @@ internal fun ActivityStrengthSetsChartCard(
     if (samples.size < 2) return
     val axis = remember(sessionStart, sessionEnd, pauses) { SessionAxis(sessionStart, sessionEnd, pauses) }
     val points = remember(samples, axis) { samples.sortedBy { it.time }.map { axis.fractionOf(it.time) to it.beatsPerMinute.toDouble() } }
-    val sets = remember(segments, axis) { strengthSetSpans(segments).map { (from, to) -> axis.fractionOf(from)..axis.fractionOf(to) } }
+    val sets = remember(segments, axis) { strengthSetSpans(segments, sessionStart, sessionEnd).map { (from, to) -> axis.fractionOf(from)..axis.fractionOf(to) } }
     val title = stringResource(R.string.activity_chart_sets_title)
     val bpm: (Double) -> String = { "${it.toInt()} bpm" }
     ActivityTypeChartFrame(
@@ -402,7 +435,7 @@ internal fun ActivityStrengthSetsChartCard(
             title = title,
             primary = OverlaySeries(points, HeartColor, stringResource(R.string.activity_recording_live_heart_rate), bpm),
             secondary = null,
-            xLabels = sessionXLabels(axis),
+            xLabel = { f -> formatElapsedChartLabel(axis.elapsedAt(f)) },
             keys = samples to segments,
             spans = sets,
             spanColor = MaterialTheme.colorScheme.primary,
@@ -411,41 +444,60 @@ internal fun ActivityStrengthSetsChartCard(
     }
 }
 
-/** 93: the heart rate in the two minutes after the end, and how far it fell. */
+/**
+ * 93: the heart rate in the two minutes after the end, and how far it fell. 103: past the last
+ * reading the fall is estimated toward the resting rate, drawn dashed and marked "≈".
+ */
 @Composable
 internal fun ActivityRecoveryChartCard(
     samples: List<HeartRateSample>,
+    sessionSamples: List<HeartRateSample>,
     sessionEnd: Instant,
+    restingHeartRateBpm: Int?,
     modifier: Modifier = Modifier,
 ) {
-    val trace = remember(samples, sessionEnd) { recoveryTrace(samples, sessionEnd) }
-    if (trace.size < 2) return
+    val curve = remember(samples, sessionSamples, sessionEnd, restingHeartRateBpm) {
+        val lastInSession = sessionSamples.filter { !it.time.isAfter(sessionEnd) }.maxByOrNull { it.time }?.beatsPerMinute
+        recoveryCurve(recoveryTrace(samples, sessionEnd), lastInSession, restingHeartRateBpm)
+    } ?: return
     val window = recoveryChartWindow.seconds.toFloat()
-    val points = remember(trace) { trace.map { (seconds, bpm) -> (seconds / window) to bpm.toDouble() } }
-    val atEnd = trace.first().second
-    fun near(seconds: Long): Long? = trace.minByOrNull { kotlin.math.abs(it.first - seconds) }
-        ?.takeIf { kotlin.math.abs(it.first - seconds) <= 20 }?.second
-    val oneMinute = near(60)
-    val twoMinutes = near(120)
-    val bpm: (Double) -> String = { "${it.toInt()} bpm" }
-    fun drop(value: Long?): String = value?.let { "−${(atEnd - it).coerceAtLeast(0)} bpm" } ?: "–"
+    val measured = remember(curve) { curve.measured.map { (seconds, bpm) -> (seconds / window) to bpm } }
+    val estimated = remember(curve) { curve.estimated.map { (seconds, bpm) -> (seconds / window) to bpm } }
+    val bpm: (Double) -> String = { "${it.roundToInt()} bpm" }
+    fun drop(mark: RecoveryMark?): String = mark?.let {
+        (if (it.estimated) "≈ " else "") + "−${(curve.endBpm - it.bpm).roundToInt().coerceAtLeast(0)} bpm"
+    } ?: "–"
     val title = stringResource(R.string.activity_chart_recovery_title)
+    val label = stringResource(R.string.activity_recording_live_heart_rate)
+    val estimateLabel = stringResource(R.string.activity_chart_recovery_estimate)
+    val lastReading = curve.measured.lastOrNull()?.first ?: 0L
     ActivityTypeChartFrame(
         title = title,
         figures = listOf(
-            stringResource(R.string.activity_chart_recovery_end) to bpm(atEnd.toDouble()),
-            stringResource(R.string.activity_chart_recovery_one) to drop(oneMinute),
-            stringResource(R.string.activity_chart_recovery_two) to drop(twoMinutes),
+            stringResource(R.string.activity_chart_recovery_end) to bpm(curve.endBpm),
+            stringResource(R.string.activity_chart_recovery_one) to drop(curve.oneMinute),
+            stringResource(R.string.activity_chart_recovery_two) to drop(curve.twoMinutes),
         ),
         accent = HeartColor,
         modifier = modifier,
+        note = if (estimated.isNotEmpty()) {
+            stringResource(
+                R.string.activity_chart_recovery_estimate_note,
+                formatElapsedChartLabel(Duration.ofSeconds(lastReading)),
+                curve.restingBpm,
+            )
+        } else {
+            null
+        },
     ) {
+        val estimateSeries = OverlaySeries(estimated, HeartColor, estimateLabel, bpm, dashed = true)
         ActivityOverlayChart(
             title = title,
-            primary = OverlaySeries(points, HeartColor, stringResource(R.string.activity_recording_live_heart_rate), bpm),
-            secondary = null,
-            xLabels = listOf("0:00", "1:00", "2:00"),
-            keys = trace,
+            primary = if (measured.size >= 2 || estimated.isEmpty()) OverlaySeries(measured, HeartColor, label, bpm) else estimateSeries,
+            secondary = if (measured.size >= 2 && estimated.isNotEmpty()) estimateSeries else null,
+            xLabel = { f -> formatElapsedChartLabel(Duration.ofSeconds((f * recoveryChartWindow.seconds).toLong())) },
+            keys = curve,
+            sharedScale = true,
         )
     }
 }
@@ -461,6 +513,7 @@ internal fun LazyListScope.activityTypeChartItems(
     recoverySamples: List<HeartRateSample>,
     maxHeartRateBpm: Int?,
     unitFormatter: UnitFormatter,
+    restingHeartRateBpm: Int? = null,
 ) {
     val cardModifier = Modifier.fillMaxWidth().padding(horizontal = Spacing.lg, vertical = Spacing.xs)
     val pauses = workout.segments.toSessionPauses()
@@ -518,6 +571,6 @@ internal fun LazyListScope.activityTypeChartItems(
         null -> Unit
     }
     if (heartRateSamples.isNotEmpty()) item(key = "type-chart-recovery") {
-        ActivityRecoveryChartCard(recoverySamples, workout.endTime, cardModifier)
+        ActivityRecoveryChartCard(recoverySamples, heartRateSamples, workout.endTime, restingHeartRateBpm, cardModifier)
     }
 }

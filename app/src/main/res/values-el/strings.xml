@@ -561,4 +561,6 @@
     <string name="settings_brand_colors_hero_tiles">Και τα δύο: χρώματα δακτυλίων και έξι πρώτων πλακιδίων</string>
     <string name="settings_brand_animated_title">Κινούμενα</string>
     <string name="settings_brand_animated_body">Ενεργό: ο διακόπτης και τα κουμπιά κινούνται. Ανενεργό: μένουν ακίνητα στα χρώματά τους.</string>
+    <string name="activity_chart_recovery_estimate">Εκτίμηση</string>
+    <string name="activity_chart_recovery_estimate_note">Δεν καταγράφηκαν παλμοί μετά το %1$s: το υπόλοιπο είναι εκτίμηση που πέφτει προς τους παλμούς ηρεμίας σου, %2$d bpm.</string>
 </resources>

@@ -12,12 +12,22 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Close
 import androidx.compose.material.icons.outlined.Fullscreen
 import androidx.compose.material.icons.outlined.ScreenRotation
+import androidx.compose.material.icons.outlined.ZoomOut
+import androidx.compose.foundation.gestures.awaitEachGesture
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.input.pointer.PointerEventPass
+import androidx.compose.ui.input.pointer.PointerId
+import androidx.compose.ui.input.pointer.changedToDownIgnoreConsumed
+import androidx.compose.ui.input.pointer.changedToUpIgnoreConsumed
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.input.pointer.positionChanged
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
@@ -53,8 +63,8 @@ data class ChartZoomState(
 )
 
 /**
- * Every chart's frame. 83: there is no pinch any more: two fingers on a chart moved the page
- * under them, and lifting them flung it (85). A screen reader still gets zoom in, zoom out
+ * Every chart's frame. 83: no pinch on the page: two fingers on a chart moved the page under
+ * them, and lifting them flung it (85). 101: the full-screen view pinches. A screen reader still gets zoom in, zoom out
  * and reset. 84: a button opens the chart full screen, where it can be turned on its side.
  * [keys] reset the viewport when the chart's subject changes.
  */
@@ -97,14 +107,23 @@ fun ChartZoom(
         }
     }
     if (fullScreen) {
-        ChartFullScreen(onDismiss = { fullScreen = false }) { content(state) }
+        ChartFullScreen(initialViewport = state.viewport, onDismiss = { fullScreen = false }, content = content)
     }
 }
 
-/** The chart alone on the screen; [content] is laid out across the long side once turned. */
+/**
+ * The chart alone on the screen; [content] is laid out across the long side once turned.
+ * 101: here, and only here, two fingers zoom and pan it: there is no page under it to fling.
+ */
 @Composable
-private fun ChartFullScreen(onDismiss: () -> Unit, content: @Composable () -> Unit) {
+private fun ChartFullScreen(
+    initialViewport: ChartViewport,
+    onDismiss: () -> Unit,
+    content: @Composable (ChartZoomState) -> Unit,
+) {
     var turned by rememberSaveable { mutableStateOf(false) }
+    var viewport by remember { mutableStateOf(initialViewport) }
+    var multiTouch by remember { mutableStateOf(false) }
     Dialog(
         onDismissRequest = onDismiss,
         properties = DialogProperties(usePlatformDefaultWidth = false, decorFitsSystemWindows = false),
@@ -123,6 +142,14 @@ private fun ChartFullScreen(onDismiss: () -> Unit, content: @Composable () -> Un
                     onClick = onDismiss,
                 )
                 Spacer(Modifier.weight(1f))
+                if (viewport.isZoomed) {
+                    ChartFrameButton(
+                        icon = { Icon(Icons.Outlined.ZoomOut, contentDescription = null) },
+                        label = stringResource(R.string.chart_zoom_reset),
+                        onClick = { viewport = ChartViewport.Full },
+                    )
+                    Spacer(Modifier.width(Spacing.md))
+                }
                 ChartFrameButton(
                     icon = { Icon(Icons.Outlined.ScreenRotation, contentDescription = null) },
                     label = stringResource(R.string.chart_rotate),
@@ -130,7 +157,13 @@ private fun ChartFullScreen(onDismiss: () -> Unit, content: @Composable () -> Un
                 )
             }
             TurnableBox(turned = turned, modifier = Modifier.weight(1f).fillMaxWidth().padding(top = Spacing.lg)) {
-                content()
+                Box(
+                    Modifier.pinchToZoom(
+                        viewport = { viewport },
+                        onViewport = { viewport = it },
+                        onMultiTouch = { multiTouch = it },
+                    ),
+                ) { content(ChartZoomState(viewport, multiTouch)) }
             }
         }
     }
@@ -175,5 +208,65 @@ private fun ChartFrameButton(
         contentAlignment = Alignment.Center,
     ) {
         Box(Modifier.size(Spacing.xl)) { icon() }
+    }
+}
+
+/**
+ * Two fingers zoom about the point between them and pan as they move; one finger is left
+ * to the chart's scrubber. Moves are applied to the viewport the pinch started from.
+ */
+private fun Modifier.pinchToZoom(
+    viewport: () -> ChartViewport,
+    onViewport: (ChartViewport) -> Unit,
+    onMultiTouch: (Boolean) -> Unit,
+): Modifier = pointerInput(Unit) {
+    awaitEachGesture {
+        val pointers = LinkedHashMap<PointerId, Offset>()
+        var startViewport: ChartViewport? = null
+        var startSeparation = 0f
+        var startFocus = 0f
+        fun separation(): Float = pointers.values.maxOf { it.x } - pointers.values.minOf { it.x }
+        fun focusX(): Float = pointers.values.sumOf { it.x.toDouble() }.toFloat() / pointers.size
+        fun restart() {
+            if (pointers.size < 2 || size.width <= 0) {
+                startViewport = null
+                return
+            }
+            startViewport = viewport()
+            startSeparation = separation()
+            startFocus = (focusX() / size.width).coerceIn(0f, 1f)
+        }
+        try {
+            while (true) {
+                val event = awaitPointerEvent(PointerEventPass.Main)
+                for (change in event.changes) {
+                    when {
+                        change.changedToDownIgnoreConsumed() -> {
+                            pointers[change.id] = change.position
+                            restart()
+                        }
+                        change.changedToUpIgnoreConsumed() -> {
+                            pointers.remove(change.id)
+                            restart()
+                        }
+                        change.pressed && pointers.containsKey(change.id) -> pointers[change.id] = change.position
+                    }
+                }
+                val from = startViewport
+                if (from != null && pointers.size >= 2 && startSeparation > 0f) {
+                    val now = separation()
+                    if (now > 0f) {
+                        val next = from.zoomed(now / startSeparation, startFocus)
+                            .panned(focusX() / size.width - startFocus)
+                        if (next != viewport()) onViewport(next)
+                    }
+                }
+                if (pointers.size >= 2) event.changes.forEach { if (it.positionChanged()) it.consume() }
+                onMultiTouch(pointers.size >= 2)
+                if (event.changes.none { it.pressed }) break
+            }
+        } finally {
+            onMultiTouch(false)
+        }
     }
 }

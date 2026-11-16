@@ -3903,4 +3903,6 @@
     <string name="settings_brand_colors_hero_tiles">Ambos: as cores dos anéis e dos seis primeiros blocos</string>
     <string name="settings_brand_animated_title">Animados</string>
     <string name="settings_brand_animated_body">Ativo: o botão e os botões mexem-se. Inativo: ficam parados nas suas cores.</string>
+    <string name="activity_chart_recovery_estimate">Estimativa</string>
+    <string name="activity_chart_recovery_estimate_note">Não há frequência cardíaca registada depois de %1$s: o resto é estimado, a descer para a tua frequência em repouso de %2$d bpm.</string>
 </resources>

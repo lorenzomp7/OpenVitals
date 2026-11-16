@@ -106,16 +106,27 @@ private fun smoothed(values: List<Pair<Instant, Double>>): List<Pair<Instant, Do
     }
 }
 
-/** 92: the stretches of a strength session spent on a set: every segment that is not a rest or a pause. */
-fun strengthSetSpans(segments: List<ExerciseSegmentData>): List<Pair<Instant, Instant>> =
-    segments
+/**
+ * 92: the stretches of a strength session spent on a set: every segment that is not a rest or
+ * a pause. 102: a segment over half the session is the workout itself, as some watches write
+ * it, not a set: shading it greyed the whole chart.
+ */
+fun strengthSetSpans(
+    segments: List<ExerciseSegmentData>,
+    sessionStart: Instant,
+    sessionEnd: Instant,
+): List<Pair<Instant, Instant>> {
+    val session = Duration.between(sessionStart, sessionEnd)
+    return segments
         .filter {
             it.segmentType != ExerciseSegment.EXERCISE_SEGMENT_TYPE_REST &&
                 it.segmentType != ExerciseSegment.EXERCISE_SEGMENT_TYPE_PAUSE &&
-                it.endTime.isAfter(it.startTime)
+                it.endTime.isAfter(it.startTime) &&
+                Duration.between(it.startTime, it.endTime).multipliedBy(2) < session
         }
         .sortedBy { it.startTime }
         .map { it.startTime to it.endTime }
+}
 
 /** How long after the end the recovery chart follows the heart. */
 val recoveryChartWindow: Duration = Duration.ofMinutes(2)
@@ -131,4 +142,48 @@ fun recoveryTrace(samples: List<HeartRateSample>, sessionEnd: Instant): List<Pai
         .filter { !it.time.isBefore(from) && !it.time.isAfter(until) }
         .sortedBy { it.time }
         .map { Duration.between(sessionEnd, it.time).seconds.coerceAtLeast(0) to it.beatsPerMinute }
+}
+
+/**
+ * 103: the heart rate after the end, read where it was recorded and estimated where it was
+ * not, falling from the last reading toward the resting rate with a two-minute time constant.
+ */
+data class RecoveryCurve(
+    /** Seconds since the end to bpm, as recorded. */
+    val measured: List<Pair<Long, Double>>,
+    /** Seconds since the end to bpm, estimated past the last reading. Empty when none was needed. */
+    val estimated: List<Pair<Long, Double>>,
+    val endBpm: Double,
+    val oneMinute: RecoveryMark?,
+    val twoMinutes: RecoveryMark?,
+    /** The resting rate the estimate falls toward, when there is an estimate. */
+    val restingBpm: Int,
+)
+
+data class RecoveryMark(val bpm: Double, val estimated: Boolean)
+
+/** The fall's time constant: about a third of the way to rest in the first minute. */
+private const val RecoveryTimeConstantSeconds = 120.0
+private const val DefaultRestingBpm = 60
+
+fun recoveryCurve(trace: List<Pair<Long, Long>>, lastSessionBpm: Long?, restingBpm: Int?): RecoveryCurve? {
+    val measured = trace.map { it.first to it.second.toDouble() }
+    val anchor = measured.lastOrNull() ?: lastSessionBpm?.let { 0L to it.toDouble() } ?: return null
+    val endBpm = measured.firstOrNull()?.second ?: anchor.second
+    val window = recoveryChartWindow.seconds
+    val rest = minOf((restingBpm ?: DefaultRestingBpm).toDouble(), anchor.second - 5.0)
+    val estimated = if (anchor.first >= window - 10) {
+        emptyList()
+    } else {
+        (anchor.first..window step 5).map { t ->
+            t to rest + (anchor.second - rest) * kotlin.math.exp(-(t - anchor.first) / RecoveryTimeConstantSeconds)
+        }
+    }
+    fun at(seconds: Long): RecoveryMark? =
+        measured.filter { kotlin.math.abs(it.first - seconds) <= 20 }.minByOrNull { kotlin.math.abs(it.first - seconds) }
+            ?.let { RecoveryMark(it.second, estimated = false) }
+            ?: estimated.minByOrNull { kotlin.math.abs(it.first - seconds) }
+                ?.takeIf { kotlin.math.abs(it.first - seconds) <= 5 }
+                ?.let { RecoveryMark(it.second, estimated = true) }
+    return RecoveryCurve(measured, estimated, endBpm, at(60), at(120), rest.roundToInt())
 }

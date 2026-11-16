@@ -3943,4 +3943,6 @@
     <string name="settings_brand_colors_hero_tiles">Оба: цвета колец и первых шести плиток</string>
     <string name="settings_brand_animated_title">Анимированные</string>
     <string name="settings_brand_animated_body">Включено: переключатель и кнопки движутся. Выключено: остаются неподвижными в своих цветах.</string>
+    <string name="activity_chart_recovery_estimate">Оценка</string>
+    <string name="activity_chart_recovery_estimate_note">После %1$s пульс не записан: остальное — оценка, снижающаяся к пульсу покоя %2$d уд/мин.</string>
 </resources>

@@ -3876,4 +3876,6 @@
     <string name="settings_brand_colors_hero_tiles">Molemmat: renkaiden ja kuuden ensimmäisen ruudun värit</string>
     <string name="settings_brand_animated_title">Animoidut</string>
     <string name="settings_brand_animated_body">Päällä: kytkin ja painikkeet liikkuvat. Pois: ne pysyvät paikallaan väreissään.</string>
+    <string name="activity_chart_recovery_estimate">Arvio</string>
+    <string name="activity_chart_recovery_estimate_note">Sykettä ei tallennettu kohdan %1$s jälkeen: loppu on arvio, joka laskee kohti leposykettäsi %2$d bpm.</string>
 </resources>

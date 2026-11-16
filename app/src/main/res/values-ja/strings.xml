@@ -3944,4 +3944,6 @@
     <string name="settings_brand_colors_hero_tiles">両方：リングと最初の 6 タイルの色</string>
     <string name="settings_brand_animated_title">アニメーション</string>
     <string name="settings_brand_animated_body">オン：トグルとボタンが動きます。オフ：色はそのままで静止します。</string>
+    <string name="activity_chart_recovery_estimate">推定</string>
+    <string name="activity_chart_recovery_estimate_note">%1$s 以降の心拍数は記録されていません。残りは安静時心拍数 %2$d bpm に向かって下がる推定値です。</string>
 </resources>

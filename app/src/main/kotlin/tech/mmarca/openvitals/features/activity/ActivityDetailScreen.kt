@@ -210,6 +210,7 @@ internal fun ActivityDetailScreen(
             heartRateRecovery = state.heartRateRecovery,
             recoverySamples = state.recoverySamples,
             maxHeartRateBpm = state.maxHeartRateBpm,
+            restingHeartRateBpm = state.restingHeartRateBpm,
             speedSamples = state.speedSamples,
             cadenceSamples = state.cadenceSamples,
             sessionCalories = state.sessionCalories,
@@ -271,6 +272,7 @@ internal fun ActivityDetailContent(
     heartRateRecovery: HeartRateRecoveryReading?,
     recoverySamples: List<tech.mmarca.openvitals.domain.model.HeartRateSample> = emptyList(),
     maxHeartRateBpm: Int? = null,
+    restingHeartRateBpm: Int? = null,
     speedSamples: List<SpeedSample>,
     cadenceSamples: List<ActivityCadenceSample>,
     markers: List<ActivityRecordingMarker>,
@@ -413,6 +415,7 @@ internal fun ActivityDetailContent(
             recoverySamples = recoverySamples,
             maxHeartRateBpm = maxHeartRateBpm,
             unitFormatter = unitFormatter,
+            restingHeartRateBpm = restingHeartRateBpm,
         )
         // Recorded speed, or the split-derived reconstruction, never both.
         if (speedSamples.isNotEmpty()) {
