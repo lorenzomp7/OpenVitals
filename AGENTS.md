@@ -208,3 +208,16 @@ If the feature would require copying code from `ActivityScreen`, `SleepScreen`, 
 "Should this be a shared scaffold/component first?"
 
 In most cases, the answer should be yes for the shell, and no for the actual chart body.
+
+## Engineering workflows (agent-skills)
+
+The pinned upstream pack lives in `tools/agent-skills` (Git submodule).
+Initialize it with `git submodule update --init tools/agent-skills`.
+Codex discovers its workflows through `.agents/skills`; shared checklists are
+available through `.agents/references`. Read only the workflows relevant to
+the task. Existing OpenVitals architecture, privacy, Health Connect, signing
+and verification rules remain the project-specific source of truth.
+Do not send real health records, exports, screenshots or credentials to an
+external model to exercise a workflow; use synthetic fixtures.
+For setup, commands and version updates see
+[AI development tools](docs/engineering/ai-tools.md).

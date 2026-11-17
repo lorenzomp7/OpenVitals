@@ -113,3 +113,7 @@ cd OpenVitals
 ## Licenza
 
 OpenVitals è distribuito con licenza [GNU AGPL v3.0 o successiva](LICENSE). Crediti e componenti di terze parti sono elencati in [THANKS.md](THANKS.md) e [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
+
+## Strumenti di sviluppo AI
+
+Le procedure di `agent-skills` sono integrate e fissate a una versione precisa per Codex CLI e Claude Code. Vedi [configurazione e comandi](docs/engineering/ai-tools.md).
