@@ -222,3 +222,21 @@ a discovery catalogue: entries do not become installed MCP servers. Select
 and review an individual server before adding a runtime integration to
 `.mcp.json`. The catalogue is not a Health Connect bridge or a health-data
 provider. No upstream README text is redistributed in this repository.
+
+## awesome-ai-plugins catalogue
+
+The second pinned source is `hashgraph-online/awesome-ai-plugins`. It uses the
+same checksum-verified local search, so it can be consulted with no plugin
+installation and without sending project or health data to a provider.
+
+```bash
+python3 scripts/ai/catalogs.py sync plugins
+python3 scripts/ai/catalogs.py search plugins testing code --limit 10
+python3 scripts/ai/catalogs.py search all android testing --limit 15
+python3 scripts/ai/catalogs.py verify all
+```
+
+Run `sync all` once before searching both sources. Source commits and README
+hashes live in `tools/catalogs/sources.json`. Updating the manifest is an
+explicit reviewed change; a cached snapshot is not a live availability check
+of every listed service. Only the catalogue search is integrated here.

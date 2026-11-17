@@ -4,5 +4,11 @@
     "commit": "5fb385c3c56a004eacad6a21cb446205c787926b",
     "path": "README.md",
     "sha256": "3f4abe51d56f4d87ddb5f9ab5edae4c237d473b83a44126c8e49cd2dc6b60c12"
+  },
+  "plugins": {
+    "repository": "hashgraph-online/awesome-ai-plugins",
+    "commit": "7186b7d74cdc4538290e697e934498bdfd09a0a6",
+    "path": "README.md",
+    "sha256": "be61f2aebc0d881c68ad645afd0765d58426fb8d727dc584dbfd2950c19baf37"
   }
 }
