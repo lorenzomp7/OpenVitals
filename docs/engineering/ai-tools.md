@@ -240,3 +240,62 @@ Run `sync all` once before searching both sources. Source commits and README
 hashes live in `tools/catalogs/sources.json`. Updating the manifest is an
 explicit reviewed change; a cached snapshot is not a live availability check
 of every listed service. Only the catalogue search is integrated here.
+
+## Darts: local time-series experiments
+
+Source: https://github.com/unit8co/darts (Apache-2.0). Darts `0.48.1` is
+installed only in `tools/darts/.venv`, with a separate dependency lock.
+No Python, server, model API or forecasting dependency enters the APK/PWA.
+The integration runs a local `NaiveDrift` linear extrapolation and compares
+its held-out MAE with a last-observed-value baseline. It requires no account,
+API key, model download, Torch or external transfer of the input records.
+
+```bash
+bash scripts/ai/darts.sh install
+bash scripts/ai/darts.sh /path/to/openvitals-backup.json --metric weight --horizon 7
+bash scripts/ai/darts.sh /path/to/measurements.csv --metric restingHeart --horizon 7
+```
+
+Inputs are PWA JSON backups with `records` or a CSV with `date,value` columns
+(or `date,<metric>`). Supported metric keys are `weight`, `restingHeart`,
+`hrv`, `steps`, `sleep`, `bodyFat`, `leanMass`, and `bodyWater`, matching PWA
+record names. The CSV `value` column must use the selected metric's unit.
+Only the selected metric is read for the forecast; no Health Connect access
+or automatic export is introduced.
+
+The CLI prints a JSON report to stdout: observation count, last date, future
+dates/values, package version, metric/unit, holdout length, both MAEs and
+whether drift beat the baseline. At least 14 consecutive daily observations
+are required; horizon is 1–30 days. Missing values are skipped and any resulting
+date gap is rejected. Duplicates and non-finite/boolean values are rejected.
+No missing-day imputation or silent replacement with zero occurs.
+This is an exploratory forecast, with no confidence interval, anomaly detector,
+clinical interpretation or automatic change to user records.
+
+```bash
+tools/darts/.venv/bin/python tools/darts/smoke.py
+```
+
+The smoke test runs real Darts forecasts on synthetic trends, checks held-out
+accuracy against the baseline, exercises CSV and PWA imports and the CLI JSON,
+and checks rejection of incomplete/duplicate/invalid series and invalid horizons.
+CI runs the same checks without real health records.
+
+Update the explicit Darts version in `tools/darts/pyproject.toml`, then run:
+
+```bash
+uv lock --project tools/darts
+uv export --project tools/darts --locked --no-hashes --no-emit-project --format requirements-txt --output-file tools/darts/requirements.lock
+```
+
+Review and commit the exported requirements after installing and testing them.
+The intermediate `uv.lock` and virtualenv stay ignored.
+
+## Remaining proposals from the original list
+
+LibSignal concerns traffic simulations; Syncfusion flutter-examples concerns
+Flutter widgets, while this project uses Kotlin/Compose and a separate JS PWA.
+Neither is integrated. MiMo-Code was an optional curiosity, outside the selected
+OpenVitals development tools; it is not installed. The two awesome repositories
+are searchable catalogues, not active providers. Darts is a local experiment,
+not an implemented forecast screen in the application.

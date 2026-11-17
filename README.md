@@ -117,5 +117,6 @@ OpenVitals è distribuito con licenza [GNU AGPL v3.0 o successiva](LICENSE). Cre
 ## Strumenti di sviluppo AI
 
 Sono integrati `agent-skills`, `container-use`, Gemini CLI, Playwriter e `vibetest-use`, con versioni fissate e strumenti separati dalle dipendenze dell’app.
+Sono disponibili anche la ricerca locale nei cataloghi `awesome-mcp-servers` e `awesome-ai-plugins`, e uno strumento Darts separato per previsioni sperimentali da CSV o backup PWA. I cataloghi non installano automaticamente i servizi elencati e le previsioni non sono una funzione dell’APK.
 Vedi [configurazione, comandi e requisiti](docs/engineering/ai-tools.md) e [verifiche automatiche](https://github.com/lorenzomp7/OpenVitals/actions/workflows/ai-tools.yml).
 Gemini e Vibetest richiedono autenticazione o chiave del modello per le richieste AI; Container Use richiede Docker; Playwriter richiede Chrome/Chromium.

@@ -2,9 +2,9 @@ name: AI tools
 on:
   push:
     branches: [main_chatgpt, main]
-    paths: ['scripts/ai/**', 'tools/ai-node/**', 'tools/vibetest/**', '.container-use/**', '.mcp.json', '.gemini/**', '.github/workflows/ai-tools.yml']
+    paths: ['scripts/ai/**', 'tools/ai-node/**', 'tools/vibetest/**', 'tools/darts/**', 'tools/catalogs/**', '.container-use/**', '.mcp.json', '.gemini/**', '.github/workflows/ai-tools.yml']
   pull_request:
-    paths: ['scripts/ai/**', 'tools/ai-node/**', 'tools/vibetest/**', '.container-use/**', '.mcp.json', '.gemini/**', '.github/workflows/ai-tools.yml']
+    paths: ['scripts/ai/**', 'tools/ai-node/**', 'tools/vibetest/**', 'tools/darts/**', 'tools/catalogs/**', '.container-use/**', '.mcp.json', '.gemini/**', '.github/workflows/ai-tools.yml']
   workflow_dispatch:
 permissions:
   contents: read
@@ -47,3 +47,19 @@ jobs:
       - run: uv venv --python 3.12 tools/vibetest/.venv
       - run: uv pip sync --python tools/vibetest/.venv/bin/python tools/vibetest/requirements.lock
       - run: tools/vibetest/.venv/bin/python scripts/ai/vibetest-smoke.py
+  catalogues:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - run: python3 scripts/ai/catalogs.py sync all
+      - run: python3 scripts/ai/catalogs.py verify all
+      - run: python3 scripts/ai/catalogs.py search all android testing --limit 5
+  darts-forecast:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+      - run: bash scripts/ai/darts.sh install
+      - run: tools/darts/.venv/bin/python tools/darts/smoke.py
