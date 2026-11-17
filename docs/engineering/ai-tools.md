@@ -108,3 +108,39 @@ CLI does not automatically install the upstream pack into Gemini's skill list.
 The normal interactive approval policy is preserved. Account access, quota
 and successful model responses require authentication and are separate from
 CLI installation checks.
+
+## Playwriter
+
+Source: https://github.com/remorses/playwriter. The npm package is pinned to
+`0.12.0` with its dependency lock in `tools/ai-node`.
+
+```bash
+npm ci --prefix tools/ai-node
+bash scripts/ai/playwriter.sh --help
+bash scripts/ai/serve-pwa.sh 8765
+```
+
+For your existing Chrome install the upstream Playwriter extension, open
+`http://127.0.0.1:8765`, and enable the extension on that tab. Claude Code
+loads the `playwriter` entry in `.mcp.json`; Codex CLI can register it with:
+
+```bash
+codex mcp add playwriter -- bash "$PWD/scripts/ai/playwriter.sh"
+```
+
+The CLI wrapper also supports sessions and `-e` execution. This controls
+browser pages; it does not test native Compose or Health Connect.
+Only use synthetic PWA records in QA sessions.
+
+```bash
+python3 scripts/ai/playwriter-smoke.py
+```
+
+The smoke test builds the real PWA and exercises mobile dashboard rendering,
+period selection, profile save/reload, synthetic demo records and detail
+navigation through Playwriter's direct CDP mode. It launches an isolated
+Chromium profile, then cleans up its session, browser and HTTP server.
+Set `CHROMIUM_PATH` if Chromium is not on PATH. The extension path requires
+manual browser enablement; direct CDP smoke does not verify that path.
+In restricted hosts where Chromium cannot create sockets, run this test on
+your development machine or through the `AI tools` GitHub Actions workflow.

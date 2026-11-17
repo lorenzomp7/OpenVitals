@@ -3,6 +3,11 @@
   "private": true,
   "version": "1.0.0",
   "description": "Development-only AI tools, separate from Android and PWA dependencies",
-  "engines": { "node": ">=22" },
-  "dependencies": { "@google/gemini-cli": "0.68.0" }
+  "engines": {
+    "node": ">=22"
+  },
+  "dependencies": {
+    "@google/gemini-cli": "0.68.0",
+    "playwriter": "0.12.0"
+  }
 }

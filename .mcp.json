@@ -6,6 +6,12 @@
         "scripts/ai/container-use.sh",
         "stdio"
       ]
+    },
+    "playwriter": {
+      "command": "bash",
+      "args": [
+        "scripts/ai/playwriter.sh"
+      ]
     }
   }
 }
