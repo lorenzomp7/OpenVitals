@@ -32,7 +32,16 @@ internal fun ActivityChartFigures(
                 else -> Alignment.CenterHorizontally to TextAlign.Center
             }
             Column(Modifier.weight(1f), horizontalAlignment = alignment) {
-                Text(value, style = MaterialTheme.typography.titleMedium, color = accent, textAlign = textAlign)
+                // 135: a figure and its unit always on one line: the text shrinks, it never wraps.
+                tech.mmarca.openvitals.ui.components.AutoResizeText(
+                    text = value,
+                    style = MaterialTheme.typography.titleMedium,
+                    color = accent,
+                    textAlign = textAlign,
+                    maxLines = 1,
+                    softWrap = false,
+                    minFontSize = FigureMinFontSize,
+                )
                 Text(
                     label,
                     style = MaterialTheme.typography.labelSmall,
@@ -53,3 +62,6 @@ internal fun activityValueRange(low: String, high: String): String {
     val bareLow = if (unit != null && low.endsWith(" $unit")) low.removeSuffix(" $unit") else low
     return "$bareLow – $high"
 }
+
+/** 135: how far a figure may shrink to stay on its one line. */
+private val FigureMinFontSize = androidx.compose.ui.unit.TextUnit(9f, androidx.compose.ui.unit.TextUnitType.Sp)

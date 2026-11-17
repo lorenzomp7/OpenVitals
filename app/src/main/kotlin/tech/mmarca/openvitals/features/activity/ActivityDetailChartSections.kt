@@ -187,9 +187,21 @@ internal fun MetricDetailSectionBuilder.activityDetailChartSections(
     }
     // 117: the length of each step, for the kinds that count steps.
     val strides = if (workout.exerciseType in tech.mmarca.openvitals.domain.model.stepBasedExercises) {
+        // 136: the same cleaned cadence and speed the charts draw.
         strideLengthSeries(
-            cadence = cadenceSamples.filter { it.kind == ActivityCadenceKind.STEPS }.map { it.time to it.rate },
-            speed = speedSamples.map { it.time to it.metersPerSecond }
+            cadence = tech.mmarca.openvitals.domain.insights.runningCadenceInSteps(
+                workout.exerciseType,
+                tech.mmarca.openvitals.domain.insights.sessionSeries(
+                    cadenceSamples.filter { it.kind == ActivityCadenceKind.STEPS }.map { tech.mmarca.openvitals.domain.insights.SessionReading(it.time, it.rate, it.source) },
+                    workout.startTime,
+                    workout.endTime,
+                ),
+            ),
+            speed = tech.mmarca.openvitals.domain.insights.sessionSeries(
+                speedSamples.map { tech.mmarca.openvitals.domain.insights.SessionReading(it.time, it.metersPerSecond, it.source) },
+                workout.startTime,
+                workout.endTime,
+            )
                 .ifEmpty { paceFromRoute(workout.route.points).map { (time, pace) -> time to 1_000.0 / pace } }
                 .ifEmpty { splitSpeedTrace?.samples.orEmpty().map { it.time to it.metersPerSecond } },
         )
@@ -221,6 +233,7 @@ internal fun MetricDetailSectionBuilder.activityDetailChartSections(
                     pauses = pauses,
                     unitFormatter = unitFormatter,
                     modifier = cardModifier,
+                    exerciseType = workout.exerciseType,
                 )
             }
         }

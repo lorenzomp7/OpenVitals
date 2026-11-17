@@ -66,12 +66,9 @@ internal fun ActivityHeartRateChartCard(
     val timeFormatter = DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT)
     // Built once, identity-stable, so the geometry cache holds.
     val chartPoints = remember(sorted, axis) {
-        sorted.map { sample ->
-            MetricLinePlotPoint(
-                xFraction = axis.fractionOf(sample.time),
-                value = sample.beatsPerMinute.toDouble(),
-            )
-        }
+        // 137: drawn from the session's start; a first reading that came later is estimated there.
+        anchoredAtStart(sorted.map { axis.fractionOf(it.time) to it.beatsPerMinute.toDouble() })
+            .map { (x, bpm) -> MetricLinePlotPoint(xFraction = x, value = bpm) }
     }
 
     OpenVitalsCard(modifier = modifier) {

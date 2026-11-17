@@ -6,11 +6,13 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -36,10 +38,10 @@ import tech.mmarca.openvitals.ui.components.chartSemantics
 import tech.mmarca.openvitals.ui.components.formatElapsedChartLabel
 import tech.mmarca.openvitals.ui.theme.Spacing
 
-private val UphillColor = Color(0xFFE57373)
-private val FlatColor = Color(0xFFFFB74D)
-private val DownhillColor = Color(0xFF64B5F6)
-private val DonutSize = Spacing.giant * 3
+/** 139: the gradient card in the elevation chart's colour, steep in full, flat faint. */
+private val UphillShade = 1f
+private val FlatShade = 0.45f
+private val DownhillShade = 0.7f
 
 @Composable
 private fun EffectCardFrame(title: String, modifier: Modifier, note: String?, content: @Composable () -> Unit) {
@@ -56,59 +58,53 @@ private fun EffectCardFrame(title: String, modifier: Modifier, note: String?, co
 @Composable
 internal fun ActivityGradientCard(distribution: GradientDistribution, modifier: Modifier = Modifier) {
     val total = distribution.totalSeconds.coerceAtLeast(1)
+    val accent = tech.mmarca.openvitals.ui.theme.ElevationColor
     val parts = listOf(
-        Triple(stringResource(R.string.activity_chart_gradient_uphill), distribution.uphillSeconds, UphillColor),
-        Triple(stringResource(R.string.activity_chart_gradient_flat), distribution.flatSeconds, FlatColor),
-        Triple(stringResource(R.string.activity_chart_gradient_downhill), distribution.downhillSeconds, DownhillColor),
+        Triple(stringResource(R.string.activity_chart_gradient_uphill), distribution.uphillSeconds, accent.copy(alpha = UphillShade)),
+        Triple(stringResource(R.string.activity_chart_gradient_flat), distribution.flatSeconds, accent.copy(alpha = FlatShade)),
+        Triple(stringResource(R.string.activity_chart_gradient_downhill), distribution.downhillSeconds, accent.copy(alpha = DownhillShade)),
     )
     val title = stringResource(R.string.activity_chart_gradient_title)
     val percent = "${(FlatGradeLimit * 100).toInt()}%"
     val spoken = parts.joinToString(", ") { (label, seconds, _) -> "$label ${seconds * 100 / total}%" }
+    // 139: as every activity chart: the three figures left, middle and right, then one bar per
+    // part as the heart rate zones draw them, in the elevation chart's colour.
     EffectCardFrame(
         title = title,
         modifier = modifier,
         note = stringResource(R.string.activity_chart_gradient_note, "+$percent", "−$percent"),
     ) {
-        Row(
-            Modifier.fillMaxWidth().chartSemantics("$title: $spoken"),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(Spacing.xl),
+        ActivityChartFigures(
+            figures = parts.map { (label, seconds, _) -> label to "${seconds * 100 / total}%" },
+            accent = accent,
+        )
+        Column(
+            modifier = Modifier.fillMaxWidth().chartSemantics("$title: $spoken"),
+            verticalArrangement = Arrangement.spacedBy(Spacing.md),
         ) {
-            Canvas(Modifier.size(DonutSize)) {
-                val stroke = size.minDimension * 0.14f
-                val inset = stroke / 2f
-                val arcSize = Size(size.width - stroke, size.height - stroke)
-                val gap = if (parts.count { it.second > 0 } > 1) 4f else 0f
-                var start = -90f
-                parts.forEach { (_, seconds, color) ->
-                    val sweep = 360f * seconds / total
-                    if (sweep > 0f) {
-                        drawArc(
-                            color = color,
-                            startAngle = start + gap / 2f,
-                            sweepAngle = (sweep - gap).coerceAtLeast(0.5f),
-                            useCenter = false,
-                            topLeft = Offset(inset, inset),
-                            size = arcSize,
-                            style = Stroke(stroke, cap = StrokeCap.Butt),
+            parts.forEach { (label, seconds, color) ->
+                Column(verticalArrangement = Arrangement.spacedBy(Spacing.xs)) {
+                    Row(verticalAlignment = Alignment.Bottom) {
+                        Text(label, style = MaterialTheme.typography.labelLarge, modifier = Modifier.weight(1f))
+                        Text(
+                            formatElapsedChartLabel(Duration.ofSeconds(seconds)),
+                            style = MaterialTheme.typography.labelMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            textAlign = TextAlign.End,
                         )
                     }
-                    start += sweep
-                }
-            }
-            Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(Spacing.sm)) {
-                parts.forEach { (label, seconds, color) ->
-                    Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(Spacing.sm)) {
-                        Box(Modifier.size(Spacing.sm).background(color, CircleShape))
-                        Column(Modifier.weight(1f)) {
-                            Text(label, style = MaterialTheme.typography.labelLarge)
-                            Text(
-                                formatElapsedChartLabel(Duration.ofSeconds(seconds)),
-                                style = MaterialTheme.typography.labelSmall,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                            )
-                        }
-                        Text("${seconds * 100 / total}%", style = MaterialTheme.typography.labelLarge, color = color)
+                    Box(
+                        Modifier
+                            .fillMaxWidth()
+                            .height(Spacing.sm)
+                            .background(accent.copy(alpha = tech.mmarca.openvitals.ui.theme.Emphasis.wash), RoundedCornerShape(Spacing.xs)),
+                    ) {
+                        Box(
+                            Modifier
+                                .fillMaxWidth((seconds.toFloat() / total).coerceAtLeast(0.01f))
+                                .fillMaxHeight()
+                                .background(color, RoundedCornerShape(Spacing.xs)),
+                        )
                     }
                 }
             }

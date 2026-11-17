@@ -54,10 +54,19 @@ internal fun ActivitySpeedChartCard(
     pauses: List<SessionPause> = emptyList(),
 ) {
     if (!hasMeaningfulSpeed(samples)) return
+    // 136: one app's readings inside the session, cleaned of single wild readings.
+    val series = remember(samples, sessionStart, sessionEnd) {
+        tech.mmarca.openvitals.domain.insights.sessionSeries(
+            samples.map { tech.mmarca.openvitals.domain.insights.SessionReading(it.time, it.metersPerSecond, it.source) },
+            sessionStart,
+            sessionEnd,
+        )
+    }
+    if (series.size < 2) return
 
     ActivitySessionMetricChartCard(
         title = stringResource(R.string.activity_recording_live_speed),
-        sortedValues = remember(samples) { samples.sortedBy { it.time }.map { it.time to it.metersPerSecond } },
+        sortedValues = series,
         sessionStart = sessionStart,
         sessionEnd = sessionEnd,
         unitFormatter = unitFormatter,
@@ -240,10 +249,26 @@ internal fun ActivityCadenceChartCard(
     unitFormatter: UnitFormatter,
     modifier: Modifier = Modifier,
     pauses: List<SessionPause> = emptyList(),
+    /** 136: a run's cadence written per foot is counted in steps. */
+    exerciseType: Int? = null,
 ) {
     val filtered = remember(samples, kind) { samples.filter { it.kind == kind } }
     // All zeros is a sensor that was not there, not a cadence.
     if (filtered.none { it.rate > 0.0 }) return
+    // 136: one app's readings inside the session, cleaned, and a run's counted in steps.
+    val series = remember(filtered, sessionStart, sessionEnd, exerciseType) {
+        val cleaned = tech.mmarca.openvitals.domain.insights.sessionSeries(
+            filtered.map { tech.mmarca.openvitals.domain.insights.SessionReading(it.time, it.rate, it.source) },
+            sessionStart,
+            sessionEnd,
+        )
+        if (kind == ActivityCadenceKind.STEPS) {
+            tech.mmarca.openvitals.domain.insights.runningCadenceInSteps(exerciseType, cleaned)
+        } else {
+            cleaned
+        }
+    }
+    if (series.size < 2) return
 
     val title = when (kind) {
         ActivityCadenceKind.CYCLING -> stringResource(R.string.metric_cycling_cadence)
@@ -256,7 +281,7 @@ internal fun ActivityCadenceChartCard(
 
     ActivitySessionMetricChartCard(
         title = title,
-        sortedValues = remember(filtered) { filtered.sortedBy { it.time }.map { it.time to it.rate } },
+        sortedValues = series,
         sessionStart = sessionStart,
         sessionEnd = sessionEnd,
         unitFormatter = unitFormatter,
@@ -300,7 +325,10 @@ private fun ActivitySessionMetricChartCard(
     // One pass each per list, not per recomposition.
     val minValue = remember(sortedValues) { sortedValues.minOf { it.second } }
     val maxValue = remember(sortedValues) { sortedValues.maxOf { it.second } }
-    val avgValue = averageOverride ?: remember(sortedValues) { sortedValues.map { it.second }.average() }
+    // 136: weighted by time, so a stretch read every second does not outweigh one read every minute.
+    val avgValue = averageOverride ?: remember(sortedValues) {
+        tech.mmarca.openvitals.domain.insights.timeWeightedMean(sortedValues) ?: sortedValues.map { it.second }.average()
+    }
     // A flat trace still needs a readable axis: give it room around its value.
     val valueRange = (maxValue - minValue).takeIf { it > 1e-6 }
         ?: maxOf(kotlin.math.abs(maxValue) * 0.2, 1.0)
@@ -317,9 +345,9 @@ private fun ActivitySessionMetricChartCard(
     val drawPoints = false
     // Built once, identity-stable, so the geometry cache holds.
     val chartPoints = remember(sortedValues, axis) {
-        sortedValues.map { (time, value) ->
-            MetricLinePlotPoint(xFraction = axis.fractionOf(time), value = value)
-        }
+        // 137: drawn from the session's start; a first reading that came later is estimated there.
+        anchoredAtStart(sortedValues.map { (time, value) -> axis.fractionOf(time) to value })
+            .map { (x, value) -> MetricLinePlotPoint(xFraction = x, value = value) }
     }
 
     OpenVitalsCard(modifier = modifier) {

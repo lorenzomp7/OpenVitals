@@ -23,6 +23,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
 import tech.mmarca.openvitals.R
 import tech.mmarca.openvitals.domain.preferences.BrandPaletteSource
 import tech.mmarca.openvitals.ui.components.BrandColors
@@ -173,6 +174,10 @@ internal fun DashboardDaySummarySheet(
                         color = goal.color,
                         trackColor = goal.color.copy(alpha = Emphasis.wash),
                         modifier = Modifier.fillMaxWidth().height(Spacing.sm),
+                        // 129, 130: one bar, the filled part running straight into the empty one,
+                        // with no stop dot at its end.
+                        gapSize = 0.dp,
+                        drawStopIndicator = {},
                     )
                 }
             }

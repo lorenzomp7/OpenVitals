@@ -134,21 +134,12 @@ internal fun cleanGpsElevation(
     meanHalfWindowSeconds: Long = 15,
 ): List<ActivityElevationSample> {
     if (samples.size < 3) return samples
-    val seconds = samples.map { it.time.epochSecond }
-    fun windowed(values: List<Double>, half: Long, reduce: (List<Double>) -> Double): List<Double> {
-        var from = 0
-        var to = 0
-        return values.indices.map { index ->
-            while (seconds[from] < seconds[index] - half) from++
-            while (to + 1 <= values.lastIndex && seconds[to + 1] <= seconds[index] + half) to++
-            reduce(values.subList(from, to + 1))
-        }
-    }
-    val medians = windowed(samples.map { it.meters }, medianHalfWindowSeconds) { window ->
-        val sorted = window.sorted()
-        if (sorted.size % 2 == 1) sorted[sorted.size / 2] else (sorted[sorted.size / 2 - 1] + sorted[sorted.size / 2]) / 2.0
-    }
-    val means = windowed(medians, meanHalfWindowSeconds) { it.average() }
+    val means = tech.mmarca.openvitals.domain.insights.rollingMedianThenMean(
+        seconds = samples.map { it.time.epochSecond },
+        values = samples.map { it.meters },
+        medianHalfWindowSeconds = medianHalfWindowSeconds,
+        meanHalfWindowSeconds = meanHalfWindowSeconds,
+    )
     return samples.mapIndexed { index, sample -> sample.copy(meters = means[index]) }
 }
 

@@ -57,7 +57,7 @@ jobs:
           if (( NEXT < 1070400000 )); then NEXT=1070400000; fi
           echo "OPENVITALS_VERSION_CODE=$NEXT" >> "$GITHUB_ENV"
           echo "code=$NEXT" >> "$GITHUB_OUTPUT"
-          echo "OPENVITALS_VERSION_NAME=2.17.21-personal-claude" >> "$GITHUB_ENV"
+          echo "OPENVITALS_VERSION_NAME=2.17.22-personal-claude" >> "$GITHUB_ENV"
       - name: Build the signed personal update
         env:
           OPENVITALS_RELEASE_STORE_FILE: ${{ github.workspace }}/personal/personal.p12
@@ -138,6 +138,16 @@ jobs:
           cat > release-notes.md <<EOF
           Scarica **OpenVitals.apk** dagli allegati e aprilo sul telefono.
 
+          Branch main_claude — 127, 129, 130, 135-140:
+          - Tapis roulant: nel riepilogo in alto c'è solo la durata, non più la FC media.
+          - Toggle OpenVitals, riepilogo: le barre non hanno più il puntino finale né lo spazio fra parte piena e vuota.
+          - Grafici delle attività: i valori delle tre colonne in alto stanno sempre su una riga, il testo si rimpicciolisce invece di andare a capo.
+          - Velocità e cadenza passi: si usano solo i campioni dentro l'attività e di una sola app (orologio e app che lo copia non si mescolano più), ripuliti dai valori isolati; la media è pesata sul tempo. Una corsa con cadenza scritta "per piede" (sotto 110 passi/min) viene contata in passi. La falcata usa gli stessi dati.
+          - Le curve partono dall'asse: se il primo valore arriva dopo l'inizio, quello iniziale è stimato (mediana dei primi valori).
+          - I numeri sugli assi non sono più colorati.
+          - "Gradient distribution" ha lo stile delle altre schede: tre colonne in alto e barre come le zone cardiache, nel colore dell'altitudine.
+          - Passo, serie, recupero e grafici a due linee: tenendo premuto e scorrendo si legge il valore sotto il dito, come negli altri grafici.
+
           Branch main_claude — 94, 99, 100, 104, 116, 131-134:
           - Toggle OpenVitals: sonno, passi, allenamento e calorie attive sono letti per il periodo scelto anche quando il loro riquadro non è sulla pagina principale. Il sonno ora mostra le ore dormite sull'obiettivo in ore (prima "58 of 8h 00m" metteva il punteggio del sonno accanto alle ore).
           - Modalità modifica della pagina principale: entrando e uscendo la vista attuale svanisce e poi compare l'altra, senza più sovrapporsi.
@@ -149,12 +159,12 @@ jobs:
 
           Questa versione aggiorna l'installazione personale compatibile di OpenVitals senza disinstallarla. La revisione ha superato la verifica completa (verify) in questa stessa esecuzione; package e firma coincidono con l'APK pubblicato precedente; installazione, aggiornamento, avvio e import screenshot sono verificati su Android 15.
 
-          Versione: **2.17.21-personal-claude**. Version code: **$OPENVITALS_VERSION_CODE**.
+          Versione: **2.17.22-personal-claude**. Version code: **$OPENVITALS_VERSION_CODE**.
           Sorgenti: https://github.com/$GH_REPO/commit/$GITHUB_SHA
           Compilazione e verifica aggiornamento: https://github.com/$GH_REPO/actions/runs/$GITHUB_RUN_ID
           EOF
           if gh release view "$TAG" > /dev/null 2>&1; then
             echo "Release already exists; keeping the published APK unchanged."
           else
-            gh release create "$TAG" release/OpenVitals.apk release/SHA256SUMS.txt --target "$GITHUB_SHA" --title "OpenVitals 2.17.21 · main_claude" --notes-file release-notes.md --latest
+            gh release create "$TAG" release/OpenVitals.apk release/SHA256SUMS.txt --target "$GITHUB_SHA" --title "OpenVitals 2.17.22 · main_claude" --notes-file release-notes.md --latest
           fi

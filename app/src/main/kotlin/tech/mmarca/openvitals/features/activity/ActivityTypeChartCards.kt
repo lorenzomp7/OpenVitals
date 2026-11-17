@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -108,6 +109,9 @@ internal fun ActivityOverlayChart(
     /** The second series continues the first, on the first's scale (103). */
     sharedScale: Boolean = false,
 ) {
+    // 137: a line that starts after the session's first second is carried back to it.
+    @Suppress("NAME_SHADOWING")
+    val primary = remember(primary) { primary.copy(points = anchoredAtStart(primary.points)) }
     val first = remember(primary.points, secondary?.points, sharedScale) {
         overlayScale(if (sharedScale && secondary != null) primary.points + secondary.points else primary.points)
     }
@@ -120,13 +124,21 @@ internal fun ActivityOverlayChart(
     ChartZoom(keys, modifier = modifier) { zoom ->
         val viewport = zoom.viewport
         Column(verticalArrangement = Arrangement.spacedBy(Spacing.xs)) {
+            // 140: hold and slide across the chart to read the reading under the finger.
+            val targets = remember(primary, secondary, first, viewport) {
+                overlayScrubTargets(primary, secondary, first, viewport, xLabel)
+            }
             Row(Modifier.fillMaxWidth().height(OverlayChartHeight)) {
                 AxisLabels(first, primary, TextAlign.End)
+                tech.mmarca.openvitals.ui.components.ChartScrubber(
+                    targets = targets,
+                    accentColor = primary.color,
+                    multiTouch = zoom.multiTouch,
+                    modifier = Modifier.weight(1f).fillMaxHeight().padding(horizontal = Spacing.xs),
+                ) {
                 Canvas(
                     Modifier
-                        .weight(1f)
-                        .fillMaxHeight()
-                        .padding(horizontal = Spacing.xs)
+                        .fillMaxSize()
                         .chartSemantics(described),
                 ) {
                     // 101: in full screen the viewport is what the fingers zoomed to.
@@ -143,6 +155,7 @@ internal fun ActivityOverlayChart(
                         if (secondary != null && second != null) drawSmoothLine(secondary, second, filled = false, viewport)
                         drawSmoothLine(primary, first, filled = true, viewport)
                     }
+                }
                 }
                 if (rightAxis && second != null) AxisLabels(second, secondary!!, TextAlign.Start) else Box(Modifier.width(Spacing.xs))
             }
@@ -161,6 +174,52 @@ internal fun ActivityOverlayChart(
 }
 
 private data class OverlayScale(val low: Double, val high: Double)
+
+/** At most this many points a hold can land on: the nearest reading is still found. */
+private const val MaxScrubTargets = 600
+
+/**
+ * 140: the readings of [primary] on show, each with the time under it and, when there is one,
+ * the second series' reading nearest in time.
+ */
+private fun overlayScrubTargets(
+    primary: OverlaySeries,
+    secondary: OverlaySeries?,
+    scale: OverlayScale,
+    viewport: tech.mmarca.openvitals.ui.components.ChartViewport,
+    xLabel: (Float) -> String,
+): List<tech.mmarca.openvitals.ui.components.ScrubTarget> {
+    val shown = primary.points.filter { (x, _) -> viewport.visibleFraction(x) in 0f..1f }
+    val step = (shown.size / MaxScrubTargets).coerceAtLeast(1)
+    val span = (scale.high - scale.low).takeIf { it > 0.0 } ?: 1.0
+    return shown.filterIndexed { index, _ -> index % step == 0 }.map { (x, value) ->
+        val share = ((value - scale.low) / span).toFloat().coerceIn(0f, 1f)
+        tech.mmarca.openvitals.ui.components.ScrubTarget(
+            xFraction = viewport.visibleFraction(x),
+            yFraction = if (primary.inverted) 1f - share else share,
+            label = {
+                val other = secondary?.points?.minByOrNull { kotlin.math.abs(it.first - x) }
+                    ?.let { (_, otherValue) -> " · ${secondary.format(otherValue)}" }.orEmpty()
+                primary.format(value) + other to xLabel(x)
+            },
+        )
+    }
+}
+
+/**
+ * 137: a series whose first reading comes after the start is drawn from the start: its first
+ * value there is estimated as the median of its first few readings, so one odd reading at the
+ * start does not set it.
+ */
+internal fun anchoredAtStart(points: List<Pair<Float, Double>>, epsilon: Float = 0.002f): List<Pair<Float, Double>> {
+    val firstX = points.firstOrNull()?.first ?: return points
+    if (firstX <= epsilon) return points
+    val head = points.take(StartEstimateReadings).map { it.second }.sorted()
+    return listOf(0f to head[head.size / 2]) + points
+}
+
+/** 137: how many of the first readings the estimated start is the median of. */
+internal const val StartEstimateReadings = 5
 
 private fun overlayScale(points: List<Pair<Float, Double>>): OverlayScale {
     val low = points.minOf { it.second }
@@ -181,7 +240,8 @@ private fun AxisLabels(scale: OverlayScale, series: OverlaySeries, align: TextAl
             Text(
                 text = (series.axisFormat ?: series.format)(value),
                 style = MaterialTheme.typography.labelSmall,
-                color = series.color,
+                // 138: the axes are read in the theme's neutral ink, never the series' colour.
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
                 textAlign = align,
                 maxLines = 1,
                 modifier = Modifier.fillMaxWidth(),
