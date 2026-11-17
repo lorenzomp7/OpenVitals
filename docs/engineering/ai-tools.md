@@ -85,3 +85,26 @@ worktree snapshots do not guarantee initialized submodule content.
 This integration does not launch parallel agents automatically. Docker is
 required to test environment creation; configuration validation alone does
 not demonstrate an Android build.
+
+## Gemini CLI
+
+Source: https://github.com/google-gemini/gemini-cli (Apache-2.0).
+The published `@google/gemini-cli` package is pinned to `0.68.0` in the
+separate `tools/ai-node/package.json` and npm lockfile.
+
+```bash
+npm ci --prefix tools/ai-node
+bash scripts/ai/gemini.sh --version
+bash scripts/ai/gemini.sh
+```
+
+Complete Google's interactive authentication on your own machine, or provide
+`GEMINI_API_KEY` in the process environment. Credentials are not stored here.
+No model calls or paid requests run during installation or `--version`.
+The project `.gemini/settings.json` loads `AGENTS.md` and disables telemetry.
+Use `/review-openvitals` for the project review command. Workflow Markdown in
+`tools/agent-skills` can be read explicitly when relevant; installing Gemini
+CLI does not automatically install the upstream pack into Gemini's skill list.
+The normal interactive approval policy is preserved. Account access, quota
+and successful model responses require authentication and are separate from
+CLI installation checks.
