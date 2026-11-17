@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="cd_back">חזרה</string>
+    <string name="metric_sections_hidden">תרשימים מוסתרים</string>
+    <string name="cd_hide_section">הסתר תרשים</string>
+    <string name="cd_show_section">הצג תרשים</string>
     <string name="cd_settings">הגדרות</string>
     <string name="cd_achievements">הישגים</string>
     <string name="cd_edit_dashboard">עריכת סיכום</string>

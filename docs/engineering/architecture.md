@@ -582,6 +582,8 @@ The content lambda should render:
 - `Week / Month / Year` content
 - optional list/breakdown sections
 
+Sections go through `renderOrderedMetricDetailSections` with the context from `rememberMetricDetailSectionOrdering`. The order is one list for every screen, and so is the set of hidden sections: in edit mode each section has an "x", and the hidden ones that screen would show sit faint at the bottom with a "+" to put them back; both are drafts until Save. An activity's charts keep `ActivityDetailGeneralOrder` as their default; bump `ActivityDetailGeneralOrderVersion` only when a saved arrangement is to be put in a new general order.
+
 When registering a new period-based screen, add a `PeriodRangePreferenceKey` and inject `PeriodPreferences` into the screen ViewModel so the saved range is owned with the rest of the feature state. Persist only range changes; selected dates remain screen state.
 
 ### 5. Keep visuals local to the feature

@@ -24,6 +24,9 @@
     <string name="cd_move_section_up">Liiguta jaotis üles</string>
     <string name="cd_move_section_down">Liiguta jaotis alla</string>
     <string name="cd_remove_widget">Eemalda vidin</string>
+    <string name="metric_sections_hidden">Peidetud graafikud</string>
+    <string name="cd_hide_section">Peida graafik</string>
+    <string name="cd_show_section">Näita graafikut</string>
     <string name="cd_decrease_recording_dashboard_widget_size">Vähenda vidina suurust</string>
     <string name="cd_increase_recording_dashboard_widget_size">Suurenda vidina suurust</string>
     <string name="cd_exit_recording_focus_mode">Välju fookusrežiimist</string>

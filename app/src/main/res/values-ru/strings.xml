@@ -24,6 +24,9 @@
     <string name="cd_move_section_up">Переместить раздел вверх</string>
     <string name="cd_move_section_down">Переместить раздел вниз</string>
     <string name="cd_remove_widget">Удалить виджет</string>
+    <string name="metric_sections_hidden">Скрытые графики</string>
+    <string name="cd_hide_section">Скрыть график</string>
+    <string name="cd_show_section">Показать график</string>
     <string name="cd_decrease_recording_dashboard_widget_size">Уменьшить виджет</string>
     <string name="cd_increase_recording_dashboard_widget_size">Увеличить виджет</string>
     <string name="cd_exit_recording_focus_mode">Выйти из режима фокусировки</string>

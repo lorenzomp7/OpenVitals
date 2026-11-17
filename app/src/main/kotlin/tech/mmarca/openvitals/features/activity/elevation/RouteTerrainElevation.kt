@@ -69,8 +69,14 @@ class RouteTerrainElevation @Inject constructor(
             .firstOrNull { (_, positions) -> positions.flatMap { it.neighbours() }.distinct().size <= MaxTiles }
             ?: return null
         val keys = positions.flatMap { it.neighbours() }.distinct()
-        val bitmaps = keys.associateWith { key -> tile(key, token) ?: return null }
-        return positions.map { position -> bilinear(position, zoom, bitmaps) }
+        // 104: one tile that will not come is no reason to drop the others: the points on it are
+        // filled between their neighbours, as long as most of the route was read.
+        val bitmaps = keys.mapNotNull { key -> tile(key, token)?.let { key to it } }.toMap()
+        val heights = positions.map { position ->
+            if (position.key in bitmaps) bilinear(position, zoom, bitmaps) else null
+        }
+        if (heights.count { it != null } < heights.size * MinCoveredShare) return null
+        return fillGaps(heights)
     }
 
     /**
@@ -179,6 +185,8 @@ class RouteTerrainElevation @Inject constructor(
         const val MaxTiles = 120
         const val TimeoutMillis = 10_000
         const val RetryDelayMillis = 500L
+        /** The share of the route whose own tile must have been read. */
+        const val MinCoveredShare = 0.8
     }
 }
 
@@ -195,5 +203,23 @@ internal fun smoothTerrain(heights: List<Double>, window: Int = 5): List<Double>
         var sum = 0.0
         for (i in from..to) sum += heights[i]
         sum / (to - from + 1)
+    }
+}
+
+/** 104: the heights a missing tile left out, drawn straight between the ones either side. */
+internal fun fillGaps(heights: List<Double?>): List<Double> {
+    val known = heights.indices.filter { heights[it] != null }
+    if (known.isEmpty()) return emptyList()
+    return heights.indices.map { index ->
+        heights[index] ?: run {
+            val insertion = -known.binarySearch(index) - 1
+            val before = known.getOrNull(insertion - 1)
+            val after = known.getOrNull(insertion)
+            when {
+                before == null -> heights[after!!]!!
+                after == null -> heights[before]!!
+                else -> heights[before]!! + (heights[after]!! - heights[before]!!) * (index - before) / (after - before)
+            }
+        }
     }
 }

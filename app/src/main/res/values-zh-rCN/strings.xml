@@ -24,6 +24,9 @@
     <string name="cd_move_section_up">上移分区</string>
     <string name="cd_move_section_down">下移分区</string>
     <string name="cd_remove_widget">移除小组件</string>
+    <string name="metric_sections_hidden">已隐藏的图表</string>
+    <string name="cd_hide_section">隐藏图表</string>
+    <string name="cd_show_section">显示图表</string>
     <string name="cd_decrease_recording_dashboard_widget_size">缩小小组件</string>
     <string name="cd_increase_recording_dashboard_widget_size">放大小组件</string>
     <string name="cd_exit_recording_focus_mode">退出专注模式</string>

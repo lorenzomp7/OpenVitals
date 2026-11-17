@@ -19,6 +19,9 @@
     <string name="cd_move_section_up">Przenieś sekcję w górę</string>
     <string name="cd_move_section_down">Przenieś sekcję w dół</string>
     <string name="cd_remove_widget">Usuń widżet</string>
+    <string name="metric_sections_hidden">Ukryte wykresy</string>
+    <string name="cd_hide_section">Ukryj wykres</string>
+    <string name="cd_show_section">Pokaż wykres</string>
     <string name="cd_decrease_recording_dashboard_widget_size">Zmniejsz widżet</string>
     <string name="cd_increase_recording_dashboard_widget_size">Powiększ widżet</string>
     <string name="cd_exit_recording_focus_mode">Wyjdź z trybu uwagi</string>

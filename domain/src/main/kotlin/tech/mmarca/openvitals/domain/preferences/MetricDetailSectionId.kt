@@ -49,6 +49,30 @@ enum class MetricDetailSectionId {
     ACTIVITY_DETAIL_RECORDS,
 }
 
+/**
+ * 132: the general order of an activity's charts, the same for every kind: the heart first,
+ * then how fast and over what ground, then the rhythm of the movement, then what the effort
+ * did; the records last, read after the rest. A kind that lacks a chart skips its place.
+ */
+val ActivityDetailGeneralOrder: List<MetricDetailSectionId> = listOf(
+    MetricDetailSectionId.ACTIVITY_DETAIL_HEART_RATE,
+    MetricDetailSectionId.ACTIVITY_DETAIL_ZONES,
+    MetricDetailSectionId.ACTIVITY_DETAIL_TYPE_CHART,
+    MetricDetailSectionId.ACTIVITY_DETAIL_JUMPS,
+    MetricDetailSectionId.ACTIVITY_DETAIL_SPEED,
+    MetricDetailSectionId.ACTIVITY_DETAIL_ELEVATION,
+    MetricDetailSectionId.ACTIVITY_DETAIL_GRADIENT,
+    MetricDetailSectionId.ACTIVITY_DETAIL_SPLITS,
+    MetricDetailSectionId.ACTIVITY_DETAIL_LAPS,
+    MetricDetailSectionId.ACTIVITY_DETAIL_CADENCE,
+    MetricDetailSectionId.ACTIVITY_DETAIL_STRIDE,
+    MetricDetailSectionId.ACTIVITY_DETAIL_CALORIES,
+    MetricDetailSectionId.ACTIVITY_DETAIL_TRAINING_EFFECT,
+    MetricDetailSectionId.ACTIVITY_DETAIL_HEART_RATE_DROP,
+    MetricDetailSectionId.ACTIVITY_DETAIL_RECOVERY,
+    MetricDetailSectionId.ACTIVITY_DETAIL_RECORDS,
+)
+
 val DefaultMetricDetailSectionOrder: List<MetricDetailSectionId> = listOf(
     MetricDetailSectionId.ACTIVITY_SUMMARY,
     MetricDetailSectionId.ACTIVITY_WEEK_OVERVIEW,
@@ -78,23 +102,8 @@ val DefaultMetricDetailSectionOrder: List<MetricDetailSectionId> = listOf(
     MetricDetailSectionId.CYCLE_THERMAL,
     MetricDetailSectionId.CYCLE_PATTERNS,
     MetricDetailSectionId.CYCLE_NIGHTLY,
-    // 119: the records first, as a watch's summary shows them.
-    MetricDetailSectionId.ACTIVITY_DETAIL_RECORDS,
-    MetricDetailSectionId.ACTIVITY_DETAIL_SPLITS,
-    MetricDetailSectionId.ACTIVITY_DETAIL_HEART_RATE,
-    MetricDetailSectionId.ACTIVITY_DETAIL_CALORIES,
-    MetricDetailSectionId.ACTIVITY_DETAIL_HEART_RATE_DROP,
-    MetricDetailSectionId.ACTIVITY_DETAIL_TYPE_CHART,
-    MetricDetailSectionId.ACTIVITY_DETAIL_ZONES,
-    MetricDetailSectionId.ACTIVITY_DETAIL_RECOVERY,
-    MetricDetailSectionId.ACTIVITY_DETAIL_SPEED,
-    MetricDetailSectionId.ACTIVITY_DETAIL_ELEVATION,
-    MetricDetailSectionId.ACTIVITY_DETAIL_CADENCE,
-    MetricDetailSectionId.ACTIVITY_DETAIL_GRADIENT,
-    MetricDetailSectionId.ACTIVITY_DETAIL_TRAINING_EFFECT,
-    MetricDetailSectionId.ACTIVITY_DETAIL_STRIDE,
-    MetricDetailSectionId.ACTIVITY_DETAIL_LAPS,
-    MetricDetailSectionId.ACTIVITY_DETAIL_JUMPS,
+    // 132: an activity's charts, in the one order every kind of activity follows.
+    *ActivityDetailGeneralOrder.toTypedArray(),
 )
 
 fun metricDetailSectionOrderFromStored(storedIds: List<String>?): List<MetricDetailSectionId> {
@@ -113,4 +122,15 @@ fun metricDetailSectionOrderFromStored(storedIds: List<String>?): List<MetricDet
         }
     }
     return merged
+}
+
+/** 132: bumped when [ActivityDetailGeneralOrder] is to replace an arrangement saved before it. */
+const val ActivityDetailGeneralOrderVersion = 1
+
+/** 132: [order] with the activity charts put back in the general order, the rest untouched. */
+fun withActivityDetailGeneralOrder(order: List<MetricDetailSectionId>): List<MetricDetailSectionId> {
+    val slots = order.indices.filter { order[it] in ActivityDetailGeneralOrder }
+    if (slots.isEmpty()) return order
+    val inGeneralOrder = ActivityDetailGeneralOrder.filter { it in order }
+    return order.toMutableList().apply { slots.forEachIndexed { i, slot -> this[slot] = inGeneralOrder[i] } }
 }

@@ -113,9 +113,10 @@ fun AmbientFluidBrand(
     // 115: a light theme draws the toggle on its light surface, with dark writing.
     val light = isLightBrandTheme()
     val surface = brandButtonSurface()
-    val greetingStyle = MaterialTheme.typography.titleSmall.copy(
-        color = if (light) MaterialTheme.colorScheme.onSurface else Color.White,
-    )
+    // 100: the greeting is lettered as "Start workout" and "+ Log" are: their type, and the
+    // home screen colours running through it.
+    val greetingStyle = MaterialTheme.typography.bodyLarge
+    val inkColors = brandInkColors(colors)
     val density = androidx.compose.ui.platform.LocalDensity.current
     val pillWidth = width ?: WorkoutActionMetrics.primaryWidth(windowWidth)
     // 98: the greeting fits the pill left of the sync light, shrinking rather than running under it.
@@ -175,13 +176,21 @@ fun AmbientFluidBrand(
         if (greetingLayout != null && greetingAlpha > 0f) {
             // 106: no sync light at the end any more, so the greeting centres in the whole pill.
             val room = size.width - size.height * 0.4f
+            val topLeft = Offset(
+                size.height * 0.4f + (room - size.height * 0.4f - greetingLayout.size.width).coerceAtLeast(0f) / 2f,
+                (size.height - greetingLayout.size.height) / 2f,
+            )
+            // The buttons' ink: the palette drifting along the letters at the buttons' pace.
+            val drift = (timeline.secondsAt(frameMillis) * 0.15f) % 1f
             drawText(
                 textLayoutResult = greetingLayout,
-                alpha = greetingAlpha,
-                topLeft = Offset(
-                    size.height * 0.4f + (room - size.height * 0.4f - greetingLayout.size.width).coerceAtLeast(0f) / 2f,
-                    (size.height - greetingLayout.size.height) / 2f,
+                brush = Brush.linearGradient(
+                    colors = List(5) { cyclicBrandColor(it / 4f + drift, inkColors) },
+                    start = topLeft,
+                    end = topLeft + Offset(greetingLayout.size.width.toFloat(), greetingLayout.size.height.toFloat()),
                 ),
+                alpha = greetingAlpha,
+                topLeft = topLeft,
             )
         }
     }
@@ -348,8 +357,17 @@ private fun DrawScope.drawOpenVitalsToggle(
     }
     val ring = Brush.sweepGradient(*stops, center = Offset(w / 2f, mid))
     val radius = androidx.compose.ui.geometry.CornerRadius(h / 2f, h / 2f)
-    drawRoundRect(brush = ring, alpha = 0.35f * open, style = Stroke(width = borderPx * 4f), cornerRadius = radius)
-    drawRoundRect(brush = ring, alpha = open, style = Stroke(width = borderPx * 1.5f), cornerRadius = radius)
+    // 100: the same edge as the buttons beside it: a 2 dp ring inset by half, a glow three times as wide.
+    val stroke = borderPx * 2f
+    drawRoundRect(brush = ring, alpha = 0.35f * open, style = Stroke(width = stroke * 3f), cornerRadius = radius)
+    drawRoundRect(
+        brush = ring,
+        alpha = open,
+        topLeft = Offset(stroke / 2f, stroke / 2f),
+        size = androidx.compose.ui.geometry.Size(w - stroke, h - stroke),
+        style = Stroke(width = stroke),
+        cornerRadius = radius,
+    )
 }
 
 /** The four colours around a circle, blended between neighbours; [position] wraps. */

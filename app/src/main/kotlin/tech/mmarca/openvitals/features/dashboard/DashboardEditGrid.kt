@@ -47,6 +47,9 @@ internal enum class HeroRole { LEFT, CENTRE, RIGHT }
 /** How many tiles become the rings at the top outside edit mode. */
 private const val DashboardFixedRingCount = 3
 
+/** 116: the values a tile in the rings shows in the edit sheet, as a 2×1. */
+private const val RingTileDetailCount = 2
+
 /**
  * The hero draws the first tile in the centre, the second on the left and the third on the
  * right. Edit mode lists them left, centre, right: the first two swap places in the column.
@@ -239,7 +242,9 @@ internal fun DashboardReorderableEditGrid(
                         )
                         is DashboardEditCell.Tile -> {
                             val held = dragging == cell.id
-                            val spec = specsById.getValue(cell.id)
+                            // 116: a tile in the rings is a 2×1 with two values while it sits there,
+                            // whatever size and count it has elsewhere; those come back when it leaves.
+                            val spec = specsById.getValue(cell.id).let { if (cell.ring) it.copy(detailCount = RingTileDetailCount) else it }
                             val sizedSpec = spec.copy(content = { tileModifier ->
                                 Box(tileModifier) { DashboardSizedTile(spec, cell.size) }
                             })
@@ -274,12 +279,12 @@ internal fun DashboardReorderableEditGrid(
                                 onRemove = { onRemoveWidget(cell.id) },
                                 onMovePrevious = null,
                                 onMoveNext = null,
-                                // 81: the shape, not a count of spaces. A ring has no shape of its own.
-                                sizeLabel = if (cell.ring) null else "${cell.size.columns}×${cell.size.rows}",
-                                onCycleSize = { onCycleWidgetSize(cell.id) },
-                                // 116: the values the tile shows now, as the options dialog counts them:
-                                // a 1×1 tile and a ring show their main value only.
-                                detailCount = if (cell.ring) 1 else dashboardDetailCount(cell.size, spec.detailCount),
+                                // 81: the shape, not a count of spaces.
+                                sizeLabel = "${cell.size.columns}×${cell.size.rows}",
+                                // 116: a ring's shape and count are fixed there: nothing to change.
+                                onCycleSize = if (cell.ring) ({}) else ({ onCycleWidgetSize(cell.id) }),
+                                // 116: the values the tile shows now, as the options dialog counts them.
+                                detailCount = dashboardDetailCount(cell.size, spec.detailCount),
                                 modifier = if (held) {
                                     // The held tile is drawn under the finger, not in its slot.
                                     Modifier.zIndex(1f).offset {

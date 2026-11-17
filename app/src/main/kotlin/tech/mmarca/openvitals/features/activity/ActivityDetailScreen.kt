@@ -269,6 +269,7 @@ internal fun ActivityDetailScreen(
             sessionCardioLoad = state.sessionCardioLoad,
             personalRecords = state.personalRecords,
             recordsComparedWith = state.recordsComparedWith,
+            samplesLoading = state.samplesLoading,
         )
     }
 }
@@ -321,6 +322,8 @@ internal fun ActivityDetailContent(
     recordsComparedWith: Int = 0,
     /** 113: the arrangement of the charts; null shows them in the default order, unarrangeable. */
     sectionContext: tech.mmarca.openvitals.core.presentation.MetricDetailSectionContext? = null,
+    /** 134: the samples are still being read; the charts' place is held, the rest waits below it. */
+    samplesLoading: Boolean = false,
 ) {
     val context = LocalContext.current
     val sections = sectionContext ?: rememberFixedActivityChartSections()
@@ -362,6 +365,16 @@ internal fun ActivityDetailContent(
                 )
             }
         }
+        // 134: until the samples are read, one block as tall as the screen holds the charts'
+        // place: the summary above never moves, and the charts take the block's place.
+        if (samplesLoading) item(key = "activity_charts_loading") {
+            androidx.compose.foundation.layout.Box(
+                modifier = Modifier.fillParentMaxHeight().fillMaxWidth(),
+                contentAlignment = androidx.compose.ui.Alignment.TopCenter,
+            ) {
+                androidx.compose.material3.CircularProgressIndicator(Modifier.padding(top = Spacing.xxl))
+            }
+        } else {
         // 113: the charts, in the order the visitor arranged them (the slider icon at the top).
         renderOrderedMetricDetailSections(sections) {
             activityDetailChartSections(
@@ -388,6 +401,7 @@ internal fun ActivityDetailContent(
                 personalRecords = personalRecords,
                 recordsComparedWith = recordsComparedWith,
             )
+        }
         }
         item {
             SessionDetailsCard(

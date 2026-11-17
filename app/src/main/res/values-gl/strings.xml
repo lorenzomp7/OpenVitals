@@ -24,6 +24,9 @@
     <string name="cd_move_section_up">Mover a sección arriba</string>
     <string name="cd_move_section_down">Mover a sección abaixo</string>
     <string name="cd_remove_widget">Retirar widget</string>
+    <string name="metric_sections_hidden">Gráficos agochados</string>
+    <string name="cd_hide_section">Agochar gráfico</string>
+    <string name="cd_show_section">Amosar gráfico</string>
     <string name="cd_decrease_recording_dashboard_widget_size">Facer máis pequeno o widget</string>
     <string name="cd_increase_recording_dashboard_widget_size">Facer máis grande o widget</string>
     <string name="cd_exit_recording_focus_mode">Saír do modo de foco</string>

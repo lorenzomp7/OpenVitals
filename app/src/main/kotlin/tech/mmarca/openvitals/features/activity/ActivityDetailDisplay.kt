@@ -122,6 +122,36 @@ internal fun elevationProfile(route: ExerciseRouteData): List<ActivityElevationS
     return if (samples.size > 1) samples else emptyList()
 }
 
+/**
+ * 104: the GPS altitude without its jumps. A watch's GPS height leaps 10 to 20 m for a few
+ * seconds up to a minute and comes back, which drew spikes and counted them as climbs. A median
+ * over two minutes keeps every slope that lasts longer and drops the leaps; a mean over half a
+ * minute then takes off the metre of jitter left.
+ */
+internal fun cleanGpsElevation(
+    samples: List<ActivityElevationSample>,
+    medianHalfWindowSeconds: Long = 60,
+    meanHalfWindowSeconds: Long = 15,
+): List<ActivityElevationSample> {
+    if (samples.size < 3) return samples
+    val seconds = samples.map { it.time.epochSecond }
+    fun windowed(values: List<Double>, half: Long, reduce: (List<Double>) -> Double): List<Double> {
+        var from = 0
+        var to = 0
+        return values.indices.map { index ->
+            while (seconds[from] < seconds[index] - half) from++
+            while (to + 1 <= values.lastIndex && seconds[to + 1] <= seconds[index] + half) to++
+            reduce(values.subList(from, to + 1))
+        }
+    }
+    val medians = windowed(samples.map { it.meters }, medianHalfWindowSeconds) { window ->
+        val sorted = window.sorted()
+        if (sorted.size % 2 == 1) sorted[sorted.size / 2] else (sorted[sorted.size / 2 - 1] + sorted[sorted.size / 2]) / 2.0
+    }
+    val means = windowed(medians, meanHalfWindowSeconds) { it.average() }
+    return samples.mapIndexed { index, sample -> sample.copy(meters = means[index]) }
+}
+
 /** Indoor machines do not travel along a GPS route; keep measured machine distance and speed. */
 internal fun activityDetailWorkout(workout: tech.mmarca.openvitals.domain.model.ExerciseData): tech.mmarca.openvitals.domain.model.ExerciseData =
     if (workout.exerciseType in tech.mmarca.openvitals.domain.model.indoorExercises) workout.copy(

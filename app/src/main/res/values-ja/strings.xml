@@ -24,6 +24,9 @@
     <string name="cd_move_section_up">セクションを上に移動</string>
     <string name="cd_move_section_down">セクションを下に移動</string>
     <string name="cd_remove_widget">ウィジェットを削除</string>
+    <string name="metric_sections_hidden">非表示のグラフ</string>
+    <string name="cd_hide_section">グラフを非表示</string>
+    <string name="cd_show_section">グラフを表示</string>
     <string name="cd_decrease_recording_dashboard_widget_size">ウィジェットを小さくする</string>
     <string name="cd_increase_recording_dashboard_widget_size">ウィジェットを大きくする</string>
     <string name="cd_exit_recording_focus_mode">集中モードを終了</string>

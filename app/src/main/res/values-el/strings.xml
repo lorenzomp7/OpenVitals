@@ -24,6 +24,9 @@
     <string name="cd_move_section_up">Μετακίνηση ενότητας προς τα πάνω</string>
     <string name="cd_move_section_down">Μετακίνηση ενότητας προς τα κάτω</string>
     <string name="cd_remove_widget">Αφαίρεση γραφικού στοιχείου</string>
+    <string name="metric_sections_hidden">Κρυφά γραφήματα</string>
+    <string name="cd_hide_section">Απόκρυψη γραφήματος</string>
+    <string name="cd_show_section">Εμφάνιση γραφήματος</string>
     <string name="cd_decrease_recording_dashboard_widget_size">Σμίκρυνση γραφικού στοιχείου</string>
     <string name="cd_increase_recording_dashboard_widget_size">Μεγέθυνση γραφικού στοιχείου</string>
     <string name="cd_exit_recording_focus_mode">Έξοδος από τη λειτουργία εστίασης</string>

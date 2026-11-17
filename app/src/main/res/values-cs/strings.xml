@@ -24,6 +24,9 @@
     <string name="cd_move_section_up">Posunout sekci nahoru</string>
     <string name="cd_move_section_down">Posunout sekci dolů</string>
     <string name="cd_remove_widget">Odebrat widget</string>
+    <string name="metric_sections_hidden">Skryté grafy</string>
+    <string name="cd_hide_section">Skrýt graf</string>
+    <string name="cd_show_section">Zobrazit graf</string>
     <string name="cd_decrease_recording_dashboard_widget_size">Zmenšit widget</string>
     <string name="cd_increase_recording_dashboard_widget_size">Zvětšit widget</string>
     <string name="cd_exit_recording_focus_mode">Ukončit režim soustředění</string>

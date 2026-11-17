@@ -67,6 +67,9 @@
     <string name="cd_move_section_up">Siirrä osiota ylös</string>
     <string name="cd_move_section_down">Siirrä osiota alas</string>
     <string name="cd_remove_widget">Poista widget</string>
+    <string name="metric_sections_hidden">Piilotetut kaaviot</string>
+    <string name="cd_hide_section">Piilota kaavio</string>
+    <string name="cd_show_section">Näytä kaavio</string>
     <string name="cd_decrease_recording_dashboard_widget_size">Pienennä widgettiä</string>
     <string name="cd_increase_recording_dashboard_widget_size">Suurenna widgettiä</string>
     <string name="cd_exit_recording_focus_mode">Poistu keskittymistilasta</string>

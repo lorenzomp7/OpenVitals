@@ -33,3 +33,38 @@ class MetricDetailSectionIdTest {
         assertEquals(DefaultMetricDetailSectionOrder.size, order.size)
     }
 }
+
+/** 132: an activity's charts follow one general order, whatever was saved before. */
+class ActivityDetailGeneralOrderTest {
+
+    @Test
+    fun everyActivityChartHasAPlace() {
+        val activityCharts = MetricDetailSectionId.entries.filter { it.name.startsWith("ACTIVITY_DETAIL_") }
+        assertEquals(activityCharts.toSet(), ActivityDetailGeneralOrder.toSet())
+    }
+
+    @Test
+    fun theActivityChartsAreSortedInTheirOwnSlots() {
+        val saved = listOf(
+            MetricDetailSectionId.ACTIVITY_DETAIL_RECORDS,
+            MetricDetailSectionId.ENTRIES,
+            MetricDetailSectionId.ACTIVITY_DETAIL_ELEVATION,
+            MetricDetailSectionId.ACTIVITY_DETAIL_HEART_RATE,
+        )
+
+        assertEquals(
+            listOf(
+                MetricDetailSectionId.ACTIVITY_DETAIL_HEART_RATE,
+                MetricDetailSectionId.ENTRIES,
+                MetricDetailSectionId.ACTIVITY_DETAIL_ELEVATION,
+                MetricDetailSectionId.ACTIVITY_DETAIL_RECORDS,
+            ),
+            withActivityDetailGeneralOrder(saved),
+        )
+    }
+
+    @Test
+    fun theDefaultOrderIsAlreadyInIt() {
+        assertEquals(DefaultMetricDetailSectionOrder, withActivityDetailGeneralOrder(DefaultMetricDetailSectionOrder))
+    }
+}

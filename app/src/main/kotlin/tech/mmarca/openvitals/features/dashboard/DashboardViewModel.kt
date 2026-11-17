@@ -391,7 +391,7 @@ class DashboardViewModel @Inject constructor(
             loadingWidgets = emptySet(),
         )
         // A partial pass reads the tiles it was given and leaves the others as they are.
-        val widgets = _uiState.value.dashboardWidgets.filter { onlyWidgets == null || it in onlyWidgets }
+        val widgets = loadedDashboardWidgets().filter { onlyWidgets == null || it in onlyWidgets }
         // Widget order is load order: first-screen tiles read first.
         val orderedMetrics = widgets.mapNotNull { it.toDashboardMetricOrNull() }.distinct()
         val groups = if (current.selectedRange == TimeRange.DAY) dashboardMetricLoadGroups(orderedMetrics)
@@ -495,7 +495,7 @@ class DashboardViewModel @Inject constructor(
         activityWeekMode: ActivityWeekMode,
         generation: Long,
     ): Throwable? {
-        val widgetIds = _uiState.value.dashboardWidgets
+        val widgetIds = loadedDashboardWidgets()
             .filter { it.toDashboardMetricOrNull() in metrics }
             .toSet()
         val query = DashboardQuery(
@@ -700,11 +700,13 @@ class DashboardViewModel @Inject constructor(
         rebuildDisplay()
     }
 
+    /** 94: the placed tiles and, after them, the toggle's goals: what a load reads. */
+    private fun loadedDashboardWidgets() = (_uiState.value.dashboardWidgets + DayGoalWidgets).distinct()
+
     fun toggleDashboardEdit() {
         if (_uiState.value.isEditingDashboard) return
         layoutEditor.begin(_uiState.value)
-        val editing = !_uiState.value.isEditingDashboard
-        _uiState.value = _uiState.value.copy(isEditingDashboard = editing)
+        _uiState.value = _uiState.value.copy(isEditingDashboard = true)
         // Edit mode materialises unsupported metrics; rebuild the display, same data.
         rebuildDisplay()
     }
@@ -718,9 +720,7 @@ class DashboardViewModel @Inject constructor(
         }
     }
 
-    fun removeDashboardWidget(widgetId: DashboardWidgetId) {
-        updateDashboardWidgets(_uiState.value.dashboardWidgets - widgetId)
-    }
+    fun removeDashboardWidget(widgetId: DashboardWidgetId) = updateDashboardWidgets(_uiState.value.dashboardWidgets - widgetId)
 
     fun addDashboardWidget(widgetId: DashboardWidgetId) {
         val current = _uiState.value.dashboardWidgets

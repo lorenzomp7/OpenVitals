@@ -41,8 +41,11 @@ internal data class DashboardDayGoal(
     val icon: ImageVector,
 )
 
-/** 94: the toggle's four lobes, in order: steps, active calories, workout, sleep. */
-private val DayGoalWidgets = listOf(
+/**
+ * 94: the toggle's four lobes, in order: steps, active calories, workout, sleep. The dashboard
+ * reads them for every period whether or not their tiles are placed: the toggle needs them.
+ */
+internal val DayGoalWidgets = listOf(
     DashboardWidgetId.STEPS,
     DashboardWidgetId.ACTIVE_CALORIES,
     DashboardWidgetId.WORKOUT,
@@ -107,12 +110,13 @@ internal fun dashboardDayGoals(
             )
         }
         val model = display.widgets[id]
-        val fraction = model?.sleepScore?.let { it.score / 100f } ?: model?.progress?.fraction ?: 0f
+        val loaded = model != null && !model.isLoading
+        // Sleep reads as hours against the hours goal, never the score against hours.
+        val fraction = if (loaded) model?.progress?.fraction ?: 0f else 0f
         DashboardDayGoal(
             id = id,
             title = dashboardWidgetTitle(id),
-            value = model?.sleepScore?.score?.toString()
-                ?: model?.value?.takeIf { model.hasValue && !model.isLoading }?.text?.takeIf { it.isNotBlank() }
+            value = model?.value?.takeIf { loaded && model.hasValue }?.text?.takeIf { it.isNotBlank() }
                 ?: "–",
             goal = model?.progress?.goalLabelValue?.text,
             fraction = fraction.coerceIn(0f, 1f),
