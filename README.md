@@ -6,7 +6,7 @@
 
 **La tua dashboard Android per salute, allenamenti e recupero, con i dati di Health Connect.**
 
-Questa repository distribuisce la versione personalizzata di OpenVitals: dashboard configurabile, periodi giorno/settimana/mese/anno, dettagli degli allenamenti, mappe dei percorsi e importazione da screenshot sul telefono.
+Questa repository distribuisce la versione personalizzata di OpenVitals: dashboard configurabile, periodi giorno/settimana/mese/anno, dettaglio completo degli allenamenti, mappe dei percorsi e importazione da screenshot sul telefono. L’app è solo per Android: Health Connect esiste solo su Android.
 
 ## Scarica l’app
 
@@ -15,7 +15,7 @@ Questa repository distribuisce la versione personalizzata di OpenVitals: dashboa
 
 ### [⬇ Scarica OpenVitals.apk](https://github.com/lorenzomp7/OpenVitals/releases/latest/download/OpenVitals.apk)
 
-**Download the Android APK directly using the link above.** Non servono un computer, Android Studio o l’accesso a GitHub Actions.
+Scarica l’APK direttamente dal link qui sopra: non servono un computer, Android Studio o l’accesso a GitHub Actions.
 
 Ogni release contiene l’APK installabile, il checksum SHA-256 e i collegamenti al codice sorgente e alla compilazione verificata. Le release sono build di sviluppo personali: consulta le note della versione che stai scaricando. Le modifiche presenti nel branch possono essere più recenti dell’ultima release.
 
@@ -35,24 +35,28 @@ Per aggiornare, scarica il nuovo APK dallo stesso link e installalo sopra la ver
 | APK `androidTest` | Il programma che esegue i test; non è l’app per l’utente. |
 | Versioni upstream Play Store / F-Droid | Distribuzioni del progetto originale, separate da questa versione personalizzata. |
 
-Se Android rifiuta un aggiornamento, controlla di aver scaricato l’APK personale e di avere una versione con firma compatibile. [Dettagli su firma e verifica degli aggiornamenti](https://github.com/lorenzomp7/OpenVitals/blob/main_chatgpt/docs/engineering/personal-build.md).
+Se Android rifiuta un aggiornamento, controlla di aver scaricato l’APK personale e di avere una versione con firma compatibile. [Dettagli su firma e verifica degli aggiornamenti](https://github.com/lorenzomp7/OpenVitals/blob/main_claude/docs/engineering/personal-build.md).
 
 ## Cosa offre questa versione
 
+Le funzioni qui sotto descrivono il [branch `main_claude`](https://github.com/lorenzomp7/OpenVitals/tree/main_claude), che contiene gli aggiornamenti Android più recenti. Il riepilogo del toggle segue il periodo selezionato. Nei dettagli attività i grafici si possono anche nascondere e ripristinare.
+
 | Area | Funzioni |
 | --- | --- |
-| **Dashboard personalizzabile** | Riquadri ridimensionabili e riordinabili, riepilogo modificabile e pagine laterali con sei riquadri medi. |
-| **Periodi e storico** | Selezione giorno, settimana, mese e anno; totali, medie e grafici secondo il tipo di metrica. |
-| **Allenamenti** | Cronologia, riepiloghi specifici per sport, passi, frequenza cardiaca, velocità, cadenza e split quando disponibili. |
-| **Percorsi e mappe** | Percorsi GPS salvati, cartografia Mapbox configurabile sul telefono e anteprima locale del tracciato. |
-| **Corpo e parametri vitali** | Peso, composizione corporea, pressione, SpO₂, HRV e altri dati supportati da Health Connect. |
-| **Sonno e recupero** | Sessioni e fasi del sonno, viste Daily Readiness, Body Energy e Training Readiness in base ai dati disponibili. |
-| **Importazione screenshot** | Selezione da impostazioni o condivisione Android; riconoscimento OCR sul telefono e anteprima da correggere prima del salvataggio. |
-| **Altri strumenti** | Registrazione attività, inserimento manuale, importazione di file, report PDF, nutrizione, idratazione, ciclo e sincronizzazione Bluetooth tra telefoni. |
+| **Dashboard** | Griglia a quattro colonne con riquadri 1×1, 2×1 e 2×2, da riordinare trascinandoli e ridimensionare; numero di dettagli per riquadro (2 o 3) scelto per ciascuno. Ogni riquadro mostra dettagli legati a ciò che misura: obiettivo, categoria (BMI, FFMI, pressione), valore di riferimento personale (FC a riposo, HRV), massa grassa, ripartizione dei macronutrienti e le metriche collegate. Anelli in evidenza in alto, pagine laterali, pulsanti per avviare un allenamento e registrare dati, tema chiaro e scuro. |
+| **Periodi** | Giorno, settimana, mese e anno, con navigazione avanti/indietro; totali, medie e obiettivi scalati secondo il tipo di metrica. |
+| **Allenamenti** | Cronologia nella dashboard e dettaglio per ogni attività con grafici da riordinare e aprire a schermo intero: frequenza cardiaca e zone (per ogni sport), passo o velocità, passo del nuoto ogni 100 m, giri e vasche, parziali, altitudine con salita, discesa e pendenza, cadenza e lunghezza del passo, effetto allenamento, serie di forza, salto con la corda, record personali e recupero stimato. |
+| **Percorsi e mappe** | Percorsi GPS salvati su cartografia Mapbox configurata sul telefono, con altitudine dal modello del terreno; anteprima locale del tracciato senza mappa. |
+| **Sonno e recupero** | Sessioni e fasi del sonno, punteggio del sonno, Daily Readiness, Body Energy e carico cardio settimanale. |
+| **Corpo e parametri vitali** | Peso, altezza, BMI, FFMI, composizione corporea, metabolismo basale, frequenza cardiaca e HRV, pressione, SpO₂, VO₂ max, frequenza respiratoria, temperatura corporea e cutanea, glicemia. |
+| **Alimentazione** | Calorie, proteine, carboidrati, grassi, bevande e idratazione, caffeina assunta e caffeina ancora attiva. |
+| **Altro** | Mindfulness, ciclo, cartella clinica (FHIR), riquadro dell'orologio OpenWatch con sincronizzazione. |
+| **Inserimento e importazione** | Registrazione delle attività, inserimento manuale, importazione da screenshot con OCR sul telefono e anteprima da correggere, importazione Apple Health e CSV, sincronizzazione Bluetooth tra due telefoni. |
+| **Report** | Report PDF generato sul telefono. |
 
 I dati dipendono dai permessi e da ciò che le app dei tuoi dispositivi scrivono effettivamente in Health Connect. OpenVitals non può mostrare una misurazione rimasta soltanto nell’app del produttore.
 
-Le note di ciascuna [release](https://github.com/lorenzomp7/OpenVitals/releases) identificano il codice incluso nell’APK. Il [branch di sviluppo `main_chatgpt`](https://github.com/lorenzomp7/OpenVitals/tree/main_chatgpt) contiene anche le correzioni più recenti, fra cui mappe a schermo intero, aggiornamento del peso al ritorno nell’app e lettura dei passi e della cadenza degli allenamenti.
+Le note di ciascuna [release](https://github.com/lorenzomp7/OpenVitals/releases) elencano le novità di quella versione e il commit da cui è stata compilata.
 
 ## Prima configurazione di Health Connect
 
@@ -72,7 +76,7 @@ Per recuperare i dati precedenti segui le [guide all’importazione dello storic
 
 ## Mappe
 
-- **Mapbox:** la configurazione avviene sul telefono. Nessun token Mapbox è incluso nel sorgente o nell’APK. [Configurazione mappe e comportamento offline](https://github.com/lorenzomp7/OpenVitals/blob/main_chatgpt/docs/engineering/mapbox.md).
+- **Mapbox:** la configurazione avviene sul telefono. Nessun token Mapbox è incluso nel sorgente o nell’APK. [Configurazione mappe e comportamento offline](https://github.com/lorenzomp7/OpenVitals/blob/main_claude/docs/engineering/mapbox.md).
 - **Senza cartografia:** resta disponibile l’anteprima locale del percorso GPS salvato.
 
 ## Dati e privacy
@@ -85,18 +89,18 @@ OCR e generazione dei report vengono eseguiti sul telefono. Le valutazioni di re
 
 ## Release e sviluppo
 
-L’APK personale viene compilato dal branch `main_chatgpt`. La pubblicazione automatica nelle Releases riutilizza soltanto una compilazione **personal-apk** terminata con successo, inclusi i controlli di firma e di installazione/aggiornamento sull’emulatore.
+L’APK viene compilato dal branch [`main_claude`](https://github.com/lorenzomp7/OpenVitals/tree/main_claude). Per i push che aggiornano la configurazione di rilascio e per le esecuzioni manuali, il workflow **publish-personal-release** esegue la verifica completa, firma l’APK con la chiave personale, controlla che la firma coincida con quella dell’APK pubblicato prima, lo installa come aggiornamento su un emulatore Android 15 e solo allora pubblica la release.
 
 - [APK, versioni precedenti e note](https://github.com/lorenzomp7/OpenVitals/releases)
-- [Codice della versione personalizzata](https://github.com/lorenzomp7/OpenVitals/tree/main_chatgpt)
-- [Compilazioni e verifiche](https://github.com/lorenzomp7/OpenVitals/actions)
+- [Codice della versione personalizzata](https://github.com/lorenzomp7/OpenVitals/tree/main_claude)
+- [Compilazioni e verifiche](https://github.com/lorenzomp7/OpenVitals/actions/workflows/publish-personal-release.yml)
 - [Segnala un problema in questa repository](https://github.com/lorenzomp7/OpenVitals/issues)
-- [Guida tecnica delle build personali](https://github.com/lorenzomp7/OpenVitals/blob/main_chatgpt/docs/engineering/personal-build.md)
+- [Guida tecnica delle build personali](https://github.com/lorenzomp7/OpenVitals/blob/main_claude/docs/engineering/personal-build.md)
 
-Per compilare la versione personalizzata: clona questa repository con i sottomoduli, seleziona `main_chatgpt` e usa Android SDK 37 e JDK 17.
+Per compilare in locale: clona la repository con i sottomoduli, seleziona `main_claude` e usa Android SDK 37 e JDK 17 o 21.
 
 ```bash
-git clone --recurse-submodules --branch main_chatgpt https://github.com/lorenzomp7/OpenVitals.git
+git clone --recurse-submodules --branch main_claude https://github.com/lorenzomp7/OpenVitals.git
 cd OpenVitals
 ./gradlew :app:assembleDebug
 ./gradlew verifyCi
