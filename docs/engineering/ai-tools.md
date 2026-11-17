@@ -204,3 +204,21 @@ against a running Docker host, and tests the Vibetest MCP adapter without API
 requests. It does not create an Android container or compile an APK. Successful
 provider calls and the Chrome extension connection need their own authenticated
 runtime checks. None of these tools is automatically activated in ChatGPT chat.
+
+## awesome-mcp-servers catalogue
+
+`tools/catalogs/sources.json` pins `punkpeye/awesome-mcp-servers` to a commit
+and the SHA-256 of its README. The project search utility downloads that exact
+snapshot into ignored `.tools/catalogs` and verifies it before every search.
+
+```bash
+python3 scripts/ai/catalogs.py sync mcp
+python3 scripts/ai/catalogs.py search mcp android health map --limit 15
+python3 scripts/ai/catalogs.py verify mcp
+```
+
+Search returns the original entry and a permanent upstream line link. This is
+a discovery catalogue: entries do not become installed MCP servers. Select
+and review an individual server before adding a runtime integration to
+`.mcp.json`. The catalogue is not a Health Connect bridge or a health-data
+provider. No upstream README text is redistributed in this repository.
