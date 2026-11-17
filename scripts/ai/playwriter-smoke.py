@@ -16,7 +16,10 @@ CLI = ["bash", str(ROOT / "scripts/ai/playwriter.sh")]
 
 
 def run(args):
-    return subprocess.check_output(args, cwd=ROOT, text=True, timeout=120)
+    result = subprocess.run(args, cwd=ROOT, text=True, timeout=120, capture_output=True)
+    if result.returncode:
+        raise RuntimeError(result.stdout + "\n" + result.stderr)
+    return result.stdout
 
 
 def main():
@@ -41,13 +44,14 @@ def main():
             debug_port = active_port.read_text().splitlines()[0]
             with urllib.request.urlopen(f"http://127.0.0.1:{debug_port}/json/version", timeout=10) as response:
                 endpoint = json.load(response)["webSocketDebuggerUrl"]
-            output = run(CLI + ["session", "new", "--direct", endpoint, "--tab-group", "openvitals"])
+            output = run(CLI + ["session", "new", "--direct", endpoint])
             match = re.search(r"Session (\d+) created", output)
             if not match:
                 raise RuntimeError(output)
             session = match[1]
             code = '''
 state.page = await context.newPage();
+state.page.setDefaultTimeout(5000);
 state.errors = [];
 state.page.on('pageerror', e => state.errors.push(e.message));
 await state.page.setViewportSize({width:390,height:844});
@@ -63,6 +67,7 @@ await state.page.reload({waitUntil:'networkidle'});
 if (await state.page.locator('[name="name"]').inputValue() !== 'QA Demo') throw Error('Profile did not persist');
 await state.page.goto(URL + '#backup');
 await state.page.locator('[data-action="sample"]').click();
+await state.page.locator('#confirm-action').click();
 await state.page.goto(URL + '#dashboard');
 if (await state.page.locator('.tile').count() < 1) throw Error('No dashboard tiles');
 await state.page.goto(URL + '#metric/STEPS');

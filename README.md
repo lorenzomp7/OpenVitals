@@ -116,4 +116,6 @@ OpenVitals è distribuito con licenza [GNU AGPL v3.0 o successiva](LICENSE). Cre
 
 ## Strumenti di sviluppo AI
 
-Le procedure di `agent-skills` sono integrate e fissate a una versione precisa per Codex CLI e Claude Code. Vedi [configurazione e comandi](docs/engineering/ai-tools.md).
+Sono integrati `agent-skills`, `container-use`, Gemini CLI, Playwriter e `vibetest-use`, con versioni fissate e strumenti separati dalle dipendenze dell’app.
+Vedi [configurazione, comandi e requisiti](docs/engineering/ai-tools.md) e [verifiche automatiche](https://github.com/lorenzomp7/OpenVitals/actions/workflows/ai-tools.yml).
+Gemini e Vibetest richiedono autenticazione o chiave del modello per le richieste AI; Container Use richiede Docker; Playwriter richiede Chrome/Chromium.

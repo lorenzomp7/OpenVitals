@@ -12,6 +12,12 @@
       "args": [
         "scripts/ai/playwriter.sh"
       ]
+    },
+    "vibetest": {
+      "command": "bash",
+      "args": [
+        "scripts/ai/vibetest.sh"
+      ]
     }
   }
 }

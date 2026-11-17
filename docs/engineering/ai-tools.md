@@ -144,3 +144,63 @@ Set `CHROMIUM_PATH` if Chromium is not on PATH. The extension path requires
 manual browser enablement; direct CDP smoke does not verify that path.
 In restricted hosts where Chromium cannot create sockets, run this test on
 your development machine or through the `AI tools` GitHub Actions workflow.
+
+## vibetest-use
+
+Source: https://github.com/browser-use/vibetest-use (declared MIT upstream).
+`tools/vibetest/pyproject.toml` pins commit
+`fe0b90ac9d6a129ce06f5b53074241a9f205015b` and browser-use `0.13.14`.
+`requirements.lock` pins the resolved transitive dependencies. Browser-use 1.x
+removed `BrowserSession`, so floating upstream requirements cannot be used.
+Our MCP adapter uses the current `MCPServer` name from the pinned MCP 2.1.1,
+maps upstream `aclose()` cleanup to `stop()`, and replaces the retired model
+names at all upstream call sites with `VIBETEST_MODEL`. The adapter also marks
+reports incomplete when requested agents failed instead of reporting a pass.
+
+```bash
+bash scripts/ai/vibetest.sh install
+bash scripts/ai/serve-pwa.sh 8765
+```
+
+Installation requires uv, Git, Python 3.12 and Chromium's system libraries.
+On Linux, if needed, run `tools/vibetest/.venv/bin/python -m playwright install --with-deps chromium`.
+Set `GOOGLE_API_KEY` and `VIBETEST_MODEL` in the environment of your MCP client
+before launching it. Choose a Google model currently available to your account.
+No credentials or model quota are included. AI QA sends page content and
+screenshots to that model and may incur charges: use synthetic records only.
+Keys are inherited from the process, never written into `.mcp.json`.
+
+Claude Code reads the `vibetest` project MCP entry. For Codex CLI:
+
+```bash
+codex mcp add vibetest -- bash "$PWD/scripts/ai/vibetest.sh"
+```
+
+Ask the connected agent to call `start` with
+`url=http://127.0.0.1:8765`, `num_agents=3`, `headless=true`, then call `results`
+with the returned test ID. Keep that MCP server alive: reports live in memory.
+Test dashboard periods, metric details, profile save/reload, backup validation
+and mobile layout. These are PWA checks, not native Android tests.
+
+A credential-free protocol test is included:
+
+```bash
+tools/vibetest/.venv/bin/python scripts/ai/vibetest-smoke.py
+```
+
+It exercises real MCP initialization, tool discovery/calls, missing-key
+handling, model override and incomplete-run reporting. It does not run model
+QA or claim browser/provider connectivity. CI runs this same smoke test.
+To update dependencies, run `uv lock --project tools/vibetest`, then
+`uv export --project tools/vibetest --locked --no-hashes --no-emit-project --format requirements-txt --output-file tools/vibetest/requirements.lock`,
+review the changes and repeat the protocol test. The large intermediate
+`uv.lock` and local virtualenv are ignored; commit the exported lock.
+
+## Verification scope
+
+`AI tools` CI installs the pinned Node tools, builds/tests the PWA, runs the
+Playwriter direct-CDP smoke, compiles Container Use and checks its configuration
+against a running Docker host, and tests the Vibetest MCP adapter without API
+requests. It does not create an Android container or compile an APK. Successful
+provider calls and the Chrome extension connection need their own authenticated
+runtime checks. None of these tools is automatically activated in ChatGPT chat.

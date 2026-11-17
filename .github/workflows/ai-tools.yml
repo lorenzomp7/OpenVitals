@@ -2,9 +2,9 @@ name: AI tools
 on:
   push:
     branches: [main_chatgpt, main]
-    paths: ['scripts/ai/**', 'tools/ai-node/**', '.container-use/**', '.mcp.json', '.gemini/**', '.github/workflows/ai-tools.yml']
+    paths: ['scripts/ai/**', 'tools/ai-node/**', 'tools/vibetest/**', '.container-use/**', '.mcp.json', '.gemini/**', '.github/workflows/ai-tools.yml']
   pull_request:
-    paths: ['scripts/ai/**', 'tools/ai-node/**', '.container-use/**', '.mcp.json', '.gemini/**', '.github/workflows/ai-tools.yml']
+    paths: ['scripts/ai/**', 'tools/ai-node/**', 'tools/vibetest/**', '.container-use/**', '.mcp.json', '.gemini/**', '.github/workflows/ai-tools.yml']
   workflow_dispatch:
 permissions:
   contents: read
@@ -38,3 +38,12 @@ jobs:
           cache: false
       - run: bash scripts/ai/container-use.sh install
       - run: bash scripts/ai/container-use.sh doctor
+  vibetest-protocol:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+      - run: uv venv --python 3.12 tools/vibetest/.venv
+      - run: uv pip sync --python tools/vibetest/.venv/bin/python tools/vibetest/requirements.lock
+      - run: tools/vibetest/.venv/bin/python scripts/ai/vibetest-smoke.py
