@@ -72,7 +72,7 @@ if (state.errors.length) throw Error(JSON.stringify(state.errors));
 await state.page.close();
 console.log('OPENVITALS_PLAYWRITER_OK: mobile dashboard, periods, profile persistence, synthetic demo, detail navigation');
 '''.replace('URL', json.dumps(f"http://127.0.0.1:{port}/"))
-            result = run(CLI + ["-s", session, "-e", code])
+            result = run(CLI + ["-s", session, "--timeout", "60000", "-e", code])
             if "OPENVITALS_PLAYWRITER_OK" not in result:
                 raise RuntimeError(result)
             print(result)

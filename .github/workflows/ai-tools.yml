@@ -22,6 +22,7 @@ jobs:
       - run: npm ci --prefix tools/ai-node --no-audit --no-fund
       - run: bash scripts/ai/gemini.sh --version
       - run: bash scripts/ai/playwriter.sh --help
+      - run: npm --prefix web run build
       - run: npm --prefix web test
       - run: python3 scripts/ai/playwriter-smoke.py
         env:
