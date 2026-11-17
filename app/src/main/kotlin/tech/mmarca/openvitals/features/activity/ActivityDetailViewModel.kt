@@ -35,6 +35,7 @@ import tech.mmarca.openvitals.domain.model.SpeedSample
 import tech.mmarca.openvitals.domain.model.withSampleBackfilledMetrics
 import tech.mmarca.openvitals.domain.preferences.ActivitySplitDistance
 import tech.mmarca.openvitals.navigation.ACTIVITY_DETAIL_ID_ARG
+import java.time.LocalDate
 import javax.inject.Inject
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
@@ -99,11 +100,34 @@ internal data class ActivityDetailUiState(
     /** 103: the rate an estimated recovery falls toward, from the profile. */
     val restingHeartRateBpm: Int? = null,
 
+    /** 117: the session's cardio load (Banister TRIMP), as the Cardio load screen counts it. */
+    val sessionCardioLoad: Int? = null,
+
+    /** 119: the records this session holds among those of its kind in the year up to it. */
+    val personalRecords: List<tech.mmarca.openvitals.domain.insights.PersonalRecord> = emptyList(),
+
+    /** 119: how many earlier sessions of the kind the records were measured against. */
+    val recordsComparedWith: Int = 0,
+
     /** The plan this session was logged against, when it still exists and can be read. */
     val linkedPlan: PlannedExerciseData? = null,
 
+    /** 134: the session is shown and its samples are still being read: the charts' place is held. */
+    val samplesLoading: Boolean = false,
+
     val error: ScreenError? = null,
 )
+
+private typealias TerrainRead = Pair<tech.mmarca.openvitals.features.activity.elevation.RouteElevationSource, List<Double>?>
+
+/** 104: the route's terrain heights as a profile; null when the terrain did not cover it. */
+private fun terrainSamples(workout: ExerciseData, read: TerrainRead?): List<ActivityElevationSample>? =
+    read?.second?.let { heights ->
+        workout.route.points.zip(heights) { point, meters -> ActivityElevationSample(point.time, meters) }.sortedBy { it.time }
+    }
+
+/** 119: how far back the records look. */
+private const val RecordsWindowDays = 365L
 
 @HiltViewModel
 internal class ActivityDetailViewModel @Inject constructor(
@@ -116,6 +140,7 @@ internal class ActivityDetailViewModel @Inject constructor(
     private val dispatchers: DispatcherProvider = DefaultDispatcherProvider,
     savedStateHandle: SavedStateHandle,
     private val terrainElevation: tech.mmarca.openvitals.features.activity.elevation.RouteTerrainElevation? = null,
+    private val recordsCache: ActivityRecordsCache = ActivityRecordsCache(),
 ) : ViewModel() {
 
     /** The workout the route opened. Blank when it named none: the not-found state. */
@@ -124,6 +149,7 @@ internal class ActivityDetailViewModel @Inject constructor(
     private val _uiState = MutableStateFlow(ActivityDetailUiState())
     val uiState: StateFlow<ActivityDetailUiState> = _uiState.asStateFlow()
     private val loadCoordinator = LoadCoordinator()
+    private var pendingTerrain: kotlinx.coroutines.Deferred<TerrainRead?>? = null
 
     init {
         load()
@@ -145,6 +171,30 @@ internal class ActivityDetailViewModel @Inject constructor(
                 .onSuccess { loaded ->
                     if (!isCurrent) return@load
                     _uiState.value = loaded
+                    val workout = loaded.workout ?: return@load
+                    coroutineScope {
+                        // 104: a terrain read that outlasted the charts swaps their heights in place.
+                        pendingTerrain?.let { pending ->
+                            launch {
+                                val read = pending.await()
+                                pendingTerrain = null
+                                if (isCurrent && read != null) _uiState.update {
+                                    it.copy(
+                                        elevationSamples = terrainSamples(workout, read) ?: it.elevationSamples,
+                                        elevationSource = read.first,
+                                    )
+                                }
+                            }
+                        }
+                        // 119: the records come after, from a year of the kind; the screen does not wait.
+                        launch {
+                            runCatchingCancellable { loadRecords(workout) }.getOrNull()?.let { (records, compared) ->
+                                if (isCurrent) {
+                                    _uiState.update { it.copy(personalRecords = records, recordsComparedWith = compared) }
+                                }
+                            }
+                        }
+                    }
                 }
                 .onFailure {
                     if (!isCurrent) return@load
@@ -156,6 +206,31 @@ internal class ActivityDetailViewModel @Inject constructor(
         }
     }
 
+    /**
+     * 119: the records [workout] holds among the sessions of its kind in the year up to it. A
+     * refused or skipped read leaves the card out, as any other missing figure.
+     */
+    private suspend fun loadRecords(
+        workout: ExerciseData,
+    ): Pair<List<tech.mmarca.openvitals.domain.insights.PersonalRecord>, Int>? {
+        val zone = java.time.ZoneId.systemDefault()
+        val end = workout.endTime.atZone(zone).toLocalDate()
+        val start = end.minusDays(RecordsWindowDays)
+        // 133: read once from the year before this session up to today, so every later session
+        // of the kind opened next is answered from memory instead of a year of reads each.
+        val sessions = recordsCache.get(workout.exerciseType, start, end) ?: run {
+            val readUntil = maxOf(end, LocalDate.now(zone))
+            repository.loadWorkoutsOfType(workout.exerciseType, start, readUntil)
+                .also { recordsCache.put(workout.exerciseType, start, readUntil, it) }
+                .filter { !it.startTime.atZone(zone).toLocalDate().isAfter(end) }
+        }
+        val earlier = sessions.filter { it.id != workout.id && !it.startTime.isAfter(workout.startTime) }
+        if (earlier.isEmpty()) return null
+        return withContext(dispatchers.default) {
+            tech.mmarca.openvitals.domain.insights.personalRecords(workout, earlier) to earlier.size
+        }
+    }
+
     /** The session first. The reads that hang on it then run together. */
     private suspend fun loadDetail(): ActivityDetailUiState {
         val splitDistanceMeters = currentSplitDistanceMeters()
@@ -163,8 +238,16 @@ internal class ActivityDetailViewModel @Inject constructor(
             ?: return ActivityDetailUiState(isLoading = false, error = ScreenError.NotFound)
                 .withSplitsCutAt(splitDistanceMeters)
         val workout = activityDetailWorkout(loadedWorkout)
-        _uiState.value = ActivityDetailUiState(isLoading = false, workout = workout)
+        // 134: the summary at once, with the charts' place held so nothing moves when they come.
+        _uiState.value = ActivityDetailUiState(isLoading = false, workout = workout, samplesLoading = true)
             .withSplitsCutAt(splitDistanceMeters)
+        // 104, 133: the terrain is a network read; it runs beside the Health Connect reads and
+        // the charts never wait for it: the cleaned GPS draws until it lands.
+        pendingTerrain = if (workout.route.status == tech.mmarca.openvitals.domain.model.ExerciseRouteStatus.DATA) {
+            viewModelScope.async { runCatchingCancellable { terrainElevation?.altitudes(workout.route.points) }.getOrNull() }
+        } else {
+            null
+        }
         return coroutineScope {
             // Speed, cadence, markers and recovery degrade to empty on failure.
             // The session and the heart-rate read do not.
@@ -223,12 +306,9 @@ internal class ActivityDetailViewModel @Inject constructor(
                 )
             }.getOrNull().orEmpty()
             val plan = linkedPlan.await()
-            // 104: the heights from a terrain model when one covers the route; the GPS drifts.
-            val terrain = if (workout.route.status == tech.mmarca.openvitals.domain.model.ExerciseRouteStatus.DATA) {
-                runCatchingCancellable { terrainElevation?.altitudes(workout.route.points) }.getOrNull()
-            } else {
-                null
-            }
+            // 104: the terrain's heights if they are already here; else they replace the GPS later.
+            val terrainRead = pendingTerrain?.takeIf { it.isCompleted }?.await()
+                ?.also { pendingTerrain = null }
             // Backfill, height profile and splits walk every sample.
             val profile = runCatchingCancellable { bodyProfilePreferences.bodyProfile() }.getOrNull()
             withContext(dispatchers.default) {
@@ -257,11 +337,8 @@ internal class ActivityDetailViewModel @Inject constructor(
                     heartRateAccessMissing = heartRate.isEmpty() && !hasHeartRateAccess,
                     markers = loadedMarkers,
                     coMapsSamples = loadedCoMapsSamples,
-                    elevationSamples = terrain?.let { (_, heights) ->
-                        workout.route.points.zip(heights) { point, meters -> ActivityElevationSample(point.time, meters) }
-                            .sortedBy { it.time }
-                    } ?: elevationProfile(backfilledWorkout.route),
-                    elevationSource = terrain?.first
+                    elevationSamples = terrainSamples(workout, terrainRead) ?: cleanGpsElevation(elevationProfile(backfilledWorkout.route)),
+                    elevationSource = terrainRead?.first
                         ?: tech.mmarca.openvitals.features.activity.elevation.RouteElevationSource.GPS,
                     heartRateRecovery = recovery,
                     recoverySamples = recoverySamples,
@@ -270,6 +347,19 @@ internal class ActivityDetailViewModel @Inject constructor(
                         profile?.ageYears(),
                     ),
                     restingHeartRateBpm = profile?.restingHeartRateBpm,
+                    sessionCardioLoad = tech.mmarca.openvitals.domain.insights.calculateCardioLoad(
+                        steps = null,
+                        samples = heartRate,
+                        restingHeartRate = profile?.restingHeartRateBpm?.toLong(),
+                        baselineRestingHeartRate = null,
+                        observedMaxHeartRate = null,
+                        activityWindows = listOf(
+                            tech.mmarca.openvitals.domain.insights.CardioLoadTimeWindow(workout.startTime, workout.endTime),
+                        ),
+                        ageYears = profile?.ageYears(),
+                        explicitMaxHeartRate = profile?.maxHeartRateBpm?.toLong(),
+                        sex = profile?.sex,
+                    ).takeIf { it.usedTrimp }?.score,
                     linkedPlan = plan,
                 ).withSplitsCutAt(splitDistanceMeters)
             }

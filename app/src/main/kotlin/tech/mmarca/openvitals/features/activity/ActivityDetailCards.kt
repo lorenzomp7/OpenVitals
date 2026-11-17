@@ -24,7 +24,6 @@ import tech.mmarca.openvitals.core.presentation.DateTimeFormatterProvider
 import tech.mmarca.openvitals.core.presentation.UnitFormatter
 import tech.mmarca.openvitals.domain.model.CaloriesBurnedSource
 import tech.mmarca.openvitals.domain.model.ExerciseData
-import tech.mmarca.openvitals.domain.model.ExerciseLapData
 import tech.mmarca.openvitals.domain.model.ExerciseRouteData
 import tech.mmarca.openvitals.domain.model.ExerciseRoutePoint
 import tech.mmarca.openvitals.domain.model.ExerciseRouteStatus
@@ -97,7 +96,11 @@ internal fun WorkoutSummaryCard(
             }
 
             Spacer(Modifier.height(16.dp))
-            if (workout.exerciseType in TimeAndHeartRateSummaryExercises) {
+            // 127: a treadmill run's heading is its time alone, as a run's is; the average heart
+            // rate is in the figures below and on its chart.
+            if (workout.exerciseType in TimeAndHeartRateSummaryExercises &&
+                workout.exerciseType != androidx.health.connect.client.records.ExerciseSessionRecord.EXERCISE_TYPE_RUNNING_TREADMILL
+            ) {
                 // 54, 55: a machine session is summed up by its time and its average bpm.
                 Row(modifier = Modifier.fillMaxWidth()) {
                     SummaryHeadlineStat(
@@ -355,34 +358,6 @@ internal fun SegmentsCard(
 }
 
 @Composable
-internal fun LapsCard(
-    laps: List<ExerciseLapData>,
-    unitFormatter: UnitFormatter,
-    dateTimeFormatterProvider: DateTimeFormatterProvider,
-    modifier: Modifier = Modifier,
-) {
-    DetailSectionCard(title = stringResource(R.string.detail_laps), modifier = modifier) {
-        if (laps.isEmpty()) {
-            Text(
-                text = stringResource(R.string.message_no_laps),
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
-        } else {
-            laps.sortedBy { it.startTime }.forEachIndexed { index, lap ->
-                if (index > 0) Spacer(Modifier.height(12.dp))
-                LapBlock(
-                    index = index,
-                    lap = lap,
-                    unitFormatter = unitFormatter,
-                    dateTimeFormatterProvider = dateTimeFormatterProvider,
-                )
-            }
-        }
-    }
-}
-
-@Composable
 internal fun RouteCard(
     route: ExerciseRouteData,
     unitFormatter: UnitFormatter,
@@ -477,29 +452,6 @@ private fun SegmentBlock(
     segment.weightKg?.let { weightKg ->
         DetailRow(stringResource(R.string.detail_weight), unitFormatter.weight(weightKg).text)
     }
-}
-
-@Composable
-private fun LapBlock(
-    index: Int,
-    lap: ExerciseLapData,
-    unitFormatter: UnitFormatter,
-    dateTimeFormatterProvider: DateTimeFormatterProvider,
-) {
-    val zone = ZoneId.systemDefault()
-    val start = lap.startTime.atZone(zone)
-    val end = lap.endTime.atZone(zone)
-
-    Text(
-        text = stringResource(R.string.detail_lap, index + 1),
-        style = MaterialTheme.typography.titleSmall,
-    )
-    DetailRow(stringResource(R.string.detail_time), formatTimeRange(start, end, dateTimeFormatterProvider))
-    DetailRow(stringResource(R.string.detail_duration), unitFormatter.duration(lap.durationMs))
-    DetailRow(
-        stringResource(R.string.detail_length),
-        lap.lengthMeters?.let { unitFormatter.distance(it).text } ?: stringResource(R.string.not_recorded),
-    )
 }
 
 private fun formatDateTime(

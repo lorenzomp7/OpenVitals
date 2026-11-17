@@ -12,9 +12,12 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.material.icons.outlined.Add
+import androidx.compose.material.icons.outlined.Close
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
@@ -91,6 +94,9 @@ fun LazyListScope.renderOrderedMetricDetailSections(
         isEditingSections = sectionContext.isEditingSections,
         onMoveSectionToTarget = sectionContext.onMoveSectionToTarget,
         onMoveSection = sectionContext.onMoveSection,
+        hidden = sectionContext.hidden,
+        onHideSection = sectionContext.onHideSection,
+        onShowSection = sectionContext.onShowSection,
         builder = builder,
     )
 }
@@ -101,10 +107,14 @@ fun LazyListScope.orderedMetricDetailSections(
     isEditingSections: Boolean,
     onMoveSectionToTarget: (MetricDetailSectionId, MetricDetailSectionId) -> Unit,
     onMoveSection: (MetricDetailSectionId, Int) -> Unit,
+    hidden: Set<MetricDetailSectionId> = emptySet(),
+    onHideSection: ((MetricDetailSectionId) -> Unit)? = null,
+    onShowSection: ((MetricDetailSectionId) -> Unit)? = null,
     builder: MetricDetailSectionBuilder.() -> Unit,
 ) {
     val sectionBuilder = MetricDetailSectionBuilder().apply(builder)
-    val visibleOrder = order.filter { it in sectionBuilder.sections }
+    // 131: a hidden section is off the screen; edit mode lists it at the bottom to put back.
+    val visibleOrder = order.filter { it in sectionBuilder.sections && it !in hidden }
     listState.visibleSectionIds = visibleOrder.toSet()
 
     // For a caller that builds the list without rememberMetricDetailSectionOrdering, which sets
@@ -132,6 +142,7 @@ fun LazyListScope.orderedMetricDetailSections(
                         dragHandleModifier = Modifier.longPressDraggableHandle(
                             enabled = isEditingSections,
                         ),
+                        onHide = onHideSection?.let { hide -> { hide(sectionId) } },
                         onMovePrevious = if (index > 0) {
                             { onMoveSection(sectionId, -1) }
                         } else {
@@ -152,6 +163,7 @@ fun LazyListScope.orderedMetricDetailSections(
                     isDragging = false,
                     isEditingSections = isEditingSections,
                     dragHandleModifier = Modifier,
+                    onHide = onHideSection?.let { hide -> { hide(sectionId) } },
                     onMovePrevious = if (index > 0) {
                         { onMoveSection(sectionId, -1) }
                     } else {
@@ -168,7 +180,66 @@ fun LazyListScope.orderedMetricDetailSections(
             }
         }
     }
+
+    // 131: the hidden sections this screen would show, dimmed under a header, each with a "+".
+    val hiddenHere = order.filter { it in sectionBuilder.sections && it in hidden }
+    if (isEditingSections && onShowSection != null && hiddenHere.isNotEmpty()) {
+        item(key = "metric_sections_hidden_header") {
+            androidx.compose.material3.Text(
+                text = stringResource(R.string.metric_sections_hidden),
+                style = MaterialTheme.typography.titleMedium,
+                color = MaterialTheme.colorScheme.primary,
+                modifier = Modifier.padding(horizontal = 16.dp).padding(top = 16.dp, bottom = 4.dp),
+            )
+        }
+        hiddenHere.forEach { sectionId ->
+            item(key = "hidden_$sectionId") {
+                HiddenMetricDetailSection(onShow = { onShowSection(sectionId) }) {
+                    sectionBuilder.sections.getValue(sectionId).invoke()
+                }
+            }
+        }
+    }
 }
+
+/** 131: a hidden section in edit mode: drawn faint, untouchable, with a "+" to put it back. */
+@Composable
+private fun HiddenMetricDetailSection(onShow: () -> Unit, content: @Composable () -> Unit) {
+    Box(modifier = Modifier.fillMaxWidth()) {
+        CompositionLocalProvider(LocalMetricSectionEditMode provides true) {
+            Column(modifier = Modifier.fillMaxWidth().graphicsLayer { alpha = HiddenSectionAlpha }) { content() }
+        }
+        Box(
+            modifier = Modifier
+                .matchParentSize()
+                .pointerInput(Unit) { detectTapGestures(onTap = { onShow() }) },
+        )
+        SectionCornerButton(
+            icon = androidx.compose.material.icons.Icons.Outlined.Add,
+            contentDescription = stringResource(R.string.cd_show_section),
+            onClick = onShow,
+            modifier = Modifier.align(androidx.compose.ui.Alignment.TopEnd),
+        )
+    }
+}
+
+/** 131: the small round button at a section's corner: "x" to hide, "+" to show. */
+@Composable
+private fun SectionCornerButton(
+    icon: androidx.compose.ui.graphics.vector.ImageVector,
+    contentDescription: String,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    androidx.compose.material3.FilledTonalIconButton(
+        onClick = onClick,
+        modifier = modifier.padding(top = 8.dp, end = 12.dp).size(36.dp),
+    ) {
+        androidx.compose.material3.Icon(icon, contentDescription = contentDescription, modifier = Modifier.size(20.dp))
+    }
+}
+
+private const val HiddenSectionAlpha = 0.4f
 
 @Composable
 private fun ReorderableMetricDetailSection(
@@ -178,6 +249,7 @@ private fun ReorderableMetricDetailSection(
     dragHandleModifier: Modifier,
     onMovePrevious: (() -> Unit)?,
     onMoveNext: (() -> Unit)?,
+    onHide: (() -> Unit)? = null,
     content: @Composable () -> Unit,
 ) {
     val wiggleRotation = if (isEditingSections && loopingMotionAllowed()) {
@@ -266,6 +338,13 @@ private fun ReorderableMetricDetailSection(
                         .pointerInput(Unit) {
                             detectTapGestures(onTap = { /* block card taps while reordering */ })
                         },
+                )
+                // 131: the "x" that takes the section off, as the home screen's tiles have.
+                if (onHide != null) SectionCornerButton(
+                    icon = androidx.compose.material.icons.Icons.Outlined.Close,
+                    contentDescription = stringResource(R.string.cd_hide_section),
+                    onClick = onHide,
+                    modifier = Modifier.align(androidx.compose.ui.Alignment.TopEnd),
                 )
             }
         }

@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
+import tech.mmarca.openvitals.ui.components.renderOrderedMetricDetailSections
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.Edit
@@ -201,6 +202,8 @@ internal fun ActivityDetailScreen(
         }
     }
 
+    // 113: the slider icon in the app bar arranges the charts, as on the metric screens.
+    val chartOrdering = tech.mmarca.openvitals.core.presentation.rememberMetricDetailSectionOrdering()
     when {
         state.isLoading -> FullScreenLoading()
         error != null -> ErrorMessage(message = error.resolve().orEmpty())
@@ -262,6 +265,11 @@ internal fun ActivityDetailScreen(
             onShareWorkoutAsFit = { shareWorkout(ActivityWorkoutExportFormat.FIT) },
             onSaveWorkoutAsFitWithRoute = { launchWorkoutExport(ActivityWorkoutExportFormat.FIT_WITH_ROUTE) },
             onShareWorkoutAsFitWithRoute = { shareWorkout(ActivityWorkoutExportFormat.FIT_WITH_ROUTE) },
+            sectionContext = chartOrdering,
+            sessionCardioLoad = state.sessionCardioLoad,
+            personalRecords = state.personalRecords,
+            recordsComparedWith = state.recordsComparedWith,
+            samplesLoading = state.samplesLoading,
         )
     }
 }
@@ -309,9 +317,23 @@ internal fun ActivityDetailContent(
     onShareWorkoutAsFit: () -> Unit = {},
     onSaveWorkoutAsFitWithRoute: () -> Unit = {},
     onShareWorkoutAsFitWithRoute: () -> Unit = {},
+    sessionCardioLoad: Int? = null,
+    personalRecords: List<tech.mmarca.openvitals.domain.insights.PersonalRecord> = emptyList(),
+    recordsComparedWith: Int = 0,
+    /** 113: the arrangement of the charts; null shows them in the default order, unarrangeable. */
+    sectionContext: tech.mmarca.openvitals.core.presentation.MetricDetailSectionContext? = null,
+    /** 134: the samples are still being read; the charts' place is held, the rest waits below it. */
+    samplesLoading: Boolean = false,
 ) {
     val context = LocalContext.current
-    LazyColumn(contentPadding = PaddingValues(vertical = 8.dp)) {
+    val sections = sectionContext ?: rememberFixedActivityChartSections()
+    val reorderableCharts = rememberActivityChartReordering(sections)
+    LazyColumn(
+        state = sections.listState.lazyListState,
+        contentPadding = PaddingValues(vertical = 8.dp),
+        // 113: while a chart is dragged the list must not scroll under the finger by itself.
+        userScrollEnabled = !reorderableCharts.isAnyItemDragging,
+    ) {
         item {
             WorkoutSummaryCard(
                 workout = workout,
@@ -343,142 +365,43 @@ internal fun ActivityDetailContent(
                 )
             }
         }
-        if (splits.isNotEmpty) {
-            item {
-                ActivitySplitsCard(
-                    splits = splits,
-                    useSpeed = workout.exerciseType !in tech.mmarca.openvitals.domain.model.prefersPaceExercises,
-                    splitDistanceMeters = splitDistanceMeters,
-                    slowestPaceSeconds = slowestSplitPaceSeconds,
-                    fastestPaceSeconds = fastestSplitPaceSeconds,
-                    unitFormatter = unitFormatter,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp, vertical = 4.dp),
-                )
+        // 134: until the samples are read, one block as tall as the screen holds the charts'
+        // place: the summary above never moves, and the charts take the block's place.
+        if (samplesLoading) item(key = "activity_charts_loading") {
+            androidx.compose.foundation.layout.Box(
+                modifier = Modifier.fillParentMaxHeight().fillMaxWidth(),
+                contentAlignment = androidx.compose.ui.Alignment.TopCenter,
+            ) {
+                androidx.compose.material3.CircularProgressIndicator(Modifier.padding(top = Spacing.xxl))
             }
+        } else {
+        // 113: the charts, in the order the visitor arranged them (the slider icon at the top).
+        renderOrderedMetricDetailSections(sections) {
+            activityDetailChartSections(
+                workout = workout,
+                heartRateSamples = heartRateSamples,
+                heartRateAccessMissing = heartRateAccessMissing,
+                onGrantHeartRate = onGrantHeartRate,
+                heartRateRecovery = heartRateRecovery,
+                recoverySamples = recoverySamples,
+                maxHeartRateBpm = maxHeartRateBpm,
+                restingHeartRateBpm = restingHeartRateBpm,
+                speedSamples = speedSamples,
+                cadenceSamples = cadenceSamples,
+                sessionCalories = sessionCalories,
+                splits = splits,
+                splitDistanceMeters = splitDistanceMeters,
+                slowestSplitPaceSeconds = slowestSplitPaceSeconds,
+                fastestSplitPaceSeconds = fastestSplitPaceSeconds,
+                splitSpeedTrace = splitSpeedTrace,
+                elevationSamples = elevationSamples,
+                elevationSource = elevationSource,
+                unitFormatter = unitFormatter,
+                sessionCardioLoad = sessionCardioLoad,
+                personalRecords = personalRecords,
+                recordsComparedWith = recordsComparedWith,
+            )
         }
-        if (heartRateSamples.isNotEmpty()) {
-            item {
-                ActivityHeartRateChartCard(
-                    samples = heartRateSamples,
-                    sessionStart = workout.startTime,
-                    sessionEnd = workout.endTime,
-                    pauses = workout.segments.toSessionPauses(),
-                    unitFormatter = unitFormatter,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp, vertical = 4.dp),
-                )
-            }
-        }
-        if (heartRateSamples.isEmpty() && heartRateAccessMissing) {
-            item {
-                ActivityHeartRateAccessCard(
-                    onGrant = onGrantHeartRate,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = Spacing.lg, vertical = Spacing.xs),
-                )
-            }
-        }
-        sessionCalories?.let { calories ->
-            item(key = "session-calories") {
-                ActivityCaloriesChartCard(
-                    calories = calories,
-                    sessionStart = workout.startTime,
-                    sessionEnd = workout.endTime,
-                    pauses = workout.segments.toSessionPauses(),
-                    unitFormatter = unitFormatter,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = Spacing.lg, vertical = Spacing.xs),
-                )
-            }
-        }
-        // Only a reading with a measured peak is worth a card.
-        if (heartRateRecovery != null && heartRateRecovery.peakBpm != null) {
-            item {
-                HeartRateRecoveryCard(
-                    reading = heartRateRecovery,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp, vertical = 4.dp),
-                )
-            }
-        }
-        // 88–93: the chart each kind of activity gets, and the recovery after any with a heart rate.
-        activityTypeChartItems(
-            workout = workout,
-            heartRateSamples = heartRateSamples,
-            speedSamples = speedSamples,
-            splitSpeedTrace = splitSpeedTrace,
-            cadenceSamples = cadenceSamples,
-            elevationSamples = elevationSamples,
-            recoverySamples = recoverySamples,
-            maxHeartRateBpm = maxHeartRateBpm,
-            unitFormatter = unitFormatter,
-            restingHeartRateBpm = restingHeartRateBpm,
-        )
-        // Recorded speed, or the split-derived reconstruction, never both.
-        if (speedSamples.isNotEmpty()) {
-            item {
-                ActivitySpeedChartCard(
-                    samples = speedSamples,
-                    sessionStart = workout.startTime,
-                    sessionEnd = workout.endTime,
-                    pauses = workout.segments.toSessionPauses(),
-                    unitFormatter = unitFormatter,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp, vertical = 4.dp),
-                )
-            }
-        } else if (splitSpeedTrace != null) {
-            item {
-                ActivitySplitSpeedChartCard(
-                    trace = splitSpeedTrace,
-                    source = splits.source,
-                    splitDistanceMeters = splitDistanceMeters,
-                    sessionStart = workout.startTime,
-                    sessionEnd = workout.endTime,
-                    pauses = workout.segments.toSessionPauses(),
-                    unitFormatter = unitFormatter,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp, vertical = 4.dp),
-                )
-            }
-        }
-        if (elevationSamples.isNotEmpty()) {
-            item {
-                ActivityElevationChartCard(
-                    samples = elevationSamples,
-                    source = elevationSource,
-                    sessionStart = workout.startTime,
-                    sessionEnd = workout.endTime,
-                    pauses = workout.segments.toSessionPauses(),
-                    unitFormatter = unitFormatter,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp, vertical = 4.dp),
-                )
-            }
-        }
-        activityCadenceKinds(cadenceSamples, workout.exerciseType).forEach { cadenceKind ->
-            item(key = "cadence-$cadenceKind") {
-                ActivityCadenceChartCard(
-                    samples = cadenceSamples,
-                    kind = cadenceKind,
-                    sessionStart = workout.startTime,
-                    sessionEnd = workout.endTime,
-                    pauses = workout.segments.toSessionPauses(),
-                    unitFormatter = unitFormatter,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp, vertical = 4.dp),
-                )
-            }
         }
         item {
             SessionDetailsCard(
@@ -604,7 +527,7 @@ internal fun ActivityDetailContent(
 
 /** Heart rate access is off: the BPM chart's place offers the grant. */
 @Composable
-private fun ActivityHeartRateAccessCard(
+internal fun ActivityHeartRateAccessCard(
     onGrant: () -> Unit,
     modifier: Modifier = Modifier,
 ) {

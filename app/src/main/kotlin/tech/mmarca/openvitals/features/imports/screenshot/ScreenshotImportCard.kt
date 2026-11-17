@@ -31,8 +31,11 @@ import tech.mmarca.openvitals.ui.theme.Spacing
 @Composable
 internal fun ScreenshotImportCard(modifier: Modifier = Modifier) {
     var pickedUri by rememberSaveable { mutableStateOf<Uri?>(null) }
+    // 78: every pick is a review of its own, with state of its own: one review's "saved" or
+    // "busy" can never hold up or close the next, however soon after it is opened.
+    var pickCount by rememberSaveable { mutableIntStateOf(0) }
     val picker = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument()) { uri ->
-        if (uri != null) pickedUri = uri
+        if (uri != null) { pickCount++; pickedUri = uri }
     }
     Column(modifier = modifier.fillMaxWidth()) {
     tech.mmarca.openvitals.ui.components.OpenVitalsCard(
@@ -64,17 +67,21 @@ internal fun ScreenshotImportCard(modifier: Modifier = Modifier) {
             )
         }
     }
+    var savedCount by remember { mutableIntStateOf(0) }
     var savedBanner by rememberSaveable { mutableStateOf(false) }
     pickedUri?.let { uri ->
         ScreenshotImportDialog(
             onDismiss = { pickedUri = null },
             initialUri = uri,
-            onSaved = { savedBanner = true },
+            onSaved = { savedCount++ },
+            viewModel = hiltViewModel(key = "screenshot-import-$pickCount"),
         )
     }
     // 73: the confirmation is a card of the app's own, under the tile, gone after a few seconds.
-    LaunchedEffect(savedBanner) {
-        if (savedBanner) {
+    // 78: each save shows it afresh for its full time; the tile above stays usable throughout.
+    LaunchedEffect(savedCount) {
+        if (savedCount > 0) {
+            savedBanner = true
             kotlinx.coroutines.delay(ScreenshotSavedBannerMillis)
             savedBanner = false
         }

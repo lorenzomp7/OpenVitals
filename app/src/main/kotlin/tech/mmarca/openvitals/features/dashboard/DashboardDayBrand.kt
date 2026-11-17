@@ -23,15 +23,15 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
 import tech.mmarca.openvitals.R
 import tech.mmarca.openvitals.domain.preferences.BrandPaletteSource
 import tech.mmarca.openvitals.ui.components.BrandColors
 import tech.mmarca.openvitals.ui.components.BrandDay
-import tech.mmarca.openvitals.ui.components.BrandSync
 import tech.mmarca.openvitals.ui.theme.Emphasis
 import tech.mmarca.openvitals.ui.theme.Spacing
 
-/** One of today's four goals, as the toggle fills it and the summary lists it. */
+/** One of the selected period's four goals, as the toggle fills it and the summary lists it. */
 internal data class DashboardDayGoal(
     val id: DashboardWidgetId,
     val title: String,
@@ -42,12 +42,23 @@ internal data class DashboardDayGoal(
     val icon: ImageVector,
 )
 
-/** 94: the toggle's four lobes, in order: steps, calories, activity, sleep. */
-private val DayGoalWidgets = listOf(
+/**
+ * 94: the toggle's four lobes, in order: steps, active calories, workout, sleep. The dashboard
+ * reads them for every period whether or not their tiles are placed: the toggle needs them.
+ */
+internal val DayGoalWidgets = listOf(
     DashboardWidgetId.STEPS,
     DashboardWidgetId.ACTIVE_CALORIES,
     DashboardWidgetId.WORKOUT,
     DashboardWidgetId.SLEEP,
+)
+
+/** 94: the order the summary lists the goals in. */
+private val SummaryOrder = listOf(
+    DashboardWidgetId.SLEEP,
+    DashboardWidgetId.STEPS,
+    DashboardWidgetId.WORKOUT,
+    DashboardWidgetId.ACTIVE_CALORIES,
 )
 
 /** 97: the home screen's palette, from the source chosen in Display settings. */
@@ -71,17 +82,42 @@ internal fun dashboardBrandColors(source: BrandPaletteSource, placedInOrder: Lis
     }
 }
 
+/**
+ * 94: the four goals of the selected period, read from the same widgets the dashboard shows for
+ * it. The workout is a yes or a no: whether the period holds any session ([hadWorkout]); null
+ * while the period is loading.
+ */
 @Composable
-internal fun dashboardDayGoals(display: DashboardDisplayState, colors: List<Color> = BrandColors): List<DashboardDayGoal> =
+internal fun dashboardDayGoals(
+    display: DashboardDisplayState,
+    colors: List<Color> = BrandColors,
+    hadWorkout: Boolean? = null,
+): List<DashboardDayGoal> =
     DayGoalWidgets.mapIndexed { index, id ->
         val color = colors[index % colors.size]
+        if (id == DashboardWidgetId.WORKOUT) {
+            return@mapIndexed DashboardDayGoal(
+                id = id,
+                title = dashboardWidgetTitle(id),
+                value = when (hadWorkout) {
+                    true -> stringResource(R.string.brand_summary_workout_yes)
+                    false -> stringResource(R.string.brand_summary_workout_no)
+                    null -> "–"
+                },
+                goal = null,
+                fraction = if (hadWorkout == true) 1f else 0f,
+                color = color,
+                icon = dashboardWidgetIcon(id),
+            )
+        }
         val model = display.widgets[id]
-        val fraction = model?.sleepScore?.let { it.score / 100f } ?: model?.progress?.fraction ?: 0f
+        val loaded = model != null && !model.isLoading
+        // Sleep reads as hours against the hours goal, never the score against hours.
+        val fraction = if (loaded) model?.progress?.fraction ?: 0f else 0f
         DashboardDayGoal(
             id = id,
             title = dashboardWidgetTitle(id),
-            value = model?.sleepScore?.score?.toString()
-                ?: model?.value?.takeIf { model.hasValue && !model.isLoading }?.text?.takeIf { it.isNotBlank() }
+            value = model?.value?.takeIf { loaded && model.hasValue }?.text?.takeIf { it.isNotBlank() }
                 ?: "–",
             goal = model?.progress?.goalLabelValue?.text,
             fraction = fraction.coerceIn(0f, 1f),
@@ -90,23 +126,18 @@ internal fun dashboardDayGoals(display: DashboardDisplayState, colors: List<Colo
         )
     }
 
-internal fun brandDay(name: String?, goals: List<DashboardDayGoal>, syncPaused: Boolean, refreshing: Boolean): BrandDay =
-    BrandDay(
-        name = name,
-        fills = goals.map { it.fraction },
-        sync = when {
-            syncPaused -> BrandSync.PAUSED
-            refreshing -> BrandSync.SYNCING
-            else -> BrandSync.UP_TO_DATE
-        },
-    )
+internal fun brandDay(name: String?, goals: List<DashboardDayGoal>): BrandDay =
+    BrandDay(name = name, fills = goals.map { it.fraction })
 
-/** 94: what tapping the toggle opens: today's four goals and where the sync stands. */
+/**
+ * 94: what tapping the toggle opens: the selected period's sleep, steps, workout and active
+ * calories, under the period's own title. Health Connect's state is not its business.
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun DashboardDaySummarySheet(
+    title: String,
     goals: List<DashboardDayGoal>,
-    sync: BrandSync,
     onOpenMetric: (DashboardWidgetId) -> Unit,
     onDismiss: () -> Unit,
 ) {
@@ -116,11 +147,12 @@ internal fun DashboardDaySummarySheet(
             verticalArrangement = Arrangement.spacedBy(Spacing.lg),
         ) {
             Text(
-                stringResource(R.string.brand_summary_title),
+                title,
                 style = MaterialTheme.typography.titleLarge,
                 fontWeight = FontWeight.SemiBold,
             )
-            goals.forEach { goal ->
+            // In the order asked for: sleep, steps, workout, active calories.
+            goals.sortedBy { SummaryOrder.indexOf(it.id) }.forEach { goal ->
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -142,20 +174,13 @@ internal fun DashboardDaySummarySheet(
                         color = goal.color,
                         trackColor = goal.color.copy(alpha = Emphasis.wash),
                         modifier = Modifier.fillMaxWidth().height(Spacing.sm),
+                        // 129, 130: one bar, the filled part running straight into the empty one,
+                        // with no stop dot at its end.
+                        gapSize = 0.dp,
+                        drawStopIndicator = {},
                     )
                 }
             }
-            Text(
-                stringResource(
-                    when (sync) {
-                        BrandSync.UP_TO_DATE -> R.string.brand_sync_up_to_date
-                        BrandSync.SYNCING -> R.string.brand_sync_syncing
-                        BrandSync.PAUSED -> R.string.brand_sync_paused
-                    },
-                ),
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
         }
     }
 }

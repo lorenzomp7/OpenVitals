@@ -66,12 +66,9 @@ internal fun ActivityHeartRateChartCard(
     val timeFormatter = DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT)
     // Built once, identity-stable, so the geometry cache holds.
     val chartPoints = remember(sorted, axis) {
-        sorted.map { sample ->
-            MetricLinePlotPoint(
-                xFraction = axis.fractionOf(sample.time),
-                value = sample.beatsPerMinute.toDouble(),
-            )
-        }
+        // 137: drawn from the session's start; a first reading that came later is estimated there.
+        anchoredAtStart(sorted.map { axis.fractionOf(it.time) to it.beatsPerMinute.toDouble() })
+            .map { (x, bpm) -> MetricLinePlotPoint(xFraction = x, value = bpm) }
     }
 
     OpenVitalsCard(modifier = modifier) {
@@ -84,26 +81,18 @@ internal fun ActivityHeartRateChartCard(
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold,
             )
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(16.dp),
-            ) {
-                ActivityHeartRateStat(
-                    label = stringResource(R.string.summary_average),
-                    value = unitFormatter.heartRate(avgBpm.toLong()).text,
-                    modifier = Modifier.weight(1f),
-                )
-                ActivityHeartRateStat(
-                    label = stringResource(R.string.summary_range),
-                    value = "${unitFormatter.heartRate(minBpm).text}-${unitFormatter.heartRate(maxBpm).text}",
-                    modifier = Modifier.weight(1f),
-                )
-                ActivityHeartRateStat(
-                    label = stringResource(R.string.summary_samples),
-                    value = unitFormatter.count(sorted.size),
-                    modifier = Modifier.weight(1f),
-                )
-            }
+            // 114: left, middle and right, the range's unit said once.
+            ActivityChartFigures(
+                figures = listOf(
+                    stringResource(R.string.summary_average) to unitFormatter.heartRate(avgBpm.toLong()).text,
+                    stringResource(R.string.summary_range) to activityValueRange(
+                        unitFormatter.heartRate(minBpm).text,
+                        unitFormatter.heartRate(maxBpm).text,
+                    ),
+                    stringResource(R.string.summary_samples) to unitFormatter.count(sorted.size),
+                ),
+                accent = HeartColor,
+            )
             // Plot and elapsed row share the one viewport.
             ChartZoom(sessionStart, sessionEnd, samples) { zoom ->
                 Column {
@@ -142,26 +131,6 @@ internal fun ActivityHeartRateChartCard(
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
         }
-    }
-}
-
-@Composable
-private fun ActivityHeartRateStat(
-    label: String,
-    value: String,
-    modifier: Modifier = Modifier,
-) {
-    Column(modifier = modifier) {
-        Text(
-            text = value,
-            style = MaterialTheme.typography.titleMedium,
-            color = HeartColor,
-        )
-        Text(
-            text = label,
-            style = MaterialTheme.typography.labelSmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-        )
     }
 }
 

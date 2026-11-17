@@ -92,6 +92,8 @@ internal fun LazyListScope.renderActivitiesOrderedContent(
     onOpenHrv: (() -> Unit)?,
     onDecreaseGoal: () -> Unit,
     onIncreaseGoal: () -> Unit,
+    visibleWorkoutCount: Int = ActivityWorkoutListPageSize,
+    onShowMoreWorkouts: () -> Unit = {},
 ) {
     val selectedDate = chartDaySelection.selectedDate
     val goalValues = workoutDailyGoalValues(state.workouts)
@@ -149,6 +151,8 @@ internal fun LazyListScope.renderActivitiesOrderedContent(
                         onEditActivity = onEditActivity,
                         onDeleteActivity = onDeleteActivity,
                         showEmptyState = !state.isLoading,
+                        visibleCount = visibleWorkoutCount,
+                        onShowMore = onShowMoreWorkouts,
                     )
                 }
                 if (state.activityTypeAggregates.isNotEmpty()) {

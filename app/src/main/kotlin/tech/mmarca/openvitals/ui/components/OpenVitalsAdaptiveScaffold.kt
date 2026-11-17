@@ -55,7 +55,8 @@ data class ChartSemanticsSummary(
 
 @OptIn(ExperimentalMaterial3Api::class)
 /** 56dp, matching the shipped app; Compose's 64dp default sat content 8dp low. */
-private val TopBarHeight = 56.dp
+internal val OpenVitalsTopBarHeight = 56.dp
+private val TopBarHeight = OpenVitalsTopBarHeight
 
 @Composable
 fun OpenVitalsAdaptiveScaffold(

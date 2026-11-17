@@ -208,11 +208,17 @@ internal fun DashboardContent(
                 )
             }
 
+            // 121: a tile carried to the top or bottom edge in the editor scrolls the list.
+            val dragAutoScroll = remember(listState) { tech.mmarca.openvitals.ui.components.DragAutoScroll(listState) }
+            androidx.compose.runtime.CompositionLocalProvider(
+                tech.mmarca.openvitals.ui.components.LocalDragAutoScroll provides dragAutoScroll,
+            ) {
             androidx.compose.foundation.lazy.LazyColumn(
                 state = listState,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .weight(1f),
+                    .weight(1f)
+                    .then(tech.mmarca.openvitals.ui.components.dragAutoScrollViewportModifier(dragAutoScroll)),
                 contentPadding = PaddingValues(
                     top = DashboardScrollTopPadding,
                     bottom = DashboardScrollBottomPadding,
@@ -243,17 +249,17 @@ internal fun DashboardContent(
 
                 item(key = "widgets") {
                     // Reveal animations play once per day on display.
-                    // 99: the pencil moves between the dashboard and its editor as the screens do, by a fade through.
+                    // 99: the editor and the dashboard swap in place: the one leaving fades out,
+                    // then the other fades in. The height jumps while neither is visible.
                     key(data.date) { androidx.compose.animation.AnimatedContent(
                         targetState = isEditingDashboard,
+                        contentAlignment = Alignment.TopCenter,
                         transitionSpec = {
-                            (
-                                androidx.compose.animation.fadeIn(androidx.compose.animation.core.tween(210, delayMillis = 90)) +
-                                    androidx.compose.animation.scaleIn(
-                                        androidx.compose.animation.core.tween(210, delayMillis = 90),
-                                        initialScale = 0.96f,
-                                    )
-                                ) togetherWith androidx.compose.animation.fadeOut(androidx.compose.animation.core.tween(90))
+                            val motion = tech.mmarca.openvitals.ui.theme.ScreenMotion
+                            (motion.fadeThroughEnter() togetherWith motion.fadeThroughExit()) using
+                                androidx.compose.animation.SizeTransform(clip = true) { _, _ ->
+                                    androidx.compose.animation.core.snap(motion.FadeThroughOutMillis)
+                                }
                         },
                         label = "dashboardEditTransition",
                     ) { editing ->
@@ -271,10 +277,8 @@ internal fun DashboardContent(
                             onSetPagedLayout = onSetPagedLayout,
                             actionContent = {
                                 DashboardQuickActions(
-                                    isEditingDashboard = editing,
                                     onOpenLog = onOpenLog,
                                     onStartActivity = onStartActivity,
-                                    onToggleDashboardEdit = onToggleDashboardEdit,
                                     // 14dp under the rings; the divider carries its own air.
                                     modifier = Modifier.padding(
                                         start = DashboardScreenPadding,
@@ -324,6 +328,7 @@ internal fun DashboardContent(
                     }
                 }
                 item(key = "bottom_spacer") { Spacer(Modifier.height(10.dp)) }
+            }
             }
         }
 

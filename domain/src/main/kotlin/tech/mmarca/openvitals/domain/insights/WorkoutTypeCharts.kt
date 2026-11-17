@@ -12,15 +12,20 @@ import tech.mmarca.openvitals.domain.model.HeartRateSample
 import tech.mmarca.openvitals.domain.model.SpeedSample
 
 /** The extra chart an activity gets for its kind (88–92); the recovery chart (93) is for any with a heart rate. */
-enum class WorkoutTypeChart { PACE, HEART_RATE_ZONES, ELEVATION_WITH_SPEED, CADENCE_WITH_HEART_RATE, HEART_RATE_WITH_SETS }
+enum class WorkoutTypeChart { PACE, SWIM_PACE, ELEVATION_WITH_SPEED, CADENCE_WITH_HEART_RATE, HEART_RATE_WITH_SETS }
 
 /** Which kind-specific chart a session of [exerciseType] gets, if any. */
 fun workoutTypeChart(exerciseType: Int): WorkoutTypeChart? = when (exerciseType) {
     ExerciseSessionRecord.EXERCISE_TYPE_RUNNING,
     ExerciseSessionRecord.EXERCISE_TYPE_WALKING,
     ExerciseSessionRecord.EXERCISE_TYPE_HIKING,
+    // 117: a treadmill's pace, from the belt's speed or the splits.
+    ExerciseSessionRecord.EXERCISE_TYPE_RUNNING_TREADMILL,
     -> WorkoutTypeChart.PACE
-    ExerciseSessionRecord.EXERCISE_TYPE_RUNNING_TREADMILL -> WorkoutTypeChart.HEART_RATE_ZONES
+    // 118: a swim's pace is read per 100 m.
+    ExerciseSessionRecord.EXERCISE_TYPE_SWIMMING_POOL,
+    ExerciseSessionRecord.EXERCISE_TYPE_SWIMMING_OPEN_WATER,
+    -> WorkoutTypeChart.SWIM_PACE
     ExerciseSessionRecord.EXERCISE_TYPE_BIKING -> WorkoutTypeChart.ELEVATION_WITH_SPEED
     ExerciseSessionRecord.EXERCISE_TYPE_BIKING_STATIONARY -> WorkoutTypeChart.CADENCE_WITH_HEART_RATE
     ExerciseSessionRecord.EXERCISE_TYPE_STRENGTH_TRAINING,
@@ -29,6 +34,9 @@ fun workoutTypeChart(exerciseType: Int): WorkoutTypeChart? = when (exerciseType)
     -> WorkoutTypeChart.HEART_RATE_WITH_SETS
     else -> null
 }
+
+/** 112: a treadmill's speed is the belt's setting, not a reading worth a chart. */
+fun showsSpeedChart(exerciseType: Int): Boolean = exerciseType != ExerciseSessionRecord.EXERCISE_TYPE_RUNNING_TREADMILL
 
 /** The heart rate a zone is a share of: the one the profile names, else Tanaka's 208 − 0.7 × age. */
 fun workoutMaxHeartRate(explicitBpm: Int?, ageYears: Int?): Int? =
@@ -61,17 +69,26 @@ private const val SlowestPaceSecondsPerKm = 1_200.0
 /** Readings are averaged over this window, so a GPS jitter is not a sprint. */
 private val paceSmoothing: Duration = Duration.ofSeconds(30)
 
+/** 118: a swim is slower than 20 min/km without standing still: 10 min per 100 m is its limit. */
+const val SlowestSwimPaceSecondsPerKm = 6_000.0
+
 /** 88: seconds per kilometre over time, from the recorded speed. */
-fun paceFromSpeed(samples: List<SpeedSample>): List<Pair<Instant, Double>> =
+fun paceFromSpeed(
+    samples: List<SpeedSample>,
+    slowestSecondsPerKm: Double = SlowestPaceSecondsPerKm,
+): List<Pair<Instant, Double>> =
     smoothed(
         samples.sortedBy { it.time }
             .filter { it.metersPerSecond > 0.0 }
             .map { it.time to 1_000.0 / it.metersPerSecond }
-            .filter { it.second <= SlowestPaceSecondsPerKm },
+            .filter { it.second <= slowestSecondsPerKm },
     )
 
 /** 88: seconds per kilometre over time, from the route when no speed was recorded. */
-fun paceFromRoute(points: List<ExerciseRoutePoint>): List<Pair<Instant, Double>> {
+fun paceFromRoute(
+    points: List<ExerciseRoutePoint>,
+    slowestSecondsPerKm: Double = SlowestPaceSecondsPerKm,
+): List<Pair<Instant, Double>> {
     val sorted = points.sortedBy { it.time }
     if (sorted.size < 2) return emptyList()
     val cumulative = DoubleArray(sorted.size)
@@ -88,10 +105,72 @@ fun paceFromRoute(points: List<ExerciseRoutePoint>): List<Pair<Instant, Double>>
         val meters = cumulative[i] - cumulative[from]
         if (seconds < 5.0 || meters <= 0.0) continue
         val pace = seconds / meters * 1_000.0
-        if (pace <= SlowestPaceSecondsPerKm) raw += sorted[i].time to pace
+        if (pace <= slowestSecondsPerKm) raw += sorted[i].time to pace
     }
     return raw
 }
+
+/**
+ * 88: of the pace series a session has, the one that covers most of it. A watch can write its
+ * speed only for the last seconds while the route or the splits run the whole way: drawing the
+ * speed then put the whole line at the end. A recorded series wins a tie.
+ */
+fun bestPaceSeries(
+    candidates: List<List<Pair<Instant, Double>>>,
+    sessionStart: Instant,
+    sessionEnd: Instant,
+): List<Pair<Instant, Double>> {
+    val sessionMillis = Duration.between(sessionStart, sessionEnd).toMillis().coerceAtLeast(1)
+    fun coverage(series: List<Pair<Instant, Double>>): Double {
+        val inside = series.filter { !it.first.isBefore(sessionStart) && !it.first.isAfter(sessionEnd) }
+        if (inside.size < 2) return 0.0
+        return Duration.between(inside.first().first, inside.last().first).toMillis().toDouble() / sessionMillis
+    }
+    var best: List<Pair<Instant, Double>> = emptyList()
+    var bestCoverage = 0.0
+    candidates.forEach { series ->
+        val sorted = series.sortedBy { it.first }
+        val covered = coverage(sorted)
+        // A later candidate must cover clearly more: a recorded speed beats a reconstruction at par.
+        if (covered > bestCoverage + 0.1 || best.isEmpty() && sorted.size >= 2) {
+            best = sorted
+            bestCoverage = covered
+        }
+    }
+    return best
+}
+
+/**
+ * 88: the average pace of a series, as time over distance: the time-weighted mean speed,
+ * inverted. The mean of the paces themselves leans toward the slow stretches.
+ */
+fun averagePaceSecondsPerKm(series: List<Pair<Instant, Double>>): Double? {
+    if (series.isEmpty()) return null
+    if (series.size == 1) return series.single().second
+    var seconds = 0.0
+    var meters = 0.0
+    for (i in 0 until series.lastIndex) {
+        val dt = Duration.between(series[i].first, series[i + 1].first).toMillis() / 1_000.0
+        if (dt <= 0.0 || series[i].second <= 0.0) continue
+        val step = dt.coerceAtMost(paceSmoothing.seconds.toDouble() * 2)
+        seconds += step
+        meters += step * 1_000.0 / series[i].second
+    }
+    return if (meters > 0.0) seconds / meters * 1_000.0 else series.map { it.second }.average()
+}
+
+/**
+ * 118: seconds per kilometre for each lap with a length, as a step: the lap's pace from its
+ * start to its end. A pool watch writes a lap per length swum, so this is the swim's pace.
+ */
+fun paceFromLaps(laps: List<tech.mmarca.openvitals.domain.model.ExerciseLapData>): List<Pair<Instant, Double>> =
+    laps.sortedBy { it.startTime }.flatMap { lap ->
+        val meters = lap.lengthMeters ?: return@flatMap emptyList()
+        val seconds = lap.durationMs / 1_000.0
+        if (meters <= 0.0 || seconds <= 0.0) return@flatMap emptyList()
+        val pace = seconds / meters * 1_000.0
+        listOf(lap.startTime to pace, lap.endTime to pace)
+    }
 
 private fun smoothed(values: List<Pair<Instant, Double>>): List<Pair<Instant, Double>> {
     var from = 0

@@ -941,6 +941,11 @@ class PreferencesRepository @Inject constructor(
         }
     }
 
+    override fun hiddenMetricDetailSections(): Set<String> = prefs.getStringSet(KEY_HIDDEN_METRIC_DETAIL_SECTIONS, null).orEmpty()
+    override fun setHiddenMetricDetailSections(sectionIds: Set<String>) = prefs.edit { putStringSet(KEY_HIDDEN_METRIC_DETAIL_SECTIONS, sectionIds) }
+    override fun activityDetailGeneralOrderVersion(): Int = prefs.getInt(KEY_ACTIVITY_DETAIL_GENERAL_ORDER, 0)
+    override fun setActivityDetailGeneralOrderVersion(version: Int) = prefs.edit { putInt(KEY_ACTIVITY_DETAIL_GENERAL_ORDER, version) }
+
     fun acknowledgedPermissionsFor(feature: HealthConnectFeature): Set<String> =
         prefs.getStringSet(acknowledgedFeatureKey(feature), emptySet()) ?: emptySet()
 
@@ -1346,6 +1351,8 @@ class PreferencesRepository @Inject constructor(
         private const val KEY_STRIDE_LENGTH_METERS = "stride_length_meters"
         private const val KEY_MANUAL_ENTRY_WIDGET_ORDER = "manual_entry_widget_order"
         private const val KEY_METRIC_DETAIL_SECTION_ORDER = "metric_detail_section_order"
+        private const val KEY_HIDDEN_METRIC_DETAIL_SECTIONS = "hidden_metric_detail_sections"
+        private const val KEY_ACTIVITY_DETAIL_GENERAL_ORDER = "activity_detail_general_order_version"
         private const val KEY_HYDRATION_DAILY_GOAL_LITERS = "hydration_daily_goal_liters"
         private const val KEY_HYDRATION_CONTAINER_VOLUME_MILLILITERS = "hydration_container_volume_milliliters"
         private const val KEY_RECENT_HYDRATION_AMOUNTS_MILLILITERS = "recent_hydration_amounts_milliliters"

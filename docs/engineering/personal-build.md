@@ -1,6 +1,6 @@
 # Consolidated personal build
 
-`main_chatgpt` starts from the consolidated branch that was rebuilt directly from Claude's `claude/adoring-brown-692amx` at `ce31872527acfd27ca6c4080e9b82c1162831329` and integrates all changes from `main_chatgpt` at `220605999f36def2626bb454f45b3582cda1c47e`. Claude's full history and the fast first-day activity load are retained. The older branches remain unchanged. The screenshot-only `personal-shots` branch is not merged into application history.
+The phone-installable APK is built from `main_claude`. Every push to it runs `publish-personal-release`: the full `verify`, a signed build, a signature check against the previously published APK, an update install on an Android 15 emulator, and only then a GitHub release tagged `personal-claude-<run id>` and marked latest, so `releases/latest/download/OpenVitals.apk` always points to it. The version name and the release notes live in that workflow file and change with each release. `main_chatgpt` is an older line and is no longer the source of the published APK.
 
 ## Verification
 
@@ -12,7 +12,7 @@ The manual `personal-screenshots` workflow reuses `verify`; it never rewrites a 
 
 The phone-installable APK uses the same existing personal development key and application ID (`tech.mmarca.openvitals.debug`) as Claude's personal APK. The key in `personal/personal.p12` is a shared development key, already present in Claude's branch, and is not the upstream release signing key. No PC setup or Actions secrets are required.
 
-Run `personal-apk` manually, or push a commit containing `[apk]` to `main_chatgpt`. Its version code increases with the workflow run number. Before publishing `OpenVitals-personal.apk`, the workflow downloads the previously distributed Claude APK from run `42711097393`, compares the signing certificates, installs that earlier APK on an emulator, and updates it with the new APK without uninstalling. An update of that `.debug` app preserves its local settings and permissions.
+Its version code is above every code already published. Before publishing `OpenVitals.apk`, the workflow downloads the previously published APK, compares the signing certificates, installs that earlier APK on an emulator, and updates it with the new APK without uninstalling. An update of that `.debug` app preserves its local settings and permissions.
 
 The `.ci` test package is a different app with a temporary runner signature. It cannot be converted into the `.debug` app by installing an APK. Leave it installed if you need to keep its local settings; the personal APK can coexist with it. Use the settings export/import section to transfer configuration between installed versions that support it. Health Connect records remain in Health Connect.
 

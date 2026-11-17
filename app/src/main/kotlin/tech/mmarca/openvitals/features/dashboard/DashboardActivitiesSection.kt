@@ -31,6 +31,7 @@ import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import tech.mmarca.openvitals.ui.theme.Spacing
@@ -55,8 +56,11 @@ internal fun LazyListScope.dashboardActivitiesToday(
     onEditActivity: (String) -> Unit,
     onRequestDeleteActivity: (ExerciseData) -> Unit,
 ) {
+    // 109: always the same four symbols: running, strength training, biking and swimming. They
+    // were the kinds of the day's activities, so a day with two kinds drew two of the four.
+    val recentKinds = ActivityBarKinds
     item(key = "activities_header") {
-        DashboardActivitiesSectionHeader(onClick = onOpenActivities)
+        DashboardActivitiesSectionHeader(recentKinds = recentKinds, onClick = onOpenActivities)
     }
     if (workouts.isNotEmpty()) {
         items(
@@ -187,18 +191,70 @@ internal fun DashboardSwipeToDeleteActivityCard(
     )
 }
 
+/**
+ * 109: the Activities bar runs the width of the screen. Its label stays over the left column,
+ * centred in it, and the right half shows running, strength training, biking and swimming,
+ * dimmed, lighting up one after the other on the toggle's clock.
+ */
 @Composable
 private fun DashboardActivitiesSectionHeader(
+    recentKinds: List<Int>,
     onClick: () -> Unit,
 ) {
     BoxWithConstraints(Modifier.fillMaxWidth().padding(start = DashboardScreenPadding, end = DashboardScreenPadding, top = DashboardSectionGap, bottom = Spacing.md / 2)) {
+        // The pill pads its content by Spacing.md each side; the left half is the left column less that.
+        val column = (maxWidth - DashboardTileGap) / 2 - Spacing.md
+        val rest = maxWidth - Spacing.md * 2 - column
+        val timeline = tech.mmarca.openvitals.ui.components.LocalFluidBrandTimeline.current
+            ?: androidx.compose.runtime.remember { tech.mmarca.openvitals.ui.components.FluidBrandTimeline() }
+        val clock = tech.mmarca.openvitals.ui.components.rememberBrandClock(timeline)
         tech.mmarca.openvitals.ui.components.BrandPillButton(
             onClick = onClick,
-            modifier = Modifier.width((maxWidth - DashboardTileGap) / 2).height(DashboardQuickActionHeight),
+            modifier = Modifier.fillMaxWidth().height(DashboardQuickActionHeight),
         ) {
-            Icon(Icons.AutoMirrored.Outlined.DirectionsRun, null, Modifier.size(DashboardQuickActionIconSize))
-            Spacer(Modifier.width(Spacing.md / 2))
-            Text(stringResource(R.string.dashboard_activities_today))
+            Row(Modifier.width(column), horizontalArrangement = androidx.compose.foundation.layout.Arrangement.Center, verticalAlignment = Alignment.CenterVertically) {
+                Icon(Icons.AutoMirrored.Outlined.DirectionsRun, null, Modifier.size(DashboardQuickActionIconSize))
+                Spacer(Modifier.width(Spacing.md / 2))
+                Text(stringResource(R.string.dashboard_activities_today), maxLines = 1)
+            }
+            Row(
+                Modifier.width(rest),
+                horizontalArrangement = androidx.compose.foundation.layout.Arrangement.SpaceEvenly,
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                recentKinds.forEachIndexed { index, kind ->
+                    Icon(
+                        imageVector = tech.mmarca.openvitals.features.activity.exerciseTypeIcon(kind),
+                        contentDescription = tech.mmarca.openvitals.features.activity.exerciseTypeLabel(kind),
+                        modifier = Modifier
+                            .size(DashboardQuickActionIconSize)
+                            .graphicsLayer {
+                                alpha = recentKindAlpha(timeline.secondsAt(clock.value), index, recentKinds.size)
+                            },
+                    )
+                }
+            }
         }
     }
+}
+
+private val ActivityBarKinds = listOf(
+    androidx.health.connect.client.records.ExerciseSessionRecord.EXERCISE_TYPE_RUNNING,
+    androidx.health.connect.client.records.ExerciseSessionRecord.EXERCISE_TYPE_STRENGTH_TRAINING,
+    androidx.health.connect.client.records.ExerciseSessionRecord.EXERCISE_TYPE_BIKING,
+    androidx.health.connect.client.records.ExerciseSessionRecord.EXERCISE_TYPE_SWIMMING_POOL,
+)
+
+/** How long each kind stays lit before the next takes over. */
+private const val RecentKindSeconds = 1.6f
+private const val RecentKindDim = 0.35f
+
+/** 109: lit at its turn, easing up and back down, dim the rest of the time. */
+private fun recentKindAlpha(seconds: Float, index: Int, count: Int): Float {
+    if (count <= 1) return 1f
+    val position = (seconds / RecentKindSeconds) % count
+    // Distance from this icon's turn, round the cycle, in turns.
+    val distance = kotlin.math.abs(((position - index) % count + count + count / 2f) % count - count / 2f)
+    val lit = (1f - distance).coerceIn(0f, 1f)
+    return RecentKindDim + (1f - RecentKindDim) * lit
 }

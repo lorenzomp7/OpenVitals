@@ -26,6 +26,10 @@ data class MetricDetailSectionContext(
     val isEditingSections: Boolean,
     val onMoveSectionToTarget: (MetricDetailSectionId, MetricDetailSectionId) -> Unit,
     val onMoveSection: (MetricDetailSectionId, Int) -> Unit,
+    /** 131: the sections taken off; edit mode shows them at the bottom with a button to put back. */
+    val hidden: Set<MetricDetailSectionId> = emptySet(),
+    val onHideSection: ((MetricDetailSectionId) -> Unit)? = null,
+    val onShowSection: ((MetricDetailSectionId) -> Unit)? = null,
 )
 
 /**
@@ -40,6 +44,7 @@ fun rememberMetricDetailSectionOrdering(): MetricDetailSectionContext {
     val sectionOrderViewModel = hiltViewModel<MetricDetailSectionOrderViewModel>()
     val sectionOrder by sectionOrderViewModel.sectionOrder.collectAsStateWithLifecycle()
     val isEditingSections by sectionOrderViewModel.isEditingSections.collectAsStateWithLifecycle()
+    val hiddenSections by sectionOrderViewModel.hiddenSections.collectAsStateWithLifecycle()
     val sectionListState = rememberMetricDetailSectionListState()
     val editingTint = MaterialTheme.colorScheme.primary
     // 67: finishing an arrangement asks Save or Discard, as the dashboard's pencil does.
@@ -118,5 +123,8 @@ fun rememberMetricDetailSectionOrdering(): MetricDetailSectionContext {
             sectionOrderViewModel.moveSectionToTarget(section, target, sectionListState.visibleSectionIds.ifEmpty { null })
         },
         onMoveSection = sectionOrderViewModel::moveSection,
+        hidden = hiddenSections,
+        onHideSection = sectionOrderViewModel::hideSection,
+        onShowSection = sectionOrderViewModel::showSection,
     )
 }

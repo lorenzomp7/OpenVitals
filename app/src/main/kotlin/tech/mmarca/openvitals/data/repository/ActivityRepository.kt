@@ -328,6 +328,19 @@ class ActivityRepositoryImpl @Inject constructor(
         ).map { it.withPreferredDistance() }
     }
 
+    override suspend fun loadWorkoutsOfType(exerciseType: Int, start: LocalDate, end: LocalDate): List<ExerciseData> {
+        val granted = grantedPermissionsIfAvailable()
+        if (readExercisePermission !in granted) return emptyList()
+        val zone = ZoneId.systemDefault()
+        return hc.readExerciseSessionsWithMetrics(
+            start = start.atStartOfDay(zone).toInstant(),
+            end = end.plusDays(1).atStartOfDay(zone).toInstant(),
+            includeDistance = readDistancePermission in granted,
+            includeSpeed = false,
+            exerciseType = exerciseType,
+        ).map { it.withPreferredDistance() }
+    }
+
     private fun ExerciseData.withPreferredDistance(): ExerciseData =
         if (sessionDistancePreferences?.preferRouteDistance == true) withRouteDistance() else this
 

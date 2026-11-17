@@ -126,4 +126,42 @@ class MetricDetailSectionOrderViewModelTest {
         viewModel.finishSectionEdit(save = true)
         verify(exactly = 1) { prefs.setMetricDetailSectionOrder(viewModel.sectionOrder.value.map { it.name }) }
     }
+
+    @Test
+    fun hiddenSection_isADraftUntilSaveAndDiscardBringsItBack() {
+        val prefs = mockk<WidgetOrderPreferences>(relaxed = true) {
+            every { metricDetailSectionOrder() } returns null
+            every { hiddenMetricDetailSections() } returns emptySet()
+            every { activityDetailGeneralOrderVersion() } returns Int.MAX_VALUE
+        }
+        val viewModel = MetricDetailSectionOrderViewModel(prefs)
+
+        viewModel.toggleSectionEdit()
+        viewModel.hideSection(MetricDetailSectionId.ACTIVITY_DETAIL_SPEED)
+        assertTrue(viewModel.hasSectionEdits())
+        verify(exactly = 0) { prefs.setHiddenMetricDetailSections(any()) }
+        viewModel.finishSectionEdit(save = false)
+        assertEquals(emptySet<MetricDetailSectionId>(), viewModel.hiddenSections.value)
+
+        viewModel.toggleSectionEdit()
+        viewModel.hideSection(MetricDetailSectionId.ACTIVITY_DETAIL_SPEED)
+        viewModel.finishSectionEdit(save = true)
+        verify { prefs.setHiddenMetricDetailSections(setOf(MetricDetailSectionId.ACTIVITY_DETAIL_SPEED.name)) }
+    }
+
+    @Test
+    fun anOrderSavedBeforeTheGeneralOrder_isPutInItOnce() {
+        val prefs = mockk<WidgetOrderPreferences>(relaxed = true) {
+            every { metricDetailSectionOrder() } returns listOf(
+                MetricDetailSectionId.ACTIVITY_DETAIL_RECORDS.name,
+                MetricDetailSectionId.ACTIVITY_DETAIL_HEART_RATE.name,
+            )
+            every { activityDetailGeneralOrderVersion() } returns 0
+        }
+        val viewModel = MetricDetailSectionOrderViewModel(prefs)
+
+        val activity = viewModel.sectionOrder.value.filter { it.name.startsWith("ACTIVITY_DETAIL_") }
+        assertEquals(tech.mmarca.openvitals.domain.preferences.ActivityDetailGeneralOrder, activity)
+        verify { prefs.setActivityDetailGeneralOrderVersion(tech.mmarca.openvitals.domain.preferences.ActivityDetailGeneralOrderVersion) }
+    }
 }

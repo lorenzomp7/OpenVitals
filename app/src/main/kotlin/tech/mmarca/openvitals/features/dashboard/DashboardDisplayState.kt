@@ -34,8 +34,8 @@ data class DashboardWidgetDisplayModel(
     /** The OpenWatch tile's watch, for [DashboardWidgetId.OPENWATCH]. */
     val openWatch: tech.mmarca.openvitals.openwatch.OpenWatchTileDisplay? = null,
     val measurementSubtitle: String? = null,
-    /** Selected period, used only as context for this metric. */
-    val periodLabel: String? = null,
+    /** Figures the tile's details are written from. */
+    val facts: DashboardWidgetFacts = DashboardWidgetFacts(),
     /** Consumed-today figure shown under the active-caffeine headline. */
     val caffeineConsumedTodayMg: Long? = null,
     val bodyEnergySubtitle: BodyEnergyTileSubtitle? = null,

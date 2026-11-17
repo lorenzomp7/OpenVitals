@@ -39,7 +39,8 @@ import tech.mmarca.openvitals.features.dashboard.components.DashboardMultiRingHe
 private val DashboardHeroSectionTopPadding = 16.dp
 private val DashboardHeroSectionBottomPadding = 0.dp
 private val DashboardGridTopPadding = DashboardSectionGap
-private val DashboardHeroRingHeight = 200.dp
+/** 108: tall enough for the rings and the reflection under them. */
+private val DashboardHeroRingHeight = 222.dp
 private val DashboardHeroTopPadding = 6.dp
 private const val DashboardHeroRingCount = 3
 
