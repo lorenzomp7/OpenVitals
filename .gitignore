@@ -63,3 +63,6 @@ local/
 
 # Personal signing material is never source code.
 /personal/
+
+# Repository-local AI tool binaries and environments
+/.tools/

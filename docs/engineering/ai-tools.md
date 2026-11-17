@@ -52,3 +52,36 @@ git commit -m "chore: update pinned agent-skills"
 
 Do not use automatic floating updates. The Git submodule entry records the
 exact version; `git submodule status tools/agent-skills` shows it.
+
+## container-use
+
+Source: https://github.com/dagger/container-use (Apache-2.0).
+`scripts/ai/container-use.sh install` builds the exact upstream commit
+`2e43e625e95216b719ec9338f4034fd3a0be2734` into ignored `.tools/bin`.
+Requires Go (toolchain auto-download enabled), Git and a running Docker daemon.
+
+```bash
+bash scripts/ai/container-use.sh install
+bash scripts/ai/container-use.sh doctor
+```
+
+Claude Code loads the project `.mcp.json` after project trust/approval.
+For Codex CLI register the same wrapper from the project root:
+
+```bash
+codex mcp add container-use -- bash "$PWD/scripts/ai/container-use.sh" stdio
+```
+
+The tracked `.container-use/environment.json` provisions Node 22, JDK 17,
+Python 3 and Android platform 37.0 / build-tools 37.0.0. Android SDK license
+acceptance happens inside the development container during provisioning.
+It does not provision an emulator or release signing keys.
+Ask the connected agent to create an environment, then run `./gradlew verifyCi`
+and `npm --prefix web test` there. Review with `container-use diff <id>`
+(using the wrapper) before applying any environment changes.
+Initialize `tools/agent-skills` separately if a workflow needs it; container
+worktree snapshots do not guarantee initialized submodule content.
+
+This integration does not launch parallel agents automatically. Docker is
+required to test environment creation; configuration validation alone does
+not demonstrate an Android build.

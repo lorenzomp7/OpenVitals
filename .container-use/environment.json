@@ -1,0 +1,15 @@
+{
+  "base_image": "node:22.21.1-bookworm",
+  "workdir": "/workdir",
+  "setup_commands": [
+    "apt-get update && apt-get install -y --no-install-recommends openjdk-17-jdk-headless git curl unzip python3 ca-certificates && mkdir -p /opt/android-sdk/cmdline-tools && curl -fsSL https://dl.google.com/android/repository/commandlinetools-linux-13114758_latest.zip -o /tmp/android-tools.zip && unzip -q /tmp/android-tools.zip -d /tmp/android-tools && mv /tmp/android-tools/cmdline-tools /opt/android-sdk/cmdline-tools/latest && rm -rf /tmp/android-tools /tmp/android-tools.zip && ln -s \"$(dirname \"$(dirname \"$(readlink -f \"$(command -v java)\")\")\")\" /opt/java17"
+  ],
+  "install_commands": [
+    "bash scripts/ai/container-android-setup.sh"
+  ],
+  "env": [
+    "ANDROID_HOME=/opt/android-sdk",
+    "ANDROID_SDK_ROOT=/opt/android-sdk",
+    "JAVA_HOME=/opt/java17"
+  ]
+}
