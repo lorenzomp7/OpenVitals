@@ -1,7 +1,7 @@
 name: OpenVitals Web
 on:
   push:
-    branches: [main, main_chatgpt_04]
+    branches: [main, main_claude]
   pull_request:
     branches: [main]
   workflow_dispatch:

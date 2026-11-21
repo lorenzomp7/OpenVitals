@@ -1,1 +1,0 @@
-{"provider":"sites","project_id":"appgprj_6af9fcad446c8191a5a762c5175a5f05","url":"https://openvitals-demo-lorenzomp7.meshedarbor16.chatgpt.site/","github_branch":"main_chatgpt_04","static_directory":"dist","note":"Sites publication is separate from the web.yml checks, which publish nothing."}

@@ -10,11 +10,9 @@ Questa repository distribuisce la versione personalizzata di OpenVitals: dashboa
 
 ## PWA nel browser
 
-### [Apri OpenVitals PWA](https://openvitals-demo-lorenzomp7.meshedarbor16.chatgpt.site/)
-
 La cartella [`web/`](web/README.md) contiene la PWA con dashboard ad anelli, riquadri modificabili, periodi giorno/settimana/mese/anno, dettagli dei parametri, attività, profilo, impostazioni e backup. È installabile dalla schermata Home e dispone di cache offline. I dati demo vengono inseriti manualmente e restano nel browser: non sono richiesti account, Health Connect o HealthKit.
 
-Il catalogo dei riquadri riprende automaticamente nomi, colori e ordine dal codice Android durante la build. La [guida web](web/README.md) descrive le funzioni portate e quelle Android ancora non presenti. Il workflow **OpenVitals Web** compila e verifica la PWA su `main_chatgpt_04` e `main`, senza pubblicarla. La pubblicazione al link sopra usa un hosting separato. La compilazione Android rimane indipendente; `web/` non entra nell'APK.
+Il catalogo dei riquadri riprende automaticamente nomi, colori e ordine dal codice Android durante la build. La [guida web](web/README.md) descrive le funzioni portate e quelle Android ancora non presenti. Il workflow **OpenVitals Web** compila e verifica la PWA su `main_claude` e `main`, senza pubblicarla: per provarla si compila in locale (vedi la [guida web](web/README.md)). La compilazione Android rimane indipendente; `web/` non entra nell'APK.
 
 ## Scarica l’app
 

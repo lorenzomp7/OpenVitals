@@ -2,8 +2,6 @@
 
 Installable browser version of OpenVitals with manual demo records. The PWA replaces the earlier standalone dashboard concept. It uses the Android dashboard's structure: app header, period/date navigation, centre ring and two side arcs, Start workout / Log / Edit actions, configurable metric tiles and activity history.
 
-Live PWA: https://openvitals-demo-lorenzomp7.meshedarbor16.chatgpt.site/
-
 ## Current web functionality
 
 - Forty widget definitions imported from the Android source: names in Italian/English, accent colours, icon identifiers and default order. `scripts/sync-android.js` regenerates `android-catalog.js` during every build, including CI. This links the catalogue to Android changes; it does not translate Kotlin screen implementations automatically.
@@ -33,10 +31,8 @@ python3 -m http.server 8000 --directory dist
 
 Run these from `web/`. Build copies only PWA assets into `dist/`, regenerates the Android catalogue and generates the service worker with a content-hashed cache version. Tests cover periods, missing values, numeric validation, backups, Android catalogue completeness and offline navigation fallback with all precached files present.
 
-## Hosting and branch workflow
+## Branch workflow
 
-Work is on `main_chatgpt_04`. `.github/workflows/web.yml` builds and tests every push to this branch and `main`, and pull requests to `main`; it publishes nothing. Android builds remain in `verify.yml`; web files are not Gradle modules and never enter the APK.
-
-The live chatgpt.site publication is a separate hosting target updated by the publishing workflow in this conversation. Its host project identity is recorded in `hosting-target.json` so future work can update the same publication. Do not create a second Site for this PWA.
+Work is on `main_claude`. `.github/workflows/web.yml` builds and tests every push to `main_claude` and `main`, and pull requests to `main`; it publishes nothing. Android builds remain in `verify.yml`; web files are not Gradle modules and never enter the APK.
 
 Source is distributed under the repository's [AGPL-3.0 licence](../LICENSE).
