@@ -35,8 +35,8 @@ Run these from `web/`. Build copies only PWA assets into `dist/`, regenerates th
 
 ## Hosting and branch workflow
 
-Work is on `main_chatgpt_04`. `.github/workflows/web.yml` builds and tests every push to this branch and `main`, and pull requests to `main`. GitHub Pages deployment runs only from `main`, after web checks, once Settings → Pages → Source is set to GitHub Actions. Android builds remain in `verify.yml`; web files are not Gradle modules and never enter the APK.
+Work is on `main_chatgpt_04`. `.github/workflows/web.yml` builds and tests every push to this branch and `main`, and pull requests to `main`; it publishes nothing. Android builds remain in `verify.yml`; web files are not Gradle modules and never enter the APK.
 
-The live chatgpt.site publication is a separate hosting target updated by the publishing workflow in this conversation. The GitHub Pages action does not update that URL. Its host project identity is recorded in `hosting-target.json` so future work can update the same publication. Do not create a second Site for this PWA.
+The live chatgpt.site publication is a separate hosting target updated by the publishing workflow in this conversation. Its host project identity is recorded in `hosting-target.json` so future work can update the same publication. Do not create a second Site for this PWA.
 
 Source is distributed under the repository's [AGPL-3.0 licence](../LICENSE).
