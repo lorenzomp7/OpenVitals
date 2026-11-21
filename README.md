@@ -8,6 +8,14 @@
 
 Questa repository distribuisce la versione personalizzata di OpenVitals: dashboard configurabile, periodi giorno/settimana/mese/anno, dettaglio completo degli allenamenti, mappe dei percorsi e importazione da screenshot sul telefono. L’app è solo per Android: Health Connect esiste solo su Android.
 
+## PWA nel browser
+
+### [Apri OpenVitals PWA](https://openvitals-demo-lorenzomp7.meshedarbor16.chatgpt.site/)
+
+La cartella [`web/`](web/README.md) contiene la PWA con dashboard ad anelli, riquadri modificabili, periodi giorno/settimana/mese/anno, dettagli dei parametri, attività, profilo, impostazioni e backup. È installabile dalla schermata Home e dispone di cache offline. I dati demo vengono inseriti manualmente e restano nel browser: non sono richiesti account, Health Connect o HealthKit.
+
+Il catalogo dei riquadri riprende automaticamente nomi, colori e ordine dal codice Android durante la build. La [guida web](web/README.md) descrive le funzioni portate e quelle Android ancora non presenti. Il workflow **OpenVitals Web** verifica `main_chatgpt_04` e `main`, con pubblicazione GitHub Pages da `main` dopo l'attivazione iniziale. La pubblicazione al link sopra usa un hosting separato. La compilazione Android rimane indipendente; `web/` non entra nell'APK.
+
 ## Scarica l’app
 
 [![Scarica APK](https://img.shields.io/badge/Scarica_APK-Android-3DDC84?style=for-the-badge&logo=android&logoColor=white)](https://github.com/lorenzomp7/OpenVitals/releases/latest/download/OpenVitals.apk)
@@ -109,3 +117,10 @@ cd OpenVitals
 ## Licenza
 
 OpenVitals è distribuito con licenza [GNU AGPL v3.0 o successiva](LICENSE). Crediti e componenti di terze parti sono elencati in [THANKS.md](THANKS.md) e [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
+
+## Strumenti di sviluppo AI
+
+Sono integrati `agent-skills`, `container-use`, Gemini CLI, Playwriter e `vibetest-use`, con versioni fissate e strumenti separati dalle dipendenze dell’app.
+Sono disponibili anche la ricerca locale nei cataloghi `awesome-mcp-servers` e `awesome-ai-plugins`, e uno strumento Darts separato per previsioni sperimentali da CSV o backup PWA. I cataloghi non installano automaticamente i servizi elencati e le previsioni non sono una funzione dell’APK.
+Vedi [configurazione, comandi e requisiti](docs/engineering/ai-tools.md) e [verifiche automatiche](https://github.com/lorenzomp7/OpenVitals/actions/workflows/ai-tools.yml).
+Gemini e Vibetest richiedono autenticazione o chiave del modello per le richieste AI; Container Use richiede Docker; Playwriter richiede Chrome/Chromium.

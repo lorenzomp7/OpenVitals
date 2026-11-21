@@ -1,0 +1,10 @@
+description = "Review OpenVitals changes against project invariants"
+prompt = """
+Review the current diff. First read AGENTS.md and docs/engineering/development.md.
+Focus on regressions, Health Connect layering and permission handling, privacy,
+Room migration safety, Compose state, and appropriate verification.
+For web changes read web/README.md. Report findings with file paths and lines.
+Use synthetic fixtures. Do not upload real health records or credentials.
+Do not commit, push, publish, or alter release signing as part of this review.
+User focus: {{args}}
+"""

@@ -63,3 +63,11 @@ local/
 
 # Personal signing material is never source code.
 /personal/
+
+# Repository-local AI tool binaries and environments
+/.tools/
+/tools/ai-node/node_modules/
+/tools/vibetest/.venv/
+/tools/vibetest/uv.lock
+/tools/darts/.venv/
+/tools/darts/uv.lock

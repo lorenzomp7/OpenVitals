@@ -1,0 +1,23 @@
+{
+  "mcpServers": {
+    "container-use": {
+      "command": "bash",
+      "args": [
+        "scripts/ai/container-use.sh",
+        "stdio"
+      ]
+    },
+    "playwriter": {
+      "command": "bash",
+      "args": [
+        "scripts/ai/playwriter.sh"
+      ]
+    },
+    "vibetest": {
+      "command": "bash",
+      "args": [
+        "scripts/ai/vibetest.sh"
+      ]
+    }
+  }
+}
