@@ -65,7 +65,10 @@ bash scripts/ai/container-use.sh install
 bash scripts/ai/container-use.sh doctor
 ```
 
-Claude Code loads the project `.mcp.json` after project trust/approval.
+Claude Code loads the project `.mcp.json` (Playwriter only) after project
+trust/approval. container-use and Vibetest live in `.mcp.optional.json` so a
+normal session does not start Docker or a keyed model server; load them when
+needed with `claude --mcp-config .mcp.optional.json`.
 For Codex CLI register the same wrapper from the project root:
 
 ```bash
@@ -170,7 +173,8 @@ No credentials or model quota are included. AI QA sends page content and
 screenshots to that model and may incur charges: use synthetic records only.
 Keys are inherited from the process, never written into `.mcp.json`.
 
-Claude Code reads the `vibetest` project MCP entry. For Codex CLI:
+Claude Code reads the `vibetest` entry from `.mcp.optional.json`
+(`claude --mcp-config .mcp.optional.json`). For Codex CLI:
 
 ```bash
 codex mcp add vibetest -- bash "$PWD/scripts/ai/vibetest.sh"

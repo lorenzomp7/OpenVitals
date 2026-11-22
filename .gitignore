@@ -45,10 +45,12 @@ out/
 Thumbs.db
 debug_files/
 OpenVitals Design System/
-# Claude config stays local, but skills are shared with the repo.
+# Claude config stays local; skills, project hooks and settings.json are shared.
 !.claude/
 .claude/*
 !.claude/skills/
+!.claude/settings.json
+!.claude/hooks/
 
 # The Gradle homes CI keeps in the workspace (scripts/ci-gradle.sh).
 .gradle-ci/
@@ -71,3 +73,7 @@ local/
 /tools/vibetest/uv.lock
 /tools/darts/.venv/
 /tools/darts/uv.lock
+
+# Claude Code: impostazioni personali e stato degli hook (non versionati)
+.claude/settings.local.json
+.claude/hooks/.state/
