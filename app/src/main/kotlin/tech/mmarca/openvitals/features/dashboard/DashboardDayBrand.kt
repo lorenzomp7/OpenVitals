@@ -114,7 +114,8 @@ internal fun dashboardBrandColors(
         BrandPaletteSource.HERO -> hero
         BrandPaletteSource.TILES -> tiles
         BrandPaletteSource.HERO_AND_TILES -> hero + tiles
-    }
+        // Tiles of one category share a colour: each colour runs round the ring once.
+    }.distinct()
     // One colour cannot run round a ring: it pairs with itself.
     return when (colors.size) {
         0 -> BrandColors

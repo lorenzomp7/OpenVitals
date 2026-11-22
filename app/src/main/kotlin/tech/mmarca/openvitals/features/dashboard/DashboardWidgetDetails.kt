@@ -14,6 +14,10 @@ import tech.mmarca.openvitals.features.heart.bloodPressureCategoryText
  * What a tile shows under its reading, most telling first: the goal, what the reading
  * means, then the readings it goes with. Each line is about the metric itself; goal
  * completion percentages and the selected period are never details.
+ *
+ * 153-180: a tile set to three values shows its reading and two lines whatever data the
+ * day holds, so the related readings run on (see [dashboardRelatedWidgetIds]) past the two
+ * the tile needs; the renderer takes what fits.
  */
 @Composable
 internal fun dashboardWidgetDetails(
@@ -26,86 +30,43 @@ internal fun dashboardWidgetDetails(
     fun add(value: String?) { value?.takeIf { it.isNotBlank() }?.let(details::add) }
     val facts = model.facts
     val goal = facts.goal?.let { stringResource(dashboardGoalLabelRes(model.id, display.isPeriod)) + ": " + it.text }
-    val related: @Composable (DashboardWidgetId) -> Unit = { id -> add(dashboardRelatedDetail(id, display)) }
     when (model.id) {
-        DashboardWidgetId.STEPS -> { add(goal); related(DashboardWidgetId.DISTANCE); related(DashboardWidgetId.ACTIVE_CALORIES) }
-        DashboardWidgetId.DISTANCE -> { add(goal); related(DashboardWidgetId.STEPS); related(DashboardWidgetId.ELEVATION) }
-        DashboardWidgetId.CALORIES_OUT -> { add(goal); related(DashboardWidgetId.ACTIVE_CALORIES); related(DashboardWidgetId.BMR) }
-        DashboardWidgetId.ACTIVE_CALORIES -> { add(goal); related(DashboardWidgetId.CALORIES_OUT); related(DashboardWidgetId.STEPS) }
-        DashboardWidgetId.FLOORS -> { add(goal); related(DashboardWidgetId.ELEVATION); related(DashboardWidgetId.STEPS) }
-        DashboardWidgetId.ELEVATION -> { add(goal); related(DashboardWidgetId.FLOORS); related(DashboardWidgetId.DISTANCE) }
-        DashboardWidgetId.WHEELCHAIR_PUSHES -> { add(goal); related(DashboardWidgetId.DISTANCE); related(DashboardWidgetId.ACTIVE_CALORIES) }
+        DashboardWidgetId.STEPS, DashboardWidgetId.DISTANCE, DashboardWidgetId.CALORIES_OUT,
+        DashboardWidgetId.ACTIVE_CALORIES, DashboardWidgetId.FLOORS, DashboardWidgetId.ELEVATION,
+        DashboardWidgetId.WHEELCHAIR_PUSHES, DashboardWidgetId.HYDRATION, DashboardWidgetId.MINDFULNESS,
+        -> add(goal)
         DashboardWidgetId.SLEEP -> {
-            model.value?.takeIf { model.hasValue }?.let { add(it.text) }
-            model.sleepScore?.let { add(sleepScoreRatingLabel(it.score)) }
+            // The ring shows the score when there is one; the hours then come here, never twice.
+            model.sleepScore?.let { score ->
+                model.value?.takeIf { model.hasValue }?.let { add(it.text) }
+                add(sleepScoreRatingLabel(score.score))
+            }
             add(goal)
         }
-        DashboardWidgetId.BODY_ENERGY -> {
-            model.bodyEnergySubtitle?.let {
-                add(stringResource(R.string.dashboard_body_energy_subtitle, it.startScore, it.charged, it.drained))
-            }
-            related(DashboardWidgetId.SLEEP)
-            related(DashboardWidgetId.HRV)
+        DashboardWidgetId.BODY_ENERGY -> model.bodyEnergySubtitle?.let {
+            add(stringResource(R.string.dashboard_body_energy_subtitle, it.startScore, it.charged, it.drained))
         }
-        DashboardWidgetId.HYDRATION -> { add(goal); related(DashboardWidgetId.CAFFEINE) }
         DashboardWidgetId.CALORIES_IN -> {
             add(goal)
             add(facts.macroGrams?.let { macroGramsLine(it) })
-            related(DashboardWidgetId.CALORIES_OUT)
         }
         DashboardWidgetId.PROTEIN, DashboardWidgetId.CARBS, DashboardWidgetId.FAT -> {
             add(goal)
             add(macroEnergyLine(facts))
-            related(DashboardWidgetId.CALORIES_IN)
         }
-        DashboardWidgetId.CAFFEINE -> {
+        DashboardWidgetId.CAFFEINE ->
             model.caffeineConsumedTodayMg?.let { add(stringResource(R.string.dashboard_caffeine_today_subtitle, it)) }
-            related(DashboardWidgetId.HYDRATION)
-        }
-        DashboardWidgetId.WEIGHT -> { add(model.measurementSubtitle); related(DashboardWidgetId.BMI); related(DashboardWidgetId.BODY_FAT) }
-        DashboardWidgetId.HEIGHT -> { add(model.measurementSubtitle); related(DashboardWidgetId.BMI) }
-        DashboardWidgetId.BMI -> {
-            add(facts.bmiCategory?.let { bmiCategoryText(it) })
-            related(DashboardWidgetId.WEIGHT)
-            related(DashboardWidgetId.HEIGHT)
-        }
-        DashboardWidgetId.FFMI -> {
-            add(facts.ffmiCategory?.let { ffmiCategoryText(it) })
-            related(DashboardWidgetId.LEAN_MASS)
-            related(DashboardWidgetId.BODY_FAT)
-        }
-        DashboardWidgetId.BODY_FAT -> {
-            add(facts.fatMass?.let { stringResource(R.string.dashboard_detail_fat_mass, it.text) })
-            related(DashboardWidgetId.LEAN_MASS)
-            related(DashboardWidgetId.WEIGHT)
-        }
-        DashboardWidgetId.LEAN_MASS -> { addShareOfWeight(facts, ::add); related(DashboardWidgetId.BODY_FAT); related(DashboardWidgetId.WEIGHT) }
-        DashboardWidgetId.BONE_MASS, DashboardWidgetId.BODY_WATER_MASS -> {
+        DashboardWidgetId.WEIGHT, DashboardWidgetId.HEIGHT -> add(model.measurementSubtitle)
+        DashboardWidgetId.BMI -> add(facts.bmiCategory?.let { bmiCategoryText(it) })
+        DashboardWidgetId.FFMI -> add(facts.ffmiCategory?.let { ffmiCategoryText(it) })
+        DashboardWidgetId.BODY_FAT -> add(facts.fatMass?.let { stringResource(R.string.dashboard_detail_fat_mass, it.text) })
+        DashboardWidgetId.LEAN_MASS, DashboardWidgetId.BONE_MASS, DashboardWidgetId.BODY_WATER_MASS ->
             addShareOfWeight(facts, ::add)
-            related(DashboardWidgetId.WEIGHT)
-            related(DashboardWidgetId.LEAN_MASS)
-        }
-        DashboardWidgetId.BMR -> { related(DashboardWidgetId.CALORIES_OUT); related(DashboardWidgetId.LEAN_MASS) }
-        DashboardWidgetId.AVG_HEART_RATE -> { related(DashboardWidgetId.RESTING_HEART_RATE); related(DashboardWidgetId.HRV) }
-        DashboardWidgetId.RESTING_HEART_RATE -> {
-            addBaseline(facts, ::add)
-            related(DashboardWidgetId.HRV)
-            related(DashboardWidgetId.AVG_HEART_RATE)
-        }
-        DashboardWidgetId.HRV -> { addBaseline(facts, ::add); related(DashboardWidgetId.RESTING_HEART_RATE) }
-        DashboardWidgetId.BLOOD_PRESSURE -> {
-            add(facts.bloodPressureCategory?.let { bloodPressureCategoryText(it) })
-            related(DashboardWidgetId.RESTING_HEART_RATE)
-        }
-        DashboardWidgetId.SPO2 -> { related(DashboardWidgetId.RESPIRATORY_RATE); related(DashboardWidgetId.RESTING_HEART_RATE) }
-        DashboardWidgetId.VO2_MAX -> { related(DashboardWidgetId.RESTING_HEART_RATE); related(DashboardWidgetId.HRV) }
-        DashboardWidgetId.RESPIRATORY_RATE -> { related(DashboardWidgetId.SPO2); related(DashboardWidgetId.RESTING_HEART_RATE) }
-        DashboardWidgetId.BODY_TEMPERATURE -> { related(DashboardWidgetId.SKIN_TEMPERATURE); related(DashboardWidgetId.RESTING_HEART_RATE) }
-        DashboardWidgetId.SKIN_TEMPERATURE -> { related(DashboardWidgetId.BODY_TEMPERATURE); related(DashboardWidgetId.RESTING_HEART_RATE) }
-        DashboardWidgetId.BLOOD_GLUCOSE -> { related(DashboardWidgetId.CARBS); related(DashboardWidgetId.CALORIES_IN) }
-        DashboardWidgetId.MINDFULNESS -> { add(goal); related(DashboardWidgetId.HRV); related(DashboardWidgetId.RESTING_HEART_RATE) }
+        DashboardWidgetId.RESTING_HEART_RATE, DashboardWidgetId.HRV -> addBaseline(facts, ::add)
+        DashboardWidgetId.BLOOD_PRESSURE -> add(facts.bloodPressureCategory?.let { bloodPressureCategoryText(it) })
+        // 156: the ring already says 438; the line under it says what it runs to, not "438 of 470".
         DashboardWidgetId.WEEKLY_CARDIO_LOAD, DashboardWidgetId.CARDIO_LOAD -> model.weeklyCardioLoad?.let { load ->
-            add(stringResource(R.string.dashboard_weekly_cardio_load_progress, load.currentScore, load.targetScore))
+            add(stringResource(R.string.dashboard_weekly_cardio_target, load.targetScore))
             add(stringResource(R.string.dashboard_cardio_today_points, load.todayScore))
         }
         DashboardWidgetId.CYCLE -> (model.cycle as? CycleWidgetDisplay.RecordedDay)?.let { recorded ->
@@ -126,15 +87,75 @@ internal fun dashboardWidgetDetails(
                 )
             }
         }
-        DashboardWidgetId.MEDICAL_RECORDS, DashboardWidgetId.WORKOUT -> Unit
+        DashboardWidgetId.BMR, DashboardWidgetId.AVG_HEART_RATE, DashboardWidgetId.SPO2,
+        DashboardWidgetId.VO2_MAX, DashboardWidgetId.RESPIRATORY_RATE, DashboardWidgetId.BODY_TEMPERATURE,
+        DashboardWidgetId.SKIN_TEMPERATURE, DashboardWidgetId.BLOOD_GLUCOSE, DashboardWidgetId.MEDICAL_RECORDS,
+        DashboardWidgetId.WORKOUT,
+        -> Unit
     }
+    dashboardRelatedWidgetIds(model.id).forEach { add(dashboardRelatedDetail(it, display)) }
     return details.distinct()
 }
+
+/**
+ * The readings a tile's details go on with, closest first: the same category before the
+ * others. The list runs past the two a tile shows, so a day missing some of them still
+ * fills the tile. 158, 170: elevation and wheelchair pushes are not about distance.
+ */
+internal fun dashboardRelatedWidgetIds(id: DashboardWidgetId): List<DashboardWidgetId> =
+    when (id) {
+        W.STEPS -> listOf(W.DISTANCE, W.ACTIVE_CALORIES, W.FLOORS, W.CALORIES_OUT)
+        W.DISTANCE -> listOf(W.STEPS, W.ACTIVE_CALORIES, W.ELEVATION, W.CALORIES_OUT)
+        W.CALORIES_OUT -> listOf(W.ACTIVE_CALORIES, W.BMR, W.STEPS, W.CALORIES_IN)
+        W.ACTIVE_CALORIES -> listOf(W.CALORIES_OUT, W.STEPS, W.BMR, W.WEEKLY_CARDIO_LOAD)
+        W.FLOORS -> listOf(W.ELEVATION, W.STEPS, W.ACTIVE_CALORIES)
+        W.ELEVATION -> listOf(W.FLOORS, W.STEPS, W.ACTIVE_CALORIES)
+        W.WHEELCHAIR_PUSHES -> listOf(W.ACTIVE_CALORIES, W.CALORIES_OUT, W.WEEKLY_CARDIO_LOAD)
+        W.SLEEP -> listOf(W.HRV, W.RESTING_HEART_RATE, W.BODY_ENERGY)
+        W.BODY_ENERGY -> listOf(W.SLEEP, W.HRV, W.RESTING_HEART_RATE, W.AVG_HEART_RATE)
+        W.HYDRATION -> listOf(W.CAFFEINE, W.CALORIES_IN, W.ACTIVE_CALORIES)
+        W.CALORIES_IN -> listOf(W.CALORIES_OUT, W.ACTIVE_CALORIES, W.BMR)
+        W.PROTEIN -> listOf(W.CALORIES_IN, W.CARBS, W.FAT, W.CALORIES_OUT)
+        W.CARBS -> listOf(W.CALORIES_IN, W.PROTEIN, W.FAT, W.CALORIES_OUT)
+        W.FAT -> listOf(W.CALORIES_IN, W.PROTEIN, W.CARBS, W.CALORIES_OUT)
+        W.CAFFEINE -> listOf(W.HYDRATION, W.CALORIES_IN, W.SLEEP, W.RESTING_HEART_RATE)
+        W.WEIGHT -> listOf(W.BMI, W.BODY_FAT, W.LEAN_MASS, W.FFMI)
+        W.HEIGHT -> listOf(W.BMI, W.WEIGHT, W.FFMI)
+        W.BMI -> listOf(W.WEIGHT, W.HEIGHT, W.BODY_FAT)
+        W.FFMI -> listOf(W.LEAN_MASS, W.BODY_FAT, W.WEIGHT, W.BMI)
+        W.BODY_FAT -> listOf(W.LEAN_MASS, W.WEIGHT, W.BMI, W.FFMI)
+        W.LEAN_MASS -> listOf(W.BODY_FAT, W.WEIGHT, W.FFMI, W.BMI)
+        W.BONE_MASS, W.BODY_WATER_MASS -> listOf(W.WEIGHT, W.LEAN_MASS, W.BODY_FAT, W.BMI)
+        W.BMR -> listOf(W.CALORIES_OUT, W.ACTIVE_CALORIES, W.LEAN_MASS, W.WEIGHT)
+        W.AVG_HEART_RATE -> listOf(W.RESTING_HEART_RATE, W.HRV, W.RESPIRATORY_RATE, W.SPO2, W.WEEKLY_CARDIO_LOAD)
+        W.RESTING_HEART_RATE -> listOf(W.HRV, W.AVG_HEART_RATE, W.RESPIRATORY_RATE, W.SPO2)
+        W.HRV -> listOf(W.RESTING_HEART_RATE, W.AVG_HEART_RATE, W.SLEEP, W.RESPIRATORY_RATE)
+        W.BLOOD_PRESSURE -> listOf(W.RESTING_HEART_RATE, W.AVG_HEART_RATE, W.HRV, W.SPO2)
+        W.SPO2 -> listOf(W.RESPIRATORY_RATE, W.RESTING_HEART_RATE, W.AVG_HEART_RATE, W.HRV)
+        W.VO2_MAX -> listOf(W.RESTING_HEART_RATE, W.AVG_HEART_RATE, W.WEEKLY_CARDIO_LOAD, W.HRV)
+        W.RESPIRATORY_RATE -> listOf(W.SPO2, W.RESTING_HEART_RATE, W.AVG_HEART_RATE, W.HRV)
+        W.BODY_TEMPERATURE -> listOf(W.SKIN_TEMPERATURE, W.RESTING_HEART_RATE, W.AVG_HEART_RATE, W.HRV)
+        W.SKIN_TEMPERATURE -> listOf(W.BODY_TEMPERATURE, W.RESTING_HEART_RATE, W.AVG_HEART_RATE, W.SLEEP)
+        W.BLOOD_GLUCOSE -> listOf(W.CARBS, W.CALORIES_IN, W.ACTIVE_CALORIES, W.STEPS, W.CALORIES_OUT)
+        W.MINDFULNESS -> listOf(W.HRV, W.RESTING_HEART_RATE, W.SLEEP, W.AVG_HEART_RATE)
+        W.WEEKLY_CARDIO_LOAD, W.CARDIO_LOAD -> listOf(W.ACTIVE_CALORIES, W.AVG_HEART_RATE, W.RESTING_HEART_RATE)
+        // The cycle is read with the temperatures and the heart at rest.
+        W.CYCLE -> listOf(W.BODY_TEMPERATURE, W.SKIN_TEMPERATURE, W.RESTING_HEART_RATE, W.HRV, W.SLEEP)
+        // The latest readings a clinical record would hold.
+        W.MEDICAL_RECORDS -> listOf(W.BLOOD_PRESSURE, W.BLOOD_GLUCOSE, W.RESTING_HEART_RATE, W.WEIGHT, W.BMI, W.SPO2)
+        W.OPENWATCH -> listOf(W.STEPS, W.RESTING_HEART_RATE, W.AVG_HEART_RATE)
+        W.WORKOUT -> emptyList()
+    }
+
+/** Short for the table above. */
+private typealias W = DashboardWidgetId
 
 /** Another tile's reading, under a label short enough to fit inside a ring. */
 @Composable
 private fun dashboardRelatedDetail(id: DashboardWidgetId, display: DashboardDisplayState): String? {
-    val value = display.widgets[id]?.takeIf { it.hasValue && !it.isLoading }?.value?.text?.takeIf { it.isNotBlank() }
+    val widget = display.widgets[id]?.takeIf { !it.isLoading } ?: return null
+    val value = widget.weeklyCardioLoad?.currentScore?.toString()
+        ?: widget.value?.takeIf { widget.hasValue }?.text?.takeIf { it.isNotBlank() }
         ?: return null
     return dashboardDetailLabel(id) + ": " + value
 }
@@ -202,8 +223,9 @@ private fun ffmiCategoryText(category: FfmiCategory): String = stringResource(
     },
 )
 
+/** 154: "Goal" on a day, short enough for a ring; a period names whose goal it is. */
 internal fun dashboardGoalLabelRes(id: DashboardWidgetId, isPeriod: Boolean): Int = when {
-    !isPeriod -> R.string.daily_goal
+    !isPeriod -> R.string.dashboard_detail_goal
     id == DashboardWidgetId.SLEEP -> R.string.dashboard_nightly_goal
     else -> R.string.dashboard_period_goal
 }

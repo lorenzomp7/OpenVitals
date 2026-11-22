@@ -3878,6 +3878,8 @@
     <string name="dashboard_cardio_today_points">Dnes: %1$d bodů</string>
     <string name="dashboard_period_goal">Cíl za období</string>
     <string name="dashboard_nightly_goal">Průměrný noční cíl</string>
+    <string name="dashboard_detail_goal">Cíl</string>
+    <string name="dashboard_weekly_cardio_target">Cíl: %1$d</string>
     <string name="user_profile_view_photo">Zobrazit</string>
     <string name="user_profile_change_photo">Změnit</string>
     <string name="dashboard_save_changes">Uložit změny hlavní obrazovky?</string>

@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.ui.layout.positionInParent
 import androidx.compose.ui.layout.onPlaced
 import androidx.compose.ui.composed
-import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -28,14 +27,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.geometry.Size
-import androidx.compose.ui.graphics.StrokeCap
-import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.layout.Layout
-import androidx.compose.ui.layout.SubcomposeLayout
-import kotlin.math.roundToInt
-import kotlin.math.sqrt
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Constraints
@@ -332,97 +324,22 @@ private fun DashboardLargeTile(ring: DashboardHeroRing, details: List<String>) {
         containerColor = colors.container,
         shape = DashboardTileShape,
     ) {
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(14.dp),
-            contentAlignment = Alignment.Center,
-        ) {
-            Canvas(modifier = Modifier.fillMaxSize()) {
-                val stroke = DashboardLargeRingStroke.toPx()
-                val diameter = minOf(size.width, size.height) - stroke
-                val topLeft = Offset((size.width - diameter) / 2f, (size.height - diameter) / 2f)
-                val arc = Size(diameter, diameter)
-                val style = Stroke(width = stroke, cap = StrokeCap.Round)
-                drawArc(colors.ringTrack, 135f, 270f, useCenter = false, topLeft = topLeft, size = arc, style = style)
-                val filled = 270f * ring.fraction.coerceIn(0f, 1f)
-                if (filled > 0f) {
-                    drawArc(colors.ring, 135f, filled, useCenter = false, topLeft = topLeft, size = arc, style = style)
-                }
-            }
-            InsideRing(stroke = DashboardLargeRingStroke) {
-                AutoResizeText(
-                    text = ring.title,
-                    style = MaterialTheme.typography.labelLarge,
-                    color = colors.icon,
-                    textAlign = TextAlign.Center,
-                    maxLines = 1,
-                    minFontSize = 10.sp,
-                )
-                AutoResizeText(
-                    text = ring.value,
-                    style = MaterialTheme.typography.headlineMedium,
-                    fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.onSurface,
-                    textAlign = TextAlign.Center,
-                    maxLines = 1,
-                    minFontSize = 13.sp,
-                )
-                details.forEach { detail ->
-                    AutoResizeText(
-                        text = detail,
-                        style = MaterialTheme.typography.bodySmall,
-                        color = colors.icon,
-                        maxLines = 1,
-                        textAlign = TextAlign.Center,
-                        minFontSize = 9.sp,
-                    )
-                }
-            }
-        }
+        DashboardRingGauge(
+            ring = ring,
+            details = details,
+            trackColor = colors.ringTrack,
+            ringColor = colors.ring,
+            labelColor = colors.icon,
+            stroke = DashboardLargeRingStroke,
+            modifier = Modifier.padding(DashboardLargeTilePadding),
+        )
     }
 }
 
-private val DashboardLargeRingStroke = 12.dp
+private val DashboardLargeRingStroke = 11.dp
 
-/** Room left between the text and the inner edge of the ring's track. */
-private val InsideRingMargin = 6.dp
-
-/**
- * Centres [content] in the hole of a ring drawn edge to edge with a [stroke]-wide track.
- * The text block is as wide as the circle is at the block's top and bottom edges, so no
- * line reaches over the track: a taller block gets a narrower width, and its lines shrink.
- */
-@Composable
-private fun InsideRing(stroke: Dp, content: @Composable () -> Unit) {
-    val column: @Composable () -> Unit = {
-        Column(horizontalAlignment = Alignment.CenterHorizontally) { content() }
-    }
-    SubcomposeLayout(Modifier.fillMaxSize()) { constraints ->
-        val strokePx = stroke.toPx()
-        val radius = (minOf(constraints.maxWidth, constraints.maxHeight) - strokePx) / 2f -
-            strokePx / 2f - InsideRingMargin.toPx()
-        if (radius <= 0f) return@SubcomposeLayout layout(constraints.maxWidth, constraints.maxHeight) {}
-        // First pass at the full hole width, for the block's height.
-        val holeWidth = (radius * 2f).roundToInt()
-        val probe = subcompose(InsideRingSlot.Probe, column)
-            .map { it.measure(Constraints(maxWidth = holeWidth, maxHeight = holeWidth)) }
-        val halfHeight = minOf(probe.maxOfOrNull { it.height }?.toFloat() ?: 0f, radius * 2f * 0.9f) / 2f
-        val width = (2f * sqrt(radius * radius - halfHeight * halfHeight)).roundToInt().coerceAtLeast(0)
-        val placeables = subcompose(InsideRingSlot.Content, column)
-            .map { it.measure(Constraints(maxWidth = width, maxHeight = holeWidth)) }
-        layout(constraints.maxWidth, constraints.maxHeight) {
-            placeables.forEach { placeable ->
-                placeable.place(
-                    x = (constraints.maxWidth - placeable.width) / 2,
-                    y = (constraints.maxHeight - placeable.height) / 2,
-                )
-            }
-        }
-    }
-}
-
-private enum class InsideRingSlot { Probe, Content }
+/** 181: the same room on every side, so the ring sits in the middle of its tile. */
+private val DashboardLargeTilePadding = 12.dp
 
 /** Slides a tile from its old place to its new one when the grid reflows, instead of jumping. */
 internal fun Modifier.animateTilePlacement(): Modifier = composed {

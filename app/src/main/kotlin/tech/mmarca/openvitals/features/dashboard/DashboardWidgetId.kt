@@ -97,8 +97,16 @@ val DefaultDashboardWidgetIds: List<DashboardWidgetId> = listOf(
     DashboardWidgetId.MEDICAL_RECORDS,
 )
 
+/**
+ * 179: the legacy cardio tile is the weekly one under an older name (Dart's intensity minutes).
+ * A saved layout holding it shows the weekly tile once, never two of them.
+ */
 fun customizableDashboardWidgetIds(widgetIds: List<DashboardWidgetId>): List<DashboardWidgetId> =
-    widgetIds.distinct()
+    widgetIds.map { if (it == DashboardWidgetId.CARDIO_LOAD) DashboardWidgetId.WEEKLY_CARDIO_LOAD else it }.distinct()
+
+/** What edit mode offers: every widget once, without the legacy cardio duplicate. */
+val DashboardEditableWidgetIds: List<DashboardWidgetId> =
+    DashboardWidgetId.entries.filterNot { it == DashboardWidgetId.CARDIO_LOAD }
 
 /**
  * Every id that existed before known ids were recorded, so the ids added
