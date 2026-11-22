@@ -12,7 +12,7 @@ export const ANDROID_METRICS = [
     "label": "Distanza",
     "en": "Distance",
     "icon": "Straighten",
-    "color": "#3B7DD8"
+    "color": "#3F9A63"
   },
   {
     "id": "CALORIES_OUT",
@@ -26,28 +26,28 @@ export const ANDROID_METRICS = [
     "label": "Calorie attive",
     "en": "Active calories",
     "icon": "LocalFireDepartment",
-    "color": "#DE6C39"
+    "color": "#DD5F3E"
   },
   {
     "id": "FLOORS",
     "label": "Piani saliti",
     "en": "Floors climbed",
     "icon": "Stairs",
-    "color": "#A8881F"
+    "color": "#3F9A63"
   },
   {
     "id": "ELEVATION",
     "label": "Elevazione",
     "en": "Elevation",
     "icon": "Terrain",
-    "color": "#6E9440"
+    "color": "#3F9A63"
   },
   {
     "id": "WHEELCHAIR_PUSHES",
     "label": "Spinte sedia a rotelle",
     "en": "Wheelchair pushes",
     "icon": "Accessible",
-    "color": "#2E8C7F"
+    "color": "#3F9A63"
   },
   {
     "id": "SLEEP",
@@ -68,7 +68,7 @@ export const ANDROID_METRICS = [
     "label": "Idratazione",
     "en": "Beverages",
     "icon": "LocalDrink",
-    "color": "#2E97C9"
+    "color": "#5C9E4B"
   },
   {
     "id": "CALORIES_IN",
@@ -131,14 +131,14 @@ export const ANDROID_METRICS = [
     "label": "FFMI",
     "en": "FFMI",
     "icon": "FitnessCenter",
-    "color": "#8A6A55"
+    "color": "#BE7A2C"
   },
   {
     "id": "BODY_FAT",
     "label": "Grasso corporeo",
     "en": "Body fat",
     "icon": "MonitorWeight",
-    "color": "#8A6A55"
+    "color": "#BE7A2C"
   },
   {
     "id": "LEAN_MASS",
