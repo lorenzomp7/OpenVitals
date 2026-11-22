@@ -1,6 +1,11 @@
 # Consolidated personal build
 
-The phone-installable APK is built from `main_claude`. Every push to it runs `publish-personal-release`: the full `verify`, a signed build, a signature check against the previously published APK, an update install on an Android 15 emulator, and only then a GitHub release tagged `personal-claude-<run id>` and marked latest, so `releases/latest/download/OpenVitals.apk` always points to it. The version name and the release notes live in that workflow file and change with each release. `main_chatgpt` is an older line and is no longer the source of the published APK.
+The phone-installable APK is built from `main_claude` along one of two paths, and each commit is published at most once.
+
+- `publish-personal-release` is the main path. It runs when a push to `main_claude` (or `main`) changes its own workflow file, which holds the version name and the release notes, or when started manually. It runs the full `verify`, a signed build, a signature check against the previously published APK, an update install on an Android 15 emulator, and only then publishes a GitHub release tagged `personal-claude-<run id>` and marked latest, so `releases/latest/download/OpenVitals.apk` always points to the newest build.
+- `personal-apk` is the on-demand path, for a build without new release notes. It runs for a push to `main_claude` whose commit message contains `[apk]`, or manually. It builds and signs the APK, checks it against the published one and installs it as an update on an Android 15 emulator; `publish-apk-release` then publishes it as `personal-apk-<run id>`, marked latest. It stops when the same push changes `publish-personal-release.yml` (that workflow publishes the commit), and `publish-apk-release` publishes nothing when the commit already has a release or an equal or higher version code is already published.
+
+Both paths number builds the same way: the version code goes above every code stated in published release notes, so Android never refuses an update as a downgrade.
 
 ## Verification
 

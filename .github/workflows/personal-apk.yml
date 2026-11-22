@@ -1,7 +1,11 @@
 name: personal-apk
+# On-demand personal APK from main_claude: runs for a push whose commit message
+# contains "[apk]", or manually. publish-apk-release publishes what it builds.
+# The main path is publish-personal-release (it runs when its own file changes);
+# a commit is published by only one of the two.
 on:
   push:
-    branches: [main_chatgpt]
+    branches: [main_claude]
   workflow_dispatch:
 permissions:
   contents: read
@@ -10,10 +14,39 @@ concurrency:
   group: personal-apk-${{ github.ref }}
   cancel-in-progress: true
 jobs:
-  apk:
+  gate:
     if: github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[apk]')
     runs-on: ubuntu-26.04
+    timeout-minutes: 5
+    outputs:
+      build: ${{ steps.check.outputs.build }}
+    env:
+      GH_TOKEN: ${{ github.token }}
+      GH_REPO: ${{ github.repository }}
+    steps:
+      - name: Leave the commit to publish-personal-release when that workflow publishes it
+        id: check
+        env:
+          BEFORE: ${{ github.event.before }}
+        run: |
+          set -euo pipefail
+          build=true
+          if [ "$GITHUB_EVENT_NAME" = push ] && [ -n "$BEFORE" ] && [ "$BEFORE" != 0000000000000000000000000000000000000000 ]; then
+            if gh api "repos/$GH_REPO/compare/$BEFORE...$GITHUB_SHA" --jq '.files[].filename' \
+              | grep -qx '.github/workflows/publish-personal-release.yml'; then
+              echo "::notice::This push changes publish-personal-release.yml, which publishes this commit; skipping to avoid a second release."
+              build=false
+            fi
+          fi
+          echo "build=$build" >> "$GITHUB_OUTPUT"
+  apk:
+    needs: gate
+    if: needs.gate.outputs.build == 'true'
+    runs-on: ubuntu-26.04
     timeout-minutes: 40
+    env:
+      GH_TOKEN: ${{ github.token }}
+      GH_REPO: ${{ github.repository }}
     steps:
       - uses: actions/checkout@v5
         with:
@@ -23,15 +56,29 @@ jobs:
           cache-read-only: false
       - name: Verify existing personal signing key
         run: keytool -list -keystore personal/personal.p12 -storepass openvitals-personal -alias personal > /dev/null
-      - name: Download previous Claude APK for real update verification
-        uses: actions/download-artifact@v4
-        with:
-          name: openvitals-debug-apk
-          run-id: 42711097393
-          github-token: ${{ github.token }}
-          path: previous-apk
-      - name: Set increasing personal version code
-        run: echo "OPENVITALS_VERSION_CODE=$((1070400000 + GITHUB_RUN_NUMBER))" >> "$GITHUB_ENV"
+      - name: Fetch the published APK for real update verification
+        run: |
+          set -euo pipefail
+          mkdir -p previous-apk
+          gh release download --pattern OpenVitals.apk --dir previous-apk
+          test -s previous-apk/OpenVitals.apk
+      - name: Set an update version above every published one
+        run: |
+          set -euo pipefail
+          scripts/ci-android-setup.sh
+          AAPT=$(find "$ANDROID_HOME/build-tools" -name aapt -type f | sort -V | tail -1)
+          "$AAPT" dump badging previous-apk/OpenVitals.apk > "$RUNNER_TEMP/previous-badging.txt"
+          grep -q "package: name='tech.mmarca.openvitals.debug'" "$RUNNER_TEMP/previous-badging.txt"
+          PREVIOUS=$(sed -n "s/.*versionCode='\([0-9]*\)'.*/\1/p" "$RUNNER_TEMP/previous-badging.txt" | head -1)
+          test -n "$PREVIOUS"
+          # Same rule as publish-personal-release: every release's notes state its version code
+          # and the next build goes above all of them, so Android never sees a downgrade.
+          PUBLISHED=$(gh api "repos/$GH_REPO/releases?per_page=100" --paginate --jq '.[].body' \
+            | grep -oE 'Version code: \*\*[0-9]+' | grep -oE '[0-9]+' | sort -n | tail -1 || true)
+          if [[ -n "$PUBLISHED" ]] && (( PUBLISHED > PREVIOUS )); then PREVIOUS=$PUBLISHED; fi
+          NEXT=$((PREVIOUS + 1))
+          if (( NEXT < 1070400000 )); then NEXT=1070400000; fi
+          echo "OPENVITALS_VERSION_CODE=$NEXT" >> "$GITHUB_ENV"
       - name: Verify support reports and translations
         run: scripts/ci-android-gradle.sh verifyTranslations :domain:testCiUnitTest --tests '*BodyProfileTest' :app:compileCiAndroidTestKotlin :app:testCiUnitTest --tests '*SettingsBackup*' --tests '*BodyProfile*' --tests '*UserProfile*' --tests '*PreferencesRepositoryTest' --tests '*Dashboard*' --tests '*ScreenTitleTest' --tests '*ArchitectureDocTest' --tests '*CrashReportEmailTest'
       - name: Build signed personal APK
@@ -42,16 +89,19 @@ jobs:
           OPENVITALS_SIGN_DEBUG_WITH_RELEASE_KEY: 'true'
           OPENVITALS_PUBLISHED_DEBUG_APK: 'true'
         run: scripts/ci-android-gradle.sh :app:assembleDebug
-      - name: Verify signed package and prepare installable APK
+      - name: Verify package, version and signature, prepare installable APK
         run: |
+          set -euo pipefail
           APK=app/build/outputs/apk/debug/app-debug.apk
           AAPT=$(find "$ANDROID_HOME/build-tools" -name aapt -type f | sort -V | tail -1)
           SIGNER=$(find "$ANDROID_HOME/build-tools" -name apksigner -type f | sort -V | tail -1)
           "$AAPT" dump badging "$APK" > "$RUNNER_TEMP/personal-badging.txt"
           grep -q "package: name='tech.mmarca.openvitals.debug'" "$RUNNER_TEMP/personal-badging.txt"
+          grep -q "versionCode='$OPENVITALS_VERSION_CODE'" "$RUNNER_TEMP/personal-badging.txt"
           mkdir -p personal-apk
           "$SIGNER" verify --verbose --print-certs "$APK" > personal-apk/signing-certificate.txt
           cp "$APK" personal-apk/OpenVitals-personal.apk
+          echo "$OPENVITALS_VERSION_CODE" > personal-apk/version-code.txt
       - name: Enable KVM
         run: |
           echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules

@@ -1,13 +1,13 @@
 name: publish-apk-release
+# Publishes the APK built by personal-apk (main_claude, on demand).
+# One release per commit and never a lower version: if this commit or a newer
+# version is already published (for example by publish-personal-release), it stops.
 on:
   workflow_dispatch:
   workflow_run:
     workflows: [personal-apk]
     types: [completed]
-    branches: [main_chatgpt]
-  push:
-    branches: [main]
-    paths: [.github/workflows/publish-apk-release.yml]
+    branches: [main_claude]
 permissions:
   contents: write
   actions: read
@@ -18,38 +18,11 @@ jobs:
   publish:
     if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'
     runs-on: ubuntu-26.04
+    timeout-minutes: 10
     env:
       GH_TOKEN: ${{ github.token }}
       GH_REPO: ${{ github.repository }}
     steps:
-      - name: Normalize existing release APK names and checksums
-        run: |
-          set -euo pipefail
-          gh api --paginate "repos/$GH_REPO/releases?per_page=100" --jq '.[] | select(.draft == false) | @base64' > releases.txt
-          while IFS= read -r encoded; do
-            entry=$(printf '%s' "$encoded" | base64 -d)
-            release_id=$(printf '%s' "$entry" | jq -r .id)
-            tag=$(printf '%s' "$entry" | jq -r .tag_name)
-            old_id=$(printf '%s' "$entry" | jq -r '[.assets[] | select(.name == "OpenVitals-personal.apk")][0].id // empty')
-            new_id=$(printf '%s' "$entry" | jq -r '[.assets[] | select(.name == "OpenVitals.apk")][0].id // empty')
-            if [ -z "$old_id$new_id" ]; then continue; fi
-            if [ -n "$old_id" ] && [ -n "$new_id" ]; then
-              echo "::error::Release $tag contains both APK names; refusing to replace either binary."
-              exit 1
-            fi
-            temp_dir=$(mktemp -d)
-            gh release download "$tag" --pattern SHA256SUMS.txt --dir "$temp_dir"
-            sed -i 's/OpenVitals-personal\.apk/OpenVitals.apk/g' "$temp_dir/SHA256SUMS.txt"
-            if [ -n "$old_id" ]; then
-              gh api --method PATCH "repos/$GH_REPO/releases/assets/$old_id" -f name=OpenVitals.apk > /dev/null
-            fi
-            gh release upload "$tag" "$temp_dir/SHA256SUMS.txt" --clobber
-            printf '%s' "$entry" | jq '{body: ((.body // "") | gsub("OpenVitals-personal\\.apk"; "OpenVitals.apk")), make_latest: "false"}' > "$temp_dir/body.json"
-            # An edit through the API marks the release "latest" unless told otherwise: this loop
-            # once left an old build marked latest, and the next build was numbered from it.
-            gh api --method PATCH "repos/$GH_REPO/releases/$release_id" --input "$temp_dir/body.json" > /dev/null
-            rm -rf "$temp_dir"
-          done < releases.txt
       - name: Find a successfully verified personal APK
         id: build
         env:
@@ -57,15 +30,26 @@ jobs:
         run: |
           set -euo pipefail
           if [ -n "$EVENT_RUN_ID" ]; then
-            RUN=$(gh api "repos/$GH_REPO/actions/runs/$EVENT_RUN_ID")
+            CANDIDATES="$EVENT_RUN_ID"
           else
-            RUN=$(gh api "repos/$GH_REPO/actions/runs?branch=main_chatgpt&status=success&per_page=100" --jq '[.workflow_runs[] | select(.name == "personal-apk")][0]')
+            CANDIDATES=$(gh api "repos/$GH_REPO/actions/workflows/personal-apk.yml/runs?branch=main_claude&status=success&per_page=20" --jq '.workflow_runs[].id')
           fi
-          echo "$RUN" | jq -e '.conclusion == "success" and .head_branch == "main_chatgpt"' > /dev/null
-          echo "id=$(echo "$RUN" | jq -r .id)" >> "$GITHUB_OUTPUT"
-          echo "sha=$(echo "$RUN" | jq -r .head_sha)" >> "$GITHUB_OUTPUT"
-          echo "number=$(echo "$RUN" | jq -r .run_number)" >> "$GITHUB_OUTPUT"
+          for id in $CANDIDATES; do
+            RUN=$(gh api "repos/$GH_REPO/actions/runs/$id")
+            echo "$RUN" | jq -e '.conclusion == "success" and .head_branch == "main_claude"' > /dev/null || continue
+            # A run stopped by its gate (the commit belongs to publish-personal-release) has no APK.
+            HAS_APK=$(gh api "repos/$GH_REPO/actions/runs/$id/artifacts" --jq '[.artifacts[] | select(.name == "openvitals-personal-apk" and .expired == false)] | length')
+            if [ "$HAS_APK" -gt 0 ]; then
+              echo "found=true" >> "$GITHUB_OUTPUT"
+              echo "id=$id" >> "$GITHUB_OUTPUT"
+              echo "sha=$(echo "$RUN" | jq -r .head_sha)" >> "$GITHUB_OUTPUT"
+              exit 0
+            fi
+          done
+          echo "::notice::No personal-apk build with an APK to publish."
+          echo "found=false" >> "$GITHUB_OUTPUT"
       - name: Download the verified installable application
+        if: steps.build.outputs.found == 'true'
         env:
           RUN_ID: ${{ steps.build.outputs.id }}
         run: |
@@ -73,43 +57,49 @@ jobs:
           mkdir -p release
           gh run download "$RUN_ID" --name openvitals-personal-apk --dir release
           test -s release/OpenVitals-personal.apk
+          test -s release/version-code.txt
           mv release/OpenVitals-personal.apk release/OpenVitals.apk
           cd release
           sha256sum OpenVitals.apk > SHA256SUMS.txt
       - name: Publish APK in GitHub Releases
+        if: steps.build.outputs.found == 'true'
         env:
           RUN_ID: ${{ steps.build.outputs.id }}
           BUILD_SHA: ${{ steps.build.outputs.sha }}
-          BUILD_NUMBER: ${{ steps.build.outputs.number }}
         run: |
           set -euo pipefail
-          # Delayed queued builds must never replace a newer published personal APK.
-          LATEST_TAG=$(gh release view --json tagName --jq .tagName)
-          if [[ "$LATEST_TAG" =~ ^personal-build-([0-9]+)$ ]]; then
-            LATEST_NUMBER="${BASH_REMATCH[1]}"
-            if (( 10#$LATEST_NUMBER >= BUILD_NUMBER )); then
-              echo "An equal or newer personal build is already published; keeping latest unchanged."
-              exit 0
-            fi
+          VERSION_CODE=$(cat release/version-code.txt)
+          RELEASES=$(gh api "repos/$GH_REPO/releases?per_page=100" --paginate --jq '.[] | {tag: .tag_name, target: .target_commitish, body: (.body // "")}')
+          # One release per commit.
+          EXISTING=$(echo "$RELEASES" | jq -r --arg sha "$BUILD_SHA" 'select(.target == $sha) | .tag' | head -1)
+          if [ -n "$EXISTING" ]; then
+            echo "::notice::Commit $BUILD_SHA is already published as $EXISTING; no second release."
+            exit 0
           fi
-          TAG="personal-build-$BUILD_NUMBER"
+          # Never publish below what phones may already have installed.
+          PUBLISHED=$(echo "$RELEASES" | jq -r .body | grep -oE 'Version code: \*\*[0-9]+' | grep -oE '[0-9]+' | sort -n | tail -1 || true)
+          if [[ -n "$PUBLISHED" ]] && (( PUBLISHED >= VERSION_CODE )); then
+            echo "::notice::Version code $PUBLISHED is already published (this build: $VERSION_CODE); keeping latest unchanged."
+            exit 0
+          fi
+          TAG="personal-apk-$RUN_ID"
           cat > release-notes.md <<EOF
-          ## Download / Scarica
-          Download **OpenVitals.apk** below and open it on your Android phone.
-          Scarica **OpenVitals.apk** dagli allegati e aprilo sul telefono Android.
-          
-          Personal development build from main_chatgpt. This APK passed the personal build's signing and installation/update checks. It updates the compatible OpenVitals Debug personal installation without uninstalling.
-          
-          Health Connect is required. Grant access to the data you want to display. Mapbox maps require setup on the phone. Upstream Play Store and F-Droid builds are separate distributions.
-          
-          Source: https://github.com/$GH_REPO/commit/$BUILD_SHA
-          Build and installation checks: https://github.com/$GH_REPO/actions/runs/$RUN_ID
-          SHA-256 checksums are attached as **SHA256SUMS.txt**.
+          Scarica **OpenVitals.apk** dagli allegati e aprilo sul telefono.
+
+          Build personale su richiesta da main_claude (commit con [apk] o avvio manuale di personal-apk).
+          Questa versione aggiorna l'installazione personale compatibile di OpenVitals senza disinstallarla: firma e package coincidono con l'APK pubblicato precedente; installazione e aggiornamento sono verificati su Android 15.
+
+          Health Connect è necessario. Le mappe Mapbox richiedono la configurazione sul telefono.
+
+          Version code: **$VERSION_CODE**.
+          Sorgenti: https://github.com/$GH_REPO/commit/$BUILD_SHA
+          Compilazione e verifica aggiornamento: https://github.com/$GH_REPO/actions/runs/$RUN_ID
+          SHA-256 in **SHA256SUMS.txt**.
           EOF
           if gh release view "$TAG" > /dev/null 2>&1; then
             echo "Release $TAG already published."
           else
             gh release create "$TAG" release/OpenVitals.apk release/SHA256SUMS.txt \
-              --target "$BUILD_SHA" --title "OpenVitals · personal build $BUILD_NUMBER" \
+              --target "$BUILD_SHA" --title "OpenVitals · build su richiesta $VERSION_CODE" \
               --notes-file release-notes.md --latest
           fi

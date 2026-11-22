@@ -8,7 +8,7 @@ The repo now has one Android app module for the local app. The goal is to keep b
 
 ## Personal development branch
 
-`main_chatgpt` consolidates dashboard sizing, migrated layout preferences and progressive workout history. See [personal build](personal-build.md). `DashboardWorkoutHistory` owns bounded history pagination; both the editor and display use `DashboardPlacedTileGrid`.
+The personal branch `main_claude` consolidates dashboard sizing, migrated layout preferences and progressive workout history. See [personal build](personal-build.md). `DashboardWorkoutHistory` owns bounded history pagination; both the editor and display use `DashboardPlacedTileGrid`.
 
 ## Personal fork map exception
 
