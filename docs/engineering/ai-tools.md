@@ -65,10 +65,10 @@ bash scripts/ai/container-use.sh install
 bash scripts/ai/container-use.sh doctor
 ```
 
-Claude Code loads the project `.mcp.json` (Playwriter only) after project
-trust/approval. container-use and Vibetest live in `.mcp.optional.json` so a
-normal session does not start Docker or a keyed model server; load them when
-needed with `claude --mcp-config .mcp.optional.json`.
+There is no project `.mcp.json`: Playwriter needs your Chrome with its
+extension, so Claude Code cloud sessions cannot use it. Playwriter,
+container-use and Vibetest live in `.mcp.optional.json`; in a local client
+load them when needed with `claude --mcp-config .mcp.optional.json`.
 For Codex CLI register the same wrapper from the project root:
 
 ```bash
@@ -125,7 +125,7 @@ bash scripts/ai/serve-pwa.sh 8765
 
 For your existing Chrome install the upstream Playwriter extension, open
 `http://127.0.0.1:8765`, and enable the extension on that tab. Claude Code
-loads the `playwriter` entry in `.mcp.json`; Codex CLI can register it with:
+loads the `playwriter` entry from `.mcp.optional.json`; Codex CLI can register it with:
 
 ```bash
 codex mcp add playwriter -- bash "$PWD/scripts/ai/playwriter.sh"
@@ -171,7 +171,7 @@ Set `GOOGLE_API_KEY` and `VIBETEST_MODEL` in the environment of your MCP client
 before launching it. Choose a Google model currently available to your account.
 No credentials or model quota are included. AI QA sends page content and
 screenshots to that model and may incur charges: use synthetic records only.
-Keys are inherited from the process, never written into `.mcp.json`.
+Keys are inherited from the process, never written into `.mcp.optional.json`.
 
 Claude Code reads the `vibetest` entry from `.mcp.optional.json`
 (`claude --mcp-config .mcp.optional.json`). For Codex CLI:
@@ -224,7 +224,7 @@ python3 scripts/ai/catalogs.py verify mcp
 Search returns the original entry and a permanent upstream line link. This is
 a discovery catalogue: entries do not become installed MCP servers. Select
 and review an individual server before adding a runtime integration to
-`.mcp.json`. The catalogue is not a Health Connect bridge or a health-data
+`.mcp.optional.json`. The catalogue is not a Health Connect bridge or a health-data
 provider. No upstream README text is redistributed in this repository.
 
 ## awesome-ai-plugins catalogue
