@@ -1,3 +1,0 @@
-package_name("tech.mmarca.openvitals")
-metadata_path("fastlane/metadata/android")
-timeout(600)

@@ -6,7 +6,7 @@ Start here when you need to understand the app, a feature, or the implementation
 
 - [App guide](app/README.md): install, getting started, Health Connect, permissions, privacy, FAQ, editions, screenshots, and support.
 - [How-to guides](how-to/README.md): concrete workflows that need step-by-step instructions.
-- [Release notes](releases/2.5.0.md): latest user-facing release summary. Full history: [CHANGELOG.md](../CHANGELOG.md).
+- [CHANGELOG.md](../CHANGELOG.md): release history. Each personal build's notes are on its [GitHub release](https://github.com/lorenzomp7/OpenVitals/releases).
 
 ## Browse Features
 

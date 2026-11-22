@@ -6,10 +6,6 @@ Read this before adding a new feature or extending an existing metric screen.
 
 ## Purpose
 
-### Browser demo
-
-`web/` is an installable PWA port with manual daily records and browser-local storage, not an Android module. It synchronizes the Android widget catalogue at build time, includes a versioned offline service worker, and has its own instructions in `web/README.md`, Node-based model tests and build script. The workflow `.github/workflows/web.yml` builds and tests the PWA on `main_claude` and `main`; it publishes nothing. Android compilation remains in `verify.yml`; do not add web dependencies to Gradle or change Android signing for web work. No Health Connect/HealthKit or server synchronization is part of this demo. Android-specific architectural and translation rules below apply to Android changes; web UI strings are currently Italian.
-
 The app is moving toward a consistent, period-based detail architecture for health metrics.
 
 The goal is:
@@ -105,11 +101,10 @@ Do not break these without an explicit decision. They are app-wide, and each has
 
 ## App icon
 
-When the launcher icon changes (`app/src/main/res/drawable/ic_launcher_foreground.xml` or its background), regenerate the README logo and the store icon in the same commit:
+When the launcher icon changes (`app/src/main/res/drawable/ic_launcher_foreground.xml` or its background), regenerate the README logo in the same commit:
 
 ```bash
 python3 scripts/render-readme-logo.py app/src/main/res/drawable/ic_launcher_foreground.xml docs/images/readme-logo.png 512
-python3 scripts/render-readme-logo.py app/src/main/res/drawable/ic_launcher_foreground.xml fastlane/metadata/android/en-US/images/icon.png 512
 ```
 
 ## Implementation Rules
@@ -219,5 +214,5 @@ the task. Existing OpenVitals architecture, privacy, Health Connect, signing
 and verification rules remain the project-specific source of truth.
 Do not send real health records, exports, screenshots or credentials to an
 external model to exercise a workflow; use synthetic fixtures.
-For setup, commands and version updates see
-[AI development tools](docs/engineering/ai-tools.md).
+To move the pin, update the submodule to an upstream tag and commit the new
+`tools/agent-skills` revision.

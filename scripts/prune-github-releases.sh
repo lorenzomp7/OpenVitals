@@ -1,19 +1,19 @@
 #!/usr/bin/env bash
-# Delete all but the newest versioned GitHub releases. The fixed nightly release
-# and every git tag are preserved: `gh release delete` keeps the tag.
+# Delete every GitHub release but the newest ones, with their tags.
 #
-# Usage:
-#   KEEP_RELEASES=9 DRY_RUN=true scripts/prune-github-releases.sh
-#   KEEP_RELEASES=9 DRY_RUN=false scripts/prune-github-releases.sh
+# Usage: scripts/prune-github-releases.sh
 #
 # Environment:
-#   GH_TOKEN       token that can delete releases (gh auth login works locally)
 #   GH_REPO        owner/repo, defaults to the checkout's origin
-#   KEEP_RELEASES  number of versioned releases to keep, defaults to 9
+#   KEEP_RELEASES  number of releases to keep, newest first; defaults to 3
 #   DRY_RUN        true prints deletions, false deletes them; defaults to true
+#
+# The newest release is the one README's download link serves, so at least one
+# is always kept. Order is by creation time: a newer build always has a higher
+# version code, and the release run reads the next code from the kept notes.
 set -euo pipefail
 
-KEEP="${KEEP_RELEASES:-9}"
+KEEP="${KEEP_RELEASES:-3}"
 DRY_RUN="${DRY_RUN:-true}"
 
 if [ "${1:-}" = "-h" ] || [ "${1:-}" = "--help" ]; then
@@ -22,8 +22,8 @@ if [ "${1:-}" = "-h" ] || [ "${1:-}" = "--help" ]; then
 fi
 
 case "$KEEP" in
-    ''|*[!0-9]*)
-        echo "KEEP_RELEASES must be a non-negative integer, got: $KEEP" >&2
+    ''|*[!0-9]*|0)
+        echo "KEEP_RELEASES must be a positive integer, got: $KEEP" >&2
         exit 1
         ;;
 esac
@@ -36,26 +36,27 @@ case "$DRY_RUN" in
         ;;
 esac
 
-# Versioned vX.Y.Z / VX.Y.Z releases, newest first; nightly never matches.
 prune_list="$(
-    gh release list --limit 1000 --json tagName,publishedAt,createdAt --jq '
-        map(select(.tagName | test("^[vV][0-9]+\\.[0-9]+\\.[0-9]+$")))
-        | sort_by(.publishedAt // .createdAt) | reverse
+    gh release list --limit 1000 --json tagName,createdAt --jq '
+        sort_by(.createdAt) | reverse
         | .['"$KEEP"':][]
-        | "\(.tagName)\t\(.publishedAt // .createdAt)"
+        | "\(.tagName)\t\(.createdAt)"
     '
 )"
 
 if [ -z "$prune_list" ]; then
-    echo "No releases to prune; keeping newest $KEEP versioned releases and nightly."
+    echo "No releases to prune; keeping the newest $KEEP."
     exit 0
 fi
 
+count=0
 while IFS=$'\t' read -r tag date; do
+    count=$((count + 1))
     if [ "$DRY_RUN" = "true" ]; then
-        echo "Would delete release $tag $date"
+        echo "Would delete release and tag $tag ($date)"
     else
-        echo "Deleting release $tag"
-        gh release delete "$tag" --yes
+        echo "Deleting release and tag $tag ($date)"
+        gh release delete "$tag" --yes --cleanup-tag
     fi
 done <<< "$prune_list"
+echo "$count release(s) beyond the newest $KEEP."

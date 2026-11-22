@@ -1,1 +1,0 @@
-Merkt sich den zuletzt aufgezeichneten Aktivitätstyp, ergänzt eine Lieblingsaktivität in den Einstellungen und kehrt nach dem Speichern neuer Aktivitäten zum Dashboard zurück.

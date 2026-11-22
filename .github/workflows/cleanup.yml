@@ -1,0 +1,105 @@
+# Manual cleanup of what the repository accumulates: old releases and their
+# tags, the request numbers in the kept releases' notes, finished workflow runs
+# and branches already merged. Nothing here runs on a schedule or a push.
+name: cleanup
+on:
+  workflow_dispatch:
+    inputs:
+      keep_releases:
+        description: Releases to keep, newest first
+        default: '3'
+        required: true
+      runs_older_than_days:
+        description: Delete finished workflow runs older than this many days
+        default: '7'
+        required: true
+      delete_branches:
+        description: Merged branches to delete, separated by spaces
+        default: main_chatgpt
+        required: false
+      dry_run:
+        description: Only list what would be deleted
+        type: boolean
+        default: false
+permissions:
+  contents: write
+  actions: write
+concurrency:
+  group: cleanup
+  cancel-in-progress: false
+jobs:
+  cleanup:
+    runs-on: ubuntu-26.04
+    timeout-minutes: 20
+    env:
+      GH_TOKEN: ${{ github.token }}
+      GH_REPO: ${{ github.repository }}
+      DRY_RUN: ${{ inputs.dry_run }}
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+      - name: Keep only the newest releases
+        env:
+          KEEP_RELEASES: ${{ inputs.keep_releases }}
+        run: bash scripts/prune-github-releases.sh
+      - name: Drop request numbers from the kept releases' notes
+        run: |
+          set -euo pipefail
+          tags=$(gh release list --limit 100 --json tagName,createdAt --jq 'sort_by(.createdAt) | reverse | .[].tagName')
+          newest=$(printf '%s\n' "$tags" | head -1)
+          for tag in $tags; do
+            gh release view "$tag" --json body --jq .body > before.md
+            python3 - before.md after.md <<'PY'
+          import re, sys
+          body = open(sys.argv[1], encoding='utf-8').read()
+          # "Branch main_claude — 153-182 (riquadri):" -> "Modifiche (riquadri):"
+          body = re.sub(r'(?m)^Branch \S+ — [0-9][0-9,\s\-–]*?(\s*\([^)]*\))?:', lambda m: 'Modifiche' + (m[1] or '') + ':', body)
+          # " (127)" or " (131-133, 136)" after a phrase
+          body = re.sub(r' \(\d{2,3}(?:\s*[-–,]\s*\d{2,3})*\)(?=[.,;:]|\s|$)', '', body)
+          open(sys.argv[2], 'w', encoding='utf-8').write(body)
+          PY
+            if cmp -s before.md after.md; then
+              echo "$tag: notes already clean"
+            elif [ "$DRY_RUN" = "true" ]; then
+              echo "$tag: would rewrite the notes"; diff before.md after.md || true
+            elif [ "$tag" = "$newest" ]; then
+              echo "$tag: rewriting the notes"; gh release edit "$tag" --notes-file after.md
+            else
+              # An edit marks a release latest unless told otherwise.
+              echo "$tag: rewriting the notes"; gh release edit "$tag" --notes-file after.md --latest=false
+            fi
+          done
+      - name: Delete finished workflow runs
+        env:
+          DAYS: ${{ inputs.runs_older_than_days }}
+        run: |
+          set -euo pipefail
+          case "$DAYS" in ''|*[!0-9]*) echo "runs_older_than_days must be a number" >&2; exit 1;; esac
+          cutoff=$(date -u -d "$DAYS days ago" +%Y-%m-%d)
+          # Collect first: deleting while paging would shift the pages.
+          gh api --paginate "repos/$GH_REPO/actions/runs?per_page=100&created=<$cutoff" \
+            --jq '.workflow_runs[] | select(.status == "completed") | .id' > runs.txt
+          echo "$(wc -l < runs.txt) finished run(s) created before $cutoff"
+          while read -r id; do
+            [ -n "$id" ] || continue
+            if [ "$DRY_RUN" = "true" ]; then echo "Would delete run $id"
+            else gh api -X DELETE "repos/$GH_REPO/actions/runs/$id" --silent && echo "Deleted run $id"; fi
+          done < runs.txt
+      - name: Delete merged branches
+        env:
+          BRANCHES: ${{ inputs.delete_branches }}
+        run: |
+          set -euo pipefail
+          for branch in $BRANCHES; do
+            case "$branch" in main|main_claude) echo "Refusing to delete $branch" >&2; exit 1;; esac
+            if ! git ls-remote --exit-code --heads origin "$branch" > /dev/null; then
+              echo "$branch: no such branch"; continue
+            fi
+            git fetch -q origin "$branch" main
+            if ! git merge-base --is-ancestor "origin/$branch" origin/main; then
+              echo "$branch: not merged into main, kept" >&2; continue
+            fi
+            if [ "$DRY_RUN" = "true" ]; then echo "Would delete branch $branch"
+            else git push origin --delete "$branch" && echo "Deleted branch $branch"; fi
+          done

@@ -111,17 +111,15 @@ The local app uses Hilt in the `:app` module:
 
 AGP 9 built-in Kotlin currently requires `android.disallowKotlinSourceSets=false` so KSP generated sources are accepted. Keep this in `gradle.properties` unless the Android Gradle Plugin/KSP behavior changes.
 
-## Docs and the Wiki
+## Docs links
 
-The [wiki](https://github.com/lorenzomp7/OpenVitals/wiki) is a mirror of the repository's Markdown, rebuilt by `.github/workflows/wiki.yml` on every push to `main` that touches a `.md` file: `README.md` is Home, every other root Markdown file and every file under `docs/` is one page, named after its first heading, with a sidebar by `docs/` folder (each folder's `README.md` first, release notes newest first). Edit the files here, never the wiki: the next run overwrites it. The repository documentation is the maintained reference for this personal version.
-
-`scripts/sync-wiki.py` rewrites each relative link to the page it points at, or to the file on GitHub for anything that is not a page. Its `--check` mode is the verify gate's `docs-links` job and fails on a relative link to a file that does not exist. To see the pages locally:
+`scripts/sync-wiki.py --check` is the verify gate's `docs-links` job: it fails on a relative link in the repository's Markdown to a file that does not exist. Run it before pushing a docs change:
 
 ```bash
-python3 scripts/sync-wiki.py --repo lorenzomp7/OpenVitals --out /tmp/openvitals-wiki
+python3 scripts/sync-wiki.py --repo lorenzomp7/OpenVitals --check
 ```
 
-Two Markdown files with the same first heading would become one page; the script stops and names both. The same script runs in OpenWatch, OpenLink and OpenBridge.
+Two Markdown files with the same first heading are also refused: the script names both.
 
 ## CI
 
@@ -135,7 +133,7 @@ prebaked container image did this until 2026-10; pulling it cost as much as the
 install). The Gradle jobs cache Gradle with `gradle/actions/setup-gradle` (v5:
 v6 moves its caching into a proprietary component under Gradle's terms of use) and
 go through `scripts/ci-android-gradle.sh`, which sizes the JVMs for the
-runner's 16 GB. Two workflows. `verify.yml` is the gate, on every pull request
+runner's 16 GB. `verify.yml` is the gate, on every pull request
 and push to `main`: the `app-test` job always, `lint` on pushes to `main` only:
 
 ```bash
@@ -149,8 +147,7 @@ git diff --check
 
 Lint alone is half of the gate's task time, so in a single job it stretched
 the tests, which shared the runner's four cores with it. A pull request's gate
-is the tests job alone; a lint finding is caught on `main` before a nightly
-ships.
+is the tests job alone; a lint finding is caught on `main` and by the release run.
 
 The Gradle build cache is on (`org.gradle.caching` in `gradle.properties`), and
 `setup-gradle` keeps it between runs along with the dependency cache. A code
@@ -158,122 +155,14 @@ change invalidates `:app`'s compile and test tasks either way, so the win is on
 `:domain` while only the app changed, on reruns, and on the release build, which
 restores what the `main` run of the same commit produced.
 
-`release.yml` is the release, on the schedule, a version tag and the manual
-run. A tag or the nightly is cut from a commit on `main`, whose push ran the
-verify workflow; the release's `context` job looks that run up, waits for it
-if it is still going, and stops the release if there is none or it failed, so
-the gate is never run twice and never skipped.
-
-Its `build` job signs the APK, the debug APK and the AAB once and stores them
-as the run's `release-build` artifact; every job after it, production
-included, ships those files as they are. There are two GitHub release outputs:
-
-- The `00:00 UTC` schedule, or a manual run of the release workflow with target
-  `nightly`, builds `:app:assembleNightly` and `:app:assembleDebug`, then
-  publishes `OpenVitals-nightly.apk` and `OpenVitals-nightly-debug.apk` to the
-  fixed GitHub `nightly` prerelease. The same run builds `:app:bundleNightly`
-  and uploads the signed AAB to the Google Play open testing track, whose Play
-  Developer API track name is `beta`. The AAB is also attached to the `nightly`
-  prerelease as `OpenVitals-nightly.aab`.
-- A pushed `vX.Y.Z` or `VX.Y.Z` tag builds `:app:assembleRelease` and
-  `:app:assembleDebug`, then publishes `OpenVitals-vX.Y.Z.apk` and
-  `OpenVitals-vX.Y.Z-debug.apk` to its own versioned GitHub prerelease. The tag
-  build also runs `:app:bundleRelease`, attaches `OpenVitals-vX.Y.Z.aab` and
-  uploads it to the open testing track, beside the prerelease. The same run
-  then waits for the `production` environment's approval.
-
-Each attached AAB has a `.sha256` file beside it. The AAB is there for a Play
-upload by hand, when Play refuses the upload from the workflow, and it is what
-a manual production run ships: a run with target `production`, started from
-the tag, downloads the prerelease's AAB, checks it against the `.sha256` and
-runs the production jobs on it. That is the way to ship a tag whose own run is
-gone (its approval lapsed, or it predates the workflow). The GitHub release job does not
-wait for the Play job, so the AAB is attached even then.
-
-Nightly and release APKs use the release-style production application ID,
-minification, packaging, and signing model. Published Debug APKs use the
-separate `tech.mmarca.openvitals.debug` application ID and are signed with the
-stable release signing configuration so Debug-to-Debug updates keep the same
-certificate across ephemeral runners. Release APKs compress bundled native
-libraries and include only ARM 32/64-bit ABIs (`armeabi-v7a` and `arm64-v8a`)
-so direct-download APKs stay small.
-
-The nightly release is intentionally mutable: each successful scheduled or
-manual nightly run moves the fixed `nightly` tag and replaces the existing APK
-and checksum assets instead of creating another release page. `versionName`
-and `versionCode` are intentionally detached: `versionName` carries the human
-release name (`1.7.7`, `1.7.7-nightly.335`, where the suffix is the workflow
-run number), while `versionCode` is only a monotonic Android update counter.
-Both nightly and versioned releases use the same counter line. CI reads
-`OpenVitals-Version-Code` markers from existing GitHub release notes plus the
-append-only `refs/version-code/*` refs, uses
-`max(markers, refs, baseVersionCode) + 1` for new release artifacts, stores the
-chosen code back into the release notes, and records it as a
-`refs/version-code/<code>` ref before the nightly tag moves (see
-`scripts/move-nightly-tag.sh`; a counter rewind on Codeberg in 2026-07 is why
-the refs exist, and they were copied over when the project moved to GitHub).
-The survey only sees GitHub: codes that exist solely on Google Play (such as
-the Flutter era's `base*10` AAB codes, whose markers recorded the 9-digit base)
-are invisible to it, so `baseVersionCode` must be kept at or above every code
-any channel has ever served; the fastlane publish lanes additionally compare
-the incoming code against the live Play track before uploading. Production runs
-reuse the marker from the already published `vX.Y.Z` release so the Play AAB
-matches the GitHub APK's install order. The nightly run also prunes old
-versioned GitHub releases so only the newest nine remain, while preserving the
-fixed `nightly` release and all Git tags. Once approved, the run promotes the
-version from the open testing track to Google Play production with the store
-metadata (it uploads the AAB instead when open testing never had that version,
-as for a tag cut while Play was paused) and promotes the matching GitHub
-prerelease to stable, the two in parallel, then posts the full release notes
-to the Zulip `releases` channel under a `vX.Y.Z` topic
-(`scripts/announce-zulip.sh`). A
-Mastodon announcement from `https://techhub.social/@openvitals`
-(`scripts/announce-mastodon.sh`, the release notes' narrative paragraph plus
-links to the GitHub release and the Play listing) is disabled for now: the
-release workflow has no job for it. Both announcement scripts check for an existing
-post for the tag first, so re-running production never announces twice.
-
-The scheduled run only skips the build when there is nothing new to publish:
-either the `nightly` tag already points at HEAD, or HEAD has no commits after
-the latest versioned `vX.Y.Z` release. Manual runs always build so an operator
-can force a refresh.
-
-The workflow's own `GITHUB_TOKEN` creates and edits releases, pushes the
-`nightly` tag and the `refs/version-code/*` refs; a tag ruleset that blocks
-`nightly` or `refs/version-code/*` breaks the nightly. Configure these
-repository Actions secrets:
-
-- `OPENVITALS_RELEASE_KEYSTORE_BASE64`, `OPENVITALS_RELEASE_STORE_PASSWORD`,
-  `OPENVITALS_RELEASE_KEY_ALIAS`, and `OPENVITALS_RELEASE_KEY_PASSWORD`, so CI
-  can produce updateable Debug, nightly, and release APKs.
-- `GOOGLE_PLAY_SERVICE_ACCOUNT_JSON_BASE64`, the base64-encoded JSON key for a
-  Google Play service account that can release to open testing and production
-  for `tech.mmarca.openvitals`. If the account is allowed to stage edits but not
-  send them for review, set the repository Actions variable
-  `OPENVITALS_PLAY_CHANGES_NOT_SENT_FOR_REVIEW=true`; the open testing or
-  production release will then need to be sent for review manually in Play
-  Console.
-- `ZULIP_BOT_EMAIL` and `ZULIP_BOT_API_KEY` for a generic bot on
-  `openvitals.zulipchat.com` (Personal settings > Bots > Add a new bot) that is
-  subscribed to the `releases` channel; only the `announce-zulip` job sees them.
-- `MASTODON_ACCESS_TOKEN`, only if the Mastodon job comes back: an access token
-  for the `@openvitals@techhub.social` account (Preferences > Development > New
-  application, scopes `write:statuses` and `read:accounts`, redirect URI left at
-  the default `urn:ietf:wg:oauth:2.0:oob` - no OAuth flow is used; copy the
-  "Your access token" shown on the application page).
-
-The Play production upload runs in the `production` environment. Add required
-reviewers to that environment so a production run waits for approval.
-
-While a release is in Play review, a new upload to any track restarts the
-review. Set the repository Actions variable `OPENVITALS_PLAY_PAUSED=true` to
-hold both Play uploads: the nightly skips its open testing job, and a
-production run still waits for approval, promotes the GitHub release to stable
-and posts to Zulip, but uploads nothing. Tags, GitHub releases and F-Droid,
-which builds from the tag, are unaffected. Delete the variable to resume. A
-version released while paused reaches Play only by hand, from the AAB on its
-GitHub release, or by a production run from its tag after the variable is
-gone; the next release's upload also supersedes it.
+`publish-personal-release.yml` publishes the phone APK from `main_claude`: it
+runs `verify` beside a signed build and an update install on an emulator, and
+publishes a GitHub release only when all of them pass. After publishing it
+deletes the older releases and their tags, keeping the newest three
+(`scripts/prune-github-releases.sh`). See
+[Consolidated personal build](personal-build.md). `personal-screenshots.yml`
+reruns `verify` by hand, and `cleanup.yml` prunes releases and old workflow
+runs by hand.
 
 ### The bundled OpenLink sources
 
@@ -284,49 +173,24 @@ The original AGPL license is retained at `openlink/LICENSE`.
 
 ## Release Checklist
 
-For a versioned prerelease:
-
-1. Bump `baseVersionName` in `app/build.gradle.kts`. Let `scripts/release.sh`
-   bump `baseVersionCode` with `scripts/version-code.sh next`; do not derive the
-   code from `vX.Y.Z`.
-2. When preparing a store release, add Play changelog files under
-   `fastlane/metadata/android/<locale>/changelogs/<versionCode>.txt`.
-3. Add the user-facing release summary to `CHANGELOG.md`.
-4. Update README or docs when the user-facing navigation, permissions, screenshots, or bundled assets change.
-5. Run:
+1. In `.github/workflows/publish-personal-release.yml`, bump the version name
+   (`OPENVITALS_VERSION_NAME` and the release title) and rewrite the release
+   notes: what changed, in words the phone user reads. The notes describe the
+   change, not the request it came from.
+2. Run the local checks:
 
 ```bash
 ./gradlew verifyCi
 git diff --check
 ```
 
-   CI has no device, so it never runs the instrumented tests. A release does
-   not need them. To run them anyway, connect a phone or emulator:
+   CI has no device for the instrumented tests outside the release run. To run
+   them on a phone or emulator:
 
 ```bash
 ANDROID_SERIAL=<serial> ./gradlew verifyAndroidTest
 ```
 
-6. Commit the release prep, tag the commit as an annotated `v<versionName>` tag
-   such as `v0.7.0` using the matching `CHANGELOG.md` section as the tag
-   message, and push both the branch and tag. The tag's release run builds the
-   signed artifacts once, publishes the versioned GitHub prerelease, and then
-   waits for the `production` environment's approval.
-7. After validation, approve that run (Actions > the tag's run > Review
-   deployments). It promotes the version from open testing to Google Play
-   production and the GitHub prerelease to stable, then posts the release notes
-   to the Zulip `releases` channel. If the run is gone, run the release workflow by
-   hand (Actions > release > Run workflow) from the version tag with target `production`: it
-   ships the prerelease's AAB the same way, without a build.
-
-For an immediate nightly release, run the release workflow by hand from `main` with
-target `nightly`. It runs the same release checks, moves the `nightly` tag
-to the commit, publishes the APK to the mutable GitHub `nightly` prerelease, and
-uploads the signed AAB to Google Play open testing. The schedule does the same
-at midnight UTC.
-
-Use the exact `versionName` for release notes, changelog references, and tags.
-For a final release, that means file name, `versionName`, and tag such as
-`1.0.0` / `v1.0.0`. Keep the Play `versionCode` unique and increasing, and add
-matching Fastlane changelog files for that exact code when preparing a store
-release.
+3. Push to `main_claude`. The change to the workflow file starts the release
+   run; when it has passed, the new APK is the latest release and only the
+   newest three releases remain.

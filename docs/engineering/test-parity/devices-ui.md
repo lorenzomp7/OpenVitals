@@ -8,7 +8,7 @@ Legend: PORTED = same logic + equivalent assertions (byte fixtures identical unl
 Kotlin counterpart: /home/manu/Documentos/repos/openvitals-android/app/src/test/kotlin/tech/mmarca/openvitals/ui/charts/PeriodChartTest.kt
 | Flutter case | Status | Kotlin test | Note |
 |---|---|---|---|
-| a week chart draws every day until it is pinched | N/A-BEHAVIOR | — | Charts no longer pinch (83): two fingers moved the page and flung it on release; the test went with the gesture |
+| a week chart draws every day until it is pinched | N/A-BEHAVIOR | — | Charts no longer pinch: two fingers moved the page and flung it on release; the test went with the gesture |
 | tapping a bar on a ZOOMED chart selects the day under the finger | PORTED | PeriodChartTest: `a tap selects the bucket it lands on, zoomed or not` | - |
 
 ## test/ui/charts/bar_label_test.dart
@@ -79,11 +79,11 @@ Kotlin counterpart: /home/manu/Documentos/repos/openvitals-android/app/src/test/
 | ChartViewport > the window stops at the ends rather than sliding off | PORTED | ChartViewportTest: `the window stops at the ends rather than sliding off` | - |
 | ChartViewport > there is a floor on how far you can zoom in | PORTED | ChartViewportTest: `there is a floor on how far you can zoom in` | - |
 | ChartViewport > zooming back out never overshoots the whole chart | PORTED | ChartViewportTest: `zooming back out never overshoots the whole chart` | - |
-| ChartZoom > two fingers pinching apart zooms in | N/A-BEHAVIOR | — | Charts no longer pinch (83): two fingers moved the page and flung it on release; the test went with the gesture |
-| ChartZoom > two fingers zoom even inside a scrolling page | N/A-BEHAVIOR | — | Charts no longer pinch (83): two fingers moved the page and flung it on release; the test went with the gesture |
-| ChartZoom > ONE finger dragging horizontally does not zoom | N/A-BEHAVIOR | — | Charts no longer pinch (83): two fingers moved the page and flung it on release; the test went with the gesture |
-| ChartZoom > the page still scrolls when dragged from inside a chart | N/A-BEHAVIOR | — | Charts no longer pinch (83): two fingers moved the page and flung it on release; the test went with the gesture |
-| ChartZoom > double tap returns the whole chart | N/A-BEHAVIOR | — | Charts no longer pinch (83): two fingers moved the page and flung it on release; the test went with the gesture |
+| ChartZoom > two fingers pinching apart zooms in | N/A-BEHAVIOR | — | Charts no longer pinch: two fingers moved the page and flung it on release; the test went with the gesture |
+| ChartZoom > two fingers zoom even inside a scrolling page | N/A-BEHAVIOR | — | Charts no longer pinch: two fingers moved the page and flung it on release; the test went with the gesture |
+| ChartZoom > ONE finger dragging horizontally does not zoom | N/A-BEHAVIOR | — | Charts no longer pinch: two fingers moved the page and flung it on release; the test went with the gesture |
+| ChartZoom > the page still scrolls when dragged from inside a chart | N/A-BEHAVIOR | — | Charts no longer pinch: two fingers moved the page and flung it on release; the test went with the gesture |
+| ChartZoom > double tap returns the whole chart | N/A-BEHAVIOR | — | Charts no longer pinch: two fingers moved the page and flung it on release; the test went with the gesture |
 
 ## test/ui/charts/charts_test.dart
 Kotlin counterpart: /home/manu/Documentos/repos/openvitals-android/app/src/test/kotlin/tech/mmarca/openvitals/ui/charts/PeriodChartTest.kt (plus ui/components/PeriodHeatmapTest.kt)
@@ -125,7 +125,7 @@ Kotlin counterpart: /home/manu/Documentos/repos/openvitals-android/app/src/test/
 |---|---|---|---|
 | dayAxisLabelsFor > the whole day is the five labels it always was | PORTED | ChartTimeAxesTest: `full viewport gives the classic five hour labels` | - |
 | dayAxisLabelsFor > zoomed in, the row says the hours actually on the plot | PORTED | ChartTimeAxesTest: `zoomed viewport labels the hours actually under the plot` (+ `zoomed labels round to whole minutes`) | different viewport values, identical rule |
-| pinching a day chart zooms the plot AND its hours | N/A-BEHAVIOR | — | Charts no longer pinch (83): two fingers moved the page and flung it on release; the test went with the gesture |
+| pinching a day chart zooms the plot AND its hours | N/A-BEHAVIOR | — | Charts no longer pinch: two fingers moved the page and flung it on release; the test went with the gesture |
 
 ## test/ui/charts/heatmap_cells_test.dart
 Kotlin counterpart: /home/manu/Documentos/repos/openvitals-android/app/src/test/kotlin/tech/mmarca/openvitals/ui/components/PeriodMonthHeatmapCellsTest.kt
@@ -156,10 +156,10 @@ Kotlin counterpart: /home/manu/Documentos/repos/openvitals-android/app/src/test/
 Kotlin counterpart: none
 | Flutter case | Status | Kotlin test | Note |
 |---|---|---|---|
-| pinching a day MetricLineChart zooms the line and its hours | N/A-BEHAVIOR | — | Charts no longer pinch (83): two fingers moved the page and flung it on release; the test went with the gesture |
-| pinching a year MetricLineChart zooms it too | N/A-BEHAVIOR | — | Charts no longer pinch (83): two fingers moved the page and flung it on release; the test went with the gesture |
-| a period chart still pinches when one finger moves before the other lands (real-device timing) | N/A-BEHAVIOR | — | Charts no longer pinch (83): two fingers moved the page and flung it on release; the test went with the gesture |
-| switching the year resets a zoom rather than carrying it over | N/A-BEHAVIOR | — | Charts no longer pinch (83): two fingers moved the page and flung it on release; the test went with the gesture |
+| pinching a day MetricLineChart zooms the line and its hours | N/A-BEHAVIOR | — | Charts no longer pinch: two fingers moved the page and flung it on release; the test went with the gesture |
+| pinching a year MetricLineChart zooms it too | N/A-BEHAVIOR | — | Charts no longer pinch: two fingers moved the page and flung it on release; the test went with the gesture |
+| a period chart still pinches when one finger moves before the other lands (real-device timing) | N/A-BEHAVIOR | — | Charts no longer pinch: two fingers moved the page and flung it on release; the test went with the gesture |
+| switching the year resets a zoom rather than carrying it over | N/A-BEHAVIOR | — | Charts no longer pinch: two fingers moved the page and flung it on release; the test went with the gesture |
 
 ## test/ui/charts/session_axis_test.dart
 Kotlin counterpart: /home/manu/Documentos/repos/openvitals-android/app/src/test/kotlin/tech/mmarca/openvitals/ui/charts/ChartTimeAxesTest.kt
@@ -185,7 +185,7 @@ Kotlin counterpart: /home/manu/Documentos/repos/openvitals-android/app/src/test/
 |---|---|---|---|
 | elapsedLabelsFor > the whole session is the five labels it always was | PORTED | ChartTimeAxesTest: `elapsed labels at full zoom span the whole session` | - |
 | elapsedLabelsFor > zoomed in, the row says the minutes actually on the plot | PORTED | ChartTimeAxesTest: `elapsed labels under zoom describe the visible slice` | 0.5..1 slice vs 0.75..1; same rule |
-| pinching a session chart zooms the trace AND its elapsed row | N/A-BEHAVIOR | — | Charts no longer pinch (83): two fingers moved the page and flung it on release; the test went with the gesture |
+| pinching a session chart zooms the trace AND its elapsed row | N/A-BEHAVIOR | — | Charts no longer pinch: two fingers moved the page and flung it on release; the test went with the gesture |
 
 ## test/ui/components/health_connect_gate_test.dart
 Kotlin counterpart: /home/manu/Documentos/repos/openvitals-android/app/src/test/kotlin/tech/mmarca/openvitals/healthconnect/HealthConnectFeatureTest.kt

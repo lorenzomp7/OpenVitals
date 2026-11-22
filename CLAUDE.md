@@ -17,7 +17,6 @@ AGENTS.md (importato sopra) vale per tutti gli agenti; qui solo ciò che riguard
 
 - All'avvio di ogni sessione cloud `.claude/hooks/session_start.sh` scarica il submodule `tools/agent-skills` (skill) e avvia in background JDK 17 + SDK Android in `~/android-sdk` (5-10 minuti; servono `dl.google.com` e, per Gradle, `api.mapbox.com` tra i domini consentiti dell'ambiente).
 - Prima di qualunque comando Gradle esegui `bash .claude/hooks/wait_setup.sh android`: aspetta la fine dell'installazione o spiega perché è fallita. Se fallisce per la rete, dillo all'utente invece di aggirare il problema.
-- La PWA in `web/` non ha dipendenze: `npm test --prefix web` funziona subito.
 - Se qualcosa manca, i dettagli sono in `.claude/hooks/.state/session-setup.log`; per ripetere la preparazione: `CLAUDE_SETUP_FORCE=1 bash .claude/hooks/session_start.sh`.
 
 ### Hook automatici (`.claude/settings.json`)
@@ -28,8 +27,8 @@ AGENTS.md (importato sopra) vale per tutti gli agenti; qui solo ciò che riguard
 
 ### Skill
 
-- In `.claude/skills/` ci sono le skill di progetto (`release`, `r8-analyzer`, `test-case-reviewer`) e 7 procedure di `addyosmani/agent-skills`, collegate al submodule che l'avvio della sessione scarica in automatico.
+- In `.claude/skills/` ci sono le skill di progetto (`r8-analyzer`, `test-case-reviewer`) e 7 procedure di `addyosmani/agent-skills`, collegate al submodule che l'avvio della sessione scarica in automatico.
 
 ### Server MCP
 
-- Nessun server MCP nelle sessioni cloud: Playwriter richiede il Chrome dell'utente con l'estensione, Vibetest la chiave Google, container-use Docker. Sono in `.mcp.optional.json` solo per un uso locale. I controlli nel browser girano nelle GitHub Actions delle pull request.
+- Il progetto non configura server MCP.

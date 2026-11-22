@@ -10,8 +10,7 @@ repository, to the file on GitHub. Pages whose source is gone are removed.
   scripts/sync-wiki.py --repo OWNER/NAME --out path/to/wiki-checkout
   scripts/sync-wiki.py --repo OWNER/NAME --check
 
---out is run by .github/workflows/wiki.yml on every push to main that touches
-Markdown. --check, run by verify.yml, builds nothing and fails on a relative
+--out builds the pages locally; nothing publishes them. --check, run by verify.yml, builds nothing and fails on a relative
 link to a file that does not exist, which the wiki would turn into a 404.
 
 The same script runs in OpenVitals, OpenWatch, OpenLink and OpenBridge; keep

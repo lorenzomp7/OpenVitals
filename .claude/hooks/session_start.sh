@@ -10,7 +10,6 @@ if [ ! -f tools/agent-skills/skills/code-review-and-quality/SKILL.md ]; then
   git submodule update --init tools/agent-skills >> "$LOG" 2>&1 && note "skill agent-skills: scaricate" \
     || note "skill agent-skills: download FALLITO"
 else note "skill agent-skills: già pronte"; fi
-note "Web (PWA): nessuna dipendenza da installare; test con: npm test --prefix web"
 # Android: JDK 17 + SDK (platform e build-tools di scripts/ci-android-setup.sh). Richiede dl.google.com.
 export_env 'ANDROID_HOME="$HOME/android-sdk"'
 export_env 'ANDROID_SDK_ROOT="$HOME/android-sdk"'
