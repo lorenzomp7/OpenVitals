@@ -3812,6 +3812,8 @@
     <string name="dashboard_cardio_today_points">Tänään: %1$d pistettä</string>
     <string name="dashboard_period_goal">Tavoite valitulle ajanjaksolle</string>
     <string name="dashboard_nightly_goal">Keskimääräinen yötavoite</string>
+    <string name="dashboard_detail_goal">Tavoite</string>
+    <string name="dashboard_weekly_cardio_target">Tavoite: %1$d</string>
     <string name="user_profile_view_photo">Näytä</string>
     <string name="user_profile_change_photo">Vaihda</string>
     <string name="dashboard_save_changes">Tallennetaanko koontinäytön muutokset?</string>

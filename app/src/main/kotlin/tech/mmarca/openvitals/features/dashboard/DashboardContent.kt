@@ -131,7 +131,7 @@ internal fun DashboardContent(
     val zone = ZoneId.systemDefault()
     val specWidgetIds = remember(dashboardWidgets, isEditingDashboard) {
         if (isEditingDashboard) {
-            DashboardWidgetId.entries.toList()
+            DashboardEditableWidgetIds
         } else {
             dashboardWidgets
         }

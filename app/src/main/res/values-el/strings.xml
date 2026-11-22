@@ -499,6 +499,8 @@
     <string name="dashboard_cardio_today_points">Σήμερα: %1$d βαθμοί</string>
     <string name="dashboard_period_goal">Στόχος περιόδου</string>
     <string name="dashboard_nightly_goal">Μέσος στόχος ανά νύχτα</string>
+    <string name="dashboard_detail_goal">Στόχος</string>
+    <string name="dashboard_weekly_cardio_target">Στόχος: %1$d</string>
     <string name="user_profile_view_photo">Προβολή</string>
     <string name="user_profile_change_photo">Αλλαγή</string>
     <string name="dashboard_save_changes">Αποθήκευση αλλαγών στον πίνακα ελέγχου;</string>

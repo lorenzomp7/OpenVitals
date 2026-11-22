@@ -125,24 +125,6 @@ import tech.mmarca.openvitals.features.activity.exerciseTypeLabel
 import tech.mmarca.openvitals.features.cycle.cycleSecondaryLineText
 import tech.mmarca.openvitals.ui.components.AutoResizeText
 import tech.mmarca.openvitals.ui.components.DayNavigator
-import tech.mmarca.openvitals.ui.theme.ActiveCaloriesColor
-import tech.mmarca.openvitals.ui.theme.BodyFatColor
-import tech.mmarca.openvitals.ui.theme.CaloriesColor
-import tech.mmarca.openvitals.ui.theme.CycleColor
-import tech.mmarca.openvitals.ui.theme.DistanceColor
-import tech.mmarca.openvitals.ui.theme.ElevationColor
-import tech.mmarca.openvitals.ui.theme.FloorsColor
-import tech.mmarca.openvitals.ui.theme.HeartColor
-import tech.mmarca.openvitals.ui.theme.HydrationColor
-import tech.mmarca.openvitals.ui.theme.MindfulnessColor
-import tech.mmarca.openvitals.ui.theme.NutritionColor
-import tech.mmarca.openvitals.ui.theme.SleepColor
-import tech.mmarca.openvitals.ui.theme.StepsColor
-import tech.mmarca.openvitals.ui.theme.MedicalRecordsColor
-import tech.mmarca.openvitals.ui.theme.VitalsColor
-import tech.mmarca.openvitals.ui.theme.WeightColor
-import tech.mmarca.openvitals.ui.theme.WheelchairPushesColor
-import tech.mmarca.openvitals.ui.theme.WorkoutColor
 import tech.mmarca.openvitals.openwatch.OpenWatchTileDisplay
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.CircularProgressIndicator
@@ -470,56 +452,60 @@ private data class DashboardWidgetMeta(
     val accentColor: Color,
 )
 
+/** 160, 161, 182: the icon is the widget's own; the colour is its category's, shared by every tile in it. */
 private fun dashboardWidgetMeta(widgetId: DashboardWidgetId): DashboardWidgetMeta =
+    DashboardWidgetMeta(dashboardWidgetIconOf(widgetId), dashboardWidgetCategory(widgetId).accentColor)
+
+private fun dashboardWidgetIconOf(widgetId: DashboardWidgetId): ImageVector =
     when (widgetId) {
-        DashboardWidgetId.STEPS -> DashboardWidgetMeta(Icons.AutoMirrored.Outlined.DirectionsWalk, StepsColor)
+        DashboardWidgetId.STEPS -> Icons.AutoMirrored.Outlined.DirectionsWalk
         DashboardWidgetId.WEEKLY_CARDIO_LOAD,
         DashboardWidgetId.CARDIO_LOAD,
-        -> DashboardWidgetMeta(Icons.Outlined.Favorite, WorkoutColor)
-        DashboardWidgetId.DISTANCE -> DashboardWidgetMeta(Icons.Outlined.Straighten, DistanceColor)
+        -> Icons.Outlined.Favorite
+        DashboardWidgetId.DISTANCE -> Icons.Outlined.Straighten
         DashboardWidgetId.CALORIES_OUT,
         DashboardWidgetId.BMR,
-        -> DashboardWidgetMeta(Icons.Outlined.LocalFireDepartment, CaloriesColor)
-        DashboardWidgetId.ACTIVE_CALORIES -> DashboardWidgetMeta(Icons.Outlined.LocalFireDepartment, ActiveCaloriesColor)
-        DashboardWidgetId.FLOORS -> DashboardWidgetMeta(Icons.Outlined.Stairs, FloorsColor)
-        DashboardWidgetId.ELEVATION -> DashboardWidgetMeta(Icons.Outlined.Terrain, ElevationColor)
-        DashboardWidgetId.WHEELCHAIR_PUSHES -> DashboardWidgetMeta(Icons.AutoMirrored.Outlined.Accessible, WheelchairPushesColor)
-        DashboardWidgetId.SLEEP -> DashboardWidgetMeta(Icons.Outlined.Bed, SleepColor)
+        DashboardWidgetId.ACTIVE_CALORIES,
+        -> Icons.Outlined.LocalFireDepartment
+        DashboardWidgetId.FLOORS -> Icons.Outlined.Stairs
+        DashboardWidgetId.ELEVATION -> Icons.Outlined.Terrain
+        DashboardWidgetId.WHEELCHAIR_PUSHES -> Icons.AutoMirrored.Outlined.Accessible
+        DashboardWidgetId.SLEEP -> Icons.Outlined.Bed
         // The battery, matching the screen the tile opens.
-        DashboardWidgetId.BODY_ENERGY -> DashboardWidgetMeta(Icons.Outlined.BatteryChargingFull, VitalsColor)
-        DashboardWidgetId.HYDRATION -> DashboardWidgetMeta(Icons.Outlined.LocalDrink, HydrationColor)
+        DashboardWidgetId.BODY_ENERGY -> Icons.Outlined.BatteryChargingFull
+        DashboardWidgetId.HYDRATION -> Icons.Outlined.LocalDrink
         DashboardWidgetId.CALORIES_IN,
         DashboardWidgetId.PROTEIN,
         DashboardWidgetId.CARBS,
         DashboardWidgetId.FAT,
         DashboardWidgetId.CAFFEINE,
-        -> DashboardWidgetMeta(Icons.Outlined.Restaurant, NutritionColor)
+        -> Icons.Outlined.Restaurant
         DashboardWidgetId.WEIGHT,
         DashboardWidgetId.HEIGHT,
         DashboardWidgetId.LEAN_MASS,
         DashboardWidgetId.BONE_MASS,
         DashboardWidgetId.BODY_WATER_MASS,
-        -> DashboardWidgetMeta(Icons.Outlined.MonitorWeight, WeightColor)
-        DashboardWidgetId.BMI -> DashboardWidgetMeta(Icons.Outlined.MonitorWeight, WeightColor)
-        DashboardWidgetId.FFMI -> DashboardWidgetMeta(Icons.Outlined.FitnessCenter, BodyFatColor)
-        DashboardWidgetId.BODY_FAT -> DashboardWidgetMeta(Icons.Outlined.MonitorWeight, BodyFatColor)
+        DashboardWidgetId.BMI,
+        DashboardWidgetId.BODY_FAT,
+        -> Icons.Outlined.MonitorWeight
+        DashboardWidgetId.FFMI -> Icons.Outlined.FitnessCenter
         DashboardWidgetId.AVG_HEART_RATE,
         DashboardWidgetId.RESTING_HEART_RATE,
         DashboardWidgetId.BLOOD_PRESSURE,
         DashboardWidgetId.RESPIRATORY_RATE,
         DashboardWidgetId.BODY_TEMPERATURE,
-        -> DashboardWidgetMeta(Icons.Outlined.Favorite, VitalsColor)
+        DashboardWidgetId.BLOOD_GLUCOSE,
+        -> Icons.Outlined.Favorite
         DashboardWidgetId.HRV,
         DashboardWidgetId.SPO2,
-        -> DashboardWidgetMeta(Icons.Outlined.FavoriteBorder, VitalsColor)
-        DashboardWidgetId.VO2_MAX -> DashboardWidgetMeta(Icons.AutoMirrored.Outlined.DirectionsRun, VitalsColor)
-        DashboardWidgetId.BLOOD_GLUCOSE -> DashboardWidgetMeta(Icons.Outlined.Favorite, VitalsColor)
-        DashboardWidgetId.SKIN_TEMPERATURE -> DashboardWidgetMeta(Icons.Outlined.DeviceThermostat, VitalsColor)
-        DashboardWidgetId.MINDFULNESS -> DashboardWidgetMeta(Icons.Outlined.SelfImprovement, MindfulnessColor)
-        DashboardWidgetId.CYCLE -> DashboardWidgetMeta(Icons.Outlined.CalendarMonth, CycleColor)
-        DashboardWidgetId.MEDICAL_RECORDS -> DashboardWidgetMeta(Icons.Outlined.MedicalInformation, MedicalRecordsColor)
-        DashboardWidgetId.OPENWATCH -> DashboardWidgetMeta(Icons.Outlined.Watch, VitalsColor)
-        DashboardWidgetId.WORKOUT -> DashboardWidgetMeta(Icons.AutoMirrored.Outlined.DirectionsRun, WorkoutColor)
+        -> Icons.Outlined.FavoriteBorder
+        DashboardWidgetId.VO2_MAX -> Icons.AutoMirrored.Outlined.DirectionsRun
+        DashboardWidgetId.SKIN_TEMPERATURE -> Icons.Outlined.DeviceThermostat
+        DashboardWidgetId.MINDFULNESS -> Icons.Outlined.SelfImprovement
+        DashboardWidgetId.CYCLE -> Icons.Outlined.CalendarMonth
+        DashboardWidgetId.MEDICAL_RECORDS -> Icons.Outlined.MedicalInformation
+        DashboardWidgetId.OPENWATCH -> Icons.Outlined.Watch
+        DashboardWidgetId.WORKOUT -> Icons.AutoMirrored.Outlined.DirectionsRun
     }
 
 internal fun MutableList<DashboardWidgetSpec>.addMetric(

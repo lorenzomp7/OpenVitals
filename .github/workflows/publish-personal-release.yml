@@ -57,7 +57,7 @@ jobs:
           if (( NEXT < 1070400000 )); then NEXT=1070400000; fi
           echo "OPENVITALS_VERSION_CODE=$NEXT" >> "$GITHUB_ENV"
           echo "code=$NEXT" >> "$GITHUB_OUTPUT"
-          echo "OPENVITALS_VERSION_NAME=2.17.23-personal-claude" >> "$GITHUB_ENV"
+          echo "OPENVITALS_VERSION_NAME=2.17.24-personal-claude" >> "$GITHUB_ENV"
       - name: Build the signed personal update
         env:
           OPENVITALS_RELEASE_STORE_FILE: ${{ github.workspace }}/personal/personal.p12
@@ -138,6 +138,14 @@ jobs:
           cat > release-notes.md <<EOF
           Scarica **OpenVitals.apk** dagli allegati e aprilo sul telefono.
 
+          Branch main_claude — 153-182 (riquadri della pagina principale):
+          - Riquadri 2x2: l'anello è centrato nel suo spazio (prima restava in alto con una fascia vuota sotto) e il testo è centrato nell'anello.
+          - Righe sotto il valore più grandi e senza "…": ogni riga è larga quanto l'anello alla sua altezza e tutte le righe usano la stessa dimensione, la più grande che ci sta. Sul giorno l'obiettivo si chiama "Obiettivo".
+          - Con 3 dettagli ogni riquadro mostra il valore e due righe anche quando mancano dati: dopo obiettivo e significato del valore seguono le letture collegate, prima quelle della stessa categoria (vale anche per Cartelle cliniche, Ciclo e Glicemia, che prima ne mostravano zero).
+          - Dislivello e Spinte in carrozzina non mostrano più la distanza.
+          - Cardio settimanale: niente più "438 di 470" sotto 438, ma "Obiettivo: 470" e i punti di oggi. Un layout salvato con il vecchio riquadro cardio mostra un solo "Cardio settimanale" e la modifica non lo propone due volte.
+          - Colori: i riquadri della stessa categoria hanno lo stesso colore (movimento, energia, allenamento, sonno, alimentazione e bevande, corpo, parametri vitali, mindfulness, ciclo, cartelle cliniche). FFMI e massa grassa sono come massa ossea, massa magra e peso. Sonno con punteggio: le ore compaiono una volta sola.
+
           Branch main_claude — 94, 99, 100, 104, 127, 131-133, 136, 141-152:
           - Toggle OpenVitals e scheda del sonno: la media del sonno del periodo è calcolata nello stesso modo (solo la notte, senza risvegli e pisolini), quindi i due numeri coincidono.
           - Modalità modifica: uscendo senza essere tornati in cima non compare più per un istante la parte alta della modifica.
@@ -168,12 +176,12 @@ jobs:
 
           Questa versione aggiorna l'installazione personale compatibile di OpenVitals senza disinstallarla. La revisione ha superato la verifica completa (verify) in questa stessa esecuzione; package e firma coincidono con l'APK pubblicato precedente; installazione, aggiornamento, avvio e import screenshot sono verificati su Android 15.
 
-          Versione: **2.17.23-personal-claude**. Version code: **$OPENVITALS_VERSION_CODE**.
+          Versione: **2.17.24-personal-claude**. Version code: **$OPENVITALS_VERSION_CODE**.
           Sorgenti: https://github.com/$GH_REPO/commit/$GITHUB_SHA
           Compilazione e verifica aggiornamento: https://github.com/$GH_REPO/actions/runs/$GITHUB_RUN_ID
           EOF
           if gh release view "$TAG" > /dev/null 2>&1; then
             echo "Release already exists; keeping the published APK unchanged."
           else
-            gh release create "$TAG" release/OpenVitals.apk release/SHA256SUMS.txt --target "$GITHUB_SHA" --title "OpenVitals 2.17.23 · main_claude" --notes-file release-notes.md --latest
+            gh release create "$TAG" release/OpenVitals.apk release/SHA256SUMS.txt --target "$GITHUB_SHA" --title "OpenVitals 2.17.24 · main_claude" --notes-file release-notes.md --latest
           fi

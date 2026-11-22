@@ -36,7 +36,7 @@ class DashboardGoalContextTest {
     @Test fun `day targets stay daily and period sleep targets remain nightly averages`() {
         val day = build(null)
         assertFalse(day.isPeriod)
-        assertEquals(R.string.daily_goal, dashboardGoalLabelRes(DashboardWidgetId.DISTANCE, day.isPeriod))
+        assertEquals(R.string.dashboard_detail_goal, dashboardGoalLabelRes(DashboardWidgetId.DISTANCE, day.isPeriod))
         assertEquals(R.string.dashboard_nightly_goal, dashboardGoalLabelRes(DashboardWidgetId.SLEEP, true))
     }
 
