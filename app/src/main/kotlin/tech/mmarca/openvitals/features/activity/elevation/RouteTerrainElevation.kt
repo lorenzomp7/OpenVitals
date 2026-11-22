@@ -13,6 +13,8 @@ import kotlin.math.PI
 import kotlin.math.floor
 import kotlin.math.ln
 import kotlin.math.tan
+import kotlinx.coroutines.async
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.withContext
 import tech.mmarca.openvitals.core.performance.DispatcherProvider
 import tech.mmarca.openvitals.data.repository.PreferencesRepository
@@ -22,8 +24,13 @@ import tech.mmarca.openvitals.features.activity.maps.MapboxTokenStore
 /**
  * Where a session's height profile came from. [GPS_MAPBOX_FAILED]: Mapbox is signed in but its
  * terrain could not be read (offline, a refused tile), so the GPS drew it; the footnote says so.
+ * [TERRARIUM_TERRAIN]: the open Terrarium model alone. [COMBINED_TERRAIN]: Mapbox and Terrarium
+ * read side by side, each correcting the other ([reconcileTerrain]). [GPS_TERRAIN_FAILED]: no
+ * terrain model could be read (no connection), so the GPS drew it.
  */
-enum class RouteElevationSource { TERRAIN_TILES, MAPBOX_TERRAIN, GPS, GPS_MAPBOX_FAILED }
+enum class RouteElevationSource {
+    TERRAIN_TILES, MAPBOX_TERRAIN, TERRARIUM_TERRAIN, COMBINED_TERRAIN, GPS, GPS_MAPBOX_FAILED, GPS_TERRAIN_FAILED,
+}
 
 /**
  * 104: a route's height profile from a terrain model rather than the GPS. A watch's GPS
@@ -44,6 +51,11 @@ class RouteTerrainElevation @Inject constructor(
     /**
      * The altitude at each point, or null when no terrain covers the whole route: then the
      * source says whether Mapbox was signed in and failed, so the footnote can tell.
+     *
+     * 104: two terrain models are read side by side when they can be: Mapbox's (when signed in)
+     * and the open Terrarium model (AWS Open Data, no account). Where they agree their mean is
+     * drawn; where one leaps away from the other (a bridge, a building, a hole in a model) the
+     * one that keeps to the route's run is kept. Either alone still beats the GPS.
      */
     suspend fun altitudes(points: List<ExerciseRoutePoint>): Pair<RouteElevationSource, List<Double>?> =
         withContext(dispatchers.io) {
@@ -55,13 +67,25 @@ class RouteTerrainElevation @Inject constructor(
                 }
             }
             val token = MapboxTokenStore.read(context).takeIf { it.isNotBlank() }
-                ?: return@withContext RouteElevationSource.GPS to null
-            runCatching { mapboxAltitudes(points, token) }.getOrNull()
-                ?.let { RouteElevationSource.MAPBOX_TERRAIN to smoothTerrain(it) }
-                ?: (RouteElevationSource.GPS_MAPBOX_FAILED to null)
+            val (mapbox, terrarium) = coroutineScope {
+                val mapboxRead = async {
+                    token?.let { runCatching { providerHeights(points, TerrainProvider.mapbox(it)) }.getOrNull() }
+                }
+                val terrariumRead = async { runCatching { providerHeights(points, TerrainProvider.Terrarium) }.getOrNull() }
+                mapboxRead.await() to terrariumRead.await()
+            }
+            when {
+                mapbox != null && terrarium != null ->
+                    RouteElevationSource.COMBINED_TERRAIN to smoothTerrain(reconcileTerrain(mapbox, terrarium))
+                mapbox != null -> RouteElevationSource.MAPBOX_TERRAIN to smoothTerrain(fillGaps(mapbox))
+                terrarium != null -> RouteElevationSource.TERRARIUM_TERRAIN to smoothTerrain(fillGaps(terrarium))
+                token != null -> RouteElevationSource.GPS_MAPBOX_FAILED to null
+                else -> RouteElevationSource.GPS_TERRAIN_FAILED to null
+            }
         }
 
-    private fun mapboxAltitudes(points: List<ExerciseRoutePoint>, token: String): List<Double>? {
+    /** Each point's height from [provider], null where its tile did not come; null when too few did. */
+    private fun providerHeights(points: List<ExerciseRoutePoint>, provider: TerrainProvider): List<Double?>? {
         // 104: a long ride crosses more tiles than is reasonable at the finest zoom; a coarser
         // one still beats the GPS, so step out until the route fits rather than giving up.
         val (zoom, positions) = (TileZoom downTo MinTileZoom).asSequence()
@@ -71,19 +95,23 @@ class RouteTerrainElevation @Inject constructor(
         val keys = positions.flatMap { it.neighbours() }.distinct()
         // 104: one tile that will not come is no reason to drop the others: the points on it are
         // filled between their neighbours, as long as most of the route was read.
-        val bitmaps = keys.mapNotNull { key -> tile(key, token)?.let { key to it } }.toMap()
+        val bitmaps = keys.mapNotNull { key -> tile(key, provider)?.let { key to it } }.toMap()
         val heights = positions.map { position ->
-            if (position.key in bitmaps) bilinear(position, zoom, bitmaps) else null
+            if (position.key in bitmaps) {
+                bilinear(position, zoom, bitmaps, provider)?.takeIf { it > LowestLandMeters }
+            } else {
+                null
+            }
         }
         if (heights.count { it != null } < heights.size * MinCoveredShare) return null
-        return fillGaps(heights)
+        return heights
     }
 
     /**
      * 104: the height between the four pixels around a point, not the one it falls in: a pixel
      * is ten metres wide, and reading the nearest drew the profile as stairs.
      */
-    private fun bilinear(position: TilePosition, zoom: Int, bitmaps: Map<TileKey, Bitmap>): Double {
+    private fun bilinear(position: TilePosition, zoom: Int, bitmaps: Map<TileKey, Bitmap>, provider: TerrainProvider): Double? {
         val size = bitmaps.getValue(position.key).width
         // Pixel centres sit at half a pixel; work in the world's pixel grid so a neighbour
         // across a tile edge is read from the next tile.
@@ -100,34 +128,26 @@ class RouteTerrainElevation @Inject constructor(
             val bitmap = bitmaps[TileKey(zoom, tx, ty)] ?: bitmaps.getValue(position.key)
             val ix = (px.toInt() - tx * size).coerceIn(0, bitmap.width - 1)
             val iy = (py.toInt() - ty * size).coerceIn(0, bitmap.height - 1)
-            return decodeHeight(bitmap.getPixel(ix, iy))
+            return provider.decode(bitmap.getPixel(ix, iy))
         }
         val top = at(x0, y0) * (1 - fx) + at(x0 + 1, y0) * fx
         val bottom = at(x0, y0 + 1) * (1 - fx) + at(x0 + 1, y0 + 1) * fx
         return top * (1 - fy) + bottom * fy
     }
 
-    private fun decodeHeight(pixel: Int): Double {
-        val red = (pixel shr 16) and 0xFF
-        val green = (pixel shr 8) and 0xFF
-        val blue = pixel and 0xFF
-        return -10_000.0 + (red * 65_536 + green * 256 + blue) * 0.1
-    }
-
-    private fun tile(key: TileKey, token: String): Bitmap? {
+    private fun tile(key: TileKey, provider: TerrainProvider): Bitmap? {
         // One retry: a dropped connection is not a reason to draw the drifting GPS.
         repeat(2) { attempt ->
-            runCatching { fetchTile(key, token) }.getOrNull()?.let { return it }
+            runCatching { fetchTile(key, provider) }.getOrNull()?.let { return it }
             if (attempt == 0) Thread.sleep(RetryDelayMillis)
         }
         return null
     }
 
-    private fun fetchTile(key: TileKey, token: String): Bitmap? {
-        val file = File(cache, "${key.z}/${key.x}/${key.y}.png")
+    private fun fetchTile(key: TileKey, provider: TerrainProvider): Bitmap? {
+        val file = File(cache, "${provider.cacheName}/${key.z}/${key.x}/${key.y}.png")
         if (!file.isFile) {
-            val url = URL("https://api.mapbox.com/v4/mapbox.mapbox-terrain-dem-v1/${key.z}/${key.x}/${key.y}.pngraw?access_token=$token")
-            val connection = url.openConnection() as HttpURLConnection
+            val connection = URL(provider.url(key.z, key.x, key.y)).openConnection() as HttpURLConnection
             try {
                 connection.connectTimeout = TimeoutMillis
                 connection.readTimeout = TimeoutMillis
@@ -151,6 +171,33 @@ class RouteTerrainElevation @Inject constructor(
         )
         if (bitmap == null) file.delete()
         return bitmap
+    }
+
+    /** A terrain model served as RGB-encoded PNG tiles in the Web Mercator grid. */
+    private class TerrainProvider(
+        val cacheName: String,
+        val url: (z: Int, x: Int, y: Int) -> String,
+        val decode: (pixel: Int) -> Double,
+    ) {
+        companion object {
+            /** Mapbox Terrain-DEM v1: height = -10000 + (R * 65536 + G * 256 + B) * 0.1. */
+            fun mapbox(token: String) = TerrainProvider(
+                cacheName = "mapbox",
+                url = { z, x, y -> "https://api.mapbox.com/v4/mapbox.mapbox-terrain-dem-v1/$z/$x/$y.pngraw?access_token=$token" },
+                decode = { pixel -> terrainHeightMapbox(pixel) },
+            )
+
+            /**
+             * 104: the Terrarium tiles of the AWS Open Data terrain set (SRTM, EU-DEM and national
+             * models merged by Mapzen): free, no account, requested by tile like Mapbox's.
+             * height = R * 256 + G + B / 256 - 32768.
+             */
+            val Terrarium = TerrainProvider(
+                cacheName = "terrarium",
+                url = { z, x, y -> "https://s3.amazonaws.com/elevation-tiles-prod/terrarium/$z/$x/$y.png" },
+                decode = { pixel -> terrainHeightTerrarium(pixel) },
+            )
+        }
     }
 
     private data class TileKey(val z: Int, val x: Int, val y: Int)
@@ -187,6 +234,8 @@ class RouteTerrainElevation @Inject constructor(
         const val RetryDelayMillis = 500L
         /** The share of the route whose own tile must have been read. */
         const val MinCoveredShare = 0.8
+        /** Below the Dead Sea shore: a model's no-data pixel, not ground. */
+        const val LowestLandMeters = -450.0
     }
 }
 
@@ -222,4 +271,60 @@ internal fun fillGaps(heights: List<Double?>): List<Double> {
             }
         }
     }
+}
+
+internal fun terrainHeightMapbox(pixel: Int): Double {
+    val red = (pixel shr 16) and 0xFF
+    val green = (pixel shr 8) and 0xFF
+    val blue = pixel and 0xFF
+    return -10_000.0 + (red * 65_536 + green * 256 + blue) * 0.1
+}
+
+internal fun terrainHeightTerrarium(pixel: Int): Double {
+    val red = (pixel shr 16) and 0xFF
+    val green = (pixel shr 8) and 0xFF
+    val blue = pixel and 0xFF
+    return red * 256.0 + green + blue / 256.0 - 32_768.0
+}
+
+/** Two models closer than this read the same ground; their mean is drawn. */
+internal const val TerrainAgreementMeters = 8.0
+
+/**
+ * 104: one profile from two terrain models read at the same points. Where they agree, their
+ * mean. Where they disagree, one has hit something that is not the route's ground (a bridge
+ * deck, a roof, a model's hole), so the one nearer the height just drawn is kept; before any
+ * height is drawn, the nearer to the first place they agree. Where one is missing, the other.
+ */
+internal fun reconcileTerrain(
+    first: List<Double?>,
+    second: List<Double?>,
+    agreementMeters: Double = TerrainAgreementMeters,
+): List<Double> {
+    val size = minOf(first.size, second.size)
+    fun agreed(index: Int): Double? {
+        val a = first[index] ?: return null
+        val b = second[index] ?: return null
+        return if (kotlin.math.abs(a - b) <= agreementMeters) (a + b) / 2.0 else null
+    }
+    val firstAgreement = (0 until size).firstNotNullOfOrNull { agreed(it) }
+    var previous: Double? = null
+    val heights = (0 until size).map { index ->
+        val a = first[index]
+        val b = second[index]
+        val height = when {
+            a != null && b != null -> agreed(index) ?: run {
+                val reference = previous ?: firstAgreement
+                when {
+                    reference == null -> (a + b) / 2.0
+                    kotlin.math.abs(a - reference) <= kotlin.math.abs(b - reference) -> a
+                    else -> b
+                }
+            }
+            else -> a ?: b
+        }
+        if (height != null) previous = height
+        height
+    }
+    return fillGaps(heights)
 }

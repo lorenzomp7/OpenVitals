@@ -6,7 +6,12 @@ import tech.mmarca.openvitals.domain.model.*
 import tech.mmarca.openvitals.healthconnect.HealthConnectManager
 
 /** Range reads, never one dashboard request per day. Snapshots retain their explicit latest/weekly meaning. */
-internal class DashboardPeriodLoader(private val hc: HealthConnectManager, private val estimatedCalories: Boolean = false) {
+internal class DashboardPeriodLoader(
+    private val hc: HealthConnectManager,
+    private val estimatedCalories: Boolean = false,
+    /** 142: the active energy of one step for the profile's body. */
+    private val kcalPerStep: Double = tech.mmarca.openvitals.domain.insights.activeKcalPerStep(null, null),
+) {
     suspend fun load(
         query: DashboardQuery,
         granted: Set<String>,
@@ -21,7 +26,22 @@ internal class DashboardPeriodLoader(private val hc: HealthConnectManager, priva
         val base = if (snapshotMetrics.isEmpty()) DashboardData(date = period.end)
             else loadDay(query.copy(date = period.end, period = null, visibleMetrics = snapshotMetrics,
                 includeHistoricalBaselines = false))
-        val totals = readTotals(query.copy(visibleMetrics = permitted), base)
+        var totals = readTotals(query.copy(visibleMetrics = permitted), base)
+        // 142: the period's active calories count the steps too, slice by slice.
+        if (DashboardMetric.ACTIVE_CALORIES in wanted) {
+            val stepsPermission = MetricReadPermissions.readStepsPermission
+            val activePermission = MetricReadPermissions.readActiveCaloriesPermission
+            if (stepsPermission in granted || activePermission in granted) {
+                val zone = ZoneId.systemDefault()
+                hc.readActiveCaloriesWithSteps(
+                    period.start.atStartOfDay(zone).toInstant(),
+                    period.end.plusDays(1).atStartOfDay(zone).toInstant(),
+                    steps = stepsPermission in granted,
+                    active = activePermission in granted,
+                    kcalPerStep = kcalPerStep,
+                )?.let { totals = totals.copy(activeCaloriesKcal = it) }
+            }
+        }
         return totals.copy(
             date = query.date,
             period = period,
@@ -50,8 +70,14 @@ internal class DashboardPeriodLoader(private val hc: HealthConnectManager, priva
         val workouts = if (wants(DashboardMetric.WORKOUT)) hc.readExerciseSessions(
             start.atStartOfDay(zone).toInstant(), end.plusDays(1).atStartOfDay(zone).toInstant(),
         ).sortedByDescending { it.startTime } else emptyList()
-        val sleep = if (wants(DashboardMetric.SLEEP)) hc.readDailySleepDurations(start, end, query.sleepWindow)
-            .filter { it.durationMs > 0 } else emptyList()
+        // Same night rule as the Sleep screen (naps and awake stages out), so the averages match.
+        val sleep = if (wants(DashboardMetric.SLEEP)) {
+            val sessions = hc.readSleepSessionsForDates(start, end, query.sleepWindow)
+            generateSequence(start) { it.plusDays(1).takeUnless { next -> next.isAfter(end) } }
+                .map { date -> nightSleepDurationMs(sleepSessionsForRange(sessions, date, query.sleepWindow, zone)) }
+                .filter { it > 0 }
+                .toList()
+        } else emptyList()
         val hrv = if (wants(DashboardMetric.HRV)) hc.readDailyHRV(start, end)
             .map { it.rmssdMs }.filter { it > 0 } else emptyList()
         val mindfulness = if (wants(DashboardMetric.MINDFULNESS)) hc.readMindfulnessSessions(
@@ -65,7 +91,7 @@ internal class DashboardPeriodLoader(private val hc: HealthConnectManager, priva
                     id = "dashboard-period-average",
                     startTime = start.atStartOfDay(zone).toInstant(),
                     endTime = end.plusDays(1).atStartOfDay(zone).toInstant(),
-                    durationMs = nights.map { it.durationMs }.average().roundToLong(),
+                    durationMs = nights.average().roundToLong(),
                     source = "",
                 )
             },

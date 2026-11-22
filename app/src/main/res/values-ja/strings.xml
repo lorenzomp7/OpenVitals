@@ -321,7 +321,7 @@
     <string name="activity_workout_export_failed">ワークアウトファイルを保存できませんでした。</string>
     <string name="activity_workout_share_chooser_title">ワークアウトを共有するアプリ</string>
     <string name="activity_workout_share_failed">ワークアウトファイルを共有できませんでした。</string>
-    <string name="activity_splits_laps_title">ラップ</string>
+    <string name="activity_splits_laps_title">スプリット · デバイスのラップ</string>
     <string name="activity_splits_laps_body">このアクティビティを保存したデバイスまたはアプリが記録したものです。</string>
     <string name="activity_splits_derived_title">スプリット · %1$s ごと</string>
     <string name="activity_splits_estimated_title">スプリット · 推定</string>
@@ -3968,8 +3968,8 @@
     <string name="settings_brand_colors_google">Google の 4 色</string>
     <string name="settings_brand_colors_phone">スマートフォンの色</string>
     <string name="settings_brand_colors_hero">上部の 3 つのリングの色</string>
-    <string name="settings_brand_colors_tiles">最初のページの最初の 6 タイルの色</string>
-    <string name="settings_brand_colors_hero_tiles">両方：リングと最初の 6 タイルの色</string>
+    <string name="settings_brand_colors_tiles">ホーム画面の色</string>
+    <string name="settings_brand_colors_hero_tiles">両方：リングの色とホーム画面の色</string>
     <string name="settings_brand_animated_title">アニメーション</string>
     <string name="settings_brand_animated_body">オン：ホーム画面のボタンとアイコンが動きます。オフ：色はそのままで静止します。OpenVitals トグルは常に動きます。</string>
     <string name="activity_chart_recovery_estimate">推定</string>
@@ -3978,6 +3978,9 @@
     <string name="activity_elevation_source_mapbox">Mapbox の地形モデルの標高。</string>
     <string name="activity_elevation_source_gps">補正されていない GPS 標高はずれます。Mapbox にサインインするか標高タイルをインポートすると補正されます。</string>
     <string name="activity_elevation_source_mapbox_failed">ずれが生じる GPS の高度です。Mapbox にはサインインしていますが、地形モデルを読み込めませんでした（接続がないか、Mapbox がリクエストを拒否しました）。もう一度試すにはアクティビティを開き直してください。</string>
+    <string name="activity_elevation_source_terrarium">オープンな地形モデル Terrarium の標高（AWS Open Data、アカウント不要）。</string>
+    <string name="activity_elevation_source_combined">2 つの地形モデル（Mapbox と Terrarium）を互いに照合した標高。</string>
+    <string name="activity_elevation_source_terrain_failed">ずれが生じる GPS の高度です。地形モデルを読み込めませんでした（接続がありません）。もう一度試すにはアクティビティを開き直してください。</string>
     <string name="dashboard_detail_fat_mass">体脂肪量: %1$s</string>
     <string name="dashboard_detail_share_of_weight">体重の %1$s</string>
     <string name="dashboard_detail_macro_energy">%1$s、摂取の %2$s</string>

@@ -57,7 +57,7 @@ jobs:
           if (( NEXT < 1070400000 )); then NEXT=1070400000; fi
           echo "OPENVITALS_VERSION_CODE=$NEXT" >> "$GITHUB_ENV"
           echo "code=$NEXT" >> "$GITHUB_OUTPUT"
-          echo "OPENVITALS_VERSION_NAME=2.17.22-personal-claude" >> "$GITHUB_ENV"
+          echo "OPENVITALS_VERSION_NAME=2.17.23-personal-claude" >> "$GITHUB_ENV"
       - name: Build the signed personal update
         env:
           OPENVITALS_RELEASE_STORE_FILE: ${{ github.workspace }}/personal/personal.p12
@@ -138,6 +138,24 @@ jobs:
           cat > release-notes.md <<EOF
           Scarica **OpenVitals.apk** dagli allegati e aprilo sul telefono.
 
+          Branch main_claude — 94, 99, 100, 104, 127, 131-133, 136, 141-152:
+          - Toggle OpenVitals e scheda del sonno: la media del sonno del periodo è calcolata nello stesso modo (solo la notte, senza risvegli e pisolini), quindi i due numeri coincidono.
+          - Modalità modifica: uscendo senza essere tornati in cima non compare più per un istante la parte alta della modifica.
+          - "Welcome back": entra e si spegne come un televisore a tubo catodico (una linea luminosa che si apre; in uscita si chiude dall'alto e dal basso fino a un punto). Parte quando la pagina principale è caricata.
+          - Altitudine: oltre a Mapbox si legge il modello del terreno aperto Terrarium (AWS Open Data, gratis, senza account), sempre per riquadri e mai il percorso. Dove i due concordano si usa la media, dove uno salta (ponti, edifici, buchi) vale l'altro; senza Mapbox basta Terrarium.
+          - Elenco attività: le corse su tapis roulant mostrano solo la durata, senza FC media.
+          - Dettaglio attività: anche Metriche, Dettagli sessione, Segmenti, Percorso, Analisi del percorso, Navigazione ed Esporta si spostano e si nascondono come i grafici. Nuovo ordine logico: cifre, mappa, grafico del tipo, cuore, velocità e parziali, terreno, ritmo, sforzo, record, dettagli ed esportazione.
+          - Due sezioni "Giri": quella con le barre ora si chiama "Suddivisioni · giri del dispositivo", la tabella resta "Giri".
+          - Attività per anno più veloci: le metriche delle sessioni si leggono in parallelo.
+          - Corsa e camminata con GPS: velocità, cadenza, falcata e passo usano l'app che ha registrato l'attività, escludono le pause e sono verificati su distanza e passi (unità sbagliata o cadenza "per piede" corrette, altrimenti la velocità dal GPS).
+          - Peso: "Latest" e "Change" ai due lati della scheda; una variazione negativa ha il segno meno.
+          - Calorie attive: contano anche i passi, fascia per fascia (si prende il maggiore fra energia registrata e passi), così una giornata di camminata non vale zero e un allenamento non si somma due volte.
+          - Cambiando periodo in qualunque schermata e nel toggle si vedono solo i dati del nuovo periodo: finché arrivano, al posto dei vecchi c'è il caricamento.
+          - Sonno: tenendo premuto sul grafico si leggono giorno e ore; "Load 10 more" mostra solo notti del periodo scelto e non le perde scorrendo o tornando indietro.
+          - Pagina principale: cambiando periodo resta la pagina dei riquadri in cui sei.
+          - Toggle: ogni onda a 100 % è alta quanto le altre (le calorie attive al 90 % non restano più basse).
+          - Colori della pagina principale: si prendono dagli anelli e dai riquadri davvero mostrati; "I colori della schermata principale" usa la prima pagina, o il primo blocco 4x4 senza pagine.
+
           Branch main_claude — 127, 129, 130, 135-140:
           - Tapis roulant: nel riepilogo in alto c'è solo la durata, non più la FC media.
           - Toggle OpenVitals, riepilogo: le barre non hanno più il puntino finale né lo spazio fra parte piena e vuota.
@@ -148,23 +166,14 @@ jobs:
           - "Gradient distribution" ha lo stile delle altre schede: tre colonne in alto e barre come le zone cardiache, nel colore dell'altitudine.
           - Passo, serie, recupero e grafici a due linee: tenendo premuto e scorrendo si legge il valore sotto il dito, come negli altri grafici.
 
-          Branch main_claude — 94, 99, 100, 104, 116, 131-134:
-          - Toggle OpenVitals: sonno, passi, allenamento e calorie attive sono letti per il periodo scelto anche quando il loro riquadro non è sulla pagina principale. Il sonno ora mostra le ore dormite sull'obiettivo in ore (prima "58 of 8h 00m" metteva il punteggio del sonno accanto alle ore).
-          - Modalità modifica della pagina principale: entrando e uscendo la vista attuale svanisce e poi compare l'altra, senza più sovrapporsi.
-          - "Welcome back" e il bordo del toggle usano lo stesso inchiostro animato nei colori della pagina principale e lo stesso bordo di "Start workout" e "+ Log".
-          - Altitudine: quando il terreno Mapbox non arriva, l'altitudine GPS viene ripulita dai salti (mediana su due minuti, poi media su mezzo minuto); un tile Mapbox mancante non fa più scartare tutto il percorso.
-          - Anelli in alto: in modifica ogni riquadro lì è un 2x1 con 2 dettagli, finché resta negli anelli.
-          - Grafici delle attività: in modifica ogni grafico ha una x per nasconderlo; i nascosti compaiono in fondo, attenuati, con + per rimetterli. Un ordine generale unico vale per tutte le attività (cuore, zone, grafico del tipo, velocità, altitudine, pendenza, parziali, giri, cadenza, falcata, calorie, effetto, recupero, record); un grafico spostato in un'attività si sposta in tutte.
-          - Attività più veloci: i record personali leggono le attività dello stesso tipo una sola volta (non più a ogni apertura); il terreno Mapbox non blocca più i grafici; lo spazio dei grafici è riservato finché arrivano, così la schermata non salta.
-
           Questa versione aggiorna l'installazione personale compatibile di OpenVitals senza disinstallarla. La revisione ha superato la verifica completa (verify) in questa stessa esecuzione; package e firma coincidono con l'APK pubblicato precedente; installazione, aggiornamento, avvio e import screenshot sono verificati su Android 15.
 
-          Versione: **2.17.22-personal-claude**. Version code: **$OPENVITALS_VERSION_CODE**.
+          Versione: **2.17.23-personal-claude**. Version code: **$OPENVITALS_VERSION_CODE**.
           Sorgenti: https://github.com/$GH_REPO/commit/$GITHUB_SHA
           Compilazione e verifica aggiornamento: https://github.com/$GH_REPO/actions/runs/$GITHUB_RUN_ID
           EOF
           if gh release view "$TAG" > /dev/null 2>&1; then
             echo "Release already exists; keeping the published APK unchanged."
           else
-            gh release create "$TAG" release/OpenVitals.apk release/SHA256SUMS.txt --target "$GITHUB_SHA" --title "OpenVitals 2.17.22 · main_claude" --notes-file release-notes.md --latest
+            gh release create "$TAG" release/OpenVitals.apk release/SHA256SUMS.txt --target "$GITHUB_SHA" --title "OpenVitals 2.17.23 · main_claude" --notes-file release-notes.md --latest
           fi

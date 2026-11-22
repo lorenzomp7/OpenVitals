@@ -50,7 +50,7 @@ object MetricReadPermissions {
     private val readWeightPermission = HealthPermission.getReadPermission(WeightRecord::class)
     private val readBodyFatPermission = HealthPermission.getReadPermission(BodyFatRecord::class)
     private val readCaloriesPermission = HealthPermission.getReadPermission(TotalCaloriesBurnedRecord::class)
-    private val readActiveCaloriesPermission = HealthPermission.getReadPermission(ActiveCaloriesBurnedRecord::class)
+    val readActiveCaloriesPermission = HealthPermission.getReadPermission(ActiveCaloriesBurnedRecord::class)
     private val readHydrationPermission = HealthPermission.getReadPermission(HydrationRecord::class)
     val readNutritionPermission = HealthPermission.getReadPermission(NutritionRecord::class)
     private val readBloodPressurePermission = HealthPermission.getReadPermission(BloodPressureRecord::class)

@@ -49,16 +49,33 @@ class DashboardPeriodLoaderTest {
         coVerify(exactly = 0) { hc.readDailySteps(any(), any(), any(), any(), any(), any(), any(), any()) }
     }
 
-    @Test fun `sleep is mean of recorded nights excluding missing nights`() = runTest {
+    @Test fun `sleep is mean of recorded nights excluding missing nights and awake time`() = runTest {
         val wanted = setOf(DashboardMetric.SLEEP)
         val granted = MetricReadPermissions.forMetric(DashboardMetric.SLEEP, false)
         every { hc.managedPermissions } returns granted
-        coEvery { hc.readDailySleepDurations(start, end, any()) } returns listOf(
-            DailySleepDuration(start, 6 * 3600000L), DailySleepDuration(end, 8 * 3600000L),
+        val zone = java.time.ZoneId.systemDefault()
+        fun night(wake: LocalDate, hours: Long, awakeMinutes: Long): SleepData {
+            val begin = wake.minusDays(1).atTime(23, 0).atZone(zone).toInstant()
+            val finish = begin.plus(java.time.Duration.ofHours(hours))
+            val awakeEnd = begin.plus(java.time.Duration.ofMinutes(awakeMinutes))
+            return SleepData(
+                id = "n$wake", startTime = begin, endTime = finish,
+                durationMs = finish.toEpochMilli() - begin.toEpochMilli(), source = "test",
+                stages = listOf(
+                    SleepStage(begin, awakeEnd, SleepStage.STAGE_AWAKE),
+                    SleepStage(awakeEnd, finish, SleepStage.STAGE_LIGHT),
+                ),
+            )
+        }
+        coEvery { hc.readSleepSessionsForDates(start, end, any()) } returns listOf(
+            night(start.plusDays(1), hours = 6, awakeMinutes = 30),
+            night(end, hours = 8, awakeMinutes = 30),
         )
         val result = DashboardPeriodLoader(hc).load(
             DashboardQuery(period = DatePeriod(start, end), visibleMetrics = wanted), granted,
         ) { DashboardData(date = it.date) }
-        assertEquals(7 * 3600000L, result.sleep?.durationMs)
+        // (5h30 + 7h30) / 2 recorded nights: awake stages out, empty nights out, as on the Sleep screen.
+        assertEquals(6 * 3600000L + 30 * 60000L, result.sleep?.durationMs)
+        coVerify(exactly = 0) { hc.readDailySleepDurations(any(), any(), any()) }
     }
 }

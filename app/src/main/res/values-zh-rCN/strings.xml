@@ -262,7 +262,7 @@
     <string name="activity_workout_export_failed">无法保存锻炼文件。</string>
     <string name="activity_workout_share_chooser_title">分享锻炼</string>
     <string name="activity_workout_share_failed">无法分享锻炼文件。</string>
-    <string name="activity_splits_laps_title">圈数</string>
+    <string name="activity_splits_laps_title">分段 · 设备圈数</string>
     <string name="activity_splits_laps_body">由保存此活动的设备或应用记录。</string>
     <string name="activity_splits_derived_title">分段 · 每 %1$s</string>
     <string name="activity_splits_estimated_title">分段 · 估算</string>
@@ -3901,8 +3901,8 @@
     <string name="settings_brand_colors_google">Google 四色</string>
     <string name="settings_brand_colors_phone">手机配色</string>
     <string name="settings_brand_colors_hero">顶部三个圆环的颜色</string>
-    <string name="settings_brand_colors_tiles">第一页前六个卡片的颜色</string>
-    <string name="settings_brand_colors_hero_tiles">两者：圆环和前六个卡片的颜色</string>
+    <string name="settings_brand_colors_tiles">主屏幕的颜色</string>
+    <string name="settings_brand_colors_hero_tiles">两者：圆环的颜色和主屏幕的颜色</string>
     <string name="settings_brand_animated_title">动态</string>
     <string name="settings_brand_animated_body">开启时，主屏幕上的按钮和图标会动；关闭时，它们保持各自颜色静止。OpenVitals 开关始终会动。</string>
     <string name="activity_chart_recovery_estimate">估算</string>
@@ -3911,6 +3911,9 @@
     <string name="activity_elevation_source_mapbox">海拔来自 Mapbox 地形模型。</string>
     <string name="activity_elevation_source_gps">未校正的 GPS 海拔会漂移：登录 Mapbox 或导入高程瓦片即可校正。</string>
     <string name="activity_elevation_source_mapbox_failed">GPS 海拔，会产生漂移：已登录 Mapbox，但无法加载其地形模型（无网络连接，或 Mapbox 拒绝了请求）。重新打开该活动即可重试。</string>
+    <string name="activity_elevation_source_terrarium">海拔来自开放的 Terrarium 地形模型（AWS Open Data，无需账户）。</string>
+    <string name="activity_elevation_source_combined">海拔来自两个相互校验的地形模型：Mapbox 和 Terrarium。</string>
+    <string name="activity_elevation_source_terrain_failed">GPS 海拔，会产生漂移：无法加载任何地形模型（无网络连接）。重新打开该活动即可重试。</string>
     <string name="dashboard_detail_fat_mass">脂肪量：%1$s</string>
     <string name="dashboard_detail_share_of_weight">占体重 %1$s</string>
     <string name="dashboard_detail_macro_energy">%1$s，占摄入 %2$s</string>

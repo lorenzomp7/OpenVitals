@@ -21,6 +21,7 @@ import tech.mmarca.openvitals.domain.model.combineNightStages
 import tech.mmarca.openvitals.domain.model.dailyNaps
 import tech.mmarca.openvitals.domain.model.durationMsForTypes
 import tech.mmarca.openvitals.domain.model.dailySleepSummary
+import tech.mmarca.openvitals.domain.model.nightSleepDurationMs
 import tech.mmarca.openvitals.domain.model.sleepDurationMsFromStages
 import tech.mmarca.openvitals.domain.model.sleepSessionsForRange
 import tech.mmarca.openvitals.domain.model.sleepSessionsUnionMs
@@ -249,12 +250,7 @@ private val SleepOverviewDay.nightSessions: List<SleepData>
     get() = splitNightAndNaps(sessions).night
 
 private val SleepOverviewDay.sleepDurationMs: Long
-    get() = nightSessions.let { night ->
-        sleepDurationMsFromStages(
-            stages = combineNightStages(night, maxGap = SleepNapGap),
-            fallbackDurationMs = sleepSessionsUnionMs(night),
-        )
-    }
+    get() = nightSleepDurationMs(sessions)
 
 private val SleepOverviewDay.timeInBedMs: Long
     get() = nightSessions.let { night ->

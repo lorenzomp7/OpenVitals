@@ -25,6 +25,7 @@ import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.DrawScope
+import androidx.compose.ui.graphics.drawscope.withTransform
 import androidx.compose.ui.text.drawText
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
@@ -167,45 +168,59 @@ fun AmbientFluidBrand(
         val seconds = if (animate) timeline.secondsAt(frameMillis) else ToggleRestSeconds
         val intro = if (animate) timeline.fillAt(frameMillis) else 1f
         // 94: the greeting holds the pill while the app opens, then gives way to the wave.
-        val greetingAlpha = if (greetingLayout != null && greetSince != null) {
-            greetingAlphaAt((frameMillis - greetSince).coerceAtLeast(0L) / 1_000f)
+        // 100: it switches on and off like a cathode-ray television (GreetingCrtMotion).
+        val crt = if (greetingLayout != null && greetSince != null) {
+            greetingCrtAt((frameMillis - greetSince).coerceAtLeast(0L) / 1_000f)
         } else {
-            0f
+            null
         }
-        drawOpenVitalsToggle(seconds, intro * (1f - greetingAlpha), FluidBorderWidth.toPx(), fills, colors, light)
-        if (greetingLayout != null && greetingAlpha > 0f) {
+        drawOpenVitalsToggle(seconds, intro * (1f - (crt?.presence ?: 0f)), FluidBorderWidth.toPx(), fills, colors, light)
+        if (greetingLayout != null && crt != null) {
             // 106: no sync light at the end any more, so the greeting centres in the whole pill.
             val room = size.width - size.height * 0.4f
             val topLeft = Offset(
                 size.height * 0.4f + (room - size.height * 0.4f - greetingLayout.size.width).coerceAtLeast(0f) / 2f,
                 (size.height - greetingLayout.size.height) / 2f,
             )
+            val textWidth = greetingLayout.size.width.toFloat()
+            val textHeight = greetingLayout.size.height.toFloat()
+            val centre = topLeft + Offset(textWidth / 2f, textHeight / 2f)
             // The buttons' ink: the palette drifting along the letters at the buttons' pace.
             val drift = (timeline.secondsAt(frameMillis) * 0.15f) % 1f
-            drawText(
-                textLayoutResult = greetingLayout,
-                brush = Brush.linearGradient(
-                    colors = List(5) { cyclicBrandColor(it / 4f + drift, inkColors) },
-                    start = topLeft,
-                    end = topLeft + Offset(greetingLayout.size.width.toFloat(), greetingLayout.size.height.toFloat()),
-                ),
-                alpha = greetingAlpha,
-                topLeft = topLeft,
+            val ink = Brush.linearGradient(
+                colors = List(5) { cyclicBrandColor(it / 4f + drift, inkColors) },
+                start = topLeft,
+                end = topLeft + Offset(textWidth, textHeight),
             )
+            withTransform({ scale(crt.scaleX, crt.scaleY, pivot = centre) }) {
+                drawText(textLayoutResult = greetingLayout, brush = ink, alpha = crt.alpha, topLeft = topLeft)
+            }
+            if (crt.beam > 0f) {
+                // The electron beam: a white line where the picture is squeezed, glowing around.
+                val lineWidth = textWidth * crt.scaleX
+                val lineHeight = (textHeight * crt.scaleY).coerceAtLeast(2.dp.toPx())
+                val lineTopLeft = Offset(centre.x - lineWidth / 2f, centre.y - lineHeight / 2f)
+                val glow = lineHeight * 3f
+                drawRoundRect(
+                    brush = ink,
+                    topLeft = Offset(lineTopLeft.x, centre.y - glow / 2f),
+                    size = androidx.compose.ui.geometry.Size(lineWidth, glow),
+                    cornerRadius = androidx.compose.ui.geometry.CornerRadius(glow / 2f),
+                    alpha = 0.35f * crt.beam * crt.alpha,
+                )
+                drawRoundRect(
+                    color = Color.White,
+                    topLeft = lineTopLeft,
+                    size = androidx.compose.ui.geometry.Size(lineWidth, lineHeight),
+                    cornerRadius = androidx.compose.ui.geometry.CornerRadius(lineHeight / 2f),
+                    alpha = 0.9f * crt.beam * crt.alpha,
+                )
+            }
         }
     }
 }
 
 private const val GreetingMillis = 3_600L
-
-/** Fades in, holds, fades out over the opening seconds. */
-private fun greetingAlphaAt(seconds: Float): Float = when {
-    seconds < 0.2f -> 0f
-    seconds < 0.7f -> (seconds - 0.2f) / 0.5f
-    seconds < 2.9f -> 1f
-    seconds < 3.5f -> 1f - (seconds - 2.9f) / 0.6f
-    else -> 0f
-}
 
 /** 100: "Welcome back, name" as the app opens; without a name, "Welcome back". */
 @Composable
@@ -243,6 +258,9 @@ private val ToggleLobes = listOf(
     ToggleLobe(BrandYellow, center = 0.60f, width = 0.14f, up = 0.32f, down = 0.10f, speed = 1.1f, phase = 3.1f),
     ToggleLobe(BrandGreen, center = 0.72f, width = 0.15f, up = 0.10f, down = 0.34f, speed = 0.8f, phase = 4.4f),
 )
+
+/** 148: the share of the pill's height a lobe spans, above and below the thread, at 100 %. */
+private const val ToggleWaveSpan = 0.8f
 
 /** Fixed sparkle seeds: position, drift, twinkle rate and tint, so every frame agrees. */
 private val ToggleSparks = List(14) { index ->
@@ -290,14 +308,20 @@ private fun DrawScope.drawOpenVitalsToggle(
     // 98: while the greeting holds the pill the wave is flat; a flat lobe's outline would draw a line through it.
     if (open > 0.02f) ToggleLobes.forEachIndexed { index, lobe ->
         val lobeColor = colors[index % colors.size].let { if (light) lerpColor(it, Color.Black, 0.1f) else it }
-        // 94: a lobe swells as far as its goal is met; one met in full stands at its full height.
-        val goal = fills?.getOrNull(index)?.coerceIn(0f, 1f)?.let { 0.22f + 0.78f * it } ?: 1f
+        // 94: a lobe swells as far as its goal is met.
+        // 148: every lobe measures its goal on the same scale: at 100 % any of the four spans the
+        // pill's full wave height, whatever its shape; the lobe's own shape only decides how
+        // that height splits above and below the thread, and the breathing stays small.
+        val goal = fills?.getOrNull(index)?.coerceIn(0f, 1f)?.let { 0.12f + 0.88f * it } ?: 1f
         val drift = sin(seconds * 0.35f * lobe.speed + lobe.phase) * 0.06f
         val cx = (0.5f + (lobe.center + drift - 0.5f) * open) * w
         val halfWidth = lobe.width * w * (0.4f + 0.6f * open)
-        val breath = 0.55f + 0.45f * sin(seconds * lobe.speed * 1.6f + lobe.phase)
-        val up = lobe.up * h * breath * open * goal
-        val down = lobe.down * h * (1.1f - breath * 0.6f) * open * goal
+        val upShare = lobe.up / (lobe.up + lobe.down)
+        val span = ToggleWaveSpan * h * open * goal
+        val breathUp = 0.9f + 0.1f * sin(seconds * lobe.speed * 1.6f + lobe.phase)
+        val breathDown = 0.9f + 0.1f * sin(seconds * lobe.speed * 1.6f + lobe.phase + 1.6f)
+        val up = span * upShare * breathUp
+        val down = span * (1f - upShare) * breathDown
         val path = Path().apply {
             val steps = 28
             moveTo(cx - halfWidth * 2.2f, mid)

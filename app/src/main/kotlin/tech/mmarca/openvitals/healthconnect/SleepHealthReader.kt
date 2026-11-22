@@ -101,7 +101,7 @@ internal class SleepHealthReader(
         }
     }
 
-    private suspend fun readSleepSessionsForDates(
+    suspend fun readSleepSessionsForDates(
         startDate: LocalDate,
         endDate: LocalDate,
         sleepWindow: SleepWindow,

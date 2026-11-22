@@ -19,10 +19,13 @@ fun sessionSeries(
     end: Instant,
     medianHalfWindowSeconds: Long = 5,
     meanHalfWindowSeconds: Long = 5,
+    /** 136: the app that wrote the session; its readings win when it wrote any. */
+    preferredSource: String? = null,
 ): List<Pair<Instant, Double>> {
     val inSession = readings.filter { !it.time.isBefore(start) && !it.time.isAfter(end) && it.value.isFinite() }
     if (inSession.isEmpty()) return emptyList()
-    val source = inSession.groupingBy { it.source }.eachCount().maxByOrNull { it.value }!!.key
+    val source = preferredSource?.takeIf { preferred -> inSession.any { it.source == preferred } }
+        ?: inSession.groupingBy { it.source }.eachCount().maxByOrNull { it.value }!!.key
     val perSecond = inSession.filter { it.source == source }
         .groupBy { it.time.epochSecond }
         .toSortedMap()

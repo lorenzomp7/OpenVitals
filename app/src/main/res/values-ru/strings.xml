@@ -333,7 +333,7 @@
     <string name="activity_workout_export_failed">Не удалось сохранить файл тренировки.</string>
     <string name="activity_workout_share_chooser_title">Поделиться тренировкой с помощью</string>
     <string name="activity_workout_share_failed">Не удалось поделиться файлом тренировки.</string>
-    <string name="activity_splits_laps_title">Круги</string>
+    <string name="activity_splits_laps_title">Отрезки · круги устройства</string>
     <string name="activity_splits_laps_body">Записано устройством или приложением, сохранившим эту активность.</string>
     <string name="activity_splits_derived_title">Отрезки · каждые %1$s</string>
     <string name="activity_splits_estimated_title">Отрезки · расчётные</string>
@@ -3967,8 +3967,8 @@
     <string name="settings_brand_colors_google">Четыре цвета Google</string>
     <string name="settings_brand_colors_phone">Цвета телефона</string>
     <string name="settings_brand_colors_hero">Цвета трёх колец вверху</string>
-    <string name="settings_brand_colors_tiles">Цвета первых шести плиток первой страницы</string>
-    <string name="settings_brand_colors_hero_tiles">Оба: цвета колец и первых шести плиток</string>
+    <string name="settings_brand_colors_tiles">Цвета главного экрана</string>
+    <string name="settings_brand_colors_hero_tiles">Оба: цвета колец и главного экрана</string>
     <string name="settings_brand_animated_title">Анимированные</string>
     <string name="settings_brand_animated_body">Вкл.: кнопки и значки на главном экране движутся; выкл.: они неподвижны в своих цветах. Переключатель OpenVitals движется всегда.</string>
     <string name="activity_chart_recovery_estimate">Оценка</string>
@@ -3977,6 +3977,9 @@
     <string name="activity_elevation_source_mapbox">Высота по модели рельефа Mapbox.</string>
     <string name="activity_elevation_source_gps">Нескорректированная высота GPS, которая дрейфует: войдите в Mapbox или импортируйте тайлы высот, чтобы её исправить.</string>
     <string name="activity_elevation_source_mapbox_failed">Высота по GPS, которая дрейфует: вход в Mapbox выполнен, но модель рельефа не загрузилась (нет соединения или Mapbox отклонил запрос). Откройте активность снова, чтобы повторить.</string>
+    <string name="activity_elevation_source_terrarium">Высота по открытой модели рельефа Terrarium (AWS Open Data, без учётной записи).</string>
+    <string name="activity_elevation_source_combined">Высота по двум моделям рельефа, Mapbox и Terrarium, сверенным друг с другом.</string>
+    <string name="activity_elevation_source_terrain_failed">Высота по GPS, которая дрейфует: не удалось загрузить ни одну модель рельефа (нет соединения). Откройте активность снова, чтобы повторить.</string>
     <string name="dashboard_detail_fat_mass">Жировая масса: %1$s</string>
     <string name="dashboard_detail_share_of_weight">%1$s массы тела</string>
     <string name="dashboard_detail_macro_energy">%1$s, %2$s потребления</string>

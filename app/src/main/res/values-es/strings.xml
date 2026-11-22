@@ -2209,7 +2209,7 @@
     <string name="activity_route_share_kmz">Compartir KMZ</string>
     <string name="activity_route_share_chooser_title">Compartir ruta con</string>
     <string name="activity_route_share_failed">No se pudo compartir el archivo de ruta.</string>
-    <string name="activity_splits_laps_title">Vueltas</string>
+    <string name="activity_splits_laps_title">Tramos · vueltas del dispositivo</string>
     <string name="activity_splits_laps_body">Registradas por el dispositivo o la app que guardó esta actividad.</string>
     <string name="activity_splits_derived_title">Tramos · cada %1$s</string>
     <string name="activity_splits_estimated_title">Tramos · estimados</string>
@@ -3933,8 +3933,8 @@
     <string name="settings_brand_colors_google">Los cuatro colores de Google</string>
     <string name="settings_brand_colors_phone">Los colores del teléfono</string>
     <string name="settings_brand_colors_hero">Los colores de los tres anillos de arriba</string>
-    <string name="settings_brand_colors_tiles">Los colores de los seis primeros recuadros de la primera página</string>
-    <string name="settings_brand_colors_hero_tiles">Ambos: los colores de los anillos y de los seis primeros recuadros</string>
+    <string name="settings_brand_colors_tiles">Los colores de la pantalla principal</string>
+    <string name="settings_brand_colors_hero_tiles">Ambos: los colores de los anillos y de la pantalla principal</string>
     <string name="settings_brand_animated_title">Animados</string>
     <string name="settings_brand_animated_body">Activado: los botones e iconos de la pantalla principal se mueven; desactivado: se quedan quietos en sus colores. El botón OpenVitals siempre se mueve.</string>
     <string name="activity_chart_recovery_estimate">Estimación</string>
@@ -3943,6 +3943,9 @@
     <string name="activity_elevation_source_mapbox">Altitud del modelo del terreno de Mapbox.</string>
     <string name="activity_elevation_source_gps">Altitud GPS sin corregir, que deriva: inicia sesión en Mapbox o importa teselas de elevación para corregirla.</string>
     <string name="activity_elevation_source_mapbox_failed">Altitud GPS, que deriva: Mapbox tiene la sesión iniciada pero su modelo del terreno no se pudo cargar (sin conexión, o Mapbox rechazó la solicitud). Vuelve a abrir la actividad para reintentarlo.</string>
+    <string name="activity_elevation_source_terrarium">Altitud del modelo del terreno abierto Terrarium (AWS Open Data, sin cuenta).</string>
+    <string name="activity_elevation_source_combined">Altitud de dos modelos del terreno, Mapbox y Terrarium, contrastados entre sí.</string>
+    <string name="activity_elevation_source_terrain_failed">Altitud GPS, que deriva: no se pudo cargar ningún modelo del terreno (sin conexión). Vuelve a abrir la actividad para reintentarlo.</string>
     <string name="dashboard_detail_fat_mass">Masa grasa: %1$s</string>
     <string name="dashboard_detail_share_of_weight">%1$s del peso corporal</string>
     <string name="dashboard_detail_macro_energy">%1$s, %2$s de la ingesta</string>

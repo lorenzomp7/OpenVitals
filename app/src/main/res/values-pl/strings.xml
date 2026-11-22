@@ -365,7 +365,7 @@
     <string name="activity_workout_export_failed">Nie udało się zapisać pliku treningu.</string>
     <string name="activity_workout_share_chooser_title">Udostępnij trening przez</string>
     <string name="activity_workout_share_failed">Nie udało się udostępnić pliku treningu.</string>
-    <string name="activity_splits_laps_title">Okrążenia</string>
+    <string name="activity_splits_laps_title">Międzyczasy · okrążenia urządzenia</string>
     <string name="activity_splits_laps_body">Zarejestrowane przez urządzenie lub aplikację, która zapisała tę aktywność.</string>
     <string name="activity_splits_derived_title">Międzyczasy · co %1$s</string>
     <string name="activity_splits_estimated_title">Międzyczasy · szacowane</string>
@@ -3966,8 +3966,8 @@
     <string name="settings_brand_colors_google">Cztery kolory Google</string>
     <string name="settings_brand_colors_phone">Kolory telefonu</string>
     <string name="settings_brand_colors_hero">Kolory trzech pierścieni u góry</string>
-    <string name="settings_brand_colors_tiles">Kolory pierwszych sześciu kafelków pierwszej strony</string>
-    <string name="settings_brand_colors_hero_tiles">Oba: kolory pierścieni i pierwszych sześciu kafelków</string>
+    <string name="settings_brand_colors_tiles">Kolory ekranu głównego</string>
+    <string name="settings_brand_colors_hero_tiles">Oba: kolory pierścieni i ekranu głównego</string>
     <string name="settings_brand_animated_title">Animowane</string>
     <string name="settings_brand_animated_body">Włączone: przyciski i ikony na ekranie głównym się poruszają; wyłączone: stoją w swoich kolorach. Przełącznik OpenVitals porusza się zawsze.</string>
     <string name="activity_chart_recovery_estimate">Szacunek</string>
@@ -3976,6 +3976,9 @@
     <string name="activity_elevation_source_mapbox">Wysokość z modelu terenu Mapbox.</string>
     <string name="activity_elevation_source_gps">Nieskorygowana wysokość GPS, która dryfuje: zaloguj się do Mapbox lub zaimportuj kafelki wysokości, aby ją poprawić.</string>
     <string name="activity_elevation_source_mapbox_failed">Wysokość z GPS, która dryfuje: Mapbox jest zalogowany, ale nie udało się wczytać jego modelu terenu (brak połączenia lub Mapbox odrzucił żądanie). Otwórz aktywność ponownie, aby spróbować jeszcze raz.</string>
+    <string name="activity_elevation_source_terrarium">Wysokość z otwartego modelu terenu Terrarium (AWS Open Data, bez konta).</string>
+    <string name="activity_elevation_source_combined">Wysokość z dwóch modeli terenu, Mapbox i Terrarium, sprawdzanych nawzajem.</string>
+    <string name="activity_elevation_source_terrain_failed">Wysokość z GPS, która dryfuje: nie udało się wczytać żadnego modelu terenu (brak połączenia). Otwórz aktywność ponownie, aby spróbować jeszcze raz.</string>
     <string name="dashboard_detail_fat_mass">Masa tłuszczu: %1$s</string>
     <string name="dashboard_detail_share_of_weight">%1$s masy ciała</string>
     <string name="dashboard_detail_macro_energy">%1$s, %2$s spożycia</string>

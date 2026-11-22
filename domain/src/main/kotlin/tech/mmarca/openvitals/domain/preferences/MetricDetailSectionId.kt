@@ -47,31 +47,73 @@ enum class MetricDetailSectionId {
     ACTIVITY_DETAIL_LAPS,
     ACTIVITY_DETAIL_JUMPS,
     ACTIVITY_DETAIL_RECORDS,
+    // 131: the cards around the charts, arranged and hidden as the charts are.
+    ACTIVITY_DETAIL_METRICS,
+    ACTIVITY_DETAIL_PLAN,
+    ACTIVITY_DETAIL_ROUTE,
+    ACTIVITY_DETAIL_ROUTE_ANALYSIS,
+    ACTIVITY_DETAIL_NAVIGATION,
+    ACTIVITY_DETAIL_SEGMENTS,
+    ACTIVITY_DETAIL_SESSION,
+    ACTIVITY_DETAIL_EXPORT,
 }
 
 /**
- * 132: the general order of an activity's charts, the same for every kind: the heart first,
- * then how fast and over what ground, then the rhythm of the movement, then what the effort
- * did; the records last, read after the rest. A kind that lacks a chart skips its place.
+ * 132: the general order of an activity's sections, the same for every kind, read top to bottom
+ * as one story: the figures and the plan; the map; the chart of the kind itself; the heart
+ * (during, then after the end); how fast (speed, splits, laps); over what ground (height,
+ * gradient, the route's analysis and navigation); the rhythm of the movement (cadence, stride);
+ * what the effort did (calories, training effect) and the records it set; last the session's
+ * own details and its export. A kind that lacks a section skips its place.
  */
 val ActivityDetailGeneralOrder: List<MetricDetailSectionId> = listOf(
-    MetricDetailSectionId.ACTIVITY_DETAIL_HEART_RATE,
-    MetricDetailSectionId.ACTIVITY_DETAIL_ZONES,
+    MetricDetailSectionId.ACTIVITY_DETAIL_METRICS,
+    MetricDetailSectionId.ACTIVITY_DETAIL_PLAN,
+    MetricDetailSectionId.ACTIVITY_DETAIL_ROUTE,
     MetricDetailSectionId.ACTIVITY_DETAIL_TYPE_CHART,
     MetricDetailSectionId.ACTIVITY_DETAIL_JUMPS,
+    MetricDetailSectionId.ACTIVITY_DETAIL_HEART_RATE,
+    MetricDetailSectionId.ACTIVITY_DETAIL_ZONES,
+    MetricDetailSectionId.ACTIVITY_DETAIL_HEART_RATE_DROP,
+    MetricDetailSectionId.ACTIVITY_DETAIL_RECOVERY,
     MetricDetailSectionId.ACTIVITY_DETAIL_SPEED,
-    MetricDetailSectionId.ACTIVITY_DETAIL_ELEVATION,
-    MetricDetailSectionId.ACTIVITY_DETAIL_GRADIENT,
     MetricDetailSectionId.ACTIVITY_DETAIL_SPLITS,
     MetricDetailSectionId.ACTIVITY_DETAIL_LAPS,
+    MetricDetailSectionId.ACTIVITY_DETAIL_ELEVATION,
+    MetricDetailSectionId.ACTIVITY_DETAIL_GRADIENT,
+    MetricDetailSectionId.ACTIVITY_DETAIL_ROUTE_ANALYSIS,
+    MetricDetailSectionId.ACTIVITY_DETAIL_NAVIGATION,
     MetricDetailSectionId.ACTIVITY_DETAIL_CADENCE,
     MetricDetailSectionId.ACTIVITY_DETAIL_STRIDE,
     MetricDetailSectionId.ACTIVITY_DETAIL_CALORIES,
     MetricDetailSectionId.ACTIVITY_DETAIL_TRAINING_EFFECT,
-    MetricDetailSectionId.ACTIVITY_DETAIL_HEART_RATE_DROP,
-    MetricDetailSectionId.ACTIVITY_DETAIL_RECOVERY,
     MetricDetailSectionId.ACTIVITY_DETAIL_RECORDS,
+    MetricDetailSectionId.ACTIVITY_DETAIL_SEGMENTS,
+    MetricDetailSectionId.ACTIVITY_DETAIL_SESSION,
+    MetricDetailSectionId.ACTIVITY_DETAIL_EXPORT,
 )
+
+/**
+ * 134: the sections drawn from the session record alone. They show at once; the others wait for
+ * the samples (heart rate, speed, markers) and the records.
+ */
+val ActivityDetailRecordSections: Set<MetricDetailSectionId> = setOf(
+    MetricDetailSectionId.ACTIVITY_DETAIL_METRICS,
+    MetricDetailSectionId.ACTIVITY_DETAIL_PLAN,
+    MetricDetailSectionId.ACTIVITY_DETAIL_ROUTE,
+    MetricDetailSectionId.ACTIVITY_DETAIL_SEGMENTS,
+    MetricDetailSectionId.ACTIVITY_DETAIL_SESSION,
+    MetricDetailSectionId.ACTIVITY_DETAIL_EXPORT,
+)
+
+/**
+ * 134: while the samples load, the record's own sections that come before the first section
+ * that waits for them in [order]: they can show without anything above them moving later.
+ */
+fun activityDetailSectionsShownWhileLoading(order: List<MetricDetailSectionId>): Set<MetricDetailSectionId> =
+    order.filter { it in ActivityDetailGeneralOrder }
+        .takeWhile { it in ActivityDetailRecordSections }
+        .toSet()
 
 val DefaultMetricDetailSectionOrder: List<MetricDetailSectionId> = listOf(
     MetricDetailSectionId.ACTIVITY_SUMMARY,
@@ -125,7 +167,7 @@ fun metricDetailSectionOrderFromStored(storedIds: List<String>?): List<MetricDet
 }
 
 /** 132: bumped when [ActivityDetailGeneralOrder] is to replace an arrangement saved before it. */
-const val ActivityDetailGeneralOrderVersion = 1
+const val ActivityDetailGeneralOrderVersion = 2
 
 /** 132: [order] with the activity charts put back in the general order, the rest untouched. */
 fun withActivityDetailGeneralOrder(order: List<MetricDetailSectionId>): List<MetricDetailSectionId> {

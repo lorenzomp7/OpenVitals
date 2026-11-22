@@ -67,4 +67,20 @@ class ActivityDetailGeneralOrderTest {
     fun theDefaultOrderIsAlreadyInIt() {
         assertEquals(DefaultMetricDetailSectionOrder, withActivityDetailGeneralOrder(DefaultMetricDetailSectionOrder))
     }
+
+    @Test
+    fun whileTheSamplesLoad_theRecordsOwnSectionsBeforeTheFirstChartShow() {
+        val order = listOf(
+            MetricDetailSectionId.ACTIVITY_DETAIL_METRICS,
+            MetricDetailSectionId.ENTRIES,
+            MetricDetailSectionId.ACTIVITY_DETAIL_ROUTE,
+            MetricDetailSectionId.ACTIVITY_DETAIL_HEART_RATE,
+            MetricDetailSectionId.ACTIVITY_DETAIL_SESSION,
+        )
+
+        assertEquals(
+            setOf(MetricDetailSectionId.ACTIVITY_DETAIL_METRICS, MetricDetailSectionId.ACTIVITY_DETAIL_ROUTE),
+            activityDetailSectionsShownWhileLoading(order),
+        )
+    }
 }

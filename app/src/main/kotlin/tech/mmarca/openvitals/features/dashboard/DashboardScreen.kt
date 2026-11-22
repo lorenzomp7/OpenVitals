@@ -70,7 +70,12 @@ fun DashboardScreen(
     // editing had scrolled to.
     var wasEditingDashboard by remember { mutableStateOf(state.isEditingDashboard) }
     androidx.compose.runtime.LaunchedEffect(state.isEditingDashboard) {
-        if (wasEditingDashboard && !state.isEditingDashboard) listState.scrollToItem(0)
+        if (wasEditingDashboard && !state.isEditingDashboard) {
+            // 99: wait for the editor to finish fading out where it stands; scrolling at once
+            // brought its top into view for a frame before the dashboard took its place.
+            kotlinx.coroutines.delay(tech.mmarca.openvitals.ui.theme.ScreenMotion.FadeThroughOutMillis.toLong())
+            listState.scrollToItem(0)
+        }
         wasEditingDashboard = state.isEditingDashboard
     }
     if (confirmEdit && state.isEditingDashboard) {
@@ -134,15 +139,33 @@ fun DashboardScreen(
     val brandLookViewModel: tech.mmarca.openvitals.features.settings.BrandLookViewModel = androidx.hilt.navigation.compose.hiltViewModel()
     val paletteSource by brandLookViewModel.palette.collectAsStateWithLifecycle()
     val brandAnimated by brandLookViewModel.animated.collectAsStateWithLifecycle()
+    // 149, 150: the tiles the home screen shows, reported by the content once it has drawn them.
+    var paletteIds by remember { mutableStateOf<DashboardPaletteIds?>(null) }
     val brandColors = dashboardBrandColors(
         paletteSource,
         state.dashboardWidgets.filter { it in state.placedDashboardWidgets },
+        paletteIds,
     )
     // 94: the toggle follows the selected period: its sleep, steps, active calories, and
     // whether it holds a workout.
-    val hadWorkout = loadedData?.let { it.workouts.isNotEmpty() || it.workout != null }
-    val dayGoals = dashboardDayGoals(display, brandColors, hadWorkout)
-    val day = brandDay(name = profile.name, goals = dayGoals)
+    // 143: while another period loads, the toggle and its summary wait for it rather than show
+    // the period before under the new one's title.
+    val awaitingPeriod = loadedData != null && (
+        loadedData.date != selectedDate ||
+            loadedData.period != state.dashboardPeriod().takeIf {
+                state.selectedRange != tech.mmarca.openvitals.core.period.TimeRange.DAY
+            }
+        )
+    val hadWorkout = loadedData?.takeUnless { awaitingPeriod }?.let { it.workouts.isNotEmpty() || it.workout != null }
+    val goalDisplay = if (awaitingPeriod) {
+        display.copy(widgets = display.widgets.mapValues { (_, model) -> model.copy(isLoading = true) })
+    } else {
+        display
+    }
+    val dayGoals = dashboardDayGoals(goalDisplay, brandColors, hadWorkout)
+    // 100: no day until the dashboard has loaded, so the greeting starts when the home screen
+    // is there to be seen, not behind the opening and the loading.
+    val day = brandDay(name = profile.name, goals = dayGoals).takeIf { loadedData != null }
     var showDaySummary by remember { mutableStateOf(false) }
     if (showDaySummary) {
         val period = state.dashboardPeriod()
@@ -249,6 +272,7 @@ fun DashboardScreen(
                     onStartActivity = onStartActivity,
                     onToggleDashboardEdit = { if (state.isEditingDashboard) requestFinishEdit() else viewModel.toggleDashboardEdit() },
                     placedWidgetIds = state.placedDashboardWidgets,
+                    onPaletteIds = { paletteIds = it },
                 )
                 else -> DashboardPlaceholder(header) { ErrorMessage(stringResource(R.string.message_no_dashboard_data)) }
             }

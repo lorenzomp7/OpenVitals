@@ -321,7 +321,7 @@
     <string name="activity_workout_export_failed">Non se puido gardar o ficheiro do adestramento.</string>
     <string name="activity_workout_share_chooser_title">Compartir o adestramento con</string>
     <string name="activity_workout_share_failed">Non se puido compartir o ficheiro do adestramento.</string>
-    <string name="activity_splits_laps_title">Voltas</string>
+    <string name="activity_splits_laps_title">Parciais · voltas do dispositivo</string>
     <string name="activity_splits_laps_body">Gravadas polo dispositivo ou app que gardou esta actividade.</string>
     <string name="activity_splits_derived_title">Parciais · cada %1$s</string>
     <string name="activity_splits_estimated_title">Parciais · estimados</string>
@@ -3971,8 +3971,8 @@ Se Acceder a rutas de exercicio non aparece no diálogo de acceso, abre os axust
     <string name="settings_brand_colors_google">As catro cores de Google</string>
     <string name="settings_brand_colors_phone">As cores do teléfono</string>
     <string name="settings_brand_colors_hero">As cores dos tres aneis de arriba</string>
-    <string name="settings_brand_colors_tiles">As cores dos seis primeiros recadros da primeira páxina</string>
-    <string name="settings_brand_colors_hero_tiles">Ambos: as cores dos aneis e dos seis primeiros recadros</string>
+    <string name="settings_brand_colors_tiles">As cores da pantalla principal</string>
+    <string name="settings_brand_colors_hero_tiles">Ambos: as cores dos aneis e da pantalla principal</string>
     <string name="settings_brand_animated_title">Animados</string>
     <string name="settings_brand_animated_body">Activado: os botóns e iconas da pantalla principal móvense; desactivado: quedan quietos nas súas cores. O botón OpenVitals móvese sempre.</string>
     <string name="activity_chart_recovery_estimate">Estimación</string>
@@ -3981,6 +3981,9 @@ Se Acceder a rutas de exercicio non aparece no diálogo de acceso, abre os axust
     <string name="activity_elevation_source_mapbox">Altitude do modelo do terreo de Mapbox.</string>
     <string name="activity_elevation_source_gps">Altitude GPS sen corrixir, que deriva: inicia sesión en Mapbox ou importa teselas de elevación para corrixila.</string>
     <string name="activity_elevation_source_mapbox_failed">Altitude GPS, que deriva: Mapbox ten a sesión iniciada pero o seu modelo do terreo non se puido cargar (sen conexión, ou Mapbox rexeitou a solicitude). Volve abrir a actividade para tentalo de novo.</string>
+    <string name="activity_elevation_source_terrarium">Altitude do modelo do terreo aberto Terrarium (AWS Open Data, sen conta).</string>
+    <string name="activity_elevation_source_combined">Altitude de dous modelos do terreo, Mapbox e Terrarium, contrastados entre si.</string>
+    <string name="activity_elevation_source_terrain_failed">Altitude GPS, que deriva: non se puido cargar ningún modelo do terreo (sen conexión). Volve abrir a actividade para tentalo de novo.</string>
     <string name="dashboard_detail_fat_mass">Masa graxa: %1$s</string>
     <string name="dashboard_detail_share_of_weight">%1$s do peso corporal</string>
     <string name="dashboard_detail_macro_energy">%1$s, %2$s da inxestión</string>

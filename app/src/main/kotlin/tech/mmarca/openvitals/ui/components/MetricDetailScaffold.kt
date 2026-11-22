@@ -88,6 +88,12 @@ fun MetricDetailScaffold(
         }
     }
 
+    // 143: the period whose data the content holds: the one on screen when the last load ended.
+    // While another period loads, its old data is not drawn under the new period's title.
+    var loadedPeriod by remember { mutableStateOf<DatePeriod?>(null) }
+    LaunchedEffect(isLoading, period) { if (!isLoading) loadedPeriod = period }
+    val showsOtherPeriod = isLoading && loadedPeriod != null && loadedPeriod != period
+
     // One reload, one indicator: the spinner answers the pull only.
     var pullRefreshRequested by remember { mutableStateOf(false) }
     LaunchedEffect(isLoading) {
@@ -168,7 +174,18 @@ fun MetricDetailScaffold(
                         item { ErrorMessage(err) }
                     }
                 }
-                content(period)
+                if (showsOtherPeriod) {
+                    item(key = "metric_period_loading") {
+                        Box(
+                            modifier = Modifier.fillMaxWidth().padding(top = 48.dp),
+                            contentAlignment = Alignment.TopCenter,
+                        ) {
+                            androidx.compose.material3.CircularProgressIndicator()
+                        }
+                    }
+                } else {
+                    content(period)
+                }
                 item { Spacer(Modifier.height(16.dp)) }
             }
         }

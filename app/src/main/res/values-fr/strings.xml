@@ -262,7 +262,7 @@
     <string name="activity_workout_export_failed">Impossible d\'enregistrer le fichier d\'entraînement.</string>
     <string name="activity_workout_share_chooser_title">Partager l\'entraînement avec</string>
     <string name="activity_workout_share_failed">Impossible de partager le fichier d\'entraînement.</string>
-    <string name="activity_splits_laps_title">Tours</string>
+    <string name="activity_splits_laps_title">Intervalles · tours de l\'appareil</string>
     <string name="activity_splits_laps_body">Enregistrés par l\'appareil ou l\'app qui a sauvegardé cette activité.</string>
     <string name="activity_splits_derived_title">Intervalles · tous les %1$s</string>
     <string name="activity_splits_estimated_title">Intervalles · estimés</string>
@@ -3933,8 +3933,8 @@
     <string name="settings_brand_colors_google">Les quatre couleurs de Google</string>
     <string name="settings_brand_colors_phone">Les couleurs du téléphone</string>
     <string name="settings_brand_colors_hero">Les couleurs des trois anneaux en haut</string>
-    <string name="settings_brand_colors_tiles">Les couleurs des six premières tuiles de la première page</string>
-    <string name="settings_brand_colors_hero_tiles">Les deux : couleurs des anneaux et des six premières tuiles</string>
+    <string name="settings_brand_colors_tiles">Les couleurs de l\'écran d\'accueil</string>
+    <string name="settings_brand_colors_hero_tiles">Les deux : couleurs des anneaux et de l\'écran d\'accueil</string>
     <string name="settings_brand_animated_title">Animés</string>
     <string name="settings_brand_animated_body">Activé : les boutons et icônes de l\'écran d\'accueil bougent ; désactivé : ils restent immobiles dans leurs couleurs. Le bouton OpenVitals bouge toujours.</string>
     <string name="activity_chart_recovery_estimate">Estimation</string>
@@ -3943,6 +3943,9 @@
     <string name="activity_elevation_source_mapbox">Altitude issue du modèle de terrain de Mapbox.</string>
     <string name="activity_elevation_source_gps">Altitude GPS non corrigée, qui dérive : connecte-toi à Mapbox ou importe des tuiles d\'altitude pour la corriger.</string>
     <string name="activity_elevation_source_mapbox_failed">Altitude GPS, qui dérive : Mapbox est connecté mais son modèle de terrain n\'a pas pu être chargé (pas de connexion, ou Mapbox a refusé la requête). Rouvrez l\'activité pour réessayer.</string>
+    <string name="activity_elevation_source_terrarium">Altitude issue du modèle de terrain ouvert Terrarium (AWS Open Data, sans compte).</string>
+    <string name="activity_elevation_source_combined">Altitude issue de deux modèles de terrain, Mapbox et Terrarium, vérifiés l\'un par l\'autre.</string>
+    <string name="activity_elevation_source_terrain_failed">Altitude GPS, qui dérive : aucun modèle de terrain n\'a pu être chargé (pas de connexion). Rouvrez l\'activité pour réessayer.</string>
     <string name="dashboard_detail_fat_mass">Masse grasse : %1$s</string>
     <string name="dashboard_detail_share_of_weight">%1$s du poids corporel</string>
     <string name="dashboard_detail_macro_energy">%1$s, %2$s de l\'apport</string>

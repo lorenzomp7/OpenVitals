@@ -2213,7 +2213,7 @@
     <string name="activity_route_share_chooser_title">Route teilen mit</string>
     <string name="activity_route_share_failed">Routendatei konnte nicht geteilt werden.</string>
     <string name="activity_workout_export_title">Workout exportieren</string>
-    <string name="activity_splits_laps_title">Runden</string>
+    <string name="activity_splits_laps_title">Abschnitte · Runden des Geräts</string>
     <string name="activity_splits_laps_body">Aufgezeichnet vom Gerät oder von der App, die diese Aktivität gespeichert hat.</string>
     <string name="activity_splits_derived_title">Abschnitte · alle %1$s</string>
     <string name="activity_splits_estimated_title">Abschnitte · geschätzt</string>
@@ -3900,8 +3900,8 @@
     <string name="settings_brand_colors_google">Die vier Google-Farben</string>
     <string name="settings_brand_colors_phone">Die Farben des Telefons</string>
     <string name="settings_brand_colors_hero">Die Farben der drei Ringe oben</string>
-    <string name="settings_brand_colors_tiles">Die Farben der ersten sechs Kacheln der ersten Seite</string>
-    <string name="settings_brand_colors_hero_tiles">Beides: die Farben der Ringe und der ersten sechs Kacheln</string>
+    <string name="settings_brand_colors_tiles">Die Farben des Startbildschirms</string>
+    <string name="settings_brand_colors_hero_tiles">Beides: die Farben der Ringe und des Startbildschirms</string>
     <string name="settings_brand_animated_title">Animiert</string>
     <string name="settings_brand_animated_body">An: Die Schaltflächen und Symbole auf dem Startbildschirm bewegen sich; aus: Sie stehen still in ihren Farben. Der OpenVitals-Schalter bewegt sich immer.</string>
     <string name="activity_chart_recovery_estimate">Schätzung</string>
@@ -3910,6 +3910,9 @@
     <string name="activity_elevation_source_mapbox">Höhe aus dem Geländemodell von Mapbox.</string>
     <string name="activity_elevation_source_gps">Unkorrigierte GPS-Höhe, die driftet: Melde dich bei Mapbox an oder importiere Höhenkacheln, um sie zu korrigieren.</string>
     <string name="activity_elevation_source_mapbox_failed">GPS-Höhe, die driftet: Mapbox ist angemeldet, aber sein Geländemodell ließ sich nicht laden (keine Verbindung oder Mapbox hat die Anfrage abgelehnt). Öffne die Aktivität erneut, um es noch einmal zu versuchen.</string>
+    <string name="activity_elevation_source_terrarium">Höhe aus dem offenen Geländemodell Terrarium (AWS Open Data, ohne Konto).</string>
+    <string name="activity_elevation_source_combined">Höhe aus zwei Geländemodellen, Mapbox und Terrarium, die einander gegenseitig prüfen.</string>
+    <string name="activity_elevation_source_terrain_failed">GPS-Höhe, die driftet: Es ließ sich kein Geländemodell laden (keine Verbindung). Öffne die Aktivität erneut, um es noch einmal zu versuchen.</string>
     <string name="dashboard_detail_fat_mass">Fettmasse: %1$s</string>
     <string name="dashboard_detail_share_of_weight">%1$s des Körpergewichts</string>
     <string name="dashboard_detail_macro_energy">%1$s, %2$s der Aufnahme</string>

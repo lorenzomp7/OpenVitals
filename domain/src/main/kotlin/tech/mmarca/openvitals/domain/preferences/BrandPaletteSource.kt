@@ -11,10 +11,13 @@ enum class BrandPaletteSource {
     /** The colours of the three tiles that make the rings at the top. */
     HERO,
 
-    /** The colours of the first six tiles of the first page. */
+    /**
+     * 150: the colours of the home screen's tiles: the first page when the tiles come in pages,
+     * else those inside the first four-by-four block of spaces.
+     */
     TILES,
 
-    /** The rings' colours, then the first six tiles'. */
+    /** The rings' colours, then the home screen's. */
     HERO_AND_TILES,
     ;
 

@@ -138,6 +138,10 @@ internal fun packDashboardTiles(
 }
 
 internal val DashboardTileGap = 12.dp
+
+/** 147: the tile page in view, held where a new period does not reset it. */
+internal val LocalDashboardTilePage =
+    androidx.compose.runtime.staticCompositionLocalOf<androidx.compose.runtime.MutableIntState?> { null }
 private val DashboardPageDotSize = 7.dp
 
 /** The dashboard's tiles outside edit mode: packed by size, in one sheet or in pages to swipe. */
@@ -163,7 +167,18 @@ internal fun DashboardPackedTiles(
         return
     }
     val pages = placements.groupBy { it.page }.toSortedMap().values.toList()
-    val pagerState = rememberPagerState(pageCount = { pages.size })
+    // 147: the page in view is held above the dashboard's per-period key, so changing the
+    // period keeps the page instead of going back to the first.
+    val heldPage = LocalDashboardTilePage.current
+    val pagerState = rememberPagerState(
+        initialPage = (heldPage?.intValue ?: 0).coerceIn(0, (pages.size - 1).coerceAtLeast(0)),
+        pageCount = { pages.size },
+    )
+    androidx.compose.runtime.LaunchedEffect(pagerState, heldPage) {
+        if (heldPage != null) {
+            androidx.compose.runtime.snapshotFlow { pagerState.currentPage }.collect { heldPage.intValue = it }
+        }
+    }
     Column(modifier = modifier, horizontalAlignment = Alignment.CenterHorizontally) {
         HorizontalPager(
             state = pagerState,

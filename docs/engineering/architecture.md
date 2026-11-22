@@ -12,7 +12,7 @@ The personal branch `main_claude` consolidates dashboard sizing, migrated layout
 
 ## Personal fork map exception
 
-Saved workout route cards use `features/activity/maps/ActivityMapboxMap.kt` and Mapbox cartography after an on-device Mapbox login. OAuth and encrypted token storage live in the same `features/activity/maps` package; GitHub builds contain no personal map token. Internet access is enabled for this feature. Route samples remain local and the existing preview is the fallback. See [Mapbox configuration](mapbox.md).
+Saved workout route cards use `features/activity/maps/ActivityMapboxMap.kt` and Mapbox cartography after an on-device Mapbox login. OAuth and encrypted token storage live in the same `features/activity/maps` package; GitHub builds contain no personal map token. Internet access is enabled for this feature and for the elevation chart's terrain tiles (Mapbox Terrain-DEM and the open Terrarium tiles, requested by tile). Route samples remain local and the existing preview is the fallback. See [Mapbox configuration](mapbox.md).
 
 ## Screenshot import
 

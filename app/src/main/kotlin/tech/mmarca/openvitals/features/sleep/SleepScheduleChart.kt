@@ -3,7 +3,6 @@ package tech.mmarca.openvitals.features.sleep
 import tech.mmarca.openvitals.ui.components.chartSemantics
 import tech.mmarca.openvitals.ui.components.chartSemanticSummary
 import androidx.compose.foundation.Canvas
-import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -24,6 +23,11 @@ import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.graphics.drawscope.clipPath
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.foundation.gestures.awaitEachGesture
+import androidx.compose.foundation.gestures.awaitFirstDown
+import androidx.compose.ui.input.pointer.changedToUp
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.text.drawText
 import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.unit.dp
@@ -92,18 +96,52 @@ internal fun SleepScheduleStageChart(
     val averageLineColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.85f)
     val averageLabelStyle = MaterialTheme.typography.labelSmall
 
-    val tapModifier = if (onDateSelected != null && days.isNotEmpty()) {
+    // 144: a tap opens the day; holding a finger on the chart reads the day and its hours asleep,
+    // following the finger along the bars until it lifts.
+    var heldIndex by remember { androidx.compose.runtime.mutableStateOf<Int?>(null) }
+    val holdLabels = remember(days) { days.map { day -> sleepScheduleHoldLabel(day) } }
+    val tapModifier = if (days.isNotEmpty()) {
         Modifier.pointerInput(days, onDateSelected) {
-            detectTapGestures { offset ->
+            fun slotAt(x: Float): Int {
                 val barsWidth = (size.width - ScheduleAxisLabelWidth.toPx()).coerceAtLeast(1f)
-                val slotWidth = barsWidth / days.size
-                val index = (offset.x / slotWidth).toInt().coerceIn(0, days.lastIndex)
-                onDateSelected(days[index].date)
+                return (x / (barsWidth / days.size)).toInt().coerceIn(0, days.lastIndex)
+            }
+            awaitEachGesture {
+                val down = awaitFirstDown()
+                var released: androidx.compose.ui.input.pointer.PointerInputChange? = null
+                val held = withTimeoutOrNull(viewConfiguration.longPressTimeoutMillis) {
+                    while (true) {
+                        val change = awaitPointerEvent().changes.firstOrNull { it.id == down.id } ?: break
+                        if (change.isConsumed) break
+                        if (change.changedToUp()) {
+                            released = change
+                            break
+                        }
+                        if ((change.position - down.position).getDistance() > viewConfiguration.touchSlop) break
+                    }
+                } == null
+                val tap = released
+                if (tap != null) {
+                    onDateSelected?.invoke(days[slotAt(tap.position.x)].date)
+                } else if (held) {
+                    heldIndex = slotAt(down.position.x)
+                    down.consume()
+                    while (true) {
+                        val change = awaitPointerEvent().changes.firstOrNull { it.id == down.id } ?: break
+                        change.consume()
+                        if (change.changedToUp()) break
+                        heldIndex = slotAt(change.position.x)
+                    }
+                    heldIndex = null
+                }
             }
         }
     } else {
         Modifier
     }
+    val holdChipColor = MaterialTheme.colorScheme.inverseSurface
+    val holdTextStyle = MaterialTheme.typography.labelMedium.copy(color = MaterialTheme.colorScheme.inverseOnSurface)
+    val holdLineColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
 
     // The bars are a picture; this is what a screen reader gets instead.
     OpenVitalsCard(modifier = modifier.chartSemantics(chartSemanticSummary(title, summaryText))) {
@@ -244,6 +282,25 @@ internal fun SleepScheduleStageChart(
                         )
                     }
                 }
+
+                // 144: the held night: a line through its slot and its date and hours above it.
+                heldIndex?.takeIf { it in days.indices }?.let { index ->
+                    val x = index * slotWidth + slotWidth / 2f
+                    drawLine(holdLineColor, Offset(x, 0f), Offset(x, size.height), strokeWidth = 1.5.dp.toPx())
+                    val measured = textMeasurer.measure(holdLabels[index], style = holdTextStyle)
+                    val padH = 8.dp.toPx()
+                    val padV = 4.dp.toPx()
+                    val chipWidth = measured.size.width + padH * 2
+                    val chipHeight = measured.size.height + padV * 2
+                    val chipLeft = (x - chipWidth / 2f).coerceIn(0f, (barsWidth - chipWidth).coerceAtLeast(0f))
+                    drawRoundRect(
+                        color = holdChipColor,
+                        topLeft = Offset(chipLeft, 0f),
+                        size = Size(chipWidth, chipHeight),
+                        cornerRadius = CornerRadius(chipHeight / 2f, chipHeight / 2f),
+                    )
+                    drawText(textLayoutResult = measured, topLeft = Offset(chipLeft + padH, padV))
+                }
             }
             Spacer(Modifier.height(8.dp))
             PeriodChartXAxis(
@@ -260,4 +317,21 @@ internal fun SleepScheduleStageChart(
             )
         }
     }
+}
+
+/**
+ * 144: what holding a finger on a night's bar reads: its date (the day number and the month) and
+ * the hours asleep, awake stages left out; a dash for a night with nothing recorded.
+ */
+internal fun sleepScheduleHoldLabel(day: SleepScheduleDay, locale: java.util.Locale = java.util.Locale.getDefault()): String {
+    val date = day.date.format(java.time.format.DateTimeFormatter.ofPattern("d MMM", locale))
+    val start = day.inBedStart
+    val end = day.inBedEnd
+    if (start == null || end == null || !end.isAfter(start)) return "$date · –"
+    val asleepMs = tech.mmarca.openvitals.domain.model.sleepDurationMsFromStages(
+        stages = day.stages,
+        fallbackDurationMs = end.toEpochMilli() - start.toEpochMilli(),
+    )
+    val minutes = asleepMs / 60_000L
+    return "$date · %dh %02dm".format(locale, minutes / 60, minutes % 60)
 }

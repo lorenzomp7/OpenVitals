@@ -151,4 +151,27 @@ class SleepNightSplitTest {
             cases.mapValues { sleepSessionsUnionMs(it.value) },
         )
     }
+
+    // nightSleepDurationMs (94: the dashboard and the Sleep screen count a night the same way).
+
+    @Test fun `nightSleepDurationMs leaves out the awake stages and the naps`() {
+        val start = t(2026, 7, 11, 23, 0)
+        val awakeEnd = t(2026, 7, 11, 23, 30)
+        val end = t(2026, 7, 12, 6, 30)
+        val night = s("night", start, end).copy(
+            stages = listOf(
+                SleepStage(start, awakeEnd, SleepStage.STAGE_AWAKE),
+                SleepStage(awakeEnd, end, SleepStage.STAGE_LIGHT),
+            ),
+        )
+        val nap = s("nap", t(2026, 7, 12, 13, 0), t(2026, 7, 12, 14, 0))
+
+        assertEquals(Duration.ofHours(7).toMillis(), nightSleepDurationMs(listOf(night, nap)))
+    }
+
+    @Test fun `nightSleepDurationMs without stages is the time asleep in the night`() {
+        val night = s("night", t(2026, 7, 11, 23, 0), t(2026, 7, 12, 6, 0))
+        assertEquals(Duration.ofHours(7).toMillis(), nightSleepDurationMs(listOf(night)))
+        assertEquals(0L, nightSleepDurationMs(emptyList()))
+    }
 }

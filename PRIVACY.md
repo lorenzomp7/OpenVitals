@@ -20,7 +20,7 @@ OpenVitals is designed to keep health data on your device.
 - No health data is sold or shared with third parties.
 - OpenVitals reads Health Connect data only after you grant the relevant Android permissions.
 - OpenVitals writes to Health Connect only through something you start or switch on: saving an entry, recording an activity, running an import, adding a medical record, syncing from another phone, or the distance backfill setting.
-- Bluetooth sync and file exports are user initiated. Mapbox additionally receives map resource requests, which include viewed map areas and network metadata; the app does not send workout records to a route service.
+- Bluetooth sync and file exports are user initiated. Mapbox additionally receives map resource requests, which include viewed map areas and network metadata; the app does not send workout records to a route service. To draw an activity's elevation from the terrain rather than the drifting GPS, the app also requests the open Terrarium terrain tiles from Amazon Web Services (AWS Open Data, no account): the request names the map tiles the route crosses, never the route, its points or its times.
 - On the phone, OpenVitals shares your body profile with OpenWatch and receives your watch's state and heart rate from it, if you have OpenWatch (see "OpenWatch On The Same Phone").
 
 ## Data OpenVitals Accesses
