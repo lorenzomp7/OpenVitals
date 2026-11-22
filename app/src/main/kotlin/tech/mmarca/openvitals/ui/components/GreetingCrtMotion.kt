@@ -1,7 +1,7 @@
 package tech.mmarca.openvitals.ui.components
 
 /**
- * 100: the opening greeting comes and goes like a cathode-ray television. It switches on as a
+ * The opening greeting comes and goes like a cathode-ray television. It switches on as a
  * bright line that widens from the centre and then opens upwards and downwards; it switches off
  * by closing from the top and the bottom onto that line, which then shrinks to a dot and goes out.
  *

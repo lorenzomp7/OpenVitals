@@ -4,7 +4,7 @@ import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Test
 
-/** 181: the four-space tile's ring sits in the middle of its tile, and its text inside it. */
+/** The four-space tile's ring sits in the middle of its tile, and its text inside it. */
 class DashboardRingGeometryTest {
     private val sin45 = 0.70710677f
 

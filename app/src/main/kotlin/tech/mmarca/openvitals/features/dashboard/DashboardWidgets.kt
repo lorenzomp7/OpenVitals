@@ -222,7 +222,7 @@ internal fun DashboardWidgetGrid(
     bottomPadding: Dp = DashboardWidgetSectionPadding,
     /** Sizes the section so a full-span widget is square, as the shipped design draws the hero rings. */
     squareRowSpan: Boolean = false,
-    /** 74: with the sideways pages on, the edit grid is cut into the same pages, each labelled. */
+    /** With the sideways pages on, the edit grid is cut into the same pages, each labelled. */
     pagedRows: Int? = null,
 ) {
     val placements = packDashboardTiles(
@@ -366,7 +366,7 @@ internal fun DashboardWidgetTile(
     /** The spaces this tile takes outside edit mode; tapping the button moves to the next size. */
     sizeLabel: String? = null,
     onCycleSize: (() -> Unit)? = null,
-    /** 81: how many values the tile shows; tapping opens the tile's options, as the size does. */
+    /** How many values the tile shows; tapping opens the tile's options, as the size does. */
     detailCount: Int? = null,
 ) {
     val wiggleRotation = 0f
@@ -411,7 +411,7 @@ internal fun DashboardWidgetTile(
             .graphicsLayer {
                 alpha = if (hideContent) 0.25f else 1f
                 rotationZ = if (isEditingDashboard && !isDragging) wiggleRotation else 0f
-                // 80, 50: the held tile keeps its size and casts no shadow.
+                // The held tile keeps its size and casts no shadow.
             }
             .then(editSemanticsModifier)
             .then(dragHandleModifier),

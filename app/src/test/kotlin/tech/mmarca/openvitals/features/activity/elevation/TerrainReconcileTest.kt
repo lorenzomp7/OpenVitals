@@ -3,7 +3,7 @@ package tech.mmarca.openvitals.features.activity.elevation
 import org.junit.Assert.assertEquals
 import org.junit.Test
 
-/** 104: two terrain models read side by side, each correcting the other. */
+/** Two terrain models read side by side, each correcting the other. */
 class TerrainReconcileTest {
 
     @Test fun `where the models agree their mean is drawn`() {

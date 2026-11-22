@@ -34,7 +34,7 @@ class MetricDetailSectionIdTest {
     }
 }
 
-/** 132: an activity's charts follow one general order, whatever was saved before. */
+/** An activity's charts follow one general order, whatever was saved before. */
 class ActivityDetailGeneralOrderTest {
 
     @Test

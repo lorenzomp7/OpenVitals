@@ -10,7 +10,7 @@ import java.time.Instant
 import tech.mmarca.openvitals.domain.insights.ActivityEnergyBucket
 
 /**
- * 142: the steps and the recorded active energy of [start]..[end] in slices of [bucket], for
+ * The steps and the recorded active energy of [start]..[end] in slices of [bucket], for
  * active calories that count the steps ([tech.mmarca.openvitals.domain.insights.activeCaloriesWithSteps]).
  * A metric without its permission reads as zero in every slice. Null when the read failed.
  */
@@ -45,7 +45,7 @@ internal suspend fun HealthConnectReaderSupport.readActiveEnergyBuckets(
 }
 
 /**
- * 142: fifteen-minute slices up to a week, hourly ones up to a month, three-hour ones beyond: a
+ * Fifteen-minute slices up to a week, hourly ones up to a month, three-hour ones beyond: a
  * year stays within a couple of dozen requests.
  */
 internal fun activeEnergyBucketFor(start: Instant, end: Instant): Duration {
@@ -57,7 +57,7 @@ internal fun activeEnergyBucketFor(start: Instant, end: Instant): Duration {
     }
 }
 
-/** 142: the active calories of [start]..[end] with the steps counted, slice by slice. */
+/** The active calories of [start]..[end] with the steps counted, slice by slice. */
 internal suspend fun HealthConnectReaderSupport.readActiveCaloriesWithSteps(
     start: Instant,
     end: Instant,

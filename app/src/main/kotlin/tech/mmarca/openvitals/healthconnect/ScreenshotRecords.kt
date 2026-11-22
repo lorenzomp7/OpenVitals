@@ -17,7 +17,7 @@ internal fun screenshotRecords(
     start: String,
     end: String,
     exerciseType: Int? = null,
-    /** 73: the weight body water % is taken of when the screenshot shows none: the body profile's. */
+    /** The weight body water % is taken of when the screenshot shows none: the body profile's. */
     referenceWeightKg: Double? = null,
 ): List<Record> {
     val zone = ZoneId.systemDefault()

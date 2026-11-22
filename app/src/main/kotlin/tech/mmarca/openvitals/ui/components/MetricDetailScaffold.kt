@@ -88,7 +88,7 @@ fun MetricDetailScaffold(
         }
     }
 
-    // 143: the period whose data the content holds: the one on screen when the last load ended.
+    // The period whose data the content holds: the one on screen when the last load ended.
     // While another period loads, its old data is not drawn under the new period's title.
     var loadedPeriod by remember { mutableStateOf<DatePeriod?>(null) }
     LaunchedEffect(isLoading, period) { if (!isLoading) loadedPeriod = period }

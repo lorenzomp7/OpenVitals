@@ -161,7 +161,7 @@ internal fun LazyListScope.renderActivitiesOrderedContent(
                         unitFormatter = unitFormatter,
                     )
                 }
-                // 65: no planned workouts in the activities screen; plans live under Workout plans.
+                // No planned workouts in the activities screen; plans live under Workout plans.
             }
         }
         section(
@@ -416,7 +416,7 @@ private fun WorkoutStatisticsSectionContent(
     Column(modifier = Modifier.fillMaxWidth()) {
         DailyGoalStatistics(
             progress = goalProgress,
-            // 16: the activities menu shows no average gap.
+            // The activities menu shows no average gap.
             averageGap = null,
             unitFormatter = unitFormatter,
             icon = Icons.AutoMirrored.Outlined.DirectionsRun,

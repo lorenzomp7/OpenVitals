@@ -5,7 +5,7 @@ import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Test
 
-/** 153-182: what a tile's details go on with, the tiles' colours and the cardio duplicate. */
+/** What a tile's details go on with, the tiles' colours and the cardio duplicate. */
 class DashboardTileDetailsAndColorsTest {
     private val tiles = DashboardWidgetId.entries - DashboardWidgetId.WORKOUT
 

@@ -47,16 +47,16 @@ private val HeroRingStroke = 12.dp
 private val HeroSideStroke = 10.dp
 private val HeroValueFloor = 13.sp
 
-/** 108: room under the rings for their reflection, as on a glossy floor. */
+/** Room under the rings for their reflection, as on a glossy floor. */
 private val HeroReflectionRoom = 22.dp
 
-/** 108: how far the glow spreads round a lit arc. */
+/** How far the glow spreads round a lit arc. */
 private val HeroGlowBlur = 7.dp
 private const val HeroGlowAlpha = 0.55f
 private const val HeroReflectionAlpha = 0.30f
 
 /**
- * How far the side arcs sit outside the centre ring, as a multiple of its radius. 108: wider,
+ * How far the side arcs sit outside the centre ring, as a multiple of its radius. Wider,
  * so a clear band of dark runs between each arc and the ring.
  */
 private const val HeroSideRadiusFactor = 1.42f
@@ -102,7 +102,7 @@ internal fun DashboardMultiRingHero(
             val sideRadius = ringRadius * HeroSideRadiusFactor
             val sideWidth = (maxWidth / 2 - sideRadius - HeroSideStroke).coerceAtLeast(0.dp)
             val glowPaint = remember { Paint() }
-            // 115: the glow and the floor's reflection are light on a dark card; on a light one
+            // The glow and the floor's reflection are light on a dark card; on a light one
             // they read as a muddy smudge round the arcs, so a light theme draws the rings plain.
             val glowing = MaterialTheme.colorScheme.surfaceContainer.luminance() < 0.5f
 
@@ -129,7 +129,7 @@ internal fun DashboardMultiRingHero(
                         HeroSideSweep / 2f, -HeroSideSweep, rightFraction, rightColors.ring,
                     ) else null,
                 )
-                // 108: each ring's light falls on the floor under it, soft and faint.
+                // Each ring's light falls on the floor under it, soft and faint.
                 if (glowing) {
                     drawReflection(glowPaint, ring, floor, width = ring.radius * 1.3f)
                     sides.forEach { drawReflection(glowPaint, it, floor, width = it.stroke * 3f) }
@@ -225,7 +225,7 @@ private fun DrawScope.drawRing(ring: HeroRing, glowPaint: Paint, glowing: Boolea
     drawArc(ring.color.copy(alpha = 0.22f), ring.startAngle, ring.sweep, useCenter = false, topLeft = topLeft, size = arcSize, style = arcStyle)
     val filled = ring.sweep * ring.fraction.coerceIn(0f, 1f)
     if (filled == 0f) return
-    // 108: the lit part glows, a blurred copy of itself under it.
+    // The lit part glows, a blurred copy of itself under it.
     if (glowing) drawIntoCanvas { canvas ->
         glowPaint.asFrameworkPaint().apply {
             reset()
@@ -244,7 +244,7 @@ private fun DrawScope.drawRing(ring: HeroRing, glowPaint: Paint, glowing: Boolea
     drawArc(ring.color, ring.startAngle, filled, useCenter = false, topLeft = topLeft, size = arcSize, style = arcStyle)
 }
 
-/** 108: a soft oval of the ring's colour on the floor under the lowest point of its arc. */
+/** A soft oval of the ring's colour on the floor under the lowest point of its arc. */
 private fun DrawScope.drawReflection(paint: Paint, ring: HeroRing, floor: Float, width: Float) {
     val end = ring.startAngle + ring.sweep
     // The lowest point the ring reaches: its bottom, or the arc's lower end.

@@ -117,7 +117,7 @@ private fun ActivityTypeAggregateRow(
             }
         }
         if (aggregate.exerciseType in TimeAndHeartRateSummaryExercises) {
-            // 54, 55: a treadmill run or a stationary ride is summed up by time and average bpm.
+            // A treadmill run or a stationary ride is summed up by time and average bpm.
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(16.dp)) {
                 AggregateMetric(
                     stringResource(R.string.stat_time),

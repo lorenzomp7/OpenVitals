@@ -14,7 +14,7 @@ data class GradePoint(
     val altitudeMeters: Double,
 )
 
-/** 117: how long a session spent going up, on the flat and going down. */
+/** How long a session spent going up, on the flat and going down. */
 data class GradientDistribution(
     val uphillSeconds: Long,
     val flatSeconds: Long,
@@ -33,7 +33,7 @@ private const val GradeStretchMeters = 50.0
 private val gradeGap: Duration = Duration.ofSeconds(60)
 
 /**
- * 117: the time spent uphill (steeper than +2%), on the flat and downhill (steeper than −2%),
+ * The time spent uphill (steeper than +2%), on the flat and downhill (steeper than −2%),
  * reading the grade over every 50 m of the route. Null without two points or any time.
  */
 fun gradientDistribution(points: List<GradePoint>): GradientDistribution? {
@@ -76,7 +76,7 @@ fun gradientDistribution(points: List<GradePoint>): GradientDistribution? {
     return result.takeIf { it.totalSeconds > 0 }
 }
 
-/** 117: an estimate of the session's aerobic and anaerobic effect, each on a 0–5 scale. */
+/** An estimate of the session's aerobic and anaerobic effect, each on a 0–5 scale. */
 data class TrainingEffect(val aerobic: Double, val anaerobic: Double)
 
 /** What a training effect value means, as the watches word it. */
@@ -107,7 +107,7 @@ private const val AnaerobicZone5Weight = 0.274
 private const val AnaerobicZone4Weight = 0.0077
 
 /**
- * 117: the aerobic and anaerobic effect from the seconds in each of the five zones (as
+ * The aerobic and anaerobic effect from the seconds in each of the five zones (as
  * [heartRateZoneSeconds] gives them). Null without time in any zone. An estimate: the watches'
  * own figure comes from a model they do not publish.
  */
@@ -128,7 +128,7 @@ fun trainingEffect(zoneSeconds: List<Long>): TrainingEffect? {
 private fun Double.oneDecimal(): Double = (this * 10).roundToInt() / 10.0
 
 /**
- * 117: the bpm each zone, 1 to 5, spans for [maxBpm]: zone 1 has no floor and zone 5 no ceiling.
+ * The bpm each zone, 1 to 5, spans for [maxBpm]: zone 1 has no floor and zone 5 no ceiling.
  * The edges are [heartRateZoneFloors], as [heartRateZoneSeconds] counts them.
  */
 fun heartRateZoneBounds(maxBpm: Int): List<Pair<Int?, Int?>> {
@@ -145,7 +145,7 @@ private const val SlowestCadence = 30.0
 private val strideMatch: Duration = Duration.ofSeconds(15)
 
 /**
- * 117: the length of each step, in metres: the speed over the cadence, at each cadence reading
+ * The length of each step, in metres: the speed over the cadence, at each cadence reading
  * with a speed within 15 s of it. [cadence] is in steps per minute, [speed] in metres per second.
  * Lengths outside 20 cm–2.5 m are a mismatch of the two sensors, and left out.
  */

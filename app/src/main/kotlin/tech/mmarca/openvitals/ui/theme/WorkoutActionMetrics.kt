@@ -10,7 +10,7 @@ object WorkoutActionMetrics {
     val screenGutter = 16.dp
     private val minimumWidth = 0.dp
 
-    /** 107: "Start workout" and "+ Log" share the row in two equal halves, and the toggle is as wide. */
+    /** "Start workout" and "+ Log" share the row in two equal halves, and the toggle is as wide. */
     fun primaryWidth(windowWidth: Dp): Dp =
         ((windowWidth - screenGutter * 2 - spacing) / 2).coerceAtLeast(minimumWidth)
 }

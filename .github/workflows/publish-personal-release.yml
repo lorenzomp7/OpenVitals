@@ -12,7 +12,7 @@ concurrency:
   cancel-in-progress: true
 jobs:
   # The full verification of this exact revision, run here because no pull request exists for it.
-  # 95: it runs beside the build and the device checks instead of before them; the release is
+  # It runs beside the build and the device checks instead of before them; the release is
   # published only once all of them have passed, as before, in about half the time.
   verify:
     uses: ./.github/workflows/verify.yml

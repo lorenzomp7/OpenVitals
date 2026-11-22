@@ -26,7 +26,7 @@ data class MetricDetailSectionContext(
     val isEditingSections: Boolean,
     val onMoveSectionToTarget: (MetricDetailSectionId, MetricDetailSectionId) -> Unit,
     val onMoveSection: (MetricDetailSectionId, Int) -> Unit,
-    /** 131: the sections taken off; edit mode shows them at the bottom with a button to put back. */
+    /** The sections taken off; edit mode shows them at the bottom with a button to put back. */
     val hidden: Set<MetricDetailSectionId> = emptySet(),
     val onHideSection: ((MetricDetailSectionId) -> Unit)? = null,
     val onShowSection: ((MetricDetailSectionId) -> Unit)? = null,
@@ -47,7 +47,7 @@ fun rememberMetricDetailSectionOrdering(): MetricDetailSectionContext {
     val hiddenSections by sectionOrderViewModel.hiddenSections.collectAsStateWithLifecycle()
     val sectionListState = rememberMetricDetailSectionListState()
     val editingTint = MaterialTheme.colorScheme.primary
-    // 67: finishing an arrangement asks Save or Discard, as the dashboard's pencil does.
+    // Finishing an arrangement asks Save or Discard, as the dashboard's pencil does.
     var confirmFinish by androidx.compose.runtime.saveable.rememberSaveable { androidx.compose.runtime.mutableStateOf(false) }
     androidx.activity.compose.BackHandler(enabled = isEditingSections) {
         if (sectionOrderViewModel.hasSectionEdits()) confirmFinish = true else sectionOrderViewModel.finishSectionEdit(save = false)

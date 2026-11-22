@@ -306,7 +306,7 @@ internal fun LazyListScope.renderSleepPeriodOrderedContent(
             )
         }
         section(MetricDetailSectionId.ENTRIES) {
-            // 145: only the nights of the selected period, not the days read before it for the score.
+            // Only the nights of the selected period, not the days read before it for the score.
             PaginatedEntryList(
                 title = stringResource(R.string.section_sleep_sessions),
                 entries = sleepEntriesNewestFirst(

@@ -55,7 +55,7 @@ internal fun rememberBrandClock(timeline: FluidBrandTimeline): State<Long> {
 }
 
 /**
- * 78: a header button in the style of the animated OpenVitals toggle: a night
+ * A header button in the style of the animated OpenVitals toggle: a night
  * circle with the four Google colours running round its edge, and the icon
  * inside painted with the same colours, drifting. [content] draws the icon or
  * the profile photo; [tintContent] paints it with the colours (off for a photo).
@@ -114,7 +114,7 @@ fun BrandIconFrame(
 private val BrandIconFrameSize = Spacing.xl + Spacing.md + Spacing.xs
 
 /**
- * 96: a button in the style of the animated OpenVitals toggle: a night pill with the four
+ * A button in the style of the animated OpenVitals toggle: a night pill with the four
  * Google colours running round its edge, and its icon and label painted with the same
  * colours, drifting. It shares the toggle's clock, so the two move as one.
  */
@@ -182,7 +182,7 @@ fun BrandPillButton(
 private const val PillGlowAlpha = 0.35f
 
 /**
- * 115: what the brand buttons are painted on: the toggle's night in a dark theme, the theme's
+ * What the brand buttons are painted on: the toggle's night in a dark theme, the theme's
  * own light surface in a light one, where a row of black pills looked like a mistake.
  */
 @Composable
@@ -192,7 +192,7 @@ internal fun brandButtonSurface(): androidx.compose.ui.graphics.Color {
 }
 
 /**
- * 115: the colours an icon or label is painted with. On a light surface they are darkened a
+ * The colours an icon or label is painted with. On a light surface they are darkened a
  * little, or the Google yellow and green would vanish into it.
  */
 @Composable

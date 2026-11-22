@@ -452,7 +452,7 @@ private data class DashboardWidgetMeta(
     val accentColor: Color,
 )
 
-/** 160, 161, 182: the icon is the widget's own; the colour is its category's, shared by every tile in it. */
+/** The icon is the widget's own; the colour is its category's, shared by every tile in it. */
 private fun dashboardWidgetMeta(widgetId: DashboardWidgetId): DashboardWidgetMeta =
     DashboardWidgetMeta(dashboardWidgetIconOf(widgetId), dashboardWidgetCategory(widgetId).accentColor)
 
@@ -753,8 +753,8 @@ private fun watchSubtitle(watch: OpenWatchTileDisplay): String? {
     return parts.joinToString(" · ").ifBlank { null }
 }
 
-/** The icon a widget is drawn with, for lists outside the grid (94). */
+/** The icon a widget is drawn with, for lists outside the grid. */
 internal fun dashboardWidgetIcon(widgetId: DashboardWidgetId): ImageVector = dashboardWidgetMeta(widgetId).icon
 
-/** The colour a widget is drawn in, for the home screen's palette (97). */
+/** The colour a widget is drawn in, for the home screen's palette. */
 internal fun dashboardWidgetAccent(widgetId: DashboardWidgetId): Color = dashboardWidgetMeta(widgetId).accentColor

@@ -22,7 +22,7 @@ import androidx.compose.ui.unit.dp
 import tech.mmarca.openvitals.R
 import tech.mmarca.openvitals.ui.components.BrandPillButton
 
-/** 107: "Start workout" on the left and "+ Log" on the right, each half the row. The pencil is in the header (106). */
+/** "Start workout" on the left and "+ Log" on the right, each half the row. The pencil is in the header. */
 @Composable
 internal fun DashboardQuickActions(
     onOpenLog: () -> Unit,
@@ -34,7 +34,7 @@ internal fun DashboardQuickActions(
         horizontalArrangement = Arrangement.spacedBy(DashboardActionsSpacing),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        // 96: the actions dressed like the animated toggle.
+        // The actions dressed like the animated toggle.
         BrandPillButton(
             onClick = onStartActivity,
             modifier = Modifier

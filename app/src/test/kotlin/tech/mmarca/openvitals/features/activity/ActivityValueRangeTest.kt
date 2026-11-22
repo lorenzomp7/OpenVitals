@@ -3,7 +3,7 @@ package tech.mmarca.openvitals.features.activity
 import org.junit.Assert.assertEquals
 import org.junit.Test
 
-/** 114: a range says its unit once. */
+/** A range says its unit once. */
 class ActivityValueRangeTest {
     @Test fun `a shared unit is said once, at the end`() {
         assertEquals("77 – 156 bpm", activityValueRange("77 bpm", "156 bpm"))

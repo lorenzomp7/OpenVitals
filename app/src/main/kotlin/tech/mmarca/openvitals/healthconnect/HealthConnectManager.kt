@@ -362,7 +362,7 @@ class HealthConnectManager @Inject constructor(
         activityReader.readSpeedSamples(start, end)
 
     suspend fun readCalorieSamples(start: Instant, end: Instant, total: Boolean, active: Boolean) = readerSupport.readSessionCalorieSamples(start, end, total, active)
-    /** 142: active calories that count the steps ([readActiveCaloriesWithSteps]); null when nothing was read. */
+    /** Active calories that count the steps ([readActiveCaloriesWithSteps]); null when nothing was read. */
     suspend fun readActiveCaloriesWithSteps(start: Instant, end: Instant, steps: Boolean, active: Boolean, kcalPerStep: Double): Double? =
         readerSupport.readActiveCaloriesWithSteps(start, end, steps, active, kcalPerStep)
     suspend fun readActivityCadenceSamples(
@@ -414,7 +414,7 @@ class HealthConnectManager @Inject constructor(
     suspend fun readDailySleepDurations(startDate: LocalDate, endDate: LocalDate, sleepWindow: SleepWindow): List<DailySleepDuration> =
         sleepReader.readDailySleepDurations(startDate, endDate, sleepWindow)
 
-    /** 94: the sessions each night of the dates claims, without the daily aggregates. */
+    /** The sessions each night of the dates claims, without the daily aggregates. */
     suspend fun readSleepSessionsForDates(startDate: LocalDate, endDate: LocalDate, sleepWindow: SleepWindow): List<SleepData> =
         sleepReader.readSleepSessionsForDates(startDate, endDate, sleepWindow)
 

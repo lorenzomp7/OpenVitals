@@ -8,7 +8,7 @@ import org.junit.Assert.assertTrue
 import org.junit.Test
 import tech.mmarca.openvitals.domain.model.ExerciseRoutePoint
 
-/** 136: speed and step cadence checked against the session's own distance and steps. */
+/** Speed and step cadence checked against the session's own distance and steps. */
 class MovementSeriesTest {
 
     private val start = Instant.parse("2026-11-16T07:00:00Z")

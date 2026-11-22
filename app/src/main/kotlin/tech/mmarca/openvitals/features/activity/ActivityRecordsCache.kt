@@ -6,7 +6,7 @@ import javax.inject.Singleton
 import tech.mmarca.openvitals.domain.model.ExerciseData
 
 /**
- * 119: the sessions of one kind over a year, as the personal records read them. Opening one
+ * The sessions of one kind over a year, as the personal records read them. Opening one
  * activity after another would otherwise read the year again each time; held thirty minutes, in
  * memory only, and dropped with the activities list when an activity is added or deleted.
  */
@@ -20,7 +20,7 @@ class ActivityRecordsCache @Inject constructor() {
         val sessions: List<ExerciseData>,
     )
 
-    /** 133: one span per kind; any window inside it is answered from it, not read again. */
+    /** One span per kind; any window inside it is answered from it, not read again. */
     private val entries = HashMap<Int, Entry>()
 
     @Synchronized

@@ -66,7 +66,7 @@ internal fun ActivityHeartRateChartCard(
     val timeFormatter = DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT)
     // Built once, identity-stable, so the geometry cache holds.
     val chartPoints = remember(sorted, axis) {
-        // 137: drawn from the session's start; a first reading that came later is estimated there.
+        // Drawn from the session's start; a first reading that came later is estimated there.
         anchoredAtStart(sorted.map { axis.fractionOf(it.time) to it.beatsPerMinute.toDouble() })
             .map { (x, bpm) -> MetricLinePlotPoint(xFraction = x, value = bpm) }
     }
@@ -81,7 +81,7 @@ internal fun ActivityHeartRateChartCard(
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold,
             )
-            // 114: left, middle and right, the range's unit said once.
+            // Left, middle and right, the range's unit said once.
             ActivityChartFigures(
                 figures = listOf(
                     stringResource(R.string.summary_average) to unitFormatter.heartRate(avgBpm.toLong()).text,

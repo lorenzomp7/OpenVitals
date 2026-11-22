@@ -32,7 +32,7 @@ class ActivitiesReturnCache @Inject constructor() {
         private var revision: Long = 0
         fun invalidateAll() { revision++ }
 
-        /** 119: what [ActivityRecordsCache] checks, so an added or deleted activity counts at once. */
+        /** What [ActivityRecordsCache] checks, so an added or deleted activity counts at once. */
         internal fun revisionNow(): Long = revision
     }
 }

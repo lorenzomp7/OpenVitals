@@ -3,7 +3,7 @@ package tech.mmarca.openvitals.features.activity
 import org.junit.Assert.assertEquals
 import org.junit.Test
 
-/** 137: a line is drawn from the session's start. */
+/** A line is drawn from the session's start. */
 class ChartStartAnchorTest {
 
     @Test fun `a late first reading gets an estimated start, the median of the first ones`() {

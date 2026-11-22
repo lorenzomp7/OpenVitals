@@ -98,7 +98,7 @@ val DefaultDashboardWidgetIds: List<DashboardWidgetId> = listOf(
 )
 
 /**
- * 179: the legacy cardio tile is the weekly one under an older name (Dart's intensity minutes).
+ * The legacy cardio tile is the weekly one under an older name (Dart's intensity minutes).
  * A saved layout holding it shows the weekly tile once, never two of them.
  */
 fun customizableDashboardWidgetIds(widgetIds: List<DashboardWidgetId>): List<DashboardWidgetId> =

@@ -30,9 +30,9 @@ internal class ActivityExportActions(
 )
 
 /**
- * 131: the cards around an activity's charts (figures, plan, route, its analysis and navigation,
+ * The cards around an activity's charts (figures, plan, route, its analysis and navigation,
  * segments, session details, export) are sections too: moved, hidden and put back as the charts
- * are, in the general order (132). The summary heading stays on top and the edit and delete
+ * are, in the general order. The summary heading stays on top and the edit and delete
  * buttons at the bottom. [only], when given, limits the build to those sections (134: what can
  * show while the samples load).
  */
@@ -65,7 +65,7 @@ internal fun MetricDetailSectionBuilder.activityDetailCardSections(
             )
         }
     }
-    // 53: no route data, no route card.
+    // No route data, no route card.
     section(MetricDetailSectionId.ACTIVITY_DETAIL_ROUTE, hasRoute && wanted(MetricDetailSectionId.ACTIVITY_DETAIL_ROUTE)) {
         RouteCard(
             route = workout.route,

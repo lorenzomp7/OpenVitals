@@ -38,7 +38,7 @@ internal fun ActivityMapboxMap(points: List<ExerciseRoutePoint>, modifier: Modif
     Box(modifier) {
         // Only one native map is alive; closing the dialog restores the card.
         if (!fullscreen) ActivityRouteMapContent(points, Modifier.fillMaxSize(), recenterRequest = cardRecenter)
-        // 72: the same two buttons in the same place as in full screen: recenter above, open below.
+        // The same two buttons in the same place as in full screen: recenter above, open below.
         Column(
             modifier = Modifier.align(Alignment.BottomEnd).padding(Spacing.md),
             verticalArrangement = Arrangement.spacedBy(Spacing.sm),
@@ -66,8 +66,8 @@ internal fun ActivityMapboxMap(points: List<ExerciseRoutePoint>, modifier: Modif
                 Box(Modifier.fillMaxSize().safeDrawingPadding()) {
                     var recenter by rememberSaveable { mutableStateOf(0) }
                     ActivityRouteMapContent(points, Modifier.fillMaxSize(), recenterRequest = recenter)
-                    // 71: the buttons sit at the bottom right, clear of Mapbox's compass (top right),
-                    // scale bar (top left) and logo (bottom left). 72: the upper one brings the route back.
+                    // The buttons sit at the bottom right, clear of Mapbox's compass (top right),
+                    // scale bar (top left) and logo (bottom left). The upper one brings the route back.
                     Column(
                         modifier = Modifier.align(Alignment.BottomEnd).padding(Spacing.md),
                         verticalArrangement = Arrangement.spacedBy(Spacing.sm),

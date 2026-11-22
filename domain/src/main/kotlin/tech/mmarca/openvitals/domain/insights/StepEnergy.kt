@@ -12,7 +12,7 @@ private const val DefaultHeightCm = 175.0
 private const val StrideShareOfHeight = 0.415
 
 /**
- * 142: the active energy of one step for a body of [weightKg] and [heightCm]: the step's length
+ * The active energy of one step for a body of [weightKg] and [heightCm]: the step's length
  * (0.415 of the height) times the net cost of walking (0.5 kcal per kg per km).
  */
 fun activeKcalPerStep(weightKg: Double?, heightCm: Double?): Double {
@@ -23,7 +23,7 @@ fun activeKcalPerStep(weightKg: Double?, heightCm: Double?): Double {
 }
 
 /**
- * 142: active calories that count the steps as well. Many watches write active energy only for
+ * Active calories that count the steps as well. Many watches write active energy only for
  * their workouts, so a day of walking read as almost nothing. Slice by slice, the larger of the
  * recorded energy and the steps' own: walking adds its steps, a workout keeps its recorded
  * energy and its steps are not counted twice. Null when neither was recorded.

@@ -75,7 +75,7 @@ fun OpenVitalsAdaptiveScaffold(
     containerColor: Color? = null,
     titleContent: (@Composable (Dp) -> Unit)? = null,
     topBarActions: @Composable RowScope.() -> Unit = {},
-    /** 63: the bar's opacity, read at draw, so it fades with the screen it belongs to. */
+    /** The bar's opacity, read at draw, so it fades with the screen it belongs to. */
     topBarAlpha: () -> Float = { 1f },
     content: @Composable (PaddingValues) -> Unit,
 ) {

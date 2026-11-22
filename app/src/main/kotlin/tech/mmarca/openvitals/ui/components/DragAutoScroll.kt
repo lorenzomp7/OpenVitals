@@ -11,7 +11,7 @@ import androidx.compose.ui.layout.boundsInWindow
 import androidx.compose.ui.layout.onGloballyPositioned
 
 /**
- * 121: the list a hand-made drag can scroll by itself when the finger comes near its top or
+ * The list a hand-made drag can scroll by itself when the finger comes near its top or
  * bottom edge, so an item can be carried past the part of the screen in view. The reorderable
  * lists of the metric screens get this from their library; the dashboard's edit grid, which
  * drags on its own, reads it from [LocalDragAutoScroll].

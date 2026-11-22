@@ -15,7 +15,7 @@ import tech.mmarca.openvitals.features.heart.bloodPressureCategoryText
  * means, then the readings it goes with. Each line is about the metric itself; goal
  * completion percentages and the selected period are never details.
  *
- * 153-180: a tile set to three values shows its reading and two lines whatever data the
+ * A tile set to three values shows its reading and two lines whatever data the
  * day holds, so the related readings run on (see [dashboardRelatedWidgetIds]) past the two
  * the tile needs; the renderer takes what fits.
  */
@@ -64,7 +64,7 @@ internal fun dashboardWidgetDetails(
             addShareOfWeight(facts, ::add)
         DashboardWidgetId.RESTING_HEART_RATE, DashboardWidgetId.HRV -> addBaseline(facts, ::add)
         DashboardWidgetId.BLOOD_PRESSURE -> add(facts.bloodPressureCategory?.let { bloodPressureCategoryText(it) })
-        // 156: the ring already says 438; the line under it says what it runs to, not "438 of 470".
+        // The ring already says 438; the line under it says what it runs to, not "438 of 470".
         DashboardWidgetId.WEEKLY_CARDIO_LOAD, DashboardWidgetId.CARDIO_LOAD -> model.weeklyCardioLoad?.let { load ->
             add(stringResource(R.string.dashboard_weekly_cardio_target, load.targetScore))
             add(stringResource(R.string.dashboard_cardio_today_points, load.todayScore))
@@ -100,7 +100,7 @@ internal fun dashboardWidgetDetails(
 /**
  * The readings a tile's details go on with, closest first: the same category before the
  * others. The list runs past the two a tile shows, so a day missing some of them still
- * fills the tile. 158, 170: elevation and wheelchair pushes are not about distance.
+ * fills the tile. Elevation and wheelchair pushes are not about distance.
  */
 internal fun dashboardRelatedWidgetIds(id: DashboardWidgetId): List<DashboardWidgetId> =
     when (id) {
@@ -223,7 +223,7 @@ private fun ffmiCategoryText(category: FfmiCategory): String = stringResource(
     },
 )
 
-/** 154: "Goal" on a day, short enough for a ring; a period names whose goal it is. */
+/** "Goal" on a day, short enough for a ring; a period names whose goal it is. */
 internal fun dashboardGoalLabelRes(id: DashboardWidgetId, isPeriod: Boolean): Int = when {
     !isPeriod -> R.string.dashboard_detail_goal
     id == DashboardWidgetId.SLEEP -> R.string.dashboard_nightly_goal

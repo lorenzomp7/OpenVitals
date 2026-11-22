@@ -51,7 +51,7 @@ fun rememberFluidBrandTimeline(): FluidBrandTimeline = rememberSaveable(
 ) { FluidBrandTimeline() }
 
 /**
- * 94: what the toggle says about the selected period. [fills] are the four goals in the lobes'
+ * What the toggle says about the selected period. [fills] are the four goals in the lobes'
  * colours, each `0..1`: the steps, the active calories, the workout (all or nothing) and the
  * sleep. [name] is who it welcomes back when the app opens; null welcomes no one by name.
  */
@@ -62,7 +62,7 @@ data class BrandDay(
 )
 
 /**
- * 97: the colours the brand pieces of the home screen are painted with (the toggle, the
+ * The colours the brand pieces of the home screen are painted with (the toggle, the
  * round header buttons, the action pills), and whether they move or stand still.
  */
 @androidx.compose.runtime.Immutable
@@ -71,7 +71,7 @@ data class BrandLook(val colors: List<Color>, val animated: Boolean = true)
 val LocalBrandLook = androidx.compose.runtime.staticCompositionLocalOf { BrandLook(BrandColors) }
 
 /**
- * 100: the greeting belongs to the app's opening, once per launch, never to a return to it. It
+ * The greeting belongs to the app's opening, once per launch, never to a return to it. It
  * keeps the moment it began rather than a flag: the loading screen's header draws a toggle first
  * and the loaded dashboard draws another, and with a flag the first took the greeting with it
  * when it left, so the dashboard never showed it.
@@ -93,16 +93,16 @@ fun AmbientFluidBrand(
     modifier: Modifier = Modifier,
     day: BrandDay? = null,
     onClick: (() -> Unit)? = null,
-    /** 106: the pill's width when the header has less room than the action row; else as wide as an action. */
+    /** The pill's width when the header has less room than the action row; else as wide as an action. */
     width: Dp? = null,
 ) {
     var frameMillis by remember { mutableLongStateOf(SystemClock.uptimeMillis()) }
     val lifecycle = LocalLifecycleOwner.current.lifecycle
     val look = LocalBrandLook.current
     val colors = look.colors.ifEmpty { BrandColors }
-    // 97: the OpenVitals toggle always moves; the Animated switch is for the buttons around it.
+    // The OpenVitals toggle always moves; the Animated switch is for the buttons around it.
     val animate = loopingMotionAllowed()
-    // 100: greet only on the first toggle the app draws since it was launched. Keyed on the day
+    // Greet only on the first toggle the app draws since it was launched. Keyed on the day
     // arriving: the first frames draw before the dashboard has loaded, and the welcome waited
     // for nothing then, so it never showed.
     val greetSince = remember(day != null) {
@@ -111,16 +111,16 @@ fun AmbientFluidBrand(
     val greeting = day?.takeIf { greetSince != null }?.let { brandGreeting(it.name) }
     val description = stringResource(R.string.app_name)
     val measurer = androidx.compose.ui.text.rememberTextMeasurer()
-    // 115: a light theme draws the toggle on its light surface, with dark writing.
+    // A light theme draws the toggle on its light surface, with dark writing.
     val light = isLightBrandTheme()
     val surface = brandButtonSurface()
-    // 100: the greeting is lettered as "Start workout" and "+ Log" are: their type, and the
+    // The greeting is lettered as "Start workout" and "+ Log" are: their type, and the
     // home screen colours running through it.
     val greetingStyle = MaterialTheme.typography.bodyLarge
     val inkColors = brandInkColors(colors)
     val density = androidx.compose.ui.platform.LocalDensity.current
     val pillWidth = width ?: WorkoutActionMetrics.primaryWidth(windowWidth)
-    // 98: the greeting fits the pill left of the sync light, shrinking rather than running under it.
+    // The greeting fits the pill left of the sync light, shrinking rather than running under it.
     val greetingLayout = remember(greeting, greetingStyle, pillWidth, density) {
         greeting?.let { text ->
             val room = with(density) { (pillWidth - WorkoutActionMetrics.height * 0.8f).toPx() }.toInt().coerceAtLeast(1)
@@ -137,7 +137,7 @@ fun AmbientFluidBrand(
     val fills = remember(day?.fills) { day?.fills?.toFloatArray() }
     LaunchedEffect(timeline, lifecycle, animate) {
         timeline.start(SystemClock.uptimeMillis())
-        // A still toggle (97) still runs its clock for the opening greeting, then stops.
+        // A still toggle still runs its clock for the opening greeting, then stops.
         val greetingUntil = greetSince?.plus(GreetingMillis)
         if (animate || greetingUntil != null) lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
             var previousFrame = 0L
@@ -167,8 +167,8 @@ fun AmbientFluidBrand(
         // Reading the frame only in DrawScope invalidates this tiny canvas, not the screen composition.
         val seconds = if (animate) timeline.secondsAt(frameMillis) else ToggleRestSeconds
         val intro = if (animate) timeline.fillAt(frameMillis) else 1f
-        // 94: the greeting holds the pill while the app opens, then gives way to the wave.
-        // 100: it switches on and off like a cathode-ray television (GreetingCrtMotion).
+        // The greeting holds the pill while the app opens, then gives way to the wave.
+        // It switches on and off like a cathode-ray television (GreetingCrtMotion).
         val crt = if (greetingLayout != null && greetSince != null) {
             greetingCrtAt((frameMillis - greetSince).coerceAtLeast(0L) / 1_000f)
         } else {
@@ -176,7 +176,7 @@ fun AmbientFluidBrand(
         }
         drawOpenVitalsToggle(seconds, intro * (1f - (crt?.presence ?: 0f)), FluidBorderWidth.toPx(), fills, colors, light)
         if (greetingLayout != null && crt != null) {
-            // 106: no sync light at the end any more, so the greeting centres in the whole pill.
+            // No sync light at the end any more, so the greeting centres in the whole pill.
             val room = size.width - size.height * 0.4f
             val topLeft = Offset(
                 size.height * 0.4f + (room - size.height * 0.4f - greetingLayout.size.width).coerceAtLeast(0f) / 2f,
@@ -222,14 +222,14 @@ fun AmbientFluidBrand(
 
 private const val GreetingMillis = 3_600L
 
-/** 100: "Welcome back, name" as the app opens; without a name, "Welcome back". */
+/** "Welcome back, name" as the app opens; without a name, "Welcome back". */
 @Composable
 private fun brandGreeting(name: String?): String {
     val first = name?.trim()?.substringBefore(' ')?.takeIf { it.isNotBlank() }
     return if (first != null) stringResource(R.string.brand_welcome_back_name, first) else stringResource(R.string.brand_welcome_back)
 }
 
-/** 35, 37: the four Google colours of the icon. */
+/** The four Google colours of the icon. */
 internal val BrandBlue = Color(0xFF4285F4)
 internal val BrandRed = Color(0xFFEA4335)
 internal val BrandYellow = Color(0xFFFBBC04)
@@ -259,7 +259,7 @@ private val ToggleLobes = listOf(
     ToggleLobe(BrandGreen, center = 0.72f, width = 0.15f, up = 0.10f, down = 0.34f, speed = 0.8f, phase = 4.4f),
 )
 
-/** 148: the share of the pill's height a lobe spans, above and below the thread, at 100 %. */
+/** The share of the pill's height a lobe spans, above and below the thread, at 100 %. */
 private const val ToggleWaveSpan = 0.8f
 
 /** Fixed sparkle seeds: position, drift, twinkle rate and tint, so every frame agrees. */
@@ -274,7 +274,7 @@ private val ToggleSparks = List(14) { index ->
 }
 
 /**
- * 35: the "Toggle animato OpenVitals", after the Gemini reel: on a night pill,
+ * The "Toggle animato OpenVitals", after the Gemini reel: on a night pill,
  * a voice wave of four light lobes in the Google colours that swell, drift and
  * add up where they cross; sparks that twinkle and drift; and a ring of the four
  * colours that runs round the edge. It opens by drawing the wave out from the
@@ -286,7 +286,7 @@ private fun DrawScope.drawOpenVitalsToggle(
     borderPx: Float,
     fills: FloatArray? = null,
     colors: List<Color> = BrandColors,
-    /** 115: on a light surface: no additive light, which washes out to white there. */
+    /** On a light surface: no additive light, which washes out to white there. */
     light: Boolean = false,
 ) {
     val blend = if (light) BlendMode.SrcOver else BlendMode.Plus
@@ -305,11 +305,11 @@ private fun DrawScope.drawOpenVitalsToggle(
         ),
     )
     // The wave: each lobe a lens above and below the midline, its height breathing.
-    // 98: while the greeting holds the pill the wave is flat; a flat lobe's outline would draw a line through it.
+    // While the greeting holds the pill the wave is flat; a flat lobe's outline would draw a line through it.
     if (open > 0.02f) ToggleLobes.forEachIndexed { index, lobe ->
         val lobeColor = colors[index % colors.size].let { if (light) lerpColor(it, Color.Black, 0.1f) else it }
-        // 94: a lobe swells as far as its goal is met.
-        // 148: every lobe measures its goal on the same scale: at 100 % any of the four spans the
+        // A lobe swells as far as its goal is met.
+        // Every lobe measures its goal on the same scale: at 100 % any of the four spans the
         // pill's full wave height, whatever its shape; the lobe's own shape only decides how
         // that height splits above and below the thread, and the breathing stays small.
         val goal = fills?.getOrNull(index)?.coerceIn(0f, 1f)?.let { 0.12f + 0.88f * it } ?: 1f
@@ -381,7 +381,7 @@ private fun DrawScope.drawOpenVitalsToggle(
     }
     val ring = Brush.sweepGradient(*stops, center = Offset(w / 2f, mid))
     val radius = androidx.compose.ui.geometry.CornerRadius(h / 2f, h / 2f)
-    // 100: the same edge as the buttons beside it: a 2 dp ring inset by half, a glow three times as wide.
+    // The same edge as the buttons beside it: a 2 dp ring inset by half, a glow three times as wide.
     val stroke = borderPx * 2f
     drawRoundRect(brush = ring, alpha = 0.35f * open, style = Stroke(width = stroke * 3f), cornerRadius = radius)
     drawRoundRect(

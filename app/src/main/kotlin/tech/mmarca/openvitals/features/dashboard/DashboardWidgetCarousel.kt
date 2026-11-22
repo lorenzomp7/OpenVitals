@@ -39,7 +39,7 @@ import tech.mmarca.openvitals.features.dashboard.components.DashboardMultiRingHe
 private val DashboardHeroSectionTopPadding = 16.dp
 private val DashboardHeroSectionBottomPadding = 0.dp
 private val DashboardGridTopPadding = DashboardSectionGap
-/** 108: tall enough for the rings and the reflection under them. */
+/** Tall enough for the rings and the reflection under them. */
 private val DashboardHeroRingHeight = 222.dp
 private val DashboardHeroTopPadding = 6.dp
 private const val DashboardHeroRingCount = 3
@@ -84,7 +84,7 @@ internal fun DashboardWidgetCarousel(
             )
         }
     }
-    // 75: editing uses one reorderable grid, the "+ log" way: the held tile follows the finger.
+    // Editing uses one reorderable grid, the "+ log" way: the held tile follows the finger.
     if (isEditingDashboard) {
         Column {
             actionContent()
@@ -128,7 +128,7 @@ internal fun DashboardWidgetCarousel(
     var draggingWidgetStartBounds by remember { mutableStateOf<Rect?>(null) }
     var draggingWidgetDragOffset by remember { mutableStateOf(Offset.Zero) }
     var draggingWidgetBounds by remember { mutableStateOf<Rect?>(null) }
-    // 59: the tile the last live swap went to, so a reflow under the finger cannot swap back at once.
+    // The tile the last live swap went to, so a reflow under the finger cannot swap back at once.
     var lastSwapTargetId by remember { mutableStateOf<DashboardWidgetId?>(null) }
 
     LaunchedEffect(visibleIds) {
@@ -190,7 +190,7 @@ internal fun DashboardWidgetCarousel(
         draggingWidgetDragOffset += dragAmount
         val bounds = projectedDraggingBounds(widgetId) ?: return
         draggingWidgetBounds = bounds
-        // 59: like the log grid, the others make room while the finger moves; nothing waits for the drop.
+        // Like the log grid, the others make room while the finger moves; nothing waits for the drop.
         val center = bounds.center
         val target = dropTargetIdsFor(widgetId, bounds).firstOrNull { id ->
             id != widgetId && widgetBounds[id]?.deflate(0.2f)?.containsPoint(center) == true
@@ -400,7 +400,7 @@ private fun DashboardDraggedWidgetOverlay(
                 translationY = bounds.top - containerBounds.top
             },
     ) {
-        // 50: the grid tile keeps a 48 dp controls band above its content; so does its moving copy,
+        // The grid tile keeps a 48 dp controls band above its content; so does its moving copy,
         // or the copy would stretch the content over the band and look larger than the tile.
         Box(Modifier.fillMaxSize().padding(top = tech.mmarca.openvitals.ui.theme.LayoutMetrics.minTouchTarget)) {
             DashboardSizedTile(spec, dashboardTileSize(spec, widgetSizes))

@@ -46,7 +46,7 @@ interface ActivityRepository {
 
     suspend fun loadWorkoutsWithMetrics(start: LocalDate, end: LocalDate): List<ExerciseData>
 
-    /** 119: the sessions of one kind in the window, with their distance, for its records. */
+    /** The sessions of one kind in the window, with their distance, for its records. */
     suspend fun loadWorkoutsOfType(exerciseType: Int, start: LocalDate, end: LocalDate): List<ExerciseData> =
         loadWorkoutsWithMetrics(start, end).filter { it.exerciseType == exerciseType }
 

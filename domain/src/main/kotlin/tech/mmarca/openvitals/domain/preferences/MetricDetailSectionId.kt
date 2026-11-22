@@ -30,7 +30,7 @@ enum class MetricDetailSectionId {
     CYCLE_THERMAL,
     CYCLE_PATTERNS,
     CYCLE_NIGHTLY,
-    // 113: the charts of one activity's detail, arranged like a metric screen's sections.
+    // The charts of one activity's detail, arranged like a metric screen's sections.
     ACTIVITY_DETAIL_SPLITS,
     ACTIVITY_DETAIL_HEART_RATE,
     ACTIVITY_DETAIL_CALORIES,
@@ -47,7 +47,7 @@ enum class MetricDetailSectionId {
     ACTIVITY_DETAIL_LAPS,
     ACTIVITY_DETAIL_JUMPS,
     ACTIVITY_DETAIL_RECORDS,
-    // 131: the cards around the charts, arranged and hidden as the charts are.
+    // The cards around the charts, arranged and hidden as the charts are.
     ACTIVITY_DETAIL_METRICS,
     ACTIVITY_DETAIL_PLAN,
     ACTIVITY_DETAIL_ROUTE,
@@ -59,7 +59,7 @@ enum class MetricDetailSectionId {
 }
 
 /**
- * 132: the general order of an activity's sections, the same for every kind, read top to bottom
+ * The general order of an activity's sections, the same for every kind, read top to bottom
  * as one story: the figures and the plan; the map; the chart of the kind itself; the heart
  * (during, then after the end); how fast (speed, splits, laps); over what ground (height,
  * gradient, the route's analysis and navigation); the rhythm of the movement (cadence, stride);
@@ -94,7 +94,7 @@ val ActivityDetailGeneralOrder: List<MetricDetailSectionId> = listOf(
 )
 
 /**
- * 134: the sections drawn from the session record alone. They show at once; the others wait for
+ * The sections drawn from the session record alone. They show at once; the others wait for
  * the samples (heart rate, speed, markers) and the records.
  */
 val ActivityDetailRecordSections: Set<MetricDetailSectionId> = setOf(
@@ -107,7 +107,7 @@ val ActivityDetailRecordSections: Set<MetricDetailSectionId> = setOf(
 )
 
 /**
- * 134: while the samples load, the record's own sections that come before the first section
+ * While the samples load, the record's own sections that come before the first section
  * that waits for them in [order]: they can show without anything above them moving later.
  */
 fun activityDetailSectionsShownWhileLoading(order: List<MetricDetailSectionId>): Set<MetricDetailSectionId> =
@@ -144,7 +144,7 @@ val DefaultMetricDetailSectionOrder: List<MetricDetailSectionId> = listOf(
     MetricDetailSectionId.CYCLE_THERMAL,
     MetricDetailSectionId.CYCLE_PATTERNS,
     MetricDetailSectionId.CYCLE_NIGHTLY,
-    // 132: an activity's charts, in the one order every kind of activity follows.
+    // An activity's charts, in the one order every kind of activity follows.
     *ActivityDetailGeneralOrder.toTypedArray(),
 )
 
@@ -166,10 +166,10 @@ fun metricDetailSectionOrderFromStored(storedIds: List<String>?): List<MetricDet
     return merged
 }
 
-/** 132: bumped when [ActivityDetailGeneralOrder] is to replace an arrangement saved before it. */
+/** Bumped when [ActivityDetailGeneralOrder] is to replace an arrangement saved before it. */
 const val ActivityDetailGeneralOrderVersion = 2
 
-/** 132: [order] with the activity charts put back in the general order, the rest untouched. */
+/** [order] with the activity charts put back in the general order, the rest untouched. */
 fun withActivityDetailGeneralOrder(order: List<MetricDetailSectionId>): List<MetricDetailSectionId> {
     val slots = order.indices.filter { order[it] in ActivityDetailGeneralOrder }
     if (slots.isEmpty()) return order

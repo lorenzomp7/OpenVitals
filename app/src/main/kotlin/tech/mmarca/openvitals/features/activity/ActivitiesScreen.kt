@@ -42,7 +42,7 @@ fun ActivitiesScreen(
     val chartDaySelection = rememberChartDaySelection(state.selectedRange, state.selectedDate)
     // A swipe only asks. The dashboard already did; this list deleted at once, with no undo.
     var workoutToDelete by remember { mutableStateOf<ExerciseData?>(null) }
-    // 111: the rows "Load more" showed stay shown after opening an activity and coming back.
+    // The rows "Load more" showed stay shown after opening an activity and coming back.
     // A new period, range or filter starts from one page again.
     var visibleWorkoutCount by rememberSaveable(state.selectedRange, state.selectedDate, state.selectedActivityType) {
         mutableIntStateOf(ActivityWorkoutListPageSize)

@@ -17,11 +17,11 @@ import androidx.navigation.compose.composable
 import tech.mmarca.openvitals.ui.components.multiTouchFlingGuard
 
 /**
- * 63: a destination painted on the app's background. The screens draw none of their own, so
+ * A destination painted on the app's background. The screens draw none of their own, so
  * during a transition the one underneath showed through; opaque, the screen arriving can sit
  * fully drawn under the one leaving, and no frame is ever empty.
  */
-/** 63: how far down each destination starts: under the app bar when it has one. */
+/** How far down each destination starts: under the app bar when it has one. */
 internal val LocalDestinationTopPadding =
     androidx.compose.runtime.staticCompositionLocalOf<(NavBackStackEntry) -> androidx.compose.ui.unit.Dp> { { 0.dp } }
 
@@ -42,7 +42,7 @@ internal fun NavGraphBuilder.opaqueComposable(
                         ?: MaterialTheme.colorScheme.background,
                 )
                 .padding(top = top)
-                // 85: one guard for every screen's lists.
+                // One guard for every screen's lists.
                 .multiTouchFlingGuard(),
         ) { scope.content(entry) }
     }

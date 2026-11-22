@@ -66,7 +66,7 @@ fun MedicalRecordEntryScreen(viewModel: MedicalRecordEntryViewModel, onDone: () 
         else -> null
     }
     val nextLabel = stringResource(accessLabelRes(state.canWrite, access == MedicalAccessAction.OpenSettings))
-    // 70: a typed record left with back asks Save or Discard.
+    // A typed record left with back asks Save or Discard.
     val changed = formHasChanges(
         signature = listOf(state.draft, state.owner),
         ready = !state.isLoading && state.draft != null,

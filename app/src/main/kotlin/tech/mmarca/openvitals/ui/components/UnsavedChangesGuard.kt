@@ -15,7 +15,7 @@ import androidx.compose.ui.res.stringResource
 import tech.mmarca.openvitals.R
 
 /**
- * 70: the one rule for every screen that edits something. Back with nothing
+ * The one rule for every screen that edits something. Back with nothing
  * changed simply goes back. Back with changes asks Save or Discard: Save runs
  * [onSave], which saves and calls `leave` once the save went through; Discard
  * leaves without saving; tapping outside stays on the screen.

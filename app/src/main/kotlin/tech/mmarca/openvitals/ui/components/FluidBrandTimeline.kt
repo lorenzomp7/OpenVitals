@@ -9,7 +9,7 @@ class FluidBrandTimeline(val initialStartMillis: Long = NotStarted) {
         if (startedAtMillis == NotStarted) startedAtMillis = nowMillis
     }
 
-    /** 83: the app came to the front: the toggle plays its opening again. */
+    /** The app came to the front: the toggle plays its opening again. */
     fun restart(nowMillis: Long) {
         startedAtMillis = nowMillis
     }
@@ -29,5 +29,5 @@ class FluidBrandTimeline(val initialStartMillis: Long = NotStarted) {
     }
 }
 
-/** The shell's timeline, for brand-styled pieces deep in a screen (96). */
+/** The shell's timeline, for brand-styled pieces deep in a screen. */
 val LocalFluidBrandTimeline = androidx.compose.runtime.staticCompositionLocalOf<FluidBrandTimeline?> { null }

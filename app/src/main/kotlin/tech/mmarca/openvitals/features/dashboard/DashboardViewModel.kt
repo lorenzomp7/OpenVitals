@@ -700,7 +700,7 @@ class DashboardViewModel @Inject constructor(
         rebuildDisplay()
     }
 
-    /** 94: the placed tiles and, after them, the toggle's goals: what a load reads. */
+    /** The placed tiles and, after them, the toggle's goals: what a load reads. */
     private fun loadedDashboardWidgets() = (_uiState.value.dashboardWidgets + DayGoalWidgets).distinct()
 
     fun toggleDashboardEdit() {
@@ -758,7 +758,7 @@ class DashboardViewModel @Inject constructor(
         updateDashboardWidgets(updated)
     }
 
-    /** 75: the tiles on view take [order], in the slots they held, so hidden ones keep their places. */
+    /** The tiles on view take [order], in the slots they held, so hidden ones keep their places. */
     fun setDashboardVisibleOrder(order: List<DashboardWidgetId>) {
         val current = _uiState.value.dashboardWidgets
         val moved = tech.mmarca.openvitals.core.presentation.replaceVisibleOrder(current, order)

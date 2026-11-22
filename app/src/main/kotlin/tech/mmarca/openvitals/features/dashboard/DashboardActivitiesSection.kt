@@ -56,7 +56,7 @@ internal fun LazyListScope.dashboardActivitiesToday(
     onEditActivity: (String) -> Unit,
     onRequestDeleteActivity: (ExerciseData) -> Unit,
 ) {
-    // 109: always the same four symbols: running, strength training, biking and swimming. They
+    // Always the same four symbols: running, strength training, biking and swimming. They
     // were the kinds of the day's activities, so a day with two kinds drew two of the four.
     val recentKinds = ActivityBarKinds
     item(key = "activities_header") {
@@ -192,7 +192,7 @@ internal fun DashboardSwipeToDeleteActivityCard(
 }
 
 /**
- * 109: the Activities bar runs the width of the screen. Its label stays over the left column,
+ * The Activities bar runs the width of the screen. Its label stays over the left column,
  * centred in it, and the right half shows running, strength training, biking and swimming,
  * dimmed, lighting up one after the other on the toggle's clock.
  */
@@ -249,7 +249,7 @@ private val ActivityBarKinds = listOf(
 private const val RecentKindSeconds = 1.6f
 private const val RecentKindDim = 0.35f
 
-/** 109: lit at its turn, easing up and back down, dim the rest of the time. */
+/** Lit at its turn, easing up and back down, dim the rest of the time. */
 private fun recentKindAlpha(seconds: Float, index: Int, count: Int): Float {
     if (count <= 1) return 1f
     val position = (seconds / RecentKindSeconds) % count

@@ -81,9 +81,9 @@ internal data class OverlaySeries(
     val format: (Double) -> String,
     /** Smaller is better and drawn higher, as a pace is. */
     val inverted: Boolean = false,
-    /** Drawn dashed: an estimate, not a reading (103). */
+    /** Drawn dashed: an estimate, not a reading. */
     val dashed: Boolean = false,
-    /** A shorter form for the axis, where the unit would not fit (88). */
+    /** A shorter form for the axis, where the unit would not fit. */
     val axisFormat: ((Double) -> String)? = null,
 )
 
@@ -91,7 +91,7 @@ private val OverlayChartHeight = Spacing.giant * 4
 private const val MaxDrawnPoints = 300
 
 /**
- * 88–93: a chart of one or two series over the same stretch of time, each on its own scale
+ * A chart of one or two series over the same stretch of time, each on its own scale
  * (the first labelled on the left, the second on the right), with optional shaded spans.
  * Lines are smooth, as the heart rate chart's are. The frame gives it the full-screen button.
  */
@@ -106,10 +106,10 @@ internal fun ActivityOverlayChart(
     spans: List<ClosedFloatingPointRange<Float>> = emptyList(),
     spanColor: Color = MaterialTheme.colorScheme.primary,
     spanLabel: String? = null,
-    /** The second series continues the first, on the first's scale (103). */
+    /** The second series continues the first, on the first's scale. */
     sharedScale: Boolean = false,
 ) {
-    // 137: a line that starts after the session's first second is carried back to it.
+    // A line that starts after the session's first second is carried back to it.
     @Suppress("NAME_SHADOWING")
     val primary = remember(primary) { primary.copy(points = anchoredAtStart(primary.points)) }
     val first = remember(primary.points, secondary?.points, sharedScale) {
@@ -124,7 +124,7 @@ internal fun ActivityOverlayChart(
     ChartZoom(keys, modifier = modifier) { zoom ->
         val viewport = zoom.viewport
         Column(verticalArrangement = Arrangement.spacedBy(Spacing.xs)) {
-            // 140: hold and slide across the chart to read the reading under the finger.
+            // Hold and slide across the chart to read the reading under the finger.
             val targets = remember(primary, secondary, first, viewport) {
                 overlayScrubTargets(primary, secondary, first, viewport, xLabel)
             }
@@ -141,7 +141,7 @@ internal fun ActivityOverlayChart(
                         .fillMaxSize()
                         .chartSemantics(described),
                 ) {
-                    // 101: in full screen the viewport is what the fingers zoomed to.
+                    // In full screen the viewport is what the fingers zoomed to.
                     clipRect {
                         spans.forEach { span ->
                             val from = viewport.visibleFraction(span.start)
@@ -179,7 +179,7 @@ private data class OverlayScale(val low: Double, val high: Double)
 private const val MaxScrubTargets = 600
 
 /**
- * 140: the readings of [primary] on show, each with the time under it and, when there is one,
+ * The readings of [primary] on show, each with the time under it and, when there is one,
  * the second series' reading nearest in time.
  */
 private fun overlayScrubTargets(
@@ -207,7 +207,7 @@ private fun overlayScrubTargets(
 }
 
 /**
- * 137: a series whose first reading comes after the start is drawn from the start: its first
+ * A series whose first reading comes after the start is drawn from the start: its first
  * value there is estimated as the median of its first few readings, so one odd reading at the
  * start does not set it.
  */
@@ -218,7 +218,7 @@ internal fun anchoredAtStart(points: List<Pair<Float, Double>>, epsilon: Float =
     return listOf(0f to head[head.size / 2]) + points
 }
 
-/** 137: how many of the first readings the estimated start is the median of. */
+/** How many of the first readings the estimated start is the median of. */
 internal const val StartEstimateReadings = 5
 
 private fun overlayScale(points: List<Pair<Float, Double>>): OverlayScale {
@@ -240,7 +240,7 @@ private fun AxisLabels(scale: OverlayScale, series: OverlaySeries, align: TextAl
             Text(
                 text = (series.axisFormat ?: series.format)(value),
                 style = MaterialTheme.typography.labelSmall,
-                // 138: the axes are read in the theme's neutral ink, never the series' colour.
+                // The axes are read in the theme's neutral ink, never the series' colour.
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 textAlign = align,
                 maxLines = 1,
@@ -319,7 +319,7 @@ private fun ActivityTypeChartFrame(
     OpenVitalsCard(modifier = modifier) {
         Column(Modifier.padding(Spacing.lg), verticalArrangement = Arrangement.spacedBy(Spacing.md)) {
             Text(title, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
-            // 114: left, middle and right, as on every activity chart.
+            // Left, middle and right, as on every activity chart.
             ActivityChartFigures(figures, accent)
             chart()
             note?.let { Text(it, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant) }
@@ -330,7 +330,7 @@ private fun ActivityTypeChartFrame(
 private fun List<Pair<Instant, Double>>.across(axis: SessionAxis): List<Pair<Float, Double>> =
     map { (time, value) -> axis.fractionOf(time) to value }
 
-/** 88: the pace over time, faster drawn higher. */
+/** The pace over time, faster drawn higher. */
 @Composable
 internal fun ActivityPaceChartCard(
     paceSecondsPerKm: List<Pair<Instant, Double>>,
@@ -339,12 +339,12 @@ internal fun ActivityPaceChartCard(
     pauses: List<SessionPause>,
     unitFormatter: UnitFormatter,
     modifier: Modifier = Modifier,
-    /** 118: a swim's pace, per 100 m rather than per kilometre. */
+    /** A swim's pace, per 100 m rather than per kilometre. */
     per100m: Boolean = false,
 ) {
     if (paceSecondsPerKm.size < 2) return
     val axis = remember(sessionStart, sessionEnd, pauses) { SessionAxis(sessionStart, sessionEnd, pauses) }
-    // 88: the axis has room for the minutes and seconds only; the figures above carry the unit.
+    // The axis has room for the minutes and seconds only; the figures above carry the unit.
     val axisPace: (Double) -> String = { seconds ->
         if (per100m) minutesSeconds(seconds / 10.0) else unitFormatter.averagePace(1_000.0, (seconds * 1_000).toLong())?.value ?: "–"
     }
@@ -385,7 +385,7 @@ private val ZoneColors = listOf(
     Color(0xFF64B5F6), Color(0xFF4DB6AC), Color(0xFFFFD54F), Color(0xFFFF8A65), Color(0xFFE57373),
 )
 
-/** 89: the time spent in each heart rate zone, as bars. */
+/** The time spent in each heart rate zone, as bars. */
 @Composable
 internal fun ActivityHeartRateZonesCard(
     samples: List<HeartRateSample>,
@@ -417,7 +417,7 @@ internal fun ActivityHeartRateZonesCard(
         val bounds = remember(maxHeartRateBpm) { heartRateZoneBounds(maxHeartRateBpm) }
         val spoken = zones.mapIndexed { index, seconds -> "${names[index]} ${formatElapsedChartLabel(Duration.ofSeconds(seconds))}" }
             .joinToString(", ")
-        // 117: as the watches show them: the hardest zone on top, each with its name, its bpm
+        // As the watches show them: the hardest zone on top, each with its name, its bpm
         // and the share and time spent in it, over a bar as long as that share.
         Column(
             modifier = Modifier.chartSemantics("$title: $spoken"),
@@ -463,7 +463,7 @@ internal fun ActivityHeartRateZonesCard(
     }
 }
 
-/** 90, 91: two measures of the same session on one chart, each on its own scale. */
+/** Two measures of the same session on one chart, each on its own scale. */
 @Composable
 internal fun ActivityPairedChartCard(
     title: String,
@@ -502,7 +502,7 @@ internal fun ActivityPairedChartCard(
     }
 }
 
-/** 92: the heart rate of a strength session with each set shaded, to see the recovery between sets. */
+/** The heart rate of a strength session with each set shaded, to see the recovery between sets. */
 @Composable
 internal fun ActivityStrengthSetsChartCard(
     samples: List<HeartRateSample>,
@@ -522,7 +522,7 @@ internal fun ActivityStrengthSetsChartCard(
     ActivityTypeChartFrame(
         title = title,
         figures = listOf(
-            // 105: a strength session is at least one set, recorded or not.
+            // A strength session is at least one set, recorded or not.
             stringResource(R.string.activity_chart_sets_count) to unitFormatter.count(maxOf(1, sets.size)),
             stringResource(R.string.summary_average) to bpm(points.map { it.second }.average()),
         ),
@@ -544,7 +544,7 @@ internal fun ActivityStrengthSetsChartCard(
 }
 
 /**
- * 93: the heart rate in the two minutes after the end, and how far it fell. 103: past the last
+ * The heart rate in the two minutes after the end, and how far it fell. Past the last
  * reading the fall is estimated toward the resting rate, drawn dashed and marked "≈".
  */
 @Composable
@@ -602,8 +602,8 @@ internal fun ActivityRecoveryChartCard(
 }
 
 /**
- * 88–93: the kind-specific chart of [workout], the zones and the recovery chart, as sections the
- * detail screen arranges (113).
+ * The kind-specific chart of [workout], the zones and the recovery chart, as sections the
+ * detail screen arranges.
  */
 internal fun MetricDetailSectionBuilder.activityTypeChartSections(
     workout: ExerciseData,
@@ -616,7 +616,7 @@ internal fun MetricDetailSectionBuilder.activityTypeChartSections(
     maxHeartRateBpm: Int?,
     unitFormatter: UnitFormatter,
     restingHeartRateBpm: Int? = null,
-    /** 136: the speed checked against the distance; the raw samples when null. */
+    /** The speed checked against the distance; the raw samples when null. */
     movement: tech.mmarca.openvitals.domain.insights.MovementSeries? = null,
 ) {
     val cardModifier = Modifier.fillMaxWidth().padding(horizontal = Spacing.lg, vertical = Spacing.xs)
@@ -627,11 +627,11 @@ internal fun MetricDetailSectionBuilder.activityTypeChartSections(
     }
     when (workoutTypeChart(workout.exerciseType)) {
         WorkoutTypeChart.PACE -> section(TypeChartSection) {
-            // 88: whichever of the recorded speed, the route and the splits covers the session.
+            // Whichever of the recorded speed, the route and the splits covers the session.
             val pace = remember(speedSamples, workout.route, splitSpeedTrace, movement) {
                 bestPaceSeries(
                     listOf(
-                        // 136: the cleaned speed that adds up to the distance, when there is one.
+                        // The cleaned speed that adds up to the distance, when there is one.
                         movement?.speed?.filter { it.second > 0.0 }
                             ?.map { it.first to 1_000.0 / it.second }
                             ?.filter { it.second <= tech.mmarca.openvitals.domain.insights.SlowestPaceSecondsPerKm }
@@ -648,7 +648,7 @@ internal fun MetricDetailSectionBuilder.activityTypeChartSections(
             ActivityPaceChartCard(pace, workout.startTime, workout.endTime, pauses, unitFormatter, cardModifier)
         }
         WorkoutTypeChart.SWIM_PACE -> section(TypeChartSection) {
-            // 118: per 100 m, from the laps a pool watch writes, else the speed or the route.
+            // Per 100 m, from the laps a pool watch writes, else the speed or the route.
             val pace = remember(workout.laps, speedSamples, workout.route) {
                 bestPaceSeries(
                     listOf(
@@ -701,7 +701,7 @@ internal fun MetricDetailSectionBuilder.activityTypeChartSections(
         }
         null -> Unit
     }
-    // 110, 118: every kind with a heart rate gets the time in each zone: tennis, a walk, a swim.
+    // Every kind with a heart rate gets the time in each zone: tennis, a walk, a swim.
     if (maxHeartRateBpm != null && heartRateSamples.isNotEmpty()) {
         section(MetricDetailSectionId.ACTIVITY_DETAIL_ZONES) {
             ActivityHeartRateZonesCard(heartRateSamples, workout.startTime, workout.endTime, maxHeartRateBpm, cardModifier)

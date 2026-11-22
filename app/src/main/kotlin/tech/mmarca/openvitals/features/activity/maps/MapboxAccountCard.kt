@@ -35,7 +35,7 @@ import tech.mmarca.openvitals.R
 import tech.mmarca.openvitals.ui.components.OpenVitalsButton
 import tech.mmarca.openvitals.ui.components.OpenVitalsCard
 
-/** 57, 26: "Online maps - Mapbox" in the activities settings, with its status and a tap to disconnect. */
+/** "Online maps - Mapbox" in the activities settings, with its status and a tap to disconnect. */
 @Composable
 internal fun MapboxAccountCard(modifier: Modifier = Modifier) {
     val context = LocalContext.current

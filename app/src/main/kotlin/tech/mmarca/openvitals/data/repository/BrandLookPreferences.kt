@@ -9,7 +9,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import tech.mmarca.openvitals.domain.preferences.BrandPaletteSource
 
-/** 97: the home screen's colours and whether its brand pieces move. A file of its own. */
+/** The home screen's colours and whether its brand pieces move. A file of its own. */
 @Singleton
 class BrandLookPreferences @Inject constructor(@ApplicationContext context: Context) {
     private val prefs = context.getSharedPreferences("openvitals_brand_look", Context.MODE_PRIVATE)

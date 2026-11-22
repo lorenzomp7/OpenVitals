@@ -82,7 +82,7 @@ fun BodyMeasurementEntryScreen(
     LifecycleEventEffect(Lifecycle.Event.ON_RESUME) {
         viewModel.refreshPermission()
     }
-    // 70: back with an unsaved measurement asks Save or Discard; Save leaves once it is stored.
+    // Back with an unsaved measurement asks Save or Discard; Save leaves once it is stored.
     val hasChanges = formHasChanges(
         signature = state.inputs.filterValues { it.isNotBlank() } to state.entryTime.takeIf { state.isEditMode },
         ready = !state.isCheckingPermission && (!state.isEditMode || state.inputs.isNotEmpty()),

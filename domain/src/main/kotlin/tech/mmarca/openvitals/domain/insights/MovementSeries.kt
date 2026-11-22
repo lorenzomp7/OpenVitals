@@ -6,7 +6,7 @@ import tech.mmarca.openvitals.core.geo.haversineMeters
 import tech.mmarca.openvitals.domain.model.ExerciseRoutePoint
 
 /**
- * 136: the speed and step cadence an activity's charts draw, checked against the session's own
+ * The speed and step cadence an activity's charts draw, checked against the session's own
  * totals. The speed, the cadence and the stride (speed over cadence) come from here, so the
  * three charts agree with each other and with the distance and steps in the summary.
  *
@@ -27,7 +27,7 @@ private const val MovingSpeedMetersPerSecond = 0.3
 private const val MovingCadenceStepsPerMinute = 20.0
 
 /**
- * 136: [speedReadings] and [stepCadenceReadings] as the charts should draw them.
+ * [speedReadings] and [stepCadenceReadings] as the charts should draw them.
  *
  * - Only the readings inside the session and outside its [pauses]; the app that wrote the session
  *   ([preferredSource]) first, else the app with the most readings; cleaned of single wild
@@ -112,7 +112,7 @@ fun movementSeries(
 }
 
 /**
- * 136: the GPS track's speed: the distance covered over the [windowSeconds] before each point,
+ * The GPS track's speed: the distance covered over the [windowSeconds] before each point,
  * then the same median and mean [sessionSeries] uses. A point closer than five seconds to the
  * window's start, or a jump faster than [MaxGpsSpeedMetersPerSecond], is no speed.
  */

@@ -22,7 +22,7 @@ private const val EntryPageSize = 10
  * survives the list changing: deleting a row must not snap it back. Only
  * ever clamped to what exists, never reset.
  *
- * 146: saved, not just remembered: scrolling the list away and back, or opening
+ * Saved, not just remembered: scrolling the list away and back, or opening
  * an entry and coming back, keeps every page already shown. [resetKey] (the
  * period, say) starts over at one page when it changes.
  */

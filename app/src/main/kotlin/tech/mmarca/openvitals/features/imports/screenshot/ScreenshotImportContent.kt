@@ -74,7 +74,7 @@ internal fun ScreenshotImportContent(state: ScreenshotImportState, start: String
             }
             if (state.values.any { it.kind == "bmi" }) ScreenshotHint(stringResource(R.string.screenshot_bmi_preview))
             if (state.values.any { it.kind == "body_water_percent" }) {
-                // 73: a screenshot without a weight takes the body profile's; with neither, body water % is skipped.
+                // A screenshot without a weight takes the body profile's; with neither, body water % is skipped.
                 val profileWeight = state.referenceWeightKg
                 ScreenshotHint(
                     when {

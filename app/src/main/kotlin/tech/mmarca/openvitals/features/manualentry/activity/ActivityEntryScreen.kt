@@ -168,7 +168,7 @@ fun ActivityEntryScreen(
             onEntrySaved()
         }
     }
-    // 70: a typed activity left with back asks Save or Discard; nothing typed, back just goes back.
+    // A typed activity left with back asks Save or Discard; nothing typed, back just goes back.
     val manualFormReady = state.mode == ActivityEntryMode.MANUAL && !state.isCheckingPermission &&
         (!state.isEditMode || state.editEntryLoaded)
     val manualFormChanged = formHasChanges(

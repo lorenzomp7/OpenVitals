@@ -97,7 +97,7 @@ import tech.mmarca.openvitals.ui.components.PrivacyReconsentPrompt
 private const val NavTransitionMillis = tech.mmarca.openvitals.ui.theme.ScreenMotion.DurationMillis
 
 /**
- * 63: a screen opening fades and grows in over the one it leaves, which stays drawn underneath;
+ * A screen opening fades and grows in over the one it leaves, which stays drawn underneath;
  * going back, the screen returned to is there at once and the one left fades away over it.
  * Every destination is opaque ([opaqueComposable]), so no frame is ever empty: the old fade
  * through emptied the screen between the two halves, a black page with only a title.
@@ -143,14 +143,14 @@ fun AppNavigation(
     onOnboardingComplete: () -> Unit = {},
 ) {
     val fluidBrandTimeline = rememberFluidBrandTimeline()
-    // 83: every time the app comes to the front, the animated toggle opens afresh.
+    // Every time the app comes to the front, the animated toggle opens afresh.
     androidx.lifecycle.compose.LifecycleEventEffect(androidx.lifecycle.Lifecycle.Event.ON_START) {
         fluidBrandTimeline.restart(android.os.SystemClock.uptimeMillis())
     }
     val navController = rememberNavController()
     val backDispatcher = LocalOnBackPressedDispatcherOwner.current?.onBackPressedDispatcher
     val liveBackStackEntry by navController.currentBackStackEntryAsState()
-    // 63: the app bar and its title follow the screen on view. The content no longer takes its
+    // The app bar and its title follow the screen on view. The content no longer takes its
     // padding from the bar (each destination pads itself), so switching the bar moves nothing.
     // Going back to a screen without a bar, the bar fades out with the screen it belongs to;
     // opening a screen with a bar from one without, it fades in with it.
@@ -263,7 +263,7 @@ fun AppNavigation(
         screenAppBar?.hidesAppBar != true
     val showNavigation =
         topLevelDestinations.size > 1 && currentRoute?.let { it in topLevelRoutes } == true
-    // 63: while the bar fades out with the screen being left, it is still that screen's bar: the
+    // While the bar fades out with the screen being left, it is still that screen's bar: the
     // stack has already popped (nothing behind the dashboard), and reading it took the arrow away
     // at the first frame of the fade.
     val showingLeavingScreen = navBackStackEntry?.id != liveBackStackEntry?.id
@@ -417,7 +417,7 @@ fun AppNavigation(
             }
         },
     ) { innerPadding ->
-        // 63: the top is padded by each destination for itself (opaqueComposable), from whether it
+        // The top is padded by each destination for itself (opaqueComposable), from whether it
         // has the bar, so the bar coming or going during a transition shifts neither screen.
         val layoutDirection = androidx.compose.ui.platform.LocalLayoutDirection.current
         val barTop = androidx.compose.foundation.layout.WindowInsets.systemBars
@@ -434,7 +434,7 @@ fun AppNavigation(
                 end = innerPadding.calculateEndPadding(layoutDirection),
                 bottom = innerPadding.calculateBottomPadding(),
             ),
-            // 63: Material "fade through" for every screen, the dashboard included: the screen being
+            // Material "fade through" for every screen, the dashboard included: the screen being
             // left fades out first, then the new one fades and scales in. The screens draw no background
             // of their own, so a cross-fade showed both at once. The system's predictive back is off
             // (manifest): it drew the dashboard over the screen being left mid-gesture.

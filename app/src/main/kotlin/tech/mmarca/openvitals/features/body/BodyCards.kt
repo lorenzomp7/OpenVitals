@@ -31,7 +31,7 @@ internal fun WeightSummaryCard(
         modifier = modifier.fillMaxWidth(),
 
     ) {
-        // 141: the row spans the card, so "Latest" sits at the start and "Change" at the end.
+        // The row spans the card, so "Latest" sits at the start and "Change" at the end.
         Row(
             modifier = Modifier.fillMaxWidth().padding(16.dp),
             horizontalArrangement = Arrangement.SpaceBetween,

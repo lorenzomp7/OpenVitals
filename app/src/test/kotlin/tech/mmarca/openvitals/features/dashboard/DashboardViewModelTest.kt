@@ -439,7 +439,7 @@ class DashboardViewModelTest {
         val state = vm.uiState.value
         assertFalse(state.isLoading)
         assertNotNull(state.data)
-        // 94: the toggle's goals load with the placed tiles, placed or not.
+        // The toggle's goals load with the placed tiles, placed or not.
         assertEquals(
             setOf(DashboardWidgetId.STEPS, DashboardWidgetId.DISTANCE) + DayGoalWidgets,
             state.loadingWidgets,
@@ -579,7 +579,7 @@ class DashboardViewModelTest {
                 setOf(DashboardMetric.HYDRATION),
                 setOf(DashboardMetric.DISTANCE),
                 setOf(DashboardMetric.WEIGHT),
-                // 94: then the toggle's goals the tiles did not already ask for.
+                // Then the toggle's goals the tiles did not already ask for.
                 setOf(DashboardMetric.ACTIVE_CALORIES),
                 setOf(DashboardMetric.WORKOUT),
             ),
@@ -625,7 +625,7 @@ class DashboardViewModelTest {
                 setOf(DashboardMetric.HYDRATION),
                 setOf(DashboardMetric.WEIGHT),
                 setOf(DashboardMetric.AVG_HEART_RATE),
-                // 94: the toggle's workout, which no tile here asked for.
+                // The toggle's workout, which no tile here asked for.
                 setOf(DashboardMetric.WORKOUT),
             ),
             queries.map { it.visibleMetrics },

@@ -13,12 +13,12 @@ interface WidgetOrderPreferences {
 
     fun setMetricDetailSectionOrder(sectionIds: List<String>)
 
-    /** 131: the sections the user took off the screens they appear on; shown again from edit mode. */
+    /** The sections the user took off the screens they appear on; shown again from edit mode. */
     fun hiddenMetricDetailSections(): Set<String> = emptySet()
 
     fun setHiddenMetricDetailSections(sectionIds: Set<String>) = Unit
 
-    /** 132: the version of the activity charts' general order the saved order was last put in. */
+    /** The version of the activity charts' general order the saved order was last put in. */
     fun activityDetailGeneralOrderVersion(): Int = Int.MAX_VALUE
 
     fun setActivityDetailGeneralOrderVersion(version: Int) = Unit

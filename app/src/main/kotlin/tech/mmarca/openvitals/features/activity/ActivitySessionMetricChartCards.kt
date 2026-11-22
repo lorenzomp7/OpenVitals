@@ -46,7 +46,7 @@ import tech.mmarca.openvitals.ui.theme.StepsColor
 
 @Composable
 internal fun ActivitySpeedChartCard(
-    /** 136: the speed as [movementSeries] checked it: cleaned, outside the pauses, adding up to the distance. */
+    /** The speed as [movementSeries] checked it: cleaned, outside the pauses, adding up to the distance. */
     series: List<Pair<Instant, Double>>,
     sessionStart: Instant,
     sessionEnd: Instant,
@@ -125,7 +125,7 @@ internal fun ActivitySplitSpeedChartCard(
  * drawn from the route's altitudes. No route or altitude, no card.
  */
 /**
- * 64, 68: the energy burned minute by minute, drawn like the heart rate and
+ * The energy burned minute by minute, drawn like the heart rate and
  * elevation charts. Each point is the kcal per minute of one slice of the
  * session, from heart rate (Keytel) when the body profile allows it.
  */
@@ -191,7 +191,7 @@ internal fun ActivityElevationChartCard(
         tech.mmarca.openvitals.features.activity.elevation.RouteElevationSource.GPS,
 ) {
     if (samples.isEmpty()) return
-    // 119: the ascent and descent of the profile drawn, filtered of GPS wander as the splits
+    // The ascent and descent of the profile drawn, filtered of GPS wander as the splits
     // count them, beside the lowest and highest point.
     val change = remember(samples) {
         tech.mmarca.openvitals.domain.insights.RouteElevation.elevationChangeFromAltitudes(samples.map { it.meters })
@@ -206,7 +206,7 @@ internal fun ActivityElevationChartCard(
             stringResource(R.string.summary_range) to
                 activityValueRange(unitFormatter.elevation(low).text, unitFormatter.elevation(high).text),
         ),
-        // 104: where the heights came from: a terrain model, or the GPS, which drifts.
+        // Where the heights came from: a terrain model, or the GPS, which drifts.
         footnote = stringResource(
             when (source) {
                 tech.mmarca.openvitals.features.activity.elevation.RouteElevationSource.TERRAIN_TILES ->
@@ -247,15 +247,15 @@ internal fun ActivityCadenceChartCard(
     unitFormatter: UnitFormatter,
     modifier: Modifier = Modifier,
     pauses: List<SessionPause> = emptyList(),
-    /** 136: a run's cadence written per foot is counted in steps. */
+    /** A run's cadence written per foot is counted in steps. */
     exerciseType: Int? = null,
-    /** 136: the step cadence as [movementSeries] checked it against the steps; read here when null. */
+    /** The step cadence as [movementSeries] checked it against the steps; read here when null. */
     stepSeries: List<Pair<Instant, Double>>? = null,
 ) {
     val filtered = remember(samples, kind) { samples.filter { it.kind == kind } }
     // All zeros is a sensor that was not there, not a cadence.
     if (filtered.none { it.rate > 0.0 }) return
-    // 136: one app's readings inside the session, cleaned, and a run's counted in steps.
+    // One app's readings inside the session, cleaned, and a run's counted in steps.
     val series = remember(filtered, sessionStart, sessionEnd, exerciseType, stepSeries) {
         if (kind == ActivityCadenceKind.STEPS && stepSeries != null) return@remember stepSeries
         val cleaned = tech.mmarca.openvitals.domain.insights.sessionSeries(
@@ -326,7 +326,7 @@ private fun ActivitySessionMetricChartCard(
     // One pass each per list, not per recomposition.
     val minValue = remember(sortedValues) { sortedValues.minOf { it.second } }
     val maxValue = remember(sortedValues) { sortedValues.maxOf { it.second } }
-    // 136: weighted by time, so a stretch read every second does not outweigh one read every minute.
+    // Weighted by time, so a stretch read every second does not outweigh one read every minute.
     val avgValue = averageOverride ?: remember(sortedValues) {
         tech.mmarca.openvitals.domain.insights.timeWeightedMean(sortedValues) ?: sortedValues.map { it.second }.average()
     }
@@ -342,11 +342,11 @@ private fun ActivitySessionMetricChartCard(
     val chartHeight = 180.dp
     val zone = ZoneId.systemDefault()
     val timeFormatter = DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT)
-    // 64: lines only, as the heart rate and elevation charts are.
+    // Lines only, as the heart rate and elevation charts are.
     val drawPoints = false
     // Built once, identity-stable, so the geometry cache holds.
     val chartPoints = remember(sortedValues, axis) {
-        // 137: drawn from the session's start; a first reading that came later is estimated there.
+        // Drawn from the session's start; a first reading that came later is estimated there.
         anchoredAtStart(sortedValues.map { (time, value) -> axis.fractionOf(time) to value })
             .map { (x, value) -> MetricLinePlotPoint(xFraction = x, value = value) }
     }
@@ -361,7 +361,7 @@ private fun ActivitySessionMetricChartCard(
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold,
             )
-            // 114: left, middle and right, the range's unit said once.
+            // Left, middle and right, the range's unit said once.
             ActivityChartFigures(
                 figures = statsOverride ?: listOf(
                     stringResource(R.string.summary_average) to valueFormatter(avgValue),
@@ -424,7 +424,7 @@ private fun ActivitySessionMetricChartCard(
     }
 }
 
-/** 117: the length of each step over the session, the speed over the cadence. */
+/** The length of each step over the session, the speed over the cadence. */
 @Composable
 internal fun ActivityStrideChartCard(
     stridesMeters: List<Pair<Instant, Double>>,

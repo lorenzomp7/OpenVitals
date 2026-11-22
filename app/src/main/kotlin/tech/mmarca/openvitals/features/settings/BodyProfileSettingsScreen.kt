@@ -49,7 +49,7 @@ fun BodyProfileSettingsScreen(viewModel: BodySettingsViewModel) {
             after()
         }
     }
-    // 70: back with unsaved edits asks Save or Discard; with none, it simply goes back.
+    // Back with unsaved edits asks Save or Discard; with none, it simply goes back.
     UnsavedChangesBackHandler(
         hasChanges = !identity.loading && (
             name.trim() != identity.name.trim() ||

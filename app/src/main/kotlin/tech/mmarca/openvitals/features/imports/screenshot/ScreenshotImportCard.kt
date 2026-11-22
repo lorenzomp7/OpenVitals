@@ -25,13 +25,13 @@ import tech.mmarca.openvitals.ui.theme.LayoutMetrics
 import tech.mmarca.openvitals.ui.theme.Spacing
 
 /**
- * 51, 61: a "+ log" tile, styled like the others. A tap opens the image
+ * A "+ log" tile, styled like the others. A tap opens the image
  * picker at once; the review opens only with a picked image.
  */
 @Composable
 internal fun ScreenshotImportCard(modifier: Modifier = Modifier) {
     var pickedUri by rememberSaveable { mutableStateOf<Uri?>(null) }
-    // 78: every pick is a review of its own, with state of its own: one review's "saved" or
+    // Every pick is a review of its own, with state of its own: one review's "saved" or
     // "busy" can never hold up or close the next, however soon after it is opened.
     var pickCount by rememberSaveable { mutableIntStateOf(0) }
     val picker = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument()) { uri ->
@@ -77,8 +77,8 @@ internal fun ScreenshotImportCard(modifier: Modifier = Modifier) {
             viewModel = hiltViewModel(key = "screenshot-import-$pickCount"),
         )
     }
-    // 73: the confirmation is a card of the app's own, under the tile, gone after a few seconds.
-    // 78: each save shows it afresh for its full time; the tile above stays usable throughout.
+    // The confirmation is a card of the app's own, under the tile, gone after a few seconds.
+    // Each save shows it afresh for its full time; the tile above stays usable throughout.
     LaunchedEffect(savedCount) {
         if (savedCount > 0) {
             savedBanner = true
@@ -134,7 +134,7 @@ internal fun ScreenshotImportDialog(
     val scope = rememberCoroutineScope()
     val context = androidx.compose.ui.platform.LocalContext.current
     var requested by remember { mutableStateOf<Set<String>>(emptySet()) }
-    // 46: Android stops showing the Health Connect dialog after repeated denials and answers
+    // Android stops showing the Health Connect dialog after repeated denials and answers
     // at once with nothing. Then OpenVitals' own page in Health Connect is the way to grant.
     val requester = rememberManualEntryWritePermissionRequester { granted ->
         if (!granted.containsAll(requested)) {
@@ -153,7 +153,7 @@ internal fun ScreenshotImportDialog(
     LaunchedEffect(state.suggestedStart, state.suggestedEnd) {
         start = state.suggestedStart; end = state.suggestedEnd; confirmed = false
     }
-    // 77: closing never asks anything. 73: a save says so and closes the review.
+    // Closing never asks anything. A save says so and closes the review.
     fun requestClose() {
         if (!state.busy) onDismiss()
     }
@@ -197,7 +197,7 @@ internal fun ScreenshotImportDialog(
         },
         onSave = { viewModel.save(start, end) }, onClose = { requestClose() },
     )
-    // 58: a full screen with the back arrow on top, like every other menu.
+    // A full screen with the back arrow on top, like every other menu.
     Dialog(
         onDismissRequest = { requestClose() },
         properties = DialogProperties(usePlatformDefaultWidth = false, decorFitsSystemWindows = false),

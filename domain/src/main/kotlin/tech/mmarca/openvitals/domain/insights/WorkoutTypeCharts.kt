@@ -11,7 +11,7 @@ import tech.mmarca.openvitals.domain.model.ExerciseSegmentData
 import tech.mmarca.openvitals.domain.model.HeartRateSample
 import tech.mmarca.openvitals.domain.model.SpeedSample
 
-/** The extra chart an activity gets for its kind (88–92); the recovery chart (93) is for any with a heart rate. */
+/** The extra chart an activity gets for its kind; the recovery chart is for any with a heart rate. */
 enum class WorkoutTypeChart { PACE, SWIM_PACE, ELEVATION_WITH_SPEED, CADENCE_WITH_HEART_RATE, HEART_RATE_WITH_SETS }
 
 /** Which kind-specific chart a session of [exerciseType] gets, if any. */
@@ -19,10 +19,10 @@ fun workoutTypeChart(exerciseType: Int): WorkoutTypeChart? = when (exerciseType)
     ExerciseSessionRecord.EXERCISE_TYPE_RUNNING,
     ExerciseSessionRecord.EXERCISE_TYPE_WALKING,
     ExerciseSessionRecord.EXERCISE_TYPE_HIKING,
-    // 117: a treadmill's pace, from the belt's speed or the splits.
+    // A treadmill's pace, from the belt's speed or the splits.
     ExerciseSessionRecord.EXERCISE_TYPE_RUNNING_TREADMILL,
     -> WorkoutTypeChart.PACE
-    // 118: a swim's pace is read per 100 m.
+    // A swim's pace is read per 100 m.
     ExerciseSessionRecord.EXERCISE_TYPE_SWIMMING_POOL,
     ExerciseSessionRecord.EXERCISE_TYPE_SWIMMING_OPEN_WATER,
     -> WorkoutTypeChart.SWIM_PACE
@@ -35,7 +35,7 @@ fun workoutTypeChart(exerciseType: Int): WorkoutTypeChart? = when (exerciseType)
     else -> null
 }
 
-/** 112: a treadmill's speed is the belt's setting, not a reading worth a chart. */
+/** A treadmill's speed is the belt's setting, not a reading worth a chart. */
 fun showsSpeedChart(exerciseType: Int): Boolean = exerciseType != ExerciseSessionRecord.EXERCISE_TYPE_RUNNING_TREADMILL
 
 /** The heart rate a zone is a share of: the one the profile names, else Tanaka's 208 − 0.7 × age. */
@@ -48,7 +48,7 @@ val heartRateZoneFloors: List<Double> = listOf(0.6, 0.7, 0.8, 0.9)
 /** A gap longer than this between two readings is not time spent at the earlier one. */
 private val zoneSampleGap: Duration = Duration.ofSeconds(30)
 
-/** 89: seconds in each of the five zones between [start] and [end]. Empty without readings. */
+/** Seconds in each of the five zones between [start] and [end]. Empty without readings. */
 fun heartRateZoneSeconds(samples: List<HeartRateSample>, start: Instant, end: Instant, maxBpm: Int): List<Long> {
     val inSession = samples.filter { !it.time.isBefore(start) && it.time.isBefore(end) }.sortedBy { it.time }
     if (inSession.isEmpty() || maxBpm <= 0) return emptyList()
@@ -69,10 +69,10 @@ const val SlowestPaceSecondsPerKm = 1_200.0
 /** Readings are averaged over this window, so a GPS jitter is not a sprint. */
 private val paceSmoothing: Duration = Duration.ofSeconds(30)
 
-/** 118: a swim is slower than 20 min/km without standing still: 10 min per 100 m is its limit. */
+/** A swim is slower than 20 min/km without standing still: 10 min per 100 m is its limit. */
 const val SlowestSwimPaceSecondsPerKm = 6_000.0
 
-/** 88: seconds per kilometre over time, from the recorded speed. */
+/** Seconds per kilometre over time, from the recorded speed. */
 fun paceFromSpeed(
     samples: List<SpeedSample>,
     slowestSecondsPerKm: Double = SlowestPaceSecondsPerKm,
@@ -84,7 +84,7 @@ fun paceFromSpeed(
             .filter { it.second <= slowestSecondsPerKm },
     )
 
-/** 88: seconds per kilometre over time, from the route when no speed was recorded. */
+/** Seconds per kilometre over time, from the route when no speed was recorded. */
 fun paceFromRoute(
     points: List<ExerciseRoutePoint>,
     slowestSecondsPerKm: Double = SlowestPaceSecondsPerKm,
@@ -111,7 +111,7 @@ fun paceFromRoute(
 }
 
 /**
- * 88: of the pace series a session has, the one that covers most of it. A watch can write its
+ * Of the pace series a session has, the one that covers most of it. A watch can write its
  * speed only for the last seconds while the route or the splits run the whole way: drawing the
  * speed then put the whole line at the end. A recorded series wins a tie.
  */
@@ -141,7 +141,7 @@ fun bestPaceSeries(
 }
 
 /**
- * 88: the average pace of a series, as time over distance: the time-weighted mean speed,
+ * The average pace of a series, as time over distance: the time-weighted mean speed,
  * inverted. The mean of the paces themselves leans toward the slow stretches.
  */
 fun averagePaceSecondsPerKm(series: List<Pair<Instant, Double>>): Double? {
@@ -160,7 +160,7 @@ fun averagePaceSecondsPerKm(series: List<Pair<Instant, Double>>): Double? {
 }
 
 /**
- * 118: seconds per kilometre for each lap with a length, as a step: the lap's pace from its
+ * Seconds per kilometre for each lap with a length, as a step: the lap's pace from its
  * start to its end. A pool watch writes a lap per length swum, so this is the swim's pace.
  */
 fun paceFromLaps(laps: List<tech.mmarca.openvitals.domain.model.ExerciseLapData>): List<Pair<Instant, Double>> =
@@ -186,8 +186,8 @@ private fun smoothed(values: List<Pair<Instant, Double>>): List<Pair<Instant, Do
 }
 
 /**
- * 92: the stretches of a strength session spent on a set: every segment that is not a rest or
- * a pause. 102: a segment over half the session is the workout itself, as some watches write
+ * The stretches of a strength session spent on a set: every segment that is not a rest or
+ * a pause. A segment over half the session is the workout itself, as some watches write
  * it, not a set: shading it greyed the whole chart.
  */
 fun strengthSetSpans(
@@ -213,7 +213,7 @@ val recoveryChartWindow: Duration = Duration.ofMinutes(2)
 /** A reading this close before the end stands for the heart rate at the end. */
 private val recoveryLeadIn: Duration = Duration.ofSeconds(15)
 
-/** 93: the heart rate from the end of the session to two minutes after, as seconds since the end. */
+/** The heart rate from the end of the session to two minutes after, as seconds since the end. */
 fun recoveryTrace(samples: List<HeartRateSample>, sessionEnd: Instant): List<Pair<Long, Long>> {
     val from = sessionEnd.minus(recoveryLeadIn)
     val until = sessionEnd.plus(recoveryChartWindow)
@@ -224,7 +224,7 @@ fun recoveryTrace(samples: List<HeartRateSample>, sessionEnd: Instant): List<Pai
 }
 
 /**
- * 103: the heart rate after the end, read where it was recorded and estimated where it was
+ * The heart rate after the end, read where it was recorded and estimated where it was
  * not, falling from the last reading toward the resting rate with a two-minute time constant.
  */
 data class RecoveryCurve(

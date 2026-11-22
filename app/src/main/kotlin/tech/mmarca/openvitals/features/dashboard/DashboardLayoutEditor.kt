@@ -8,7 +8,7 @@ internal class DashboardLayoutEditor(private val prefs: PreferencesRepository) {
 
     fun begin(state: DashboardUiState) { original = state }
 
-    /** 70: whether the layout differs from where editing began; moving a tile and back is no change. */
+    /** Whether the layout differs from where editing began; moving a tile and back is no change. */
     fun hasChanges(
         current: DashboardUiState,
         defaultSpaces: Map<DashboardWidgetId, Int> = emptyMap(),

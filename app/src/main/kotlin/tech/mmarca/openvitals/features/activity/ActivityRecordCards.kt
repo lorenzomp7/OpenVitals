@@ -29,7 +29,7 @@ import tech.mmarca.openvitals.ui.theme.WorkoutColor
 
 private val RecordGold = Color(0xFFFFB300)
 
-/** 119: the jumps of a jump rope session, how many a minute, and in how many sets. */
+/** The jumps of a jump rope session, how many a minute, and in how many sets. */
 @Composable
 internal fun ActivityJumpRopeCard(summary: JumpRopeSummary, unitFormatter: UnitFormatter, modifier: Modifier = Modifier) {
     OpenVitalsCard(modifier = modifier) {
@@ -47,7 +47,7 @@ internal fun ActivityJumpRopeCard(summary: JumpRopeSummary, unitFormatter: UnitF
     }
 }
 
-/** 119: the records this activity holds among those of its kind in the year up to it. */
+/** The records this activity holds among those of its kind in the year up to it. */
 @Composable
 internal fun ActivityPersonalRecordsCard(
     records: List<PersonalRecord>,

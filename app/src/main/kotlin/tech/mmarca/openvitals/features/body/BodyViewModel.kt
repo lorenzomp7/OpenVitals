@@ -235,7 +235,7 @@ class BodyViewModel @Inject constructor(
 
     private fun applyPeriodSelection(selection: PeriodSelection) {
         _uiState.value = _uiState.value.copy(
-            // 143: the new period's data is not here yet; the screen must not show the old one as it.
+            // The new period's data is not here yet; the screen must not show the old one as it.
             isLoading = true,
             selectedRange = selection.selectedRange,
             selectedDate = selection.selectedDate,

@@ -10,7 +10,7 @@ import androidx.compose.animation.scaleOut
 import androidx.compose.ui.graphics.TransformOrigin
 
 /**
- * 63, 99: the one way a view opens over another and closes back to it, shared by the screens and
+ * The one way a view opens over another and closes back to it, shared by the screens and
  * by the dashboard's editor. Opening, the new view fades and grows in over the old, which stays
  * drawn underneath; closing, the view returned to is there at once and the one left fades and
  * shrinks away over it. No frame is ever empty.
@@ -29,7 +29,7 @@ object ScreenMotion {
         fadeOut(tween(DurationMillis)) + scaleOut(tween(DurationMillis), targetScale = Scale)
 
     /**
-     * 99: the dashboard's editor and the dashboard swap places in the same spot, so they never
+     * The dashboard's editor and the dashboard swap places in the same spot, so they never
      * overlap: the one leaving fades out first, then the one arriving fades in, growing a little
      * from its top edge. Both ways the same.
      */

@@ -482,7 +482,7 @@ internal fun ManualEntryMetricTile(
                     Modifier
                 }
             ),
-        // 66: under AMOLED the shared accent tint (9% over black) left the log grid dim; these
+        // Under AMOLED the shared accent tint (9% over black) left the log grid dim; these
         // tiles take a stronger wash, a full-strength icon and a primary label.
         containerColor = manualEntryTileContainer(accentColor),
         style = OpenVitalsCardStyle.Accent,

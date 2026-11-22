@@ -4,7 +4,7 @@ import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
 import org.junit.Test
 
-/** 142: active calories that count the steps. */
+/** Active calories that count the steps. */
 class StepEnergyTest {
 
     private val perStep = activeKcalPerStep(weightKg = 70.0, heightCm = 180.0)

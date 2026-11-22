@@ -125,7 +125,7 @@ internal fun DashboardContent(
     onToggleDashboardEdit: () -> Unit,
     /** The widgets the user placed. Only these keep an unsupported metric in the edit grid. */
     placedWidgetIds: Set<DashboardWidgetId> = emptySet(),
-    /** 149, 150: the rings' and the home screen's tiles as drawn, for the home screen's palette. */
+    /** The rings' and the home screen's tiles as drawn, for the home screen's palette. */
     onPaletteIds: (DashboardPaletteIds) -> Unit = {},
 ) {
     val zone = ZoneId.systemDefault()
@@ -178,7 +178,7 @@ internal fun DashboardContent(
             sortEmptyTilesLast = sortEmptyTilesLast,
         )
     }
-    // 149, 150: the palette follows what the home screen shows, not the saved order; the editor's
+    // The palette follows what the home screen shows, not the saved order; the editor's
     // grid is not the home screen, so it leaves the palette as it was.
     if (!isEditingDashboard) {
         val paletteIds = remember(visibleIds, specsById, widgetSizes, pagedLayout) {
@@ -224,7 +224,7 @@ internal fun DashboardContent(
                 )
             }
 
-            // 121: a tile carried to the top or bottom edge in the editor scrolls the list.
+            // A tile carried to the top or bottom edge in the editor scrolls the list.
             val dragAutoScroll = remember(listState) { tech.mmarca.openvitals.ui.components.DragAutoScroll(listState) }
             androidx.compose.runtime.CompositionLocalProvider(
                 tech.mmarca.openvitals.ui.components.LocalDragAutoScroll provides dragAutoScroll,
@@ -264,11 +264,11 @@ internal fun DashboardContent(
                 }
 
                 item(key = "widgets") {
-                    // 147: the tile page survives the per-day key below.
+                    // The tile page survives the per-day key below.
                     val tilePage = androidx.compose.runtime.saveable.rememberSaveable { androidx.compose.runtime.mutableIntStateOf(0) }
                     androidx.compose.runtime.CompositionLocalProvider(LocalDashboardTilePage provides tilePage) {
                     // Reveal animations play once per day on display.
-                    // 99: the editor and the dashboard swap in place: the one leaving fades out,
+                    // The editor and the dashboard swap in place: the one leaving fades out,
                     // then the other fades in. The height jumps while neither is visible.
                     key(data.date) { androidx.compose.animation.AnimatedContent(
                         targetState = isEditingDashboard,

@@ -63,9 +63,9 @@ data class ChartZoomState(
 )
 
 /**
- * Every chart's frame. 83: no pinch on the page: two fingers on a chart moved the page under
- * them, and lifting them flung it (85). 101: the full-screen view pinches. A screen reader still gets zoom in, zoom out
- * and reset. 84: a button opens the chart full screen, where it can be turned on its side.
+ * Every chart's frame. No pinch on the page: two fingers on a chart moved the page under
+ * them, and lifting them flung it. The full-screen view pinches. A screen reader still gets zoom in, zoom out
+ * and reset. A button opens the chart full screen, where it can be turned on its side.
  * [keys] reset the viewport when the chart's subject changes.
  */
 @Composable
@@ -113,7 +113,7 @@ fun ChartZoom(
 
 /**
  * The chart alone on the screen; [content] is laid out across the long side once turned.
- * 101: here, and only here, two fingers zoom and pan it: there is no page under it to fling.
+ * Here, and only here, two fingers zoom and pan it: there is no page under it to fling.
  */
 @Composable
 private fun ChartFullScreen(

@@ -7,7 +7,7 @@ import org.junit.Assert.assertEquals
 import org.junit.Test
 import tech.mmarca.openvitals.domain.model.SleepStage
 
-/** 144: holding a finger on the sleep chart reads the night's date and hours asleep. */
+/** Holding a finger on the sleep chart reads the night's date and hours asleep. */
 class SleepScheduleHoldLabelTest {
 
     private val date = LocalDate.of(2026, 11, 16)

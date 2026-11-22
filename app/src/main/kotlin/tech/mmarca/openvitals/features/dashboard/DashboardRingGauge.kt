@@ -35,7 +35,7 @@ private const val RingOpening = 0.70710677f
 internal data class DashboardRingGeometry(val centerX: Float, val centerY: Float, val radius: Float)
 
 /**
- * 181: the ring as large as the tile allows and centred on what is drawn, not on the full
+ * The ring as large as the tile allows and centred on what is drawn, not on the full
  * circle. A 270° ring is open at the bottom, so centring the circle left the drawing high
  * in its tile with an empty band below; here the band from the ring's top to the bottom
  * of its two round ends sits in the middle.
@@ -73,7 +73,7 @@ private class RingLine(val text: String, val style: TextStyle, val maxSize: Text
 
 /**
  * A four-space tile's ring: the title, the reading and the [details] inside it. 154, 155,
- * 178: each line is as wide as the ring is at its height, and the details share one size,
+ * Each line is as wide as the ring is at its height, and the details share one size,
  * the largest at which all of them fit, so no line is cut short or smaller than the rest.
  */
 @Composable

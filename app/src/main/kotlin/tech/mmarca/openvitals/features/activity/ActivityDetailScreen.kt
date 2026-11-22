@@ -202,7 +202,7 @@ internal fun ActivityDetailScreen(
         }
     }
 
-    // 113: the slider icon in the app bar arranges the charts, as on the metric screens.
+    // The slider icon in the app bar arranges the charts, as on the metric screens.
     val chartOrdering = tech.mmarca.openvitals.core.presentation.rememberMetricDetailSectionOrdering()
     when {
         state.isLoading -> FullScreenLoading()
@@ -320,14 +320,14 @@ internal fun ActivityDetailContent(
     sessionCardioLoad: Int? = null,
     personalRecords: List<tech.mmarca.openvitals.domain.insights.PersonalRecord> = emptyList(),
     recordsComparedWith: Int = 0,
-    /** 113: the arrangement of the charts; null shows them in the default order, unarrangeable. */
+    /** The arrangement of the charts; null shows them in the default order, unarrangeable. */
     sectionContext: tech.mmarca.openvitals.core.presentation.MetricDetailSectionContext? = null,
-    /** 134: the samples are still being read; the charts' place is held, the rest waits below it. */
+    /** The samples are still being read; the charts' place is held, the rest waits below it. */
     samplesLoading: Boolean = false,
 ) {
     val context = LocalContext.current
     val sections = sectionContext ?: rememberFixedActivityChartSections()
-    // 136: the speed and cadence the speed, cadence, stride and pace charts share.
+    // The speed and cadence the speed, cadence, stride and pace charts share.
     val movement = androidx.compose.runtime.remember(workout, speedSamples, cadenceSamples) {
         workout.movementSeries(speedSamples, cadenceSamples)
     }
@@ -335,7 +335,7 @@ internal fun ActivityDetailContent(
     LazyColumn(
         state = sections.listState.lazyListState,
         contentPadding = PaddingValues(vertical = 8.dp),
-        // 113: while a chart is dragged the list must not scroll under the finger by itself.
+        // While a chart is dragged the list must not scroll under the finger by itself.
         userScrollEnabled = !reorderableCharts.isAnyItemDragging,
     ) {
         item {
@@ -363,7 +363,7 @@ internal fun ActivityDetailContent(
             onShareRouteAsGpx = onShareRouteAsGpx,
             onShareRouteAsKmz = onShareRouteAsKmz,
         )
-        // 134: until the samples are read, the record's own sections that come first in the
+        // Until the samples are read, the record's own sections that come first in the
         // order show, then one block as tall as the screen holds the rest's place: nothing
         // above it moves, and the remaining sections take the block's place.
         val shownWhileLoading = if (samplesLoading) {
@@ -371,7 +371,7 @@ internal fun ActivityDetailContent(
         } else {
             null
         }
-        // 113, 131: the charts and the cards around them, in the order the visitor arranged
+        // The charts and the cards around them, in the order the visitor arranged
         // them (the slider icon at the top), each one movable and removable.
         renderOrderedMetricDetailSections(sections) {
             activityDetailCardSections(

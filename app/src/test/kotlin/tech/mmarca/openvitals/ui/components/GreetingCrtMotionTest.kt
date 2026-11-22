@@ -5,7 +5,7 @@ import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
 
-/** 100: the greeting switches on and off like a cathode-ray television. */
+/** The greeting switches on and off like a cathode-ray television. */
 class GreetingCrtMotionTest {
 
     @Test fun `nothing before it switches on or after it switches off`() {

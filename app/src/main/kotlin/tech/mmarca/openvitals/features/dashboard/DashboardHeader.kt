@@ -33,7 +33,7 @@ import tech.mmarca.openvitals.ui.components.OpenVitalsIconButton
 import tech.mmarca.openvitals.ui.theme.WorkoutActionMetrics
 
 /**
- * A normal list item: its position is owned only by the dashboard's scroll. 106: profile and
+ * A normal list item: its position is owned only by the dashboard's scroll. Profile and
  * achievements on the left, the OpenVitals toggle in the middle, the pencil and settings on the
  * right, every button dressed like the toggle. Always these four and the toggle, whatever is
  * connected or loading: the sensors' battery lives in Settings, Sensors.
@@ -63,7 +63,7 @@ internal fun DashboardHeader(
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Row(Modifier.weight(1f), verticalAlignment = Alignment.CenterVertically) {
-                // 78: profile, achievements and settings dressed like the animated toggle.
+                // Profile, achievements and settings dressed like the animated toggle.
                 OpenVitalsIconButton(onClick = onOpenProfile) {
                     val description = stringResource(R.string.user_profile_title)
                     BrandIconFrame(timeline, tintContent = photo == null) {

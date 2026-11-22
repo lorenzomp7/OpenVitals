@@ -34,8 +34,8 @@ import tech.mmarca.openvitals.ui.components.rememberMetricDetailSectionListState
 import tech.mmarca.openvitals.ui.theme.Spacing
 
 /**
- * 113: the charts of one activity, each a section the detail screen lets the visitor arrange,
- * with the same slider icon, drag and Save or Discard as the metric screens. 131: the cards
+ * The charts of one activity, each a section the detail screen lets the visitor arrange,
+ * with the same slider icon, drag and Save or Discard as the metric screens. The cards
  * around them are sections as well ([activityDetailCardSections]); only the summary heading
  * and the edit and delete buttons stay where they are.
  */
@@ -62,16 +62,16 @@ internal fun MetricDetailSectionBuilder.activityDetailChartSections(
     sessionCardioLoad: Int? = null,
     personalRecords: List<tech.mmarca.openvitals.domain.insights.PersonalRecord> = emptyList(),
     recordsComparedWith: Int = 0,
-    /** 136: speed and step cadence checked against the distance and the steps. */
+    /** Speed and step cadence checked against the distance and the steps. */
     movement: tech.mmarca.openvitals.domain.insights.MovementSeries = workout.movementSeries(speedSamples, cadenceSamples),
 ) {
     val cardModifier = Modifier.fillMaxWidth().padding(horizontal = Spacing.lg, vertical = Spacing.xs)
     val pauses = workout.segments.toSessionPauses()
-    // 119: the records this activity holds among those of its kind.
+    // The records this activity holds among those of its kind.
     section(MetricDetailSectionId.ACTIVITY_DETAIL_RECORDS, personalRecords.isNotEmpty()) {
         ActivityPersonalRecordsCard(personalRecords, recordsComparedWith, unitFormatter, cardModifier)
     }
-    // 119: a jump rope session's jumps, from its segments.
+    // A jump rope session's jumps, from its segments.
     val jumps = tech.mmarca.openvitals.domain.insights.jumpRopeSummary(workout.segments)
     section(MetricDetailSectionId.ACTIVITY_DETAIL_JUMPS, jumps != null) {
         jumps?.let { ActivityJumpRopeCard(it, unitFormatter, cardModifier) }
@@ -122,7 +122,7 @@ internal fun MetricDetailSectionBuilder.activityDetailChartSections(
             HeartRateRecoveryCard(reading = heartRateRecovery, modifier = cardModifier)
         }
     }
-    // 88–93: the chart each kind of activity gets, the zones, and the recovery after the end.
+    // The chart each kind of activity gets, the zones, and the recovery after the end.
     activityTypeChartSections(
         workout = workout,
         heartRateSamples = heartRateSamples,
@@ -136,7 +136,7 @@ internal fun MetricDetailSectionBuilder.activityDetailChartSections(
         restingHeartRateBpm = restingHeartRateBpm,
         movement = movement,
     )
-    // Recorded speed, or the split-derived reconstruction, never both. 112: not on a treadmill.
+    // Recorded speed, or the split-derived reconstruction, never both. Not on a treadmill.
     val speedChartShown = showsSpeedChart(workout.exerciseType)
     section(
         MetricDetailSectionId.ACTIVITY_DETAIL_SPEED,
@@ -175,12 +175,12 @@ internal fun MetricDetailSectionBuilder.activityDetailChartSections(
             modifier = cardModifier,
         )
     }
-    // 117: the time uphill, flat and downhill, from the route and its heights.
+    // The time uphill, flat and downhill, from the route and its heights.
     val gradient = activityGradient(workout, elevationSamples)
     section(MetricDetailSectionId.ACTIVITY_DETAIL_GRADIENT, gradient != null) {
         gradient?.let { ActivityGradientCard(it, cardModifier) }
     }
-    // 117: the aerobic and anaerobic effect from the zones, and the session's load.
+    // The aerobic and anaerobic effect from the zones, and the session's load.
     val effect = if (maxHeartRateBpm != null && heartRateSamples.isNotEmpty()) {
         trainingEffect(heartRateZoneSeconds(heartRateSamples, workout.startTime, workout.endTime, maxHeartRateBpm))
     } else {
@@ -189,9 +189,9 @@ internal fun MetricDetailSectionBuilder.activityDetailChartSections(
     section(MetricDetailSectionId.ACTIVITY_DETAIL_TRAINING_EFFECT, effect != null) {
         effect?.let { ActivityTrainingEffectCard(it, sessionCardioLoad, cardModifier) }
     }
-    // 117: the length of each step, for the kinds that count steps.
+    // The length of each step, for the kinds that count steps.
     val strides = if (workout.exerciseType in tech.mmarca.openvitals.domain.model.stepBasedExercises) {
-        // 136: the same checked cadence and speed the charts draw.
+        // The same checked cadence and speed the charts draw.
         strideLengthSeries(
             cadence = movement.stepCadence,
             speed = movement.speed
@@ -203,7 +203,7 @@ internal fun MetricDetailSectionBuilder.activityDetailChartSections(
     section(MetricDetailSectionId.ACTIVITY_DETAIL_STRIDE, strides.size >= 2) {
         ActivityStrideChartCard(strides, workout.startTime, workout.endTime, unitFormatter, cardModifier, pauses)
     }
-    // 118: the laps the watch wrote: a pool swim's lengths, a track's laps.
+    // The laps the watch wrote: a pool swim's lengths, a track's laps.
     section(MetricDetailSectionId.ACTIVITY_DETAIL_LAPS, workout.laps.isNotEmpty()) {
         ActivityLapsCard(
             laps = workout.laps,
@@ -248,7 +248,7 @@ internal fun rememberFixedActivityChartSections(): MetricDetailSectionContext {
     }
 }
 
-/** 113: the drag wiring the metric screens get from their scaffold, for the detail's own list. */
+/** The drag wiring the metric screens get from their scaffold, for the detail's own list. */
 @Composable
 internal fun rememberActivityChartReordering(sections: MetricDetailSectionContext): ReorderableLazyListState {
     val listState = sections.listState
@@ -261,7 +261,7 @@ internal fun rememberActivityChartReordering(sections: MetricDetailSectionContex
     return reorderable
 }
 
-/** 117: the route's points with the heights the chart draws (terrain or GPS), matched by time. */
+/** The route's points with the heights the chart draws (terrain or GPS), matched by time. */
 private fun activityGradient(workout: ExerciseData, elevation: List<ActivityElevationSample>): GradientDistribution? {
     if (elevation.size < 2) return null
     val heights = elevation.associate { it.time to it.meters }
@@ -272,7 +272,7 @@ private fun activityGradient(workout: ExerciseData, elevation: List<ActivityElev
 }
 
 /**
- * 136: the speed and step cadence of [this] session as its charts draw them: the session app's
+ * The speed and step cadence of [this] session as its charts draw them: the session app's
  * readings outside the pauses, checked against the distance and the steps ([movementSeries]).
  */
 internal fun ExerciseData.movementSeries(

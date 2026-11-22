@@ -13,7 +13,7 @@ import tech.mmarca.openvitals.ui.theme.WeightColor
 import tech.mmarca.openvitals.ui.theme.WorkoutColor
 
 /**
- * 182: the group a dashboard tile belongs to. Tiles of one group share one colour, so the
+ * The group a dashboard tile belongs to. Tiles of one group share one colour, so the
  * colour says what kind of reading a tile holds before its title is read.
  */
 enum class DashboardWidgetCategory(val accentColor: Color) {

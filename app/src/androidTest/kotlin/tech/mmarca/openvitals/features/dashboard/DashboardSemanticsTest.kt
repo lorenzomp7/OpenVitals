@@ -80,6 +80,6 @@ class DashboardSemanticsTest {
         composeRule.onNodeWithText(string(R.string.dashboard_action_start_workout))
             .assertIsDisplayed()
             .assertHasClickAction()
-        // 106: the pencil moved to the header, beside settings; DashboardHeaderSemanticsTest covers it.
+        // The pencil moved to the header, beside settings; DashboardHeaderSemanticsTest covers it.
     }
 }

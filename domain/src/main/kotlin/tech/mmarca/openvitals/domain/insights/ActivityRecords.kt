@@ -5,11 +5,11 @@ import tech.mmarca.openvitals.domain.model.ExerciseData
 import tech.mmarca.openvitals.domain.model.ExerciseSegmentData
 import tech.mmarca.openvitals.domain.model.prefersPaceExercises
 
-/** 119: a jump rope session in numbers: the jumps, how many a minute, and in how many sets. */
+/** A jump rope session in numbers: the jumps, how many a minute, and in how many sets. */
 data class JumpRopeSummary(val jumps: Int, val jumpsPerMinute: Double, val sets: Int)
 
 /**
- * 119: the jumps counted in the session's jump rope segments, their rate over the time spent
+ * The jumps counted in the session's jump rope segments, their rate over the time spent
  * jumping, and the sets. Null when no segment is jump rope with a count: Health Connect has no
  * jump rope exercise of its own, only the segment.
  */
@@ -23,7 +23,7 @@ fun jumpRopeSummary(segments: List<ExerciseSegmentData>): JumpRopeSummary? {
     return JumpRopeSummary(jumps, jumps / minutes, jumping.size)
 }
 
-/** 119: what an activity can be the best of its kind at. */
+/** What an activity can be the best of its kind at. */
 enum class PersonalRecordKind { DISTANCE, DURATION, PACE, SPEED, JUMPS }
 
 data class PersonalRecord(val kind: PersonalRecordKind, val value: Double)
@@ -32,7 +32,7 @@ data class PersonalRecord(val kind: PersonalRecordKind, val value: Double)
 private const val RecordMinimumDistanceMeters = 1_000.0
 
 /**
- * 119: the records [current] holds against [others] of the same kind: the longest distance and
+ * The records [current] holds against [others] of the same kind: the longest distance and
  * duration, the fastest average pace (or speed, for a kind read in speed) over at least 1 km,
  * and the most jumps. A tie with an earlier session is not a record. [others] may include
  * [current]; it is left out by id.

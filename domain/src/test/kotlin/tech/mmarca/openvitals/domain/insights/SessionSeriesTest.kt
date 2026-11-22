@@ -6,7 +6,7 @@ import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Test
 
-/** 136: speed and cadence as the charts draw them. */
+/** Speed and cadence as the charts draw them. */
 class SessionSeriesTest {
 
     private val start = Instant.parse("2026-11-16T19:18:00Z")

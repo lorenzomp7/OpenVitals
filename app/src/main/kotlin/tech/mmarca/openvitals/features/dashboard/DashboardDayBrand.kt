@@ -43,7 +43,7 @@ internal data class DashboardDayGoal(
 )
 
 /**
- * 94: the toggle's four lobes, in order: steps, active calories, workout, sleep. The dashboard
+ * The toggle's four lobes, in order: steps, active calories, workout, sleep. The dashboard
  * reads them for every period whether or not their tiles are placed: the toggle needs them.
  */
 internal val DayGoalWidgets = listOf(
@@ -53,7 +53,7 @@ internal val DayGoalWidgets = listOf(
     DashboardWidgetId.SLEEP,
 )
 
-/** 94: the order the summary lists the goals in. */
+/** The order the summary lists the goals in. */
 private val SummaryOrder = listOf(
     DashboardWidgetId.SLEEP,
     DashboardWidgetId.STEPS,
@@ -62,7 +62,7 @@ private val SummaryOrder = listOf(
 )
 
 /**
- * 149, 150: the tiles the home screen's palette is taken from, as the screen shows them: [hero]
+ * The tiles the home screen's palette is taken from, as the screen shows them: [hero]
  * the three that make the rings at the top (empty when the rings are not shown), [homeScreen]
  * the tiles of the home screen itself: the first page when the tiles come in pages, else those
  * inside the first four-by-four block of spaces (sixteen small tiles, or four large ones).
@@ -72,7 +72,7 @@ internal data class DashboardPaletteIds(
     val homeScreen: List<DashboardWidgetId>,
 )
 
-/** 150: the home screen's block when the tiles are not in pages: four rows of four spaces. */
+/** The home screen's block when the tiles are not in pages: four rows of four spaces. */
 private const val HomeScreenRows = 4
 
 internal fun dashboardPaletteIds(
@@ -95,7 +95,7 @@ internal fun dashboardPaletteIds(
 }
 
 /**
- * 97: the home screen's palette, from the source chosen in Display settings. 149: the colours
+ * The home screen's palette, from the source chosen in Display settings. The colours
  * are those of the tiles the screen shows ([shown]); until it has been drawn once, the placed
  * order stands in.
  */
@@ -125,7 +125,7 @@ internal fun dashboardBrandColors(
 }
 
 /**
- * 94: the four goals of the selected period, read from the same widgets the dashboard shows for
+ * The four goals of the selected period, read from the same widgets the dashboard shows for
  * it. The workout is a yes or a no: whether the period holds any session ([hadWorkout]); null
  * while the period is loading.
  */
@@ -172,7 +172,7 @@ internal fun brandDay(name: String?, goals: List<DashboardDayGoal>): BrandDay =
     BrandDay(name = name, fills = goals.map { it.fraction })
 
 /**
- * 94: what tapping the toggle opens: the selected period's sleep, steps, workout and active
+ * What tapping the toggle opens: the selected period's sleep, steps, workout and active
  * calories, under the period's own title. Health Connect's state is not its business.
  */
 @OptIn(ExperimentalMaterial3Api::class)
@@ -216,7 +216,7 @@ internal fun DashboardDaySummarySheet(
                         color = goal.color,
                         trackColor = goal.color.copy(alpha = Emphasis.wash),
                         modifier = Modifier.fillMaxWidth().height(Spacing.sm),
-                        // 129, 130: one bar, the filled part running straight into the empty one,
+                        // One bar, the filled part running straight into the empty one,
                         // with no stop dot at its end.
                         gapSize = 0.dp,
                         drawStopIndicator = {},

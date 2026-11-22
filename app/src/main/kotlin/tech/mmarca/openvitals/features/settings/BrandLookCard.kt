@@ -33,7 +33,7 @@ import tech.mmarca.openvitals.domain.preferences.BrandPaletteSource
 import tech.mmarca.openvitals.ui.components.OpenVitalsCard
 import tech.mmarca.openvitals.ui.theme.Spacing
 
-/** 97: the home screen's colours and motion, read by the settings card and the dashboard. */
+/** The home screen's colours and motion, read by the settings card and the dashboard. */
 @HiltViewModel
 class BrandLookViewModel @Inject constructor(private val preferences: BrandLookPreferences) : ViewModel() {
     val palette = preferences.palette
@@ -43,8 +43,8 @@ class BrandLookViewModel @Inject constructor(private val preferences: BrandLookP
 }
 
 /**
- * 97: which colours the home screen's toggle, header buttons and action pills use, and whether they move.
- * 105: built as the cards around it are: chips for the choice, as the chart grouping card, and an
+ * Which colours the home screen's toggle, header buttons and action pills use, and whether they move.
+ * Built as the cards around it are: chips for the choice, as the chart grouping card, and an
  * icon, title and switch row for the motion, as the empty-tiles card.
  */
 @OptIn(ExperimentalLayoutApi::class)

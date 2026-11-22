@@ -46,7 +46,7 @@ import tech.mmarca.openvitals.features.activity.RoutePreview
 internal fun ActivityRouteMapContent(
     points: List<ExerciseRoutePoint>,
     modifier: Modifier = Modifier,
-    /** 72: each new value brings the whole route back into view. */
+    /** Each new value brings the whole route back into view. */
     recenterRequest: Int = 0,
 ) {
     val validPoints = remember(points) { points.filter {

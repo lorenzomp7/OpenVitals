@@ -47,7 +47,7 @@ internal enum class HeroRole { LEFT, CENTRE, RIGHT }
 /** How many tiles become the rings at the top outside edit mode. */
 private const val DashboardFixedRingCount = 3
 
-/** 116: the values a tile in the rings shows in the edit sheet, as a 2×1. */
+/** The values a tile in the rings shows in the edit sheet, as a 2×1. */
 private const val RingTileDetailCount = 2
 
 /**
@@ -72,7 +72,7 @@ internal sealed interface DashboardEditCell {
         override val rows: Int get() = 1
     }
 
-    /** 82: the small hero beside a ring tile, with the ring that tile becomes picked out. */
+    /** The small hero beside a ring tile, with the ring that tile becomes picked out. */
     data class RingDiagram(override val key: String, override val row: Int, val role: HeroRole, val ringOf: DashboardWidgetId) :
         DashboardEditCell {
         override val column: Int get() = 2
@@ -96,8 +96,8 @@ internal sealed interface DashboardEditCell {
 internal class DashboardEditPlan(val cells: List<DashboardEditCell>, val labelRows: Set<Int>, val rowCount: Int)
 
 /**
- * 79: the edit sheet places every tile as the dashboard does (a 2×2 beside two stacked
- * 2×1s), from the same packing. 82: the three ring tiles come first, in a column on the
+ * The edit sheet places every tile as the dashboard does (a 2×2 beside two stacked
+ * 2×1s), from the same packing. The three ring tiles come first, in a column on the
  * left, left, centre, right, each beside a small hero showing the ring it becomes.
  */
 internal fun dashboardEditPlan(
@@ -145,12 +145,12 @@ internal fun dashboardEditPlan(
 
 private val DashboardEditLabelHeight = Spacing.xl + Spacing.md
 
-/** 121: how near the list's edge a held tile starts the scroll, and its fastest step per frame. */
+/** How near the list's edge a held tile starts the scroll, and its fastest step per frame. */
 private val AutoScrollEdge = 72.dp
 private val AutoScrollMaxStep = 14.dp
 
 /**
- * 75: the dashboard's edit sheet. Hold a tile and it follows the finger; the others make
+ * The dashboard's edit sheet. Hold a tile and it follows the finger; the others make
  * room as it passes over them, sliding to their new places.
  */
 @Composable
@@ -177,7 +177,7 @@ internal fun DashboardReorderableEditGrid(
     var dragStart by remember { mutableStateOf(Rect.Zero) }
     var dragAmount by remember { mutableStateOf(Offset.Zero) }
     var lastTarget by remember { mutableStateOf<DashboardWidgetId?>(null) }
-    // 121: where the finger holds the tile, and where the grid sits on the window, so the held
+    // Where the finger holds the tile, and where the grid sits on the window, so the held
     // tile carried to the top or bottom edge scrolls the dashboard and keeps under the finger.
     var grab by remember { mutableStateOf(Offset.Zero) }
     var gridTopInWindow by remember { mutableStateOf(0f) }
@@ -242,7 +242,7 @@ internal fun DashboardReorderableEditGrid(
                         )
                         is DashboardEditCell.Tile -> {
                             val held = dragging == cell.id
-                            // 116: a tile in the rings is a 2×1 with two values while it sits there,
+                            // A tile in the rings is a 2×1 with two values while it sits there,
                             // whatever size and count it has elsewhere; those come back when it leaves.
                             val spec = specsById.getValue(cell.id).let { if (cell.ring) it.copy(detailCount = RingTileDetailCount) else it }
                             val sizedSpec = spec.copy(content = { tileModifier ->
@@ -279,11 +279,11 @@ internal fun DashboardReorderableEditGrid(
                                 onRemove = { onRemoveWidget(cell.id) },
                                 onMovePrevious = null,
                                 onMoveNext = null,
-                                // 81: the shape, not a count of spaces.
+                                // The shape, not a count of spaces.
                                 sizeLabel = "${cell.size.columns}×${cell.size.rows}",
-                                // 116: a ring's shape and count are fixed there: nothing to change.
+                                // A ring's shape and count are fixed there: nothing to change.
                                 onCycleSize = if (cell.ring) ({}) else ({ onCycleWidgetSize(cell.id) }),
-                                // 116: the values the tile shows now, as the options dialog counts them.
+                                // The values the tile shows now, as the options dialog counts them.
                                 detailCount = dashboardDetailCount(cell.size, spec.detailCount),
                                 modifier = if (held) {
                                     // The held tile is drawn under the finger, not in its slot.

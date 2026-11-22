@@ -21,7 +21,7 @@ import tech.mmarca.openvitals.ui.components.OpenVitalsCard
 import tech.mmarca.openvitals.ui.theme.Spacing
 
 /**
- * 118: the laps the watch wrote, one row each: its length, its time and its pace (per 100 m for
+ * The laps the watch wrote, one row each: its length, its time and its pace (per 100 m for
  * a swim, per kilometre otherwise). A pool watch writes a lap per length swum.
  */
 @Composable

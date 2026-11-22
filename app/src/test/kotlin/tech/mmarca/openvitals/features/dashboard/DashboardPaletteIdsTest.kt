@@ -3,7 +3,7 @@ package tech.mmarca.openvitals.features.dashboard
 import org.junit.Assert.assertEquals
 import org.junit.Test
 
-/** 149, 150: the home screen's palette comes from the tiles the screen shows. */
+/** The home screen's palette comes from the tiles the screen shows. */
 class DashboardPaletteIdsTest {
     private val ids = DashboardWidgetId.entries.take(24)
 

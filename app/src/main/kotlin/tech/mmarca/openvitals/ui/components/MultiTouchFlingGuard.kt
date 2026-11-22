@@ -12,7 +12,7 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.Velocity
 
 /**
- * 85: no fling after a gesture that had two fingers down. When one of them lifts, a list's drag
+ * No fling after a gesture that had two fingers down. When one of them lifts, a list's drag
  * goes on with the other, and its velocity tracker reads the jump from one finger to the other
  * as a flick of thousands of pixels a second: the page shot to its top or its end. Scrolling
  * with the fingers still works; only the throw at the end is dropped.

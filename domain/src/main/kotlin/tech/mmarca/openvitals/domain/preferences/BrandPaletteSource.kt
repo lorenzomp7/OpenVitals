@@ -1,6 +1,6 @@
 package tech.mmarca.openvitals.domain.preferences
 
-/** 97: where the home screen's brand pieces take their colours from. */
+/** Where the home screen's brand pieces take their colours from. */
 enum class BrandPaletteSource {
     /** The four Google colours of the icon. */
     GOOGLE,
@@ -12,7 +12,7 @@ enum class BrandPaletteSource {
     HERO,
 
     /**
-     * 150: the colours of the home screen's tiles: the first page when the tiles come in pages,
+     * The colours of the home screen's tiles: the first page when the tiles come in pages,
      * else those inside the first four-by-four block of spaces.
      */
     TILES,

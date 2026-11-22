@@ -296,7 +296,7 @@ class DashboardDataLoader @Inject constructor(
                     canEstimateTotalCalories(granted, showOpenVitalsCalculatedCalories),
             ).firstOrNull()
         }
-        // 142: the steps count as well, slice by slice, so a day of walking is not zero.
+        // The steps count as well, slice by slice, so a day of walking is not zero.
         val activeCalories = if (
             wants(DashboardMetric.ACTIVE_CALORIES) &&
             (readActiveCaloriesPermission in granted || readStepsPermission in granted)

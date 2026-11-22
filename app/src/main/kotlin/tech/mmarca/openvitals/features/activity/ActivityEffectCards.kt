@@ -38,7 +38,7 @@ import tech.mmarca.openvitals.ui.components.chartSemantics
 import tech.mmarca.openvitals.ui.components.formatElapsedChartLabel
 import tech.mmarca.openvitals.ui.theme.Spacing
 
-/** 139: the gradient card in the elevation chart's colour, steep in full, flat faint. */
+/** The gradient card in the elevation chart's colour, steep in full, flat faint. */
 private val UphillShade = 1f
 private val FlatShade = 0.45f
 private val DownhillShade = 0.7f
@@ -54,7 +54,7 @@ private fun EffectCardFrame(title: String, modifier: Modifier, note: String?, co
     }
 }
 
-/** 117: the time uphill, on the flat and downhill, as a ring and a legend with time and share. */
+/** The time uphill, on the flat and downhill, as a ring and a legend with time and share. */
 @Composable
 internal fun ActivityGradientCard(distribution: GradientDistribution, modifier: Modifier = Modifier) {
     val total = distribution.totalSeconds.coerceAtLeast(1)
@@ -67,7 +67,7 @@ internal fun ActivityGradientCard(distribution: GradientDistribution, modifier: 
     val title = stringResource(R.string.activity_chart_gradient_title)
     val percent = "${(FlatGradeLimit * 100).toInt()}%"
     val spoken = parts.joinToString(", ") { (label, seconds, _) -> "$label ${seconds * 100 / total}%" }
-    // 139: as every activity chart: the three figures left, middle and right, then one bar per
+    // As every activity chart: the three figures left, middle and right, then one bar per
     // part as the heart rate zones draw them, in the elevation chart's colour.
     EffectCardFrame(
         title = title,
@@ -131,7 +131,7 @@ private fun effectColor(value: Double): Color =
     EffectGaugeColors[(value.toInt()).coerceIn(0, EffectGaugeColors.lastIndex)]
 
 /**
- * 117: the aerobic and anaerobic effect, each a half-dial from 0 to 5 with its value and what
+ * The aerobic and anaerobic effect, each a half-dial from 0 to 5 with its value and what
  * it means, and the session's load beside them. An estimate of OpenVitals, and said so.
  */
 @Composable

@@ -20,7 +20,7 @@ class MetricDetailSectionOrderViewModel @Inject constructor(
     private val _sectionOrder = MutableStateFlow(storedOrderInGeneralOrder())
     val sectionOrder: StateFlow<List<MetricDetailSectionId>> = _sectionOrder.asStateFlow()
 
-    /** 131: the sections taken off their screens; edit mode lists them at the bottom to put back. */
+    /** The sections taken off their screens; edit mode lists them at the bottom to put back. */
     private val _hiddenSections = MutableStateFlow(
         widgetOrder.hiddenMetricDetailSections()
             .mapNotNull { name -> MetricDetailSectionId.entries.firstOrNull { it.name == name } }
@@ -30,7 +30,7 @@ class MetricDetailSectionOrderViewModel @Inject constructor(
     private var hiddenBeforeEdit: Set<MetricDetailSectionId>? = null
 
     /**
-     * 132: an arrangement saved before the activity charts had one general order is put in it
+     * An arrangement saved before the activity charts had one general order is put in it
      * once; after that, a chart moved in one activity moves in all of them.
      */
     private fun storedOrderInGeneralOrder(): List<MetricDetailSectionId> {
@@ -42,10 +42,10 @@ class MetricDetailSectionOrderViewModel @Inject constructor(
         return ordered
     }
 
-    /** 131: takes [sectionId] off every screen it appears on; a draft until Save while editing. */
+    /** Takes [sectionId] off every screen it appears on; a draft until Save while editing. */
     fun hideSection(sectionId: MetricDetailSectionId) = updateHidden(_hiddenSections.value + sectionId)
 
-    /** 131: puts [sectionId] back where the order places it. */
+    /** Puts [sectionId] back where the order places it. */
     fun showSection(sectionId: MetricDetailSectionId) = updateHidden(_hiddenSections.value - sectionId)
 
     private fun updateHidden(hidden: Set<MetricDetailSectionId>) {
@@ -71,11 +71,11 @@ class MetricDetailSectionOrderViewModel @Inject constructor(
         }
     }
 
-    /** 70: whether the order differs from where editing began. */
+    /** Whether the order differs from where editing began. */
     fun hasSectionEdits(): Boolean = orderBeforeEdit?.let { it != _sectionOrder.value } == true ||
         hiddenBeforeEdit?.let { it != _hiddenSections.value } == true
 
-    /** 67: ends editing like the dashboard does: Save keeps the new order, Discard puts the old one back. */
+    /** Ends editing like the dashboard does: Save keeps the new order, Discard puts the old one back. */
     fun finishSectionEdit(save: Boolean) {
         val before = orderBeforeEdit
         val hiddenBefore = hiddenBeforeEdit

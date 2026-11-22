@@ -87,7 +87,7 @@ internal fun splitSpeedTrace(
         val metersPerSecond = 1.0 / pace
         if (!metersPerSecond.isFinite()) continue
 
-        // 64: one point per split, at its middle, so the line runs smooth like the heart rate's;
+        // One point per split, at its middle, so the line runs smooth like the heart rate's;
         // the first and last splits also hold the session's ends, so the line spans it all.
         if (splitCount == 0) samples.add(ActivitySpeedTraceSample(split.startTime, metersPerSecond))
         val middle = split.startTime.plusMillis(java.time.Duration.between(split.startTime, split.endTime).toMillis() / 2)
@@ -123,7 +123,7 @@ internal fun elevationProfile(route: ExerciseRouteData): List<ActivityElevationS
 }
 
 /**
- * 104: the GPS altitude without its jumps. A watch's GPS height leaps 10 to 20 m for a few
+ * The GPS altitude without its jumps. A watch's GPS height leaps 10 to 20 m for a few
  * seconds up to a minute and comes back, which drew spikes and counted them as climbs. A median
  * over two minutes keeps every slope that lasts longer and drops the leaps; a mean over half a
  * minute then takes off the metre of jitter left.

@@ -96,7 +96,7 @@ internal fun SleepScheduleStageChart(
     val averageLineColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.85f)
     val averageLabelStyle = MaterialTheme.typography.labelSmall
 
-    // 144: a tap opens the day; holding a finger on the chart reads the day and its hours asleep,
+    // A tap opens the day; holding a finger on the chart reads the day and its hours asleep,
     // following the finger along the bars until it lifts.
     var heldIndex by remember { androidx.compose.runtime.mutableStateOf<Int?>(null) }
     val holdLabels = remember(days) { days.map { day -> sleepScheduleHoldLabel(day) } }
@@ -283,7 +283,7 @@ internal fun SleepScheduleStageChart(
                     }
                 }
 
-                // 144: the held night: a line through its slot and its date and hours above it.
+                // The held night: a line through its slot and its date and hours above it.
                 heldIndex?.takeIf { it in days.indices }?.let { index ->
                     val x = index * slotWidth + slotWidth / 2f
                     drawLine(holdLineColor, Offset(x, 0f), Offset(x, size.height), strokeWidth = 1.5.dp.toPx())
@@ -320,7 +320,7 @@ internal fun SleepScheduleStageChart(
 }
 
 /**
- * 144: what holding a finger on a night's bar reads: its date (the day number and the month) and
+ * What holding a finger on a night's bar reads: its date (the day number and the month) and
  * the hours asleep, awake stages left out; a dash for a night with nothing recorded.
  */
 internal fun sleepScheduleHoldLabel(day: SleepScheduleDay, locale: java.util.Locale = java.util.Locale.getDefault()): String {

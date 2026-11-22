@@ -7,7 +7,7 @@ import java.time.Instant
 data class SessionReading(val time: Instant, val value: Double, val source: String)
 
 /**
- * 136: a speed or cadence series as a chart can draw it. Health Connect hands back every app's
+ * A speed or cadence series as a chart can draw it. Health Connect hands back every app's
  * samples over the session's window: a watch and the phone app that copies it interleave, which
  * drew a saw, and a record that runs past the session adds readings after its end. So: only the
  * readings inside the session, from the one app that wrote the most of them, one per second, then
@@ -19,7 +19,7 @@ fun sessionSeries(
     end: Instant,
     medianHalfWindowSeconds: Long = 5,
     meanHalfWindowSeconds: Long = 5,
-    /** 136: the app that wrote the session; its readings win when it wrote any. */
+    /** The app that wrote the session; its readings win when it wrote any. */
     preferredSource: String? = null,
 ): List<Pair<Instant, Double>> {
     val inSession = readings.filter { !it.time.isBefore(start) && !it.time.isAfter(end) && it.value.isFinite() }
@@ -70,7 +70,7 @@ fun rollingMedianThenMean(
 }
 
 /**
- * 136: the mean of a series over time, each reading weighted by the time to the next, up to
+ * The mean of a series over time, each reading weighted by the time to the next, up to
  * [maxGapSeconds]: a stretch with a reading a second and one with a reading a minute count by
  * how long they lasted, not by how many readings they hold.
  */
@@ -87,11 +87,11 @@ fun timeWeightedMean(series: List<Pair<Instant, Double>>, maxGapSeconds: Long = 
     return if (total > 0.0) weighted / total else series.map { it.second }.average()
 }
 
-/** 136: below this many steps a minute, a run's cadence has been written per foot. */
+/** Below this many steps a minute, a run's cadence has been written per foot. */
 private const val RunningPerFootCadenceCeiling = 110.0
 
 /**
- * 136: some apps write a run's cadence per foot (strides a minute, about 85) where Health
+ * Some apps write a run's cadence per foot (strides a minute, about 85) where Health
  * Connect asks for steps a minute (about 170): a run at under 110 steps a minute does not
  * happen, so such a series is counted in steps. Walks and other kinds are left as written.
  */

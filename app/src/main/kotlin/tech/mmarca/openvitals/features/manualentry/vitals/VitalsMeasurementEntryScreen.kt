@@ -141,7 +141,7 @@ fun VitalsMeasurementEntryScreen(
                         },
                     )
                 }
-    // 70: back with an unsaved reading asks Save or Discard; Save leaves once it is stored.
+    // Back with an unsaved reading asks Save or Discard; Save leaves once it is stored.
     val hasChanges = formHasChanges(
         signature = listOf(
             state.inputText, state.secondaryInputText, state.pulseInputText, state.bpMealContext,

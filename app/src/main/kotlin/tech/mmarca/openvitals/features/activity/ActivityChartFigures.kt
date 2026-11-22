@@ -14,7 +14,7 @@ import androidx.compose.ui.text.style.TextAlign
 import tech.mmarca.openvitals.ui.theme.Spacing
 
 /**
- * 114: the figures over an activity chart, the same on every chart: the first at the left
+ * The figures over an activity chart, the same on every chart: the first at the left
  * edge, the last at the right edge, any between them in the middle, each a value over its label.
  */
 @Composable
@@ -32,7 +32,7 @@ internal fun ActivityChartFigures(
                 else -> Alignment.CenterHorizontally to TextAlign.Center
             }
             Column(Modifier.weight(1f), horizontalAlignment = alignment) {
-                // 135: a figure and its unit always on one line: the text shrinks, it never wraps.
+                // A figure and its unit always on one line: the text shrinks, it never wraps.
                 tech.mmarca.openvitals.ui.components.AutoResizeText(
                     text = value,
                     style = MaterialTheme.typography.titleMedium,
@@ -54,7 +54,7 @@ internal fun ActivityChartFigures(
 }
 
 /**
- * 114: a range with its unit said once, at the end: "77 – 156 bpm", not "77 bpm-156 bpm", which
+ * A range with its unit said once, at the end: "77 – 156 bpm", not "77 bpm-156 bpm", which
  * broke the column onto two lines. Two values in different units keep both.
  */
 internal fun activityValueRange(low: String, high: String): String {
@@ -63,5 +63,5 @@ internal fun activityValueRange(low: String, high: String): String {
     return "$bareLow – $high"
 }
 
-/** 135: how far a figure may shrink to stay on its one line. */
+/** How far a figure may shrink to stay on its one line. */
 private val FigureMinFontSize = androidx.compose.ui.unit.TextUnit(9f, androidx.compose.ui.unit.TextUnitType.Sp)

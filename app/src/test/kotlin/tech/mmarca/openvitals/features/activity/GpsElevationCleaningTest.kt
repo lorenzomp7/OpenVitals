@@ -5,7 +5,7 @@ import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Test
 
-/** 104: the GPS height without its leaps, so a flat walk does not draw spikes or count climbs. */
+/** The GPS height without its leaps, so a flat walk does not draw spikes or count climbs. */
 class GpsElevationCleaningTest {
 
     private val start: Instant = Instant.parse("2026-11-16T15:00:00Z")

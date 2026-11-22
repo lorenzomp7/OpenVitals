@@ -56,7 +56,7 @@ internal class ScreenshotImportViewModel @Inject constructor(
         mutable.value = ScreenshotImportState()
     }
 
-    /** 78: a new pick starts a new review: the last import's "saved" must not close this one. */
+    /** A new pick starts a new review: the last import's "saved" must not close this one. */
     fun startWith(uri: Uri) {
         if (mutable.value.busy) return
         sharedUri = uri

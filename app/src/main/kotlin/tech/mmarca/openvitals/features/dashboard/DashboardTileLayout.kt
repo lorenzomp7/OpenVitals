@@ -131,7 +131,7 @@ internal fun packDashboardTiles(
 
 internal val DashboardTileGap = 12.dp
 
-/** 147: the tile page in view, held where a new period does not reset it. */
+/** The tile page in view, held where a new period does not reset it. */
 internal val LocalDashboardTilePage =
     androidx.compose.runtime.staticCompositionLocalOf<androidx.compose.runtime.MutableIntState?> { null }
 private val DashboardPageDotSize = 7.dp
@@ -159,7 +159,7 @@ internal fun DashboardPackedTiles(
         return
     }
     val pages = placements.groupBy { it.page }.toSortedMap().values.toList()
-    // 147: the page in view is held above the dashboard's per-period key, so changing the
+    // The page in view is held above the dashboard's per-period key, so changing the
     // period keeps the page instead of going back to the first.
     val heldPage = LocalDashboardTilePage.current
     val pagerState = rememberPagerState(
@@ -338,7 +338,7 @@ private fun DashboardLargeTile(ring: DashboardHeroRing, details: List<String>) {
 
 private val DashboardLargeRingStroke = 11.dp
 
-/** 181: the same room on every side, so the ring sits in the middle of its tile. */
+/** The same room on every side, so the ring sits in the middle of its tile. */
 private val DashboardLargeTilePadding = 12.dp
 
 /** Slides a tile from its old place to its new one when the grid reflows, instead of jumping. */

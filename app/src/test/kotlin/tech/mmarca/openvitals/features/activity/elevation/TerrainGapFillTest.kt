@@ -3,7 +3,7 @@ package tech.mmarca.openvitals.features.activity.elevation
 import org.junit.Assert.assertEquals
 import org.junit.Test
 
-/** 104: a terrain tile that would not come leaves its points to be drawn between their neighbours. */
+/** A terrain tile that would not come leaves its points to be drawn between their neighbours. */
 class TerrainGapFillTest {
 
     @Test fun `a gap is filled in a straight line`() {

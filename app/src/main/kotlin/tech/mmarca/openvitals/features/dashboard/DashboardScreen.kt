@@ -61,17 +61,17 @@ fun DashboardScreen(
     }
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     var confirmEdit by androidx.compose.runtime.saveable.rememberSaveable { mutableStateOf(false) }
-    // 70: an edit that ends where it began closes without asking.
+    // An edit that ends where it began closes without asking.
     val requestFinishEdit: () -> Unit = {
         if (viewModel.hasDashboardEdits()) confirmEdit = true else viewModel.finishDashboardEdit(false)
     }
     androidx.activity.compose.BackHandler(enabled = state.isEditingDashboard) { requestFinishEdit() }
-    // 120: leaving the editor, saved or not, lands at the top of the home screen, not where the
+    // Leaving the editor, saved or not, lands at the top of the home screen, not where the
     // editing had scrolled to.
     var wasEditingDashboard by remember { mutableStateOf(state.isEditingDashboard) }
     androidx.compose.runtime.LaunchedEffect(state.isEditingDashboard) {
         if (wasEditingDashboard && !state.isEditingDashboard) {
-            // 99: wait for the editor to finish fading out where it stands; scrolling at once
+            // Wait for the editor to finish fading out where it stands; scrolling at once
             // brought its top into view for a frame before the dashboard took its place.
             kotlinx.coroutines.delay(tech.mmarca.openvitals.ui.theme.ScreenMotion.FadeThroughOutMillis.toLong())
             listState.scrollToItem(0)
@@ -134,21 +134,21 @@ fun DashboardScreen(
     LifecycleEventEffect(Lifecycle.Event.ON_RESUME) { profileViewModel.refresh() }
     val profilePhoto = remember(profile.photo) { profile.photo?.let { it.asImageBitmap() } }
     val timeline = brandTimeline ?: tech.mmarca.openvitals.ui.components.rememberFluidBrandTimeline()
-    // 94: the toggle greets, fills with today's goals, shows the sync, and opens today's summary.
-    // 97: the palette and motion chosen in Display settings.
+    // The toggle greets, fills with today's goals, shows the sync, and opens today's summary.
+    // The palette and motion chosen in Display settings.
     val brandLookViewModel: tech.mmarca.openvitals.features.settings.BrandLookViewModel = androidx.hilt.navigation.compose.hiltViewModel()
     val paletteSource by brandLookViewModel.palette.collectAsStateWithLifecycle()
     val brandAnimated by brandLookViewModel.animated.collectAsStateWithLifecycle()
-    // 149, 150: the tiles the home screen shows, reported by the content once it has drawn them.
+    // The tiles the home screen shows, reported by the content once it has drawn them.
     var paletteIds by remember { mutableStateOf<DashboardPaletteIds?>(null) }
     val brandColors = dashboardBrandColors(
         paletteSource,
         state.dashboardWidgets.filter { it in state.placedDashboardWidgets },
         paletteIds,
     )
-    // 94: the toggle follows the selected period: its sleep, steps, active calories, and
+    // The toggle follows the selected period: its sleep, steps, active calories, and
     // whether it holds a workout.
-    // 143: while another period loads, the toggle and its summary wait for it rather than show
+    // While another period loads, the toggle and its summary wait for it rather than show
     // the period before under the new one's title.
     val awaitingPeriod = loadedData != null && (
         loadedData.date != selectedDate ||
@@ -163,7 +163,7 @@ fun DashboardScreen(
         display
     }
     val dayGoals = dashboardDayGoals(goalDisplay, brandColors, hadWorkout)
-    // 100: no day until the dashboard has loaded, so the greeting starts when the home screen
+    // No day until the dashboard has loaded, so the greeting starts when the home screen
     // is there to be seen, not behind the opening and the loading.
     val day = brandDay(name = profile.name, goals = dayGoals).takeIf { loadedData != null }
     var showDaySummary by remember { mutableStateOf(false) }
@@ -182,7 +182,7 @@ fun DashboardScreen(
             onOpenBodyProfile, onOpenAchievements, onOpenSettings,
             day = day, onOpenDay = { showDaySummary = true },
             isEditingDashboard = state.isEditingDashboard,
-            // 106: the pencil lives in the header now; it needs a loaded dashboard to edit.
+            // The pencil lives in the header now; it needs a loaded dashboard to edit.
             onToggleDashboardEdit = if (loadedData != null) {
                 { if (state.isEditingDashboard) requestFinishEdit() else viewModel.toggleDashboardEdit() }
             } else null,

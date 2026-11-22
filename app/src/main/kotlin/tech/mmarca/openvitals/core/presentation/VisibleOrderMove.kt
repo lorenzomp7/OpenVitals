@@ -3,7 +3,7 @@ package tech.mmarca.openvitals.core.presentation
 /**
  * Moves [item] to [target]'s place among the [visible] items of [full], the visible items between
  * them shifting by one. The items that are not visible keep their slots, so a move and its reverse
- * leave [full] exactly as it was: an edit undone by hand is no edit (70).
+ * leave [full] exactly as it was: an edit undone by hand is no edit.
  */
 fun <T> moveWithinVisible(full: List<T>, visible: Set<T>, item: T, target: T): List<T> {
     val order = full.filter { it in visible }.toMutableList()

@@ -62,7 +62,7 @@ fun ManualEntryScreen(
     val hiddenSpecs = specs.filter { it.id !in visibleIds }
 
     val editingTint = MaterialTheme.colorScheme.primary
-    // 69, 70: finishing or leaving an edit with changes asks Save or Discard, as on the dashboard.
+    // Finishing or leaving an edit with changes asks Save or Discard, as on the dashboard.
     var confirmFinishEdit by androidx.compose.runtime.saveable.rememberSaveable { androidx.compose.runtime.mutableStateOf(false) }
     androidx.activity.compose.BackHandler(enabled = state.isEditingWidgets) {
         if (viewModel.hasWidgetEdits()) confirmFinishEdit = true else viewModel.finishWidgetEdit(save = true)
@@ -168,7 +168,7 @@ fun ManualEntryScreen(
 
     LazyColumn(contentPadding = PaddingValues(vertical = 8.dp)) {
         item(key = "screenshot_import") {
-                // 61: the grid's own gutter and gap: 12 dp at the sides, 4 + 4 dp to the first row.
+                // The grid's own gutter and gap: 12 dp at the sides, 4 + 4 dp to the first row.
                 tech.mmarca.openvitals.features.imports.screenshot.ScreenshotImportCard(
                     modifier = Modifier.fillMaxWidth().padding(horizontal = Spacing.md, vertical = Spacing.xs),
                 )

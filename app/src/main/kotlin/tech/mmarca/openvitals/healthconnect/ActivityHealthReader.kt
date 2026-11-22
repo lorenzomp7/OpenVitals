@@ -358,7 +358,7 @@ internal class ActivityHealthReader(
         includeDistance: Boolean,
         includeSpeed: Boolean,
         includeHeartRate: Boolean = false,
-        /** 119: only sessions of this kind, so the per-session aggregates are read for them alone. */
+        /** Only sessions of this kind, so the per-session aggregates are read for them alone. */
         exerciseType: Int? = null,
     ): List<ExerciseData> =
         support.withLogging("readExerciseSessionsWithMetrics[$start..$end]", emptyList()) {
@@ -368,7 +368,7 @@ internal class ActivityHealthReader(
                 ascendingOrder = false,
                 pageSize = 50,
             ).filter { exerciseType == null || it.exerciseType == exerciseType }
-            // 133: one aggregate per session, a few at a time rather than one after another: a
+            // One aggregate per session, a few at a time rather than one after another: a
             // year of sessions read in sequence held the Activities screen for seconds. The calls
             // are the same in number; a rate-limit refusal still cancels the rest and is rethrown.
             val gate = kotlinx.coroutines.sync.Semaphore(SessionMetricsParallelism)
@@ -1568,5 +1568,5 @@ private fun Int.toActiveExerciseSegmentType(): Int =
         else -> ExerciseSegment.EXERCISE_SEGMENT_TYPE_OTHER_WORKOUT
     }
 
-/** 133: per-session aggregates in flight at once while a period's sessions are read. */
+/** Per-session aggregates in flight at once while a period's sessions are read. */
 private const val SessionMetricsParallelism = 6

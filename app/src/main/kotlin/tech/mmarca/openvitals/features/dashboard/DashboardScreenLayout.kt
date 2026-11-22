@@ -15,5 +15,5 @@ internal val DashboardQuickActionIconSize = 18.dp
 // Tighter than the default, so "Start workout" fits on one line.
 internal val DashboardQuickActionContentPadding = PaddingValues(horizontal = 12.dp, vertical = 8.dp)
 
-/** 60: the air between "Start workout + Log" and the tiles, and between the tiles (or their page dots) and "Activities". */
+/** The air between "Start workout + Log" and the tiles, and between the tiles (or their page dots) and "Activities". */
 internal val DashboardSectionGap = tech.mmarca.openvitals.ui.theme.Spacing.xl + tech.mmarca.openvitals.ui.theme.Spacing.md

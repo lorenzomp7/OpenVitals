@@ -143,7 +143,7 @@ internal fun ActivityPeriodSummaryCard(
     onEditActivity: (String) -> Unit,
     onDeleteActivity: (String) -> Unit,
     showEmptyState: Boolean,
-    /** 111: how many rows show; held by the screen, so it survives opening an activity. */
+    /** How many rows show; held by the screen, so it survives opening an activity. */
     visibleCount: Int = ActivityWorkoutListPageSize,
     onShowMore: () -> Unit = {},
 ) {
@@ -555,8 +555,8 @@ internal fun ActivityOverviewWorkoutRowContent(
                 style = MaterialTheme.typography.labelSmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
-            // 54, 55: machine sessions add their average bpm to the time.
-            // 127: not a treadmill run: its row in the list is its time alone.
+            // Machine sessions add their average bpm to the time.
+            // Not a treadmill run: its row in the list is its time alone.
             val averageBpm = workout.averageHeartRateBpm
             if (workout.exerciseType in TimeAndHeartRateSummaryExercises &&
                 workout.exerciseType != androidx.health.connect.client.records.ExerciseSessionRecord.EXERCISE_TYPE_RUNNING_TREADMILL &&
@@ -986,7 +986,7 @@ internal fun LazyListScope.workoutGoal(
     item {
         DailyGoalStatistics(
             progress = progress,
-            // 16: the activities menu shows no average gap.
+            // The activities menu shows no average gap.
             averageGap = null,
             unitFormatter = unitFormatter,
             icon = Icons.AutoMirrored.Outlined.DirectionsRun,

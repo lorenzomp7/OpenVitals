@@ -96,12 +96,12 @@ internal fun WorkoutSummaryCard(
             }
 
             Spacer(Modifier.height(16.dp))
-            // 127: a treadmill run's heading is its time alone, as a run's is; the average heart
+            // A treadmill run's heading is its time alone, as a run's is; the average heart
             // rate is in the figures below and on its chart.
             if (workout.exerciseType in TimeAndHeartRateSummaryExercises &&
                 workout.exerciseType != androidx.health.connect.client.records.ExerciseSessionRecord.EXERCISE_TYPE_RUNNING_TREADMILL
             ) {
-                // 54, 55: a machine session is summed up by its time and its average bpm.
+                // A machine session is summed up by its time and its average bpm.
                 Row(modifier = Modifier.fillMaxWidth()) {
                     SummaryHeadlineStat(
                         value = unitFormatter.duration(workout.durationMs),

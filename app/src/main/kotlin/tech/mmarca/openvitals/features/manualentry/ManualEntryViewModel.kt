@@ -144,7 +144,7 @@ class ManualEntryViewModel @Inject constructor(
     /** Whether the draft differs from the tiles editing started from. */
     fun hasWidgetEdits(): Boolean = widgetsBeforeEdit?.let { it != _uiState.value.widgets } == true
 
-    /** 69: Save writes the new tiles; Discard puts the old ones back. */
+    /** Save writes the new tiles; Discard puts the old ones back. */
     fun finishWidgetEdit(save: Boolean) {
         val before = widgetsBeforeEdit
         widgetsBeforeEdit = null

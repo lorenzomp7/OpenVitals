@@ -33,7 +33,7 @@ enum class RouteElevationSource {
 }
 
 /**
- * 104: a route's height profile from a terrain model rather than the GPS. A watch's GPS
+ * A route's height profile from a terrain model rather than the GPS. A watch's GPS
  * altitude drifts tens of metres over a ride (one dropped 25 m over a flat hour), so its own
  * app shows a calibrated height and the raw one disagrees with it. The terrain comes from the
  * imported elevation tiles when they cover the route, else from Mapbox's terrain tiles when
@@ -52,7 +52,7 @@ class RouteTerrainElevation @Inject constructor(
      * The altitude at each point, or null when no terrain covers the whole route: then the
      * source says whether Mapbox was signed in and failed, so the footnote can tell.
      *
-     * 104: two terrain models are read side by side when they can be: Mapbox's (when signed in)
+     * Two terrain models are read side by side when they can be: Mapbox's (when signed in)
      * and the open Terrarium model (AWS Open Data, no account). Where they agree their mean is
      * drawn; where one leaps away from the other (a bridge, a building, a hole in a model) the
      * one that keeps to the route's run is kept. Either alone still beats the GPS.
@@ -86,14 +86,14 @@ class RouteTerrainElevation @Inject constructor(
 
     /** Each point's height from [provider], null where its tile did not come; null when too few did. */
     private fun providerHeights(points: List<ExerciseRoutePoint>, provider: TerrainProvider): List<Double?>? {
-        // 104: a long ride crosses more tiles than is reasonable at the finest zoom; a coarser
+        // A long ride crosses more tiles than is reasonable at the finest zoom; a coarser
         // one still beats the GPS, so step out until the route fits rather than giving up.
         val (zoom, positions) = (TileZoom downTo MinTileZoom).asSequence()
             .map { z -> z to points.map { tilePosition(it.latitude, it.longitude, z) } }
             .firstOrNull { (_, positions) -> positions.flatMap { it.neighbours() }.distinct().size <= MaxTiles }
             ?: return null
         val keys = positions.flatMap { it.neighbours() }.distinct()
-        // 104: one tile that will not come is no reason to drop the others: the points on it are
+        // One tile that will not come is no reason to drop the others: the points on it are
         // filled between their neighbours, as long as most of the route was read.
         val bitmaps = keys.mapNotNull { key -> tile(key, provider)?.let { key to it } }.toMap()
         val heights = positions.map { position ->
@@ -108,7 +108,7 @@ class RouteTerrainElevation @Inject constructor(
     }
 
     /**
-     * 104: the height between the four pixels around a point, not the one it falls in: a pixel
+     * The height between the four pixels around a point, not the one it falls in: a pixel
      * is ten metres wide, and reading the nearest drew the profile as stairs.
      */
     private fun bilinear(position: TilePosition, zoom: Int, bitmaps: Map<TileKey, Bitmap>, provider: TerrainProvider): Double? {
@@ -188,7 +188,7 @@ class RouteTerrainElevation @Inject constructor(
             )
 
             /**
-             * 104: the Terrarium tiles of the AWS Open Data terrain set (SRTM, EU-DEM and national
+             * The Terrarium tiles of the AWS Open Data terrain set (SRTM, EU-DEM and national
              * models merged by Mapzen): free, no account, requested by tile like Mapbox's.
              * height = R * 256 + G + B / 256 - 32768.
              */
@@ -240,7 +240,7 @@ class RouteTerrainElevation @Inject constructor(
 }
 
 /**
- * 104: a light running mean over the terrain heights. The model's own grid and the GPS track's
+ * A light running mean over the terrain heights. The model's own grid and the GPS track's
  * wander across it leave a metre or two of jitter that the chart drew as noise.
  */
 internal fun smoothTerrain(heights: List<Double>, window: Int = 5): List<Double> {
@@ -255,7 +255,7 @@ internal fun smoothTerrain(heights: List<Double>, window: Int = 5): List<Double>
     }
 }
 
-/** 104: the heights a missing tile left out, drawn straight between the ones either side. */
+/** The heights a missing tile left out, drawn straight between the ones either side. */
 internal fun fillGaps(heights: List<Double?>): List<Double> {
     val known = heights.indices.filter { heights[it] != null }
     if (known.isEmpty()) return emptyList()
@@ -291,7 +291,7 @@ internal fun terrainHeightTerrarium(pixel: Int): Double {
 internal const val TerrainAgreementMeters = 8.0
 
 /**
- * 104: one profile from two terrain models read at the same points. Where they agree, their
+ * One profile from two terrain models read at the same points. Where they agree, their
  * mean. Where they disagree, one has hit something that is not the route's ground (a bridge
  * deck, a roof, a model's hole), so the one nearer the height just drawn is kept; before any
  * height is drawn, the nearer to the first place they agree. Where one is missing, the other.

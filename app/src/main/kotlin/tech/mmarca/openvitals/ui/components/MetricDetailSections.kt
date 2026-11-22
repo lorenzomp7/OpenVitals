@@ -113,7 +113,7 @@ fun LazyListScope.orderedMetricDetailSections(
     builder: MetricDetailSectionBuilder.() -> Unit,
 ) {
     val sectionBuilder = MetricDetailSectionBuilder().apply(builder)
-    // 131: a hidden section is off the screen; edit mode lists it at the bottom to put back.
+    // A hidden section is off the screen; edit mode lists it at the bottom to put back.
     val visibleOrder = order.filter { it in sectionBuilder.sections && it !in hidden }
     listState.visibleSectionIds = visibleOrder.toSet()
 
@@ -181,7 +181,7 @@ fun LazyListScope.orderedMetricDetailSections(
         }
     }
 
-    // 131: the hidden sections this screen would show, dimmed under a header, each with a "+".
+    // The hidden sections this screen would show, dimmed under a header, each with a "+".
     val hiddenHere = order.filter { it in sectionBuilder.sections && it in hidden }
     if (isEditingSections && onShowSection != null && hiddenHere.isNotEmpty()) {
         item(key = "metric_sections_hidden_header") {
@@ -202,7 +202,7 @@ fun LazyListScope.orderedMetricDetailSections(
     }
 }
 
-/** 131: a hidden section in edit mode: drawn faint, untouchable, with a "+" to put it back. */
+/** A hidden section in edit mode: drawn faint, untouchable, with a "+" to put it back. */
 @Composable
 private fun HiddenMetricDetailSection(onShow: () -> Unit, content: @Composable () -> Unit) {
     Box(modifier = Modifier.fillMaxWidth()) {
@@ -223,7 +223,7 @@ private fun HiddenMetricDetailSection(onShow: () -> Unit, content: @Composable (
     }
 }
 
-/** 131: the small round button at a section's corner: "x" to hide, "+" to show. */
+/** The small round button at a section's corner: "x" to hide, "+" to show. */
 @Composable
 private fun SectionCornerButton(
     icon: androidx.compose.ui.graphics.vector.ImageVector,
@@ -339,7 +339,7 @@ private fun ReorderableMetricDetailSection(
                             detectTapGestures(onTap = { /* block card taps while reordering */ })
                         },
                 )
-                // 131: the "x" that takes the section off, as the home screen's tiles have.
+                // The "x" that takes the section off, as the home screen's tiles have.
                 if (onHide != null) SectionCornerButton(
                     icon = androidx.compose.material.icons.Icons.Outlined.Close,
                     contentDescription = stringResource(R.string.cd_hide_section),

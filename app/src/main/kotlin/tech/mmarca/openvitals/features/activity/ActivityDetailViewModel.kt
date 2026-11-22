@@ -58,7 +58,7 @@ internal data class ActivityDetailUiState(
     /** Running energy total over the session; empty without calorie data. */
     val calorieSamples: List<ActivityCalorieSample> = emptyList(),
 
-    /** 64: energy per slice of the session, from heart rate when it can be, else from recorded calories. */
+    /** Energy per slice of the session, from heart rate when it can be, else from recorded calories. */
     val sessionCalories: tech.mmarca.openvitals.domain.insights.SessionCalories? = null,
 
     /** Heart rate cannot be read: the chart slot offers the grant instead. */
@@ -84,35 +84,35 @@ internal data class ActivityDetailUiState(
     /** The height profile of the session, oldest first. */
     val elevationSamples: List<ActivityElevationSample> = emptyList(),
 
-    /** 104: where [elevationSamples] came from. */
+    /** Where [elevationSamples] came from. */
     val elevationSource: tech.mmarca.openvitals.features.activity.elevation.RouteElevationSource =
         tech.mmarca.openvitals.features.activity.elevation.RouteElevationSource.GPS,
 
     /** How the heart rate fell after the effort stopped, for a session that carries a stop mark. */
     val heartRateRecovery: HeartRateRecoveryReading? = null,
 
-    /** 93: the heart rate read around the end, for the recovery chart. */
+    /** The heart rate read around the end, for the recovery chart. */
     val recoverySamples: List<tech.mmarca.openvitals.domain.model.HeartRateSample> = emptyList(),
 
-    /** 89: the heart rate the zones are shares of, from the profile or the age. */
+    /** The heart rate the zones are shares of, from the profile or the age. */
     val maxHeartRateBpm: Int? = null,
 
-    /** 103: the rate an estimated recovery falls toward, from the profile. */
+    /** The rate an estimated recovery falls toward, from the profile. */
     val restingHeartRateBpm: Int? = null,
 
-    /** 117: the session's cardio load (Banister TRIMP), as the Cardio load screen counts it. */
+    /** The session's cardio load (Banister TRIMP), as the Cardio load screen counts it. */
     val sessionCardioLoad: Int? = null,
 
-    /** 119: the records this session holds among those of its kind in the year up to it. */
+    /** The records this session holds among those of its kind in the year up to it. */
     val personalRecords: List<tech.mmarca.openvitals.domain.insights.PersonalRecord> = emptyList(),
 
-    /** 119: how many earlier sessions of the kind the records were measured against. */
+    /** How many earlier sessions of the kind the records were measured against. */
     val recordsComparedWith: Int = 0,
 
     /** The plan this session was logged against, when it still exists and can be read. */
     val linkedPlan: PlannedExerciseData? = null,
 
-    /** 134: the session is shown and its samples are still being read: the charts' place is held. */
+    /** The session is shown and its samples are still being read: the charts' place is held. */
     val samplesLoading: Boolean = false,
 
     val error: ScreenError? = null,
@@ -120,13 +120,13 @@ internal data class ActivityDetailUiState(
 
 private typealias TerrainRead = Pair<tech.mmarca.openvitals.features.activity.elevation.RouteElevationSource, List<Double>?>
 
-/** 104: the route's terrain heights as a profile; null when the terrain did not cover it. */
+/** The route's terrain heights as a profile; null when the terrain did not cover it. */
 private fun terrainSamples(workout: ExerciseData, read: TerrainRead?): List<ActivityElevationSample>? =
     read?.second?.let { heights ->
         workout.route.points.zip(heights) { point, meters -> ActivityElevationSample(point.time, meters) }.sortedBy { it.time }
     }
 
-/** 119: how far back the records look. */
+/** How far back the records look. */
 private const val RecordsWindowDays = 365L
 
 @HiltViewModel
@@ -173,7 +173,7 @@ internal class ActivityDetailViewModel @Inject constructor(
                     _uiState.value = loaded
                     val workout = loaded.workout ?: return@load
                     coroutineScope {
-                        // 104: a terrain read that outlasted the charts swaps their heights in place.
+                        // A terrain read that outlasted the charts swaps their heights in place.
                         pendingTerrain?.let { pending ->
                             launch {
                                 val read = pending.await()
@@ -186,7 +186,7 @@ internal class ActivityDetailViewModel @Inject constructor(
                                 }
                             }
                         }
-                        // 119: the records come after, from a year of the kind; the screen does not wait.
+                        // The records come after, from a year of the kind; the screen does not wait.
                         launch {
                             runCatchingCancellable { loadRecords(workout) }.getOrNull()?.let { (records, compared) ->
                                 if (isCurrent) {
@@ -207,7 +207,7 @@ internal class ActivityDetailViewModel @Inject constructor(
     }
 
     /**
-     * 119: the records [workout] holds among the sessions of its kind in the year up to it. A
+     * The records [workout] holds among the sessions of its kind in the year up to it. A
      * refused or skipped read leaves the card out, as any other missing figure.
      */
     private suspend fun loadRecords(
@@ -216,7 +216,7 @@ internal class ActivityDetailViewModel @Inject constructor(
         val zone = java.time.ZoneId.systemDefault()
         val end = workout.endTime.atZone(zone).toLocalDate()
         val start = end.minusDays(RecordsWindowDays)
-        // 133: read once from the year before this session up to today, so every later session
+        // Read once from the year before this session up to today, so every later session
         // of the kind opened next is answered from memory instead of a year of reads each.
         val sessions = recordsCache.get(workout.exerciseType, start, end) ?: run {
             val readUntil = maxOf(end, LocalDate.now(zone))
@@ -238,10 +238,10 @@ internal class ActivityDetailViewModel @Inject constructor(
             ?: return ActivityDetailUiState(isLoading = false, error = ScreenError.NotFound)
                 .withSplitsCutAt(splitDistanceMeters)
         val workout = activityDetailWorkout(loadedWorkout)
-        // 134: the summary at once, with the charts' place held so nothing moves when they come.
+        // The summary at once, with the charts' place held so nothing moves when they come.
         _uiState.value = ActivityDetailUiState(isLoading = false, workout = workout, samplesLoading = true)
             .withSplitsCutAt(splitDistanceMeters)
-        // 104, 133: the terrain is a network read; it runs beside the Health Connect reads and
+        // The terrain is a network read; it runs beside the Health Connect reads and
         // the charts never wait for it: the cleaned GPS draws until it lands.
         pendingTerrain = if (workout.route.status == tech.mmarca.openvitals.domain.model.ExerciseRouteStatus.DATA) {
             viewModelScope.async { runCatchingCancellable { terrainElevation?.altitudes(workout.route.points) }.getOrNull() }
@@ -298,7 +298,7 @@ internal class ActivityDetailViewModel @Inject constructor(
             val loadedMarkers = markers.await()
             val loadedCoMapsSamples = coMapsSamples.await()
             val recovery = heartRateRecovery.await()
-            // 93: the two minutes after the end, read only for a session with a heart rate.
+            // The two minutes after the end, read only for a session with a heart rate.
             val recoverySamples = if (heartRate.isEmpty()) emptyList() else runCatchingCancellable {
                 heartRepository?.loadHeartRateSamples(
                     workout.endTime.minusSeconds(15),
@@ -306,7 +306,7 @@ internal class ActivityDetailViewModel @Inject constructor(
                 )
             }.getOrNull().orEmpty()
             val plan = linkedPlan.await()
-            // 104: the terrain's heights if they are already here; else they replace the GPS later.
+            // The terrain's heights if they are already here; else they replace the GPS later.
             val terrainRead = pendingTerrain?.takeIf { it.isCompleted }?.await()
                 ?.also { pendingTerrain = null }
             // Backfill, height profile and splits walk every sample.

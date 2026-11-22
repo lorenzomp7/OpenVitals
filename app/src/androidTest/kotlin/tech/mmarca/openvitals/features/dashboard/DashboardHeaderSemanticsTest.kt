@@ -10,7 +10,7 @@ import tech.mmarca.openvitals.testing.string
 import tech.mmarca.openvitals.ui.components.rememberFluidBrandTimeline
 import tech.mmarca.openvitals.ui.theme.OpenVitalsTheme
 
-/** 106: the header holds profile, achievements, the toggle, the pencil and settings, each named. */
+/** The header holds profile, achievements, the toggle, the pencil and settings, each named. */
 class DashboardHeaderSemanticsTest {
     @get:Rule val composeRule = createComposeRule()
 

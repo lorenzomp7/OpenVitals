@@ -9,7 +9,7 @@ import tech.mmarca.openvitals.healthconnect.HealthConnectManager
 internal class DashboardPeriodLoader(
     private val hc: HealthConnectManager,
     private val estimatedCalories: Boolean = false,
-    /** 142: the active energy of one step for the profile's body. */
+    /** The active energy of one step for the profile's body. */
     private val kcalPerStep: Double = tech.mmarca.openvitals.domain.insights.activeKcalPerStep(null, null),
 ) {
     suspend fun load(
@@ -27,7 +27,7 @@ internal class DashboardPeriodLoader(
             else loadDay(query.copy(date = period.end, period = null, visibleMetrics = snapshotMetrics,
                 includeHistoricalBaselines = false))
         var totals = readTotals(query.copy(visibleMetrics = permitted), base)
-        // 142: the period's active calories count the steps too, slice by slice.
+        // The period's active calories count the steps too, slice by slice.
         if (DashboardMetric.ACTIVE_CALORIES in wanted) {
             val stepsPermission = MetricReadPermissions.readStepsPermission
             val activePermission = MetricReadPermissions.readActiveCaloriesPermission
