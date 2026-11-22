@@ -1,7 +1,7 @@
 name: AI tools
 on:
   push:
-    branches: [main_chatgpt, main]
+    branches: [main_claude, main]
     paths: ['scripts/ai/**', 'tools/ai-node/**', 'tools/vibetest/**', 'tools/darts/**', 'tools/catalogs/**', '.container-use/**', '.mcp.json', '.gemini/**', '.github/workflows/ai-tools.yml']
   pull_request:
     paths: ['scripts/ai/**', 'tools/ai-node/**', 'tools/vibetest/**', 'tools/darts/**', 'tools/catalogs/**', '.container-use/**', '.mcp.json', '.gemini/**', '.github/workflows/ai-tools.yml']
