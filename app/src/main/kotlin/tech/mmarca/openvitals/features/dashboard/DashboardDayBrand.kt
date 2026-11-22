@@ -61,12 +61,53 @@ private val SummaryOrder = listOf(
     DashboardWidgetId.ACTIVE_CALORIES,
 )
 
-/** 97: the home screen's palette, from the source chosen in Display settings. */
+/**
+ * 149, 150: the tiles the home screen's palette is taken from, as the screen shows them: [hero]
+ * the three that make the rings at the top (empty when the rings are not shown), [homeScreen]
+ * the tiles of the home screen itself: the first page when the tiles come in pages, else those
+ * inside the first four-by-four block of spaces (sixteen small tiles, or four large ones).
+ */
+internal data class DashboardPaletteIds(
+    val hero: List<DashboardWidgetId>,
+    val homeScreen: List<DashboardWidgetId>,
+)
+
+/** 150: the home screen's block when the tiles are not in pages: four rows of four spaces. */
+private const val HomeScreenRows = 4
+
+internal fun dashboardPaletteIds(
+    visibleIds: List<DashboardWidgetId>,
+    hasHero: (DashboardWidgetId) -> Boolean,
+    sizeOf: (DashboardWidgetId) -> DashboardTileSize?,
+    paged: Boolean,
+): DashboardPaletteIds {
+    val top = visibleIds.take(3)
+    val hero = if (top.isNotEmpty() && top.all(hasHero)) top else emptyList()
+    val tiles = visibleIds.filterNot { it in hero }
+        .mapNotNull { id -> sizeOf(id)?.let { id to it } }
+    val placements = packDashboardTiles(tiles, rowsPerPage = DashboardPagedRows.takeIf { paged })
+    val home = if (paged) {
+        placements.filter { it.page == 0 }
+    } else {
+        placements.filter { it.row + it.size.rows <= HomeScreenRows }
+    }
+    return DashboardPaletteIds(hero = hero, homeScreen = home.map { it.id })
+}
+
+/**
+ * 97: the home screen's palette, from the source chosen in Display settings. 149: the colours
+ * are those of the tiles the screen shows ([shown]); until it has been drawn once, the placed
+ * order stands in.
+ */
 @Composable
-internal fun dashboardBrandColors(source: BrandPaletteSource, placedInOrder: List<DashboardWidgetId>): List<Color> {
+internal fun dashboardBrandColors(
+    source: BrandPaletteSource,
+    placedInOrder: List<DashboardWidgetId>,
+    shown: DashboardPaletteIds? = null,
+): List<Color> {
     val scheme = MaterialTheme.colorScheme
-    val hero = placedInOrder.take(3).map(::dashboardWidgetAccent)
-    val tiles = placedInOrder.drop(3).take(6).map(::dashboardWidgetAccent)
+    val hero = (shown?.hero ?: placedInOrder.take(3)).map(::dashboardWidgetAccent)
+    val tiles = (shown?.homeScreen ?: placedInOrder.drop(3).take(6)).map(::dashboardWidgetAccent)
     val colors = when (source) {
         BrandPaletteSource.GOOGLE -> BrandColors
         BrandPaletteSource.PHONE -> listOf(scheme.primary, scheme.tertiary, scheme.secondary, scheme.inversePrimary)

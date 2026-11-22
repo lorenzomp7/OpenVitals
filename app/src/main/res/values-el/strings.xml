@@ -398,7 +398,7 @@
     <string name="vo2_method_metabolic_cart">Εργαστηριακή εξέταση (ανάλυση αερίων)</string>
     <string name="vo2_method_cooper">Τεστ Cooper</string>
     <string name="vo2_method_multistage">Τεστ Beep (πολλαπλών σταδίων)</string>
-    <string name="activity_splits_laps_title">Γύροι</string>
+    <string name="activity_splits_laps_title">Ενδιάμεσοι χρόνοι · γύροι της συσκευής</string>
     <string name="activity_splits_laps_body">Καταγράφηκε από τη συσκευή ή την εφαρμογή που αποθήκευσε αυτή τη δραστηριότητα.</string>
     <string name="activity_splits_derived_title">Ενδιάμεσοι χρόνοι · κάθε %1$s</string>
     <string name="activity_splits_estimated_title">Ενδιάμεσοι χρόνοι · εκτιμώμενοι</string>
@@ -587,8 +587,8 @@
     <string name="settings_brand_colors_google">Τα τέσσερα χρώματα της Google</string>
     <string name="settings_brand_colors_phone">Τα χρώματα του τηλεφώνου</string>
     <string name="settings_brand_colors_hero">Τα χρώματα των τριών δακτυλίων επάνω</string>
-    <string name="settings_brand_colors_tiles">Τα χρώματα των έξι πρώτων πλακιδίων της πρώτης σελίδας</string>
-    <string name="settings_brand_colors_hero_tiles">Και τα δύο: χρώματα δακτυλίων και έξι πρώτων πλακιδίων</string>
+    <string name="settings_brand_colors_tiles">Τα χρώματα της αρχικής οθόνης</string>
+    <string name="settings_brand_colors_hero_tiles">Και τα δύο: τα χρώματα των δακτυλίων και της αρχικής οθόνης</string>
     <string name="settings_brand_animated_title">Κινούμενα</string>
     <string name="settings_brand_animated_body">Ενεργό: τα κουμπιά και τα εικονίδια της αρχικής οθόνης κινούνται· ανενεργό: μένουν ακίνητα στα χρώματά τους. Ο διακόπτης OpenVitals κινείται πάντα.</string>
     <string name="activity_chart_recovery_estimate">Εκτίμηση</string>
@@ -597,6 +597,9 @@
     <string name="activity_elevation_source_mapbox">Υψόμετρο από το μοντέλο εδάφους του Mapbox.</string>
     <string name="activity_elevation_source_gps">Μη διορθωμένο υψόμετρο GPS, που αποκλίνει: συνδέσου στο Mapbox ή εισήγαγε πλακίδια υψομέτρου για να διορθωθεί.</string>
     <string name="activity_elevation_source_mapbox_failed">Υψόμετρο GPS, που ολισθαίνει: το Mapbox είναι συνδεδεμένο, αλλά το μοντέλο εδάφους του δεν φορτώθηκε (χωρίς σύνδεση ή το Mapbox απέρριψε το αίτημα). Ανοίξτε ξανά τη δραστηριότητα για νέα προσπάθεια.</string>
+    <string name="activity_elevation_source_terrarium">Υψόμετρο από το ανοιχτό μοντέλο εδάφους Terrarium (AWS Open Data, χωρίς λογαριασμό).</string>
+    <string name="activity_elevation_source_combined">Υψόμετρο από δύο μοντέλα εδάφους, Mapbox και Terrarium, που ελέγχουν το ένα το άλλο.</string>
+    <string name="activity_elevation_source_terrain_failed">Υψόμετρο GPS, που ολισθαίνει: δεν φορτώθηκε κανένα μοντέλο εδάφους (χωρίς σύνδεση). Ανοίξτε ξανά τη δραστηριότητα για νέα προσπάθεια.</string>
     <string name="dashboard_detail_fat_mass">Λιπώδης μάζα: %1$s</string>
     <string name="dashboard_detail_share_of_weight">%1$s του σωματικού βάρους</string>
     <string name="dashboard_detail_macro_energy">%1$s, %2$s της πρόσληψης</string>

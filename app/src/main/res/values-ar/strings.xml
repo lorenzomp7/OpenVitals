@@ -237,8 +237,8 @@
     <string name="settings_brand_colors_google">ألوان Google الأربعة</string>
     <string name="settings_brand_colors_phone">ألوان الهاتف</string>
     <string name="settings_brand_colors_hero">ألوان الحلقات الثلاث في الأعلى</string>
-    <string name="settings_brand_colors_tiles">ألوان أول ستة مربعات في الصفحة الأولى</string>
-    <string name="settings_brand_colors_hero_tiles">كلاهما: ألوان الحلقات وأول ستة مربعات</string>
+    <string name="settings_brand_colors_tiles">ألوان الشاشة الرئيسية</string>
+    <string name="settings_brand_colors_hero_tiles">كلاهما: ألوان الحلقات وألوان الشاشة الرئيسية</string>
     <string name="settings_brand_animated_title">متحركة</string>
     <string name="settings_brand_animated_body">عند التشغيل تتحرك الأزرار والأيقونات في الشاشة الرئيسية، وعند الإيقاف تبقى ثابتة بألوانها. زر OpenVitals يتحرك دائمًا.</string>
     <string name="activity_chart_recovery_estimate">تقدير</string>
@@ -247,6 +247,9 @@
     <string name="activity_elevation_source_mapbox">الارتفاع من نموذج التضاريس في Mapbox.</string>
     <string name="activity_elevation_source_gps">ارتفاع GPS غير مصحح ويتغير: سجّل الدخول إلى Mapbox أو استورد مربعات الارتفاع لتصحيحه.</string>
     <string name="activity_elevation_source_mapbox_failed">ارتفاع GPS، وهو ينحرف: تم تسجيل الدخول إلى Mapbox لكن تعذّر تحميل نموذج التضاريس (لا يوجد اتصال، أو رفض Mapbox الطلب). افتح النشاط مرة أخرى لإعادة المحاولة.</string>
+    <string name="activity_elevation_source_terrarium">الارتفاع من نموذج التضاريس المفتوح Terrarium (AWS Open Data، دون حساب).</string>
+    <string name="activity_elevation_source_combined">الارتفاع من نموذجَي تضاريس، Mapbox وTerrarium، يُصحَّح كلٌّ منهما بالآخر.</string>
+    <string name="activity_elevation_source_terrain_failed">ارتفاع GPS، وهو ينحرف: تعذّر تحميل أي نموذج تضاريس (لا يوجد اتصال). افتح النشاط مرة أخرى لإعادة المحاولة.</string>
     <string name="dashboard_detail_fat_mass">كتلة الدهون: %1$s</string>
     <string name="dashboard_detail_share_of_weight">%1$s من وزن الجسم</string>
     <string name="dashboard_detail_macro_energy">%1$s، %2$s من المتناول</string>

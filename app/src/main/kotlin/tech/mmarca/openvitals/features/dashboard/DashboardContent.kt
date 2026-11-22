@@ -125,6 +125,8 @@ internal fun DashboardContent(
     onToggleDashboardEdit: () -> Unit,
     /** The widgets the user placed. Only these keep an unsupported metric in the edit grid. */
     placedWidgetIds: Set<DashboardWidgetId> = emptySet(),
+    /** 149, 150: the rings' and the home screen's tiles as drawn, for the home screen's palette. */
+    onPaletteIds: (DashboardPaletteIds) -> Unit = {},
 ) {
     val zone = ZoneId.systemDefault()
     val specWidgetIds = remember(dashboardWidgets, isEditingDashboard) {
@@ -175,6 +177,20 @@ internal fun DashboardContent(
             placedWidgetIds = placedWidgetIds,
             sortEmptyTilesLast = sortEmptyTilesLast,
         )
+    }
+    // 149, 150: the palette follows what the home screen shows, not the saved order; the editor's
+    // grid is not the home screen, so it leaves the palette as it was.
+    if (!isEditingDashboard) {
+        val paletteIds = remember(visibleIds, specsById, widgetSizes, pagedLayout) {
+            dashboardPaletteIds(
+                visibleIds = visibleIds,
+                hasHero = { specsById[it]?.hero != null },
+                sizeOf = { id -> specsById[id]?.let { dashboardTileSize(it, widgetSizes) } },
+                paged = pagedLayout,
+            )
+        }
+        val reportPalette by androidx.compose.runtime.rememberUpdatedState(onPaletteIds)
+        androidx.compose.runtime.LaunchedEffect(paletteIds) { reportPalette(paletteIds) }
     }
     val hiddenSpecs = remember(isEditingDashboard, specs, visibleIds) {
         val trayIds = dashboardTrayWidgetIds(
@@ -248,6 +264,9 @@ internal fun DashboardContent(
                 }
 
                 item(key = "widgets") {
+                    // 147: the tile page survives the per-day key below.
+                    val tilePage = androidx.compose.runtime.saveable.rememberSaveable { androidx.compose.runtime.mutableIntStateOf(0) }
+                    androidx.compose.runtime.CompositionLocalProvider(LocalDashboardTilePage provides tilePage) {
                     // Reveal animations play once per day on display.
                     // 99: the editor and the dashboard swap in place: the one leaving fades out,
                     // then the other fades in. The height jumps while neither is visible.
@@ -297,6 +316,7 @@ internal fun DashboardContent(
                             },
                         )
                     } }
+                    }
                 }
 
                 // The sensor-status card is absent: the top-bar battery action is the entry point.

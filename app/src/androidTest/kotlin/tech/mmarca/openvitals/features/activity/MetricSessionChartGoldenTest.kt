@@ -42,7 +42,11 @@ class MetricSessionChartGoldenTest {
         composeRule.setContent {
             OpenVitalsVisualTestSurface(width = 360.dp, height = 420.dp) {
                 ActivitySpeedChartCard(
-                    samples = samples,
+                    series = tech.mmarca.openvitals.domain.insights.sessionSeries(
+                        samples.map { tech.mmarca.openvitals.domain.insights.SessionReading(it.time, it.metersPerSecond, it.source) },
+                        START,
+                        END,
+                    ),
                     sessionStart = START,
                     sessionEnd = END,
                     unitFormatter = FORMATTER,

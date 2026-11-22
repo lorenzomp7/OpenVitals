@@ -396,7 +396,7 @@
     <string name="activity_workout_export_failed">Treenitiedostoa ei voitu tallentaa.</string>
     <string name="activity_workout_share_chooser_title">Jaa treeni sovelluksella</string>
     <string name="activity_workout_share_failed">Treenitiedostoa ei voitu jakaa.</string>
-    <string name="activity_splits_laps_title">Kierrokset</string>
+    <string name="activity_splits_laps_title">Väliajat · laitteen kierrokset</string>
     <string name="activity_splits_laps_body">Tallentanut laite tai sovellus, joka tallensi tämän aktiviteetin.</string>
     <string name="activity_splits_derived_title">Väliajat · joka %1$s</string>
     <string name="activity_splits_estimated_title">Väliajat · arvio</string>
@@ -3900,8 +3900,8 @@
     <string name="settings_brand_colors_google">Googlen neljä väriä</string>
     <string name="settings_brand_colors_phone">Puhelimen värit</string>
     <string name="settings_brand_colors_hero">Ylhäällä olevien kolmen renkaan värit</string>
-    <string name="settings_brand_colors_tiles">Ensimmäisen sivun kuuden ensimmäisen ruudun värit</string>
-    <string name="settings_brand_colors_hero_tiles">Molemmat: renkaiden ja kuuden ensimmäisen ruudun värit</string>
+    <string name="settings_brand_colors_tiles">Aloitusnäytön värit</string>
+    <string name="settings_brand_colors_hero_tiles">Molemmat: renkaiden ja aloitusnäytön värit</string>
     <string name="settings_brand_animated_title">Animoidut</string>
     <string name="settings_brand_animated_body">Päällä: aloitusnäytön painikkeet ja kuvakkeet liikkuvat; pois: ne pysyvät paikallaan väreissään. OpenVitals-kytkin liikkuu aina.</string>
     <string name="activity_chart_recovery_estimate">Arvio</string>
@@ -3910,6 +3910,9 @@
     <string name="activity_elevation_source_mapbox">Korkeus Mapboxin maastomallista.</string>
     <string name="activity_elevation_source_gps">Korjaamaton GPS-korkeus, joka ajelehtii: kirjaudu Mapboxiin tai tuo korkeustiilet korjataksesi sen.</string>
     <string name="activity_elevation_source_mapbox_failed">GPS-korkeus, joka ajelehtii: Mapbox on kirjautunut, mutta sen maastomallia ei voitu ladata (ei yhteyttä tai Mapbox hylkäsi pyynnön). Yritä uudelleen avaamalla aktiviteetti uudelleen.</string>
+    <string name="activity_elevation_source_terrarium">Korkeus avoimesta Terrarium-maastomallista (AWS Open Data, ei tiliä).</string>
+    <string name="activity_elevation_source_combined">Korkeus kahdesta maastomallista, Mapboxista ja Terrariumista, jotka tarkistavat toisensa.</string>
+    <string name="activity_elevation_source_terrain_failed">GPS-korkeus, joka ajelehtii: mitään maastomallia ei voitu ladata (ei yhteyttä). Yritä uudelleen avaamalla aktiviteetti uudelleen.</string>
     <string name="dashboard_detail_fat_mass">Rasvamassa: %1$s</string>
     <string name="dashboard_detail_share_of_weight">%1$s kehon painosta</string>
     <string name="dashboard_detail_macro_energy">%1$s, %2$s saannista</string>

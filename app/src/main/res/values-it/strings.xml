@@ -2251,7 +2251,7 @@
     <string name="activity_workout_export_failed">Impossibile salvare il file dell\'allenamento.</string>
     <string name="activity_workout_share_chooser_title">Condividi allenamento con</string>
     <string name="activity_workout_share_failed">Impossibile condividere il file dell\'allenamento.</string>
-    <string name="activity_splits_laps_title">Giri</string>
+    <string name="activity_splits_laps_title">Suddivisioni · giri del dispositivo</string>
     <string name="activity_splits_laps_body">Registrati dal dispositivo o dall\'app che ha salvato questa attività.</string>
     <string name="activity_splits_derived_title">Suddivisioni · ogni %1$s</string>
     <string name="activity_splits_estimated_title">Suddivisioni · stimate</string>
@@ -3932,8 +3932,8 @@
     <string name="settings_brand_colors_google">I 4 colori di Google</string>
     <string name="settings_brand_colors_phone">Il colore del telefono</string>
     <string name="settings_brand_colors_hero">I 3 colori dei toggle principali (anelli in alto)</string>
-    <string name="settings_brand_colors_tiles">I colori dei primi 6 riquadri della prima pagina</string>
-    <string name="settings_brand_colors_hero_tiles">Entrambi: i colori degli anelli e dei primi 6 riquadri</string>
+    <string name="settings_brand_colors_tiles">I colori della schermata principale</string>
+    <string name="settings_brand_colors_hero_tiles">Entrambi: i colori degli anelli e della schermata principale</string>
     <string name="settings_brand_animated_title">Animati</string>
     <string name="settings_brand_animated_body">Attivo: i pulsanti e le icone della schermata principale si muovono. Disattivo: restano fermi nei loro colori. Il toggle OpenVitals si muove sempre.</string>
     <string name="activity_chart_recovery_estimate">Stima</string>
@@ -3942,6 +3942,9 @@
     <string name="activity_elevation_source_mapbox">Altitudine dal modello del terreno di Mapbox.</string>
     <string name="activity_elevation_source_gps">Altitudine GPS non corretta, che deriva: accedi a Mapbox o importa i tile di elevazione per correggerla.</string>
     <string name="activity_elevation_source_mapbox_failed">Altitudine GPS, che deriva: Mapbox è collegato ma il suo modello del terreno non si è caricato (nessuna connessione, o Mapbox ha rifiutato la richiesta). Riapri l\'attività per riprovare.</string>
+    <string name="activity_elevation_source_terrarium">Altitudine dal modello del terreno aperto Terrarium (AWS Open Data, senza account).</string>
+    <string name="activity_elevation_source_combined">Altitudine da due modelli del terreno, Mapbox e Terrarium, confrontati e corretti l\'uno con l\'altro.</string>
+    <string name="activity_elevation_source_terrain_failed">Altitudine GPS, che deriva: non si è caricato nessun modello del terreno (nessuna connessione). Riapri l\'attività per riprovare.</string>
     <string name="dashboard_detail_fat_mass">Massa grassa: %1$s</string>
     <string name="dashboard_detail_share_of_weight">%1$s del peso</string>
     <string name="dashboard_detail_macro_energy">%1$s, %2$s dell\'apporto</string>

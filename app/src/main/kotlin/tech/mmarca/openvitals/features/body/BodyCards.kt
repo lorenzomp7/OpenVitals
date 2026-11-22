@@ -31,8 +31,9 @@ internal fun WeightSummaryCard(
         modifier = modifier.fillMaxWidth(),
 
     ) {
+        // 141: the row spans the card, so "Latest" sits at the start and "Change" at the end.
         Row(
-            modifier = Modifier.padding(16.dp),
+            modifier = Modifier.fillMaxWidth().padding(16.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically,
         ) {
@@ -55,7 +56,7 @@ internal fun WeightSummaryCard(
                         style = MaterialTheme.typography.labelMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
-                    val sign = if (changeKg >= 0) "+" else ""
+                    val sign = if (changeKg >= 0) "+" else "\u2212"
                     val change = unitFormatter.weight(abs(changeKg))
                     Text(
                         text = "$sign${change.text}",

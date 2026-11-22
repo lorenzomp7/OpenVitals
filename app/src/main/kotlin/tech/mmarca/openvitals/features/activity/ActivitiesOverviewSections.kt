@@ -556,8 +556,12 @@ internal fun ActivityOverviewWorkoutRowContent(
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
             // 54, 55: machine sessions add their average bpm to the time.
+            // 127: not a treadmill run: its row in the list is its time alone.
             val averageBpm = workout.averageHeartRateBpm
-            if (workout.exerciseType in TimeAndHeartRateSummaryExercises && averageBpm != null) {
+            if (workout.exerciseType in TimeAndHeartRateSummaryExercises &&
+                workout.exerciseType != androidx.health.connect.client.records.ExerciseSessionRecord.EXERCISE_TYPE_RUNNING_TREADMILL &&
+                averageBpm != null
+            ) {
                 Text(
                     text = unitFormatter.heartRate(averageBpm).text,
                     style = MaterialTheme.typography.titleMedium,

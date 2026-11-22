@@ -107,6 +107,20 @@ fun splitNightAndNaps(
     return SleepNightSplit(night = night, naps = naps)
 }
 
+/**
+ * A night's asleep time as the Sleep screen counts it: the night cluster of
+ * [windowedSessions] (naps out), its stages combined, awake stages excluded.
+ * The dashboard's period average uses the same rule, so the two agree.
+ */
+fun nightSleepDurationMs(windowedSessions: List<SleepData>): Long {
+    val night = splitNightAndNaps(windowedSessions).night
+    if (night.isEmpty()) return 0L
+    return sleepDurationMsFromStages(
+        stages = combineNightStages(night, maxGap = SleepNapGap),
+        fallbackDurationMs = sleepSessionsUnionMs(night),
+    )
+}
+
 /** Every nap of [selectedDate]: the night window's other clusters plus daytime sessions. */
 fun dailyNaps(
     sessions: List<SleepData>,

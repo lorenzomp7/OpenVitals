@@ -238,8 +238,8 @@
     <string name="settings_brand_colors_google">ארבעת הצבעים של Google</string>
     <string name="settings_brand_colors_phone">צבעי הטלפון</string>
     <string name="settings_brand_colors_hero">צבעי שלוש הטבעות למעלה</string>
-    <string name="settings_brand_colors_tiles">צבעי ששת האריחים הראשונים בעמוד הראשון</string>
-    <string name="settings_brand_colors_hero_tiles">שניהם: צבעי הטבעות וששת האריחים הראשונים</string>
+    <string name="settings_brand_colors_tiles">צבעי המסך הראשי</string>
+    <string name="settings_brand_colors_hero_tiles">שניהם: צבעי הטבעות וצבעי המסך הראשי</string>
     <string name="settings_brand_animated_title">מונפשים</string>
     <string name="settings_brand_animated_body">מופעל: הכפתורים והסמלים במסך הראשי זזים; כבוי: הם נשארים במקום בצבעיהם. מתג OpenVitals זז תמיד.</string>
     <string name="activity_chart_recovery_estimate">הערכה</string>
@@ -248,6 +248,9 @@
     <string name="activity_elevation_source_mapbox">גובה ממודל השטח של Mapbox.</string>
     <string name="activity_elevation_source_gps">גובה GPS לא מתוקן, שנסחף: התחבר ל-Mapbox או ייבא אריחי גובה כדי לתקן אותו.</string>
     <string name="activity_elevation_source_mapbox_failed">גובה GPS, שסוטה: Mapbox מחובר אך לא ניתן היה לטעון את מודל פני השטח שלו (אין חיבור, או ש-Mapbox דחה את הבקשה). פתחו שוב את הפעילות כדי לנסות שוב.</string>
+    <string name="activity_elevation_source_terrarium">גובה ממודל השטח הפתוח Terrarium (AWS Open Data, ללא חשבון).</string>
+    <string name="activity_elevation_source_combined">גובה משני מודלי שטח, Mapbox ו-Terrarium, שנבדקים זה מול זה.</string>
+    <string name="activity_elevation_source_terrain_failed">גובה GPS, שסוטה: לא ניתן היה לטעון אף מודל שטח (אין חיבור). פתחו שוב את הפעילות כדי לנסות שוב.</string>
     <string name="dashboard_detail_fat_mass">מסת שומן: %1$s</string>
     <string name="dashboard_detail_share_of_weight">%1$s ממשקל הגוף</string>
     <string name="dashboard_detail_macro_energy">%1$s, %2$s מהצריכה</string>

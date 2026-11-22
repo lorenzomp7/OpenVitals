@@ -35,8 +35,9 @@ import tech.mmarca.openvitals.ui.theme.Spacing
 
 /**
  * 113: the charts of one activity, each a section the detail screen lets the visitor arrange,
- * with the same slider icon, drag and Save or Discard as the metric screens. The summary above
- * and the details, export and route cards below stay where they are.
+ * with the same slider icon, drag and Save or Discard as the metric screens. 131: the cards
+ * around them are sections as well ([activityDetailCardSections]); only the summary heading
+ * and the edit and delete buttons stay where they are.
  */
 internal fun MetricDetailSectionBuilder.activityDetailChartSections(
     workout: ExerciseData,
@@ -61,6 +62,8 @@ internal fun MetricDetailSectionBuilder.activityDetailChartSections(
     sessionCardioLoad: Int? = null,
     personalRecords: List<tech.mmarca.openvitals.domain.insights.PersonalRecord> = emptyList(),
     recordsComparedWith: Int = 0,
+    /** 136: speed and step cadence checked against the distance and the steps. */
+    movement: tech.mmarca.openvitals.domain.insights.MovementSeries = workout.movementSeries(speedSamples, cadenceSamples),
 ) {
     val cardModifier = Modifier.fillMaxWidth().padding(horizontal = Spacing.lg, vertical = Spacing.xs)
     val pauses = workout.segments.toSessionPauses()
@@ -131,16 +134,17 @@ internal fun MetricDetailSectionBuilder.activityDetailChartSections(
         maxHeartRateBpm = maxHeartRateBpm,
         unitFormatter = unitFormatter,
         restingHeartRateBpm = restingHeartRateBpm,
+        movement = movement,
     )
     // Recorded speed, or the split-derived reconstruction, never both. 112: not on a treadmill.
     val speedChartShown = showsSpeedChart(workout.exerciseType)
     section(
         MetricDetailSectionId.ACTIVITY_DETAIL_SPEED,
-        speedChartShown && (speedSamples.isNotEmpty() || splitSpeedTrace != null),
+        speedChartShown && (movement.speed.size >= 2 || splitSpeedTrace != null),
     ) {
-        if (speedSamples.isNotEmpty()) {
+        if (movement.speed.size >= 2) {
             ActivitySpeedChartCard(
-                samples = speedSamples,
+                series = movement.speed,
                 sessionStart = workout.startTime,
                 sessionEnd = workout.endTime,
                 pauses = pauses,
@@ -187,22 +191,10 @@ internal fun MetricDetailSectionBuilder.activityDetailChartSections(
     }
     // 117: the length of each step, for the kinds that count steps.
     val strides = if (workout.exerciseType in tech.mmarca.openvitals.domain.model.stepBasedExercises) {
-        // 136: the same cleaned cadence and speed the charts draw.
+        // 136: the same checked cadence and speed the charts draw.
         strideLengthSeries(
-            cadence = tech.mmarca.openvitals.domain.insights.runningCadenceInSteps(
-                workout.exerciseType,
-                tech.mmarca.openvitals.domain.insights.sessionSeries(
-                    cadenceSamples.filter { it.kind == ActivityCadenceKind.STEPS }.map { tech.mmarca.openvitals.domain.insights.SessionReading(it.time, it.rate, it.source) },
-                    workout.startTime,
-                    workout.endTime,
-                ),
-            ),
-            speed = tech.mmarca.openvitals.domain.insights.sessionSeries(
-                speedSamples.map { tech.mmarca.openvitals.domain.insights.SessionReading(it.time, it.metersPerSecond, it.source) },
-                workout.startTime,
-                workout.endTime,
-            )
-                .ifEmpty { paceFromRoute(workout.route.points).map { (time, pace) -> time to 1_000.0 / pace } }
+            cadence = movement.stepCadence,
+            speed = movement.speed
                 .ifEmpty { splitSpeedTrace?.samples.orEmpty().map { it.time to it.metersPerSecond } },
         )
     } else {
@@ -228,6 +220,7 @@ internal fun MetricDetailSectionBuilder.activityDetailChartSections(
                 ActivityCadenceChartCard(
                     samples = cadenceSamples,
                     kind = cadenceKind,
+                    stepSeries = movement.stepCadence,
                     sessionStart = workout.startTime,
                     sessionEnd = workout.endTime,
                     pauses = pauses,
@@ -277,3 +270,25 @@ private fun activityGradient(workout: ExerciseData, elevation: List<ActivityElev
     }
     return gradientDistribution(points)
 }
+
+/**
+ * 136: the speed and step cadence of [this] session as its charts draw them: the session app's
+ * readings outside the pauses, checked against the distance and the steps ([movementSeries]).
+ */
+internal fun ExerciseData.movementSeries(
+    speedSamples: List<SpeedSample>,
+    cadenceSamples: List<ActivityCadenceSample>,
+): tech.mmarca.openvitals.domain.insights.MovementSeries =
+    tech.mmarca.openvitals.domain.insights.movementSeries(
+        exerciseType = exerciseType,
+        start = startTime,
+        end = endTime,
+        speedReadings = speedSamples.map { tech.mmarca.openvitals.domain.insights.SessionReading(it.time, it.metersPerSecond, it.source) },
+        stepCadenceReadings = cadenceSamples.filter { it.kind == ActivityCadenceKind.STEPS }
+            .map { tech.mmarca.openvitals.domain.insights.SessionReading(it.time, it.rate, it.source) },
+        preferredSource = source.takeIf { it.isNotBlank() },
+        route = if (route.status == tech.mmarca.openvitals.domain.model.ExerciseRouteStatus.DATA) route.points else emptyList(),
+        distanceMeters = totalDistanceMeters,
+        steps = steps,
+        pauses = segments.toSessionPauses().map { it.start to it.end },
+    )

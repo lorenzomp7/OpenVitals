@@ -46,6 +46,7 @@ import tech.mmarca.openvitals.domain.insights.IntensityMinutesEstimate
 import tech.mmarca.openvitals.domain.insights.IntensityWorkoutInput
 import tech.mmarca.openvitals.domain.insights.OvernightHrvInput
 import tech.mmarca.openvitals.domain.insights.SleepScoreEstimate
+import tech.mmarca.openvitals.domain.insights.activeKcalPerStep
 import tech.mmarca.openvitals.domain.insights.SleepScoreLookbackDays
 import tech.mmarca.openvitals.domain.insights.calculateCardioLoad
 import tech.mmarca.openvitals.domain.insights.calculateIntensityMinutes
@@ -166,7 +167,10 @@ class DashboardDataLoader @Inject constructor(
         withContext(dispatchers.io) {
             val inputs = dashboardLoadInputs()
             if (query.period != null) {
-                DashboardPeriodLoader(hc, inputs.showOpenVitalsCalculatedCalories).load(query, inputs.granted) { dailyQuery ->
+                val profile = preferencesRepository?.bodyProfile()
+                DashboardPeriodLoader(
+                    hc, inputs.showOpenVitalsCalculatedCalories, activeKcalPerStep(profile?.weightKg, profile?.heightCm),
+                ).load(query, inputs.granted) { dailyQuery ->
                     loadDashboardInternal(dailyQuery, inputs)
                 }
             } else loadDashboardInternal(query, inputs)
@@ -292,17 +296,20 @@ class DashboardDataLoader @Inject constructor(
                     canEstimateTotalCalories(granted, showOpenVitalsCalculatedCalories),
             ).firstOrNull()
         }
+        // 142: the steps count as well, slice by slice, so a day of walking is not zero.
         val activeCalories = if (
             wants(DashboardMetric.ACTIVE_CALORIES) &&
-            readActiveCaloriesPermission in granted &&
-            readStepsPermission in granted &&
-            readDistancePermission in granted
+            (readActiveCaloriesPermission in granted || readStepsPermission in granted)
         ) {
             async {
                 dashboardMetric("active calories") {
-                    hc.readDailySteps(date, date, includeSteps = false, includeDistance = false, includeActiveCalories = true)
-                        .firstOrNull()
-                        ?.activeCaloriesKcal
+                    val profile = preferencesRepository?.bodyProfile()
+                    hc.readActiveCaloriesWithSteps(
+                        dayStart, dayEnd,
+                        steps = readStepsPermission in granted,
+                        active = readActiveCaloriesPermission in granted,
+                        kcalPerStep = activeKcalPerStep(profile?.weightKg, profile?.heightCm),
+                    )
                 }
             }
         } else {

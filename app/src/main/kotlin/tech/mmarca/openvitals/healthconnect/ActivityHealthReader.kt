@@ -1,5 +1,8 @@
 package tech.mmarca.openvitals.healthconnect
 
+import kotlinx.coroutines.sync.withPermit
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.async
 import android.util.Log
 import androidx.health.connect.client.records.ActiveCaloriesBurnedRecord
 import androidx.health.connect.client.records.CyclingPedalingCadenceRecord
@@ -365,13 +368,23 @@ internal class ActivityHealthReader(
                 ascendingOrder = false,
                 pageSize = 50,
             ).filter { exerciseType == null || it.exerciseType == exerciseType }
-            val sessions = records.map { record ->
-                readExerciseSessionMetrics(
-                    record = record,
-                    includeDistance = includeDistance,
-                    includeSpeed = includeSpeed,
-                    includeHeartRate = includeHeartRate,
-                )
+            // 133: one aggregate per session, a few at a time rather than one after another: a
+            // year of sessions read in sequence held the Activities screen for seconds. The calls
+            // are the same in number; a rate-limit refusal still cancels the rest and is rethrown.
+            val gate = kotlinx.coroutines.sync.Semaphore(SessionMetricsParallelism)
+            val sessions = kotlinx.coroutines.coroutineScope {
+                records.map { record ->
+                    async {
+                        gate.withPermit {
+                            readExerciseSessionMetrics(
+                                record = record,
+                                includeDistance = includeDistance,
+                                includeSpeed = includeSpeed,
+                                includeHeartRate = includeHeartRate,
+                            )
+                        }
+                    }
+                }.awaitAll()
             }
 
             deduplicateExerciseSessions(sessions)
@@ -1554,3 +1567,6 @@ private fun Int.toActiveExerciseSegmentType(): Int =
         ExerciseSessionRecord.EXERCISE_TYPE_YOGA -> ExerciseSegment.EXERCISE_SEGMENT_TYPE_YOGA
         else -> ExerciseSegment.EXERCISE_SEGMENT_TYPE_OTHER_WORKOUT
     }
+
+/** 133: per-session aggregates in flight at once while a period's sessions are read. */
+private const val SessionMetricsParallelism = 6

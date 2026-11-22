@@ -261,7 +261,7 @@
     <string name="activity_workout_export_failed">Soubor s tréninkem se nepodařilo uložit.</string>
     <string name="activity_workout_share_chooser_title">Sdílet trénink pomocí</string>
     <string name="activity_workout_share_failed">Soubor s tréninkem se nepodařilo sdílet.</string>
-    <string name="activity_splits_laps_title">Kola</string>
+    <string name="activity_splits_laps_title">Úseky · kola zařízení</string>
     <string name="activity_splits_laps_body">Zaznamenáno zařízením nebo aplikací, která tuto aktivitu uložila.</string>
     <string name="activity_splits_derived_title">Úseky · každých %1$s</string>
     <string name="activity_splits_estimated_title">Úseky · odhad</string>
@@ -3966,8 +3966,8 @@
     <string name="settings_brand_colors_google">Čtyři barvy Google</string>
     <string name="settings_brand_colors_phone">Barvy telefonu</string>
     <string name="settings_brand_colors_hero">Barvy tří kruhů nahoře</string>
-    <string name="settings_brand_colors_tiles">Barvy prvních šesti dlaždic první stránky</string>
-    <string name="settings_brand_colors_hero_tiles">Obojí: barvy kruhů a prvních šesti dlaždic</string>
+    <string name="settings_brand_colors_tiles">Barvy hlavní obrazovky</string>
+    <string name="settings_brand_colors_hero_tiles">Obojí: barvy kruhů a hlavní obrazovky</string>
     <string name="settings_brand_animated_title">Animované</string>
     <string name="settings_brand_animated_body">Zapnuto: tlačítka a ikony na hlavní obrazovce se pohybují; vypnuto: stojí ve svých barvách. Přepínač OpenVitals se pohybuje vždy.</string>
     <string name="activity_chart_recovery_estimate">Odhad</string>
@@ -3976,6 +3976,9 @@
     <string name="activity_elevation_source_mapbox">Nadmořská výška z modelu terénu Mapbox.</string>
     <string name="activity_elevation_source_gps">Neopravená výška z GPS, která se odchyluje: přihlas se k Mapboxu nebo importuj výškové dlaždice a oprav ji.</string>
     <string name="activity_elevation_source_mapbox_failed">Nadmořská výška z GPS, která se posouvá: Mapbox je přihlášen, ale jeho model terénu se nepodařilo načíst (bez připojení nebo Mapbox požadavek odmítl). Otevřete aktivitu znovu a zkuste to znovu.</string>
+    <string name="activity_elevation_source_terrarium">Nadmořská výška z otevřeného modelu terénu Terrarium (AWS Open Data, bez účtu).</string>
+    <string name="activity_elevation_source_combined">Nadmořská výška ze dvou modelů terénu, Mapbox a Terrarium, porovnaných navzájem.</string>
+    <string name="activity_elevation_source_terrain_failed">Nadmořská výška z GPS, která se posouvá: nepodařilo se načíst žádný model terénu (bez připojení). Otevřete aktivitu znovu a zkuste to znovu.</string>
     <string name="dashboard_detail_fat_mass">Tuková hmota: %1$s</string>
     <string name="dashboard_detail_share_of_weight">%1$s tělesné hmotnosti</string>
     <string name="dashboard_detail_macro_energy">%1$s, %2$s příjmu</string>

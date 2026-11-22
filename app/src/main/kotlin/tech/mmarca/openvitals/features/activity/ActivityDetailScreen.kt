@@ -327,6 +327,10 @@ internal fun ActivityDetailContent(
 ) {
     val context = LocalContext.current
     val sections = sectionContext ?: rememberFixedActivityChartSections()
+    // 136: the speed and cadence the speed, cadence, stride and pace charts share.
+    val movement = androidx.compose.runtime.remember(workout, speedSamples, cadenceSamples) {
+        workout.movementSeries(speedSamples, cadenceSamples)
+    }
     val reorderableCharts = rememberActivityChartReordering(sections)
     LazyColumn(
         state = sections.listState.lazyListState,
@@ -345,39 +349,44 @@ internal fun ActivityDetailContent(
                     .padding(horizontal = 16.dp, vertical = 8.dp),
             )
         }
-        item {
-            MetricsCard(
-                workout = workout,
-                unitFormatter = unitFormatter,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp, vertical = 4.dp),
-            )
-        }
-        workout.plannedExerciseSessionId?.let { planId ->
-            item {
-                ActivityLinkedPlanDetailCard(
-                    planTitle = linkedPlanTitle,
-                    onOpenPlan = { onOpenPlan(planId) },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp, vertical = 4.dp),
-                )
-            }
-        }
-        // 134: until the samples are read, one block as tall as the screen holds the charts'
-        // place: the summary above never moves, and the charts take the block's place.
-        if (samplesLoading) item(key = "activity_charts_loading") {
-            androidx.compose.foundation.layout.Box(
-                modifier = Modifier.fillParentMaxHeight().fillMaxWidth(),
-                contentAlignment = androidx.compose.ui.Alignment.TopCenter,
-            ) {
-                androidx.compose.material3.CircularProgressIndicator(Modifier.padding(top = Spacing.xxl))
-            }
+        val export = ActivityExportActions(
+            onSaveWorkoutAsTcx = onSaveWorkoutAsTcx,
+            onSaveWorkoutAsCsv = onSaveWorkoutAsCsv,
+            onSaveWorkoutAsFit = onSaveWorkoutAsFit,
+            onShareWorkoutAsTcx = onShareWorkoutAsTcx,
+            onShareWorkoutAsCsv = onShareWorkoutAsCsv,
+            onShareWorkoutAsFit = onShareWorkoutAsFit,
+            onSaveWorkoutAsFitWithRoute = onSaveWorkoutAsFitWithRoute,
+            onShareWorkoutAsFitWithRoute = onShareWorkoutAsFitWithRoute,
+            onSaveRouteAsGpx = onSaveRouteAsGpx,
+            onSaveRouteAsKmz = onSaveRouteAsKmz,
+            onShareRouteAsGpx = onShareRouteAsGpx,
+            onShareRouteAsKmz = onShareRouteAsKmz,
+        )
+        // 134: until the samples are read, the record's own sections that come first in the
+        // order show, then one block as tall as the screen holds the rest's place: nothing
+        // above it moves, and the remaining sections take the block's place.
+        val shownWhileLoading = if (samplesLoading) {
+            tech.mmarca.openvitals.domain.preferences.activityDetailSectionsShownWhileLoading(sections.order)
         } else {
-        // 113: the charts, in the order the visitor arranged them (the slider icon at the top).
+            null
+        }
+        // 113, 131: the charts and the cards around them, in the order the visitor arranged
+        // them (the slider icon at the top), each one movable and removable.
         renderOrderedMetricDetailSections(sections) {
-            activityDetailChartSections(
+            activityDetailCardSections(
+                workout = workout,
+                markers = markers,
+                coMapsSamples = coMapsSamples,
+                linkedPlanTitle = linkedPlanTitle,
+                onOpenPlan = onOpenPlan,
+                onOpenRouteInMap = onOpenRouteInMap,
+                export = export,
+                unitFormatter = unitFormatter,
+                dateTimeFormatterProvider = dateTimeFormatterProvider,
+                only = shownWhileLoading,
+            )
+            if (!samplesLoading) activityDetailChartSections(
                 workout = workout,
                 heartRateSamples = heartRateSamples,
                 heartRateAccessMissing = heartRateAccessMissing,
@@ -400,81 +409,15 @@ internal fun ActivityDetailContent(
                 sessionCardioLoad = sessionCardioLoad,
                 personalRecords = personalRecords,
                 recordsComparedWith = recordsComparedWith,
+                movement = movement,
             )
         }
-        }
-        item {
-            SessionDetailsCard(
-                workout = workout,
-                dateTimeFormatterProvider = dateTimeFormatterProvider,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp, vertical = 4.dp),
-            )
-        }
-        if (workout.segments.isNotEmpty()) item {
-            SegmentsCard(
-                segments = workout.segments,
-                unitFormatter = unitFormatter,
-                dateTimeFormatterProvider = dateTimeFormatterProvider,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp, vertical = 4.dp),
-            )
-        }
-        // 53: no route data, no route card.
-        if (workout.route.status == ExerciseRouteStatus.DATA && workout.route.points.isNotEmpty()) item {
-            RouteCard(
-                route = workout.route,
-                unitFormatter = unitFormatter,
-                dateTimeFormatterProvider = dateTimeFormatterProvider,
-                onOpenRouteInMap = onOpenRouteInMap,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp, vertical = 4.dp),
-            )
-        }
-        item {
-            // Route formats only with a route; metric formats always.
-            val hasExportableRoute = workout.route.status == ExerciseRouteStatus.DATA &&
-                workout.route.points.isNotEmpty()
-            WorkoutExportCard(
-                onSaveAsTcx = onSaveWorkoutAsTcx,
-                onSaveAsCsv = onSaveWorkoutAsCsv,
-                onSaveAsFit = onSaveWorkoutAsFit,
-                onShareAsTcx = onShareWorkoutAsTcx,
-                onShareAsCsv = onShareWorkoutAsCsv,
-                onShareAsFit = onShareWorkoutAsFit,
-                onSaveRouteAsGpx = onSaveRouteAsGpx.takeIf { hasExportableRoute },
-                onSaveRouteAsKmz = onSaveRouteAsKmz.takeIf { hasExportableRoute },
-                onShareRouteAsGpx = onShareRouteAsGpx.takeIf { hasExportableRoute },
-                onShareRouteAsKmz = onShareRouteAsKmz.takeIf { hasExportableRoute },
-                onSaveRouteAsFit = onSaveWorkoutAsFitWithRoute.takeIf { hasExportableRoute },
-                onShareRouteAsFit = onShareWorkoutAsFitWithRoute.takeIf { hasExportableRoute },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = Spacing.lg, vertical = Spacing.xs),
-            )
-        }
-        item {
-            ActivityRouteAnalysisCard(
-                workout = workout,
-                markers = markers,
-                unitFormatter = unitFormatter,
-                dateTimeFormatterProvider = dateTimeFormatterProvider,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp, vertical = 4.dp),
-            )
-        }
-        if (coMapsSamples.isNotEmpty()) {
-            item {
-                ActivityCoMapsNavigationCard(
-                    samples = coMapsSamples,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp, vertical = 4.dp),
-                )
+        if (samplesLoading) item(key = "activity_charts_loading") {
+            androidx.compose.foundation.layout.Box(
+                modifier = Modifier.fillParentMaxHeight().fillMaxWidth(),
+                contentAlignment = androidx.compose.ui.Alignment.TopCenter,
+            ) {
+                androidx.compose.material3.CircularProgressIndicator(Modifier.padding(top = Spacing.xxl))
             }
         }
         if (workout.isOpenVitalsEntry && workout.id.isNotBlank()) {

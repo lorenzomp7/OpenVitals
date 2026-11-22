@@ -64,7 +64,7 @@ fun heartRateZoneSeconds(samples: List<HeartRateSample>, start: Instant, end: In
 }
 
 /** Paces slower than this are standing still, not a pace to draw: 20 min/km. */
-private const val SlowestPaceSecondsPerKm = 1_200.0
+const val SlowestPaceSecondsPerKm = 1_200.0
 
 /** Readings are averaged over this window, so a GPS jitter is not a sprint. */
 private val paceSmoothing: Duration = Duration.ofSeconds(30)

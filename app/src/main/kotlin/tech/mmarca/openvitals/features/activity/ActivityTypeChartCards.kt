@@ -616,20 +616,26 @@ internal fun MetricDetailSectionBuilder.activityTypeChartSections(
     maxHeartRateBpm: Int?,
     unitFormatter: UnitFormatter,
     restingHeartRateBpm: Int? = null,
+    /** 136: the speed checked against the distance; the raw samples when null. */
+    movement: tech.mmarca.openvitals.domain.insights.MovementSeries? = null,
 ) {
     val cardModifier = Modifier.fillMaxWidth().padding(horizontal = Spacing.lg, vertical = Spacing.xs)
     val pauses = workout.segments.toSessionPauses()
     val heartRate = heartRateSamples.map { it.time to it.beatsPerMinute.toDouble() }
-    val speed = speedSamples.map { it.time to it.metersPerSecond }.ifEmpty {
+    val speed = (movement?.speed ?: speedSamples.map { it.time to it.metersPerSecond }).ifEmpty {
         splitSpeedTrace?.samples.orEmpty().map { it.time to it.metersPerSecond }
     }
     when (workoutTypeChart(workout.exerciseType)) {
         WorkoutTypeChart.PACE -> section(TypeChartSection) {
             // 88: whichever of the recorded speed, the route and the splits covers the session.
-            val pace = remember(speedSamples, workout.route, splitSpeedTrace) {
+            val pace = remember(speedSamples, workout.route, splitSpeedTrace, movement) {
                 bestPaceSeries(
                     listOf(
-                        paceFromSpeed(speedSamples),
+                        // 136: the cleaned speed that adds up to the distance, when there is one.
+                        movement?.speed?.filter { it.second > 0.0 }
+                            ?.map { it.first to 1_000.0 / it.second }
+                            ?.filter { it.second <= tech.mmarca.openvitals.domain.insights.SlowestPaceSecondsPerKm }
+                            ?: paceFromSpeed(speedSamples),
                         paceFromRoute(workout.route.points),
                         splitSpeedTrace?.samples.orEmpty()
                             .filter { it.metersPerSecond > 0.0 }

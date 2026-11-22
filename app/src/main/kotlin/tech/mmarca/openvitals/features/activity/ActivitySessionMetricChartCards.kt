@@ -46,22 +46,14 @@ import tech.mmarca.openvitals.ui.theme.StepsColor
 
 @Composable
 internal fun ActivitySpeedChartCard(
-    samples: List<SpeedSample>,
+    /** 136: the speed as [movementSeries] checked it: cleaned, outside the pauses, adding up to the distance. */
+    series: List<Pair<Instant, Double>>,
     sessionStart: Instant,
     sessionEnd: Instant,
     unitFormatter: UnitFormatter,
     modifier: Modifier = Modifier,
     pauses: List<SessionPause> = emptyList(),
 ) {
-    if (!hasMeaningfulSpeed(samples)) return
-    // 136: one app's readings inside the session, cleaned of single wild readings.
-    val series = remember(samples, sessionStart, sessionEnd) {
-        tech.mmarca.openvitals.domain.insights.sessionSeries(
-            samples.map { tech.mmarca.openvitals.domain.insights.SessionReading(it.time, it.metersPerSecond, it.source) },
-            sessionStart,
-            sessionEnd,
-        )
-    }
     if (series.size < 2) return
 
     ActivitySessionMetricChartCard(
@@ -225,6 +217,12 @@ internal fun ActivityElevationChartCard(
                     R.string.activity_elevation_source_gps
                 tech.mmarca.openvitals.features.activity.elevation.RouteElevationSource.GPS_MAPBOX_FAILED ->
                     R.string.activity_elevation_source_mapbox_failed
+                tech.mmarca.openvitals.features.activity.elevation.RouteElevationSource.TERRARIUM_TERRAIN ->
+                    R.string.activity_elevation_source_terrarium
+                tech.mmarca.openvitals.features.activity.elevation.RouteElevationSource.COMBINED_TERRAIN ->
+                    R.string.activity_elevation_source_combined
+                tech.mmarca.openvitals.features.activity.elevation.RouteElevationSource.GPS_TERRAIN_FAILED ->
+                    R.string.activity_elevation_source_terrain_failed
             },
         ),
         title = stringResource(R.string.metric_elevation),
@@ -251,12 +249,15 @@ internal fun ActivityCadenceChartCard(
     pauses: List<SessionPause> = emptyList(),
     /** 136: a run's cadence written per foot is counted in steps. */
     exerciseType: Int? = null,
+    /** 136: the step cadence as [movementSeries] checked it against the steps; read here when null. */
+    stepSeries: List<Pair<Instant, Double>>? = null,
 ) {
     val filtered = remember(samples, kind) { samples.filter { it.kind == kind } }
     // All zeros is a sensor that was not there, not a cadence.
     if (filtered.none { it.rate > 0.0 }) return
     // 136: one app's readings inside the session, cleaned, and a run's counted in steps.
-    val series = remember(filtered, sessionStart, sessionEnd, exerciseType) {
+    val series = remember(filtered, sessionStart, sessionEnd, exerciseType, stepSeries) {
+        if (kind == ActivityCadenceKind.STEPS && stepSeries != null) return@remember stepSeries
         val cleaned = tech.mmarca.openvitals.domain.insights.sessionSeries(
             filtered.map { tech.mmarca.openvitals.domain.insights.SessionReading(it.time, it.rate, it.source) },
             sessionStart,

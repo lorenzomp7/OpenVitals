@@ -362,7 +362,7 @@
     <string name="activity_workout_export_failed">Could not save workout file.</string>
     <string name="activity_workout_share_chooser_title">Share workout with</string>
     <string name="activity_workout_share_failed">Could not share workout file.</string>
-    <string name="activity_splits_laps_title">Laps</string>
+    <string name="activity_splits_laps_title">Splits · device laps</string>
     <string name="activity_splits_laps_body">Recorded by the device or app that saved this activity.</string>
     <string name="activity_splits_derived_title">Splits · every %1$s</string>
     <string name="activity_splits_estimated_title">Splits · estimated</string>
@@ -3969,8 +3969,8 @@
     <string name="settings_brand_colors_google">The four Google colours</string>
     <string name="settings_brand_colors_phone">The phone\'s colours</string>
     <string name="settings_brand_colors_hero">The colours of the three rings at the top</string>
-    <string name="settings_brand_colors_tiles">The colours of the first six tiles of the first page</string>
-    <string name="settings_brand_colors_hero_tiles">Both: the rings\' colours and the first six tiles\'</string>
+    <string name="settings_brand_colors_tiles">The colours of the home screen</string>
+    <string name="settings_brand_colors_hero_tiles">Both: the rings\' colours and the home screen\'s</string>
     <string name="settings_brand_animated_title">Animated</string>
     <string name="settings_brand_animated_body">On, the buttons and icons on the home screen move; off, they stand still in their colours. The OpenVitals toggle always moves.</string>
     <string name="activity_chart_recovery_estimate">Estimate</string>
@@ -3979,4 +3979,7 @@
     <string name="activity_elevation_source_mapbox">Altitude from Mapbox\'s terrain model.</string>
     <string name="activity_elevation_source_gps">Uncorrected GPS altitude, which drifts: sign in to Mapbox or import elevation tiles to correct it.</string>
     <string name="activity_elevation_source_mapbox_failed">GPS altitude, which drifts: Mapbox is signed in but its terrain could not be loaded (no connection, or Mapbox refused the request). Open the activity again to retry.</string>
+    <string name="activity_elevation_source_terrarium">Altitude from the open Terrarium terrain model (AWS Open Data, no account needed).</string>
+    <string name="activity_elevation_source_combined">Altitude from two terrain models, Mapbox and Terrarium, checked against each other.</string>
+    <string name="activity_elevation_source_terrain_failed">GPS altitude, which drifts: no terrain model could be loaded (no connection). Open the activity again to retry.</string>
 </resources>
