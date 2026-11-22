@@ -1,5 +1,11 @@
 {
   "mcpServers": {
+    "playwriter": {
+      "command": "bash",
+      "args": [
+        "scripts/ai/playwriter.sh"
+      ]
+    },
     "container-use": {
       "command": "bash",
       "args": [
