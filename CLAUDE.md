@@ -15,6 +15,7 @@ AGENTS.md (importato sopra) vale per tutti gli agenti; qui solo ciò che riguard
 
 ### Hook automatici (`.claude/settings.json`)
 
+- Gli hook partono tramite `.claude/hooks/run.sh`, che usa il primo Python 3.9+ disponibile (`python3`, `python` o `py`). Se Python manca vengono saltati senza bloccare.
 - Dopo ogni modifica un controllo rapido del file (sintassi, nomi non definiti, JSON/YAML validi). Se segnala un errore, correggilo subito.
 - Nessun test automatico a fine turno: la build Gradle è troppo lenta per un hook: esegui tu le verifiche indicate in AGENTS.md e in `docs/engineering/development.md`.
 
