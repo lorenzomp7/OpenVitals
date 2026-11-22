@@ -21,6 +21,7 @@ while [ $waited -le $MAX ]; do
       fi ;;
     *) echo "$NAME: nessuna installazione avviata. Avviala con: CLAUDE_SETUP_FORCE=1 bash .claude/hooks/session_start.sh"; exit 1 ;;
   esac
+  [ $((waited + 10)) -gt $MAX ] && break
   sleep 10; waited=$((waited + 10))
 done
 echo "$NAME: ancora in corso dopo ${2:-15} minuti; log: $STATE/$NAME.log"
