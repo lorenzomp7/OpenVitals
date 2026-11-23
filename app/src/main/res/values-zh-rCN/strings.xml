@@ -3903,7 +3903,7 @@
     <string name="settings_brand_colors_google">Google 四色</string>
     <string name="settings_brand_colors_phone">手机配色</string>
     <string name="settings_brand_colors_hero">顶部三个圆环的颜色</string>
-    <string name="settings_brand_colors_tiles">主屏幕的颜色</string>
+    <string name="settings_brand_colors_tiles">主屏幕磁贴的颜色</string>
     <string name="settings_brand_colors_hero_tiles">两者：圆环的颜色和主屏幕的颜色</string>
     <string name="settings_brand_animated_title">动态</string>
     <string name="settings_brand_animated_body">开启时，主屏幕上的按钮和图标会动；关闭时，它们保持各自颜色静止。OpenVitals 开关始终会动。</string>

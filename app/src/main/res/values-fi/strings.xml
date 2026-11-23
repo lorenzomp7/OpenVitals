@@ -3902,7 +3902,7 @@
     <string name="settings_brand_colors_google">Googlen neljä väriä</string>
     <string name="settings_brand_colors_phone">Puhelimen värit</string>
     <string name="settings_brand_colors_hero">Ylhäällä olevien kolmen renkaan värit</string>
-    <string name="settings_brand_colors_tiles">Aloitusnäytön värit</string>
+    <string name="settings_brand_colors_tiles">Aloitusnäytön ruutujen värit</string>
     <string name="settings_brand_colors_hero_tiles">Molemmat: renkaiden ja aloitusnäytön värit</string>
     <string name="settings_brand_animated_title">Animoidut</string>
     <string name="settings_brand_animated_body">Päällä: aloitusnäytön painikkeet ja kuvakkeet liikkuvat; pois: ne pysyvät paikallaan väreissään. OpenVitals-kytkin liikkuu aina.</string>

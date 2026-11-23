@@ -1,0 +1,5 @@
+const CACHE='openvitals-pwa-ac55efd7571d269a';
+const ASSETS=["./","./logo.png","./index.html","./app.js","./views.js","./state.js","./icons.js","./metrics.js","./android-catalog.js","./model.js","./style.css","./manifest.webmanifest","./icon-192.png"];
+self.addEventListener('install',event=>event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(ASSETS)).then(()=>self.skipWaiting())));
+self.addEventListener('activate',event=>event.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(key=>key.startsWith('openvitals-pwa-')&&key!==CACHE).map(key=>caches.delete(key)))).then(()=>self.clients.claim())));
+self.addEventListener('fetch',event=>{const req=event.request;if(req.method!=='GET'||new URL(req.url).origin!==self.location.origin)return;if(req.mode==='navigate'){event.respondWith(fetch(req).then(response=>{if(response.ok){const copy=response.clone();caches.open(CACHE).then(cache=>cache.put('./',copy));}return response;}).catch(()=>caches.match('./')));return;}event.respondWith(caches.match(req).then(cached=>cached||fetch(req)));});

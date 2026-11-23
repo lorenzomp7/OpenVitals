@@ -3902,7 +3902,7 @@
     <string name="settings_brand_colors_google">Google\'i neli värvi</string>
     <string name="settings_brand_colors_phone">Telefoni värvid</string>
     <string name="settings_brand_colors_hero">Kolme ülemise rõnga värvid</string>
-    <string name="settings_brand_colors_tiles">Avakuva värvid</string>
+    <string name="settings_brand_colors_tiles">Avakuva paanide värvid</string>
     <string name="settings_brand_colors_hero_tiles">Mõlemad: rõngaste ja avakuva värvid</string>
     <string name="settings_brand_animated_title">Animeeritud</string>
     <string name="settings_brand_animated_body">Sees: avakuva nupud ja ikoonid liiguvad; väljas: need seisavad oma värvides. OpenVitalsi lüliti liigub alati.</string>

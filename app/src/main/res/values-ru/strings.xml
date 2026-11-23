@@ -3969,7 +3969,7 @@
     <string name="settings_brand_colors_google">Четыре цвета Google</string>
     <string name="settings_brand_colors_phone">Цвета телефона</string>
     <string name="settings_brand_colors_hero">Цвета трёх колец вверху</string>
-    <string name="settings_brand_colors_tiles">Цвета главного экрана</string>
+    <string name="settings_brand_colors_tiles">Цвета плиток главного экрана</string>
     <string name="settings_brand_colors_hero_tiles">Оба: цвета колец и главного экрана</string>
     <string name="settings_brand_animated_title">Анимированные</string>
     <string name="settings_brand_animated_body">Вкл.: кнопки и значки на главном экране движутся; выкл.: они неподвижны в своих цветах. Переключатель OpenVitals движется всегда.</string>

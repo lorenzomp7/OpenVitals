@@ -3968,7 +3968,7 @@
     <string name="settings_brand_colors_google">Čtyři barvy Google</string>
     <string name="settings_brand_colors_phone">Barvy telefonu</string>
     <string name="settings_brand_colors_hero">Barvy tří kruhů nahoře</string>
-    <string name="settings_brand_colors_tiles">Barvy hlavní obrazovky</string>
+    <string name="settings_brand_colors_tiles">Barvy dlaždic hlavní obrazovky</string>
     <string name="settings_brand_colors_hero_tiles">Obojí: barvy kruhů a hlavní obrazovky</string>
     <string name="settings_brand_animated_title">Animované</string>
     <string name="settings_brand_animated_body">Zapnuto: tlačítka a ikony na hlavní obrazovce se pohybují; vypnuto: stojí ve svých barvách. Přepínač OpenVitals se pohybuje vždy.</string>

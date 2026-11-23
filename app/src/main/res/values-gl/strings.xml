@@ -3973,7 +3973,7 @@ Se Acceder a rutas de exercicio non aparece no diálogo de acceso, abre os axust
     <string name="settings_brand_colors_google">As catro cores de Google</string>
     <string name="settings_brand_colors_phone">As cores do teléfono</string>
     <string name="settings_brand_colors_hero">As cores dos tres aneis de arriba</string>
-    <string name="settings_brand_colors_tiles">As cores da pantalla principal</string>
+    <string name="settings_brand_colors_tiles">As cores dos recadros da pantalla principal</string>
     <string name="settings_brand_colors_hero_tiles">Ambos: as cores dos aneis e da pantalla principal</string>
     <string name="settings_brand_animated_title">Animados</string>
     <string name="settings_brand_animated_body">Activado: os botóns e iconas da pantalla principal móvense; desactivado: quedan quietos nas súas cores. O botón OpenVitals móvese sempre.</string>

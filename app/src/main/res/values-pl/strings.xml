@@ -3968,7 +3968,7 @@
     <string name="settings_brand_colors_google">Cztery kolory Google</string>
     <string name="settings_brand_colors_phone">Kolory telefonu</string>
     <string name="settings_brand_colors_hero">Kolory trzech pierścieni u góry</string>
-    <string name="settings_brand_colors_tiles">Kolory ekranu głównego</string>
+    <string name="settings_brand_colors_tiles">Kolory kafelków ekranu głównego</string>
     <string name="settings_brand_colors_hero_tiles">Oba: kolory pierścieni i ekranu głównego</string>
     <string name="settings_brand_animated_title">Animowane</string>
     <string name="settings_brand_animated_body">Włączone: przyciski i ikony na ekranie głównym się poruszają; wyłączone: stoją w swoich kolorach. Przełącznik OpenVitals porusza się zawsze.</string>

@@ -3929,7 +3929,7 @@
     <string name="settings_brand_colors_google">As quatro cores da Google</string>
     <string name="settings_brand_colors_phone">As cores do telemóvel</string>
     <string name="settings_brand_colors_hero">As cores dos três anéis no topo</string>
-    <string name="settings_brand_colors_tiles">As cores do ecrã principal</string>
+    <string name="settings_brand_colors_tiles">As cores dos mosaicos do ecrã principal</string>
     <string name="settings_brand_colors_hero_tiles">Ambos: as cores dos anéis e do ecrã principal</string>
     <string name="settings_brand_animated_title">Animados</string>
     <string name="settings_brand_animated_body">Ativado: os botões e ícones do ecrã principal mexem-se; desativado: ficam parados nas suas cores. O botão OpenVitals mexe-se sempre.</string>

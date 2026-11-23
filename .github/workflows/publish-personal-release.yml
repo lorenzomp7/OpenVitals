@@ -57,7 +57,7 @@ jobs:
           if (( NEXT < 1070400000 )); then NEXT=1070400000; fi
           echo "OPENVITALS_VERSION_CODE=$NEXT" >> "$GITHUB_ENV"
           echo "code=$NEXT" >> "$GITHUB_OUTPUT"
-          echo "OPENVITALS_VERSION_NAME=2.17.25-personal-claude" >> "$GITHUB_ENV"
+          echo "OPENVITALS_VERSION_NAME=2.17.26-personal-claude" >> "$GITHUB_ENV"
       - name: Build the signed personal update
         env:
           OPENVITALS_RELEASE_STORE_FILE: ${{ github.workspace }}/personal/personal.p12
@@ -138,18 +138,21 @@ jobs:
           cat > release-notes.md <<EOF
           Scarica **OpenVitals.apk** dagli allegati e aprilo sul telefono.
 
-          Nessuna modifica visibile nell'app: questa versione accompagna una pulizia del progetto (commenti del codice, documentazione e flussi di pubblicazione). Da ora restano pubblicate solo le ultime tre versioni.
+          Riquadri 2x2 della pagina principale:
+          - Il titolo (es. "Spinte in carrozzina", "Frequenza cardiaca a riposo") sta sotto l'anello, nell'apertura in basso, su tutta la larghezza del riquadro: niente più titolo minuscolo o con i puntini.
+          - L'anello è un po' più grande e i dettagli dentro hanno più spazio. Un dettaglio che non ci sta a una dimensione leggibile va su due righe invece di finire con "…" (SpO2, frequenza respiratoria, frequenza cardiaca media, mindfulness).
+          - Impostazioni: "I colori della schermata principale" diventa "I colori dei toggle della schermata principale".
 
           Questa versione aggiorna l'installazione personale compatibile di OpenVitals senza disinstallarla. La revisione ha superato la verifica completa (verify) in questa stessa esecuzione; package e firma coincidono con l'APK pubblicato precedente; installazione, aggiornamento, avvio e import screenshot sono verificati su Android 15.
 
-          Versione: **2.17.25-personal-claude**. Version code: **$OPENVITALS_VERSION_CODE**.
+          Versione: **2.17.26-personal-claude**. Version code: **$OPENVITALS_VERSION_CODE**.
           Sorgenti: https://github.com/$GH_REPO/commit/$GITHUB_SHA
           Compilazione e verifica aggiornamento: https://github.com/$GH_REPO/actions/runs/$GITHUB_RUN_ID
           EOF
           if gh release view "$TAG" > /dev/null 2>&1; then
             echo "Release already exists; keeping the published APK unchanged."
           else
-            gh release create "$TAG" release/OpenVitals.apk release/SHA256SUMS.txt --target "$GITHUB_SHA" --title "OpenVitals 2.17.25 · main_claude" --notes-file release-notes.md --latest
+            gh release create "$TAG" release/OpenVitals.apk release/SHA256SUMS.txt --target "$GITHUB_SHA" --title "OpenVitals 2.17.26 · main_claude" --notes-file release-notes.md --latest
           fi
       - uses: actions/checkout@v5
         with:

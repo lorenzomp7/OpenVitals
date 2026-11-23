@@ -3970,7 +3970,7 @@
     <string name="settings_brand_colors_google">Google の 4 色</string>
     <string name="settings_brand_colors_phone">スマートフォンの色</string>
     <string name="settings_brand_colors_hero">上部の 3 つのリングの色</string>
-    <string name="settings_brand_colors_tiles">ホーム画面の色</string>
+    <string name="settings_brand_colors_tiles">ホーム画面のタイルの色</string>
     <string name="settings_brand_colors_hero_tiles">両方：リングの色とホーム画面の色</string>
     <string name="settings_brand_animated_title">アニメーション</string>
     <string name="settings_brand_animated_body">オン：ホーム画面のボタンとアイコンが動きます。オフ：色はそのままで静止します。OpenVitals トグルは常に動きます。</string>

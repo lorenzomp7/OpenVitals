@@ -3902,7 +3902,7 @@
     <string name="settings_brand_colors_google">Die vier Google-Farben</string>
     <string name="settings_brand_colors_phone">Die Farben des Telefons</string>
     <string name="settings_brand_colors_hero">Die Farben der drei Ringe oben</string>
-    <string name="settings_brand_colors_tiles">Die Farben des Startbildschirms</string>
+    <string name="settings_brand_colors_tiles">Die Farben der Kacheln auf dem Startbildschirm</string>
     <string name="settings_brand_colors_hero_tiles">Beides: die Farben der Ringe und des Startbildschirms</string>
     <string name="settings_brand_animated_title">Animiert</string>
     <string name="settings_brand_animated_body">An: Die Schaltflächen und Symbole auf dem Startbildschirm bewegen sich; aus: Sie stehen still in ihren Farben. Der OpenVitals-Schalter bewegt sich immer.</string>

@@ -3971,7 +3971,7 @@
     <string name="settings_brand_colors_google">The four Google colours</string>
     <string name="settings_brand_colors_phone">The phone\'s colours</string>
     <string name="settings_brand_colors_hero">The colours of the three rings at the top</string>
-    <string name="settings_brand_colors_tiles">The colours of the home screen</string>
+    <string name="settings_brand_colors_tiles">The colours of the home screen toggles</string>
     <string name="settings_brand_colors_hero_tiles">Both: the rings\' colours and the home screen\'s</string>
     <string name="settings_brand_animated_title">Animated</string>
     <string name="settings_brand_animated_body">On, the buttons and icons on the home screen move; off, they stand still in their colours. The OpenVitals toggle always moves.</string>
