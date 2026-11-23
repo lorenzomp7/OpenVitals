@@ -247,8 +247,19 @@
         <provider android:authorities="app.comaps.fdroid.debug.provider.navigation" />
         <provider android:authorities="app.comaps.google.debug.provider.navigation" />
         <provider android:authorities="app.comaps.huawei.debug.provider.navigation" />
+        <!-- The apps that write to Health Connect. Every Health Connect app declares one of
+             these two screens: the permissions rationale (Android 13 and older) or, from
+             Android 14, an activity alias for VIEW_PERMISSION_USAGE in the HEALTH_PERMISSIONS
+             category. Matching them makes those apps visible, so the diagnostics can read their
+             names, icons and requested health permissions. Without the second one an app that
+             declares only the Android 14 alias stays invisible and shows as the last
+             segment of its package name. -->
         <intent>
             <action android:name="androidx.health.ACTION_SHOW_PERMISSIONS_RATIONALE" />
+        </intent>
+        <intent>
+            <action android:name="android.intent.action.VIEW_PERMISSION_USAGE" />
+            <category android:name="android.intent.category.HEALTH_PERMISSIONS" />
         </intent>
         <intent>
             <action android:name="android.health.connect.action.MANAGE_HEALTH_PERMISSIONS" />

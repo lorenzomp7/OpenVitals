@@ -2247,8 +2247,18 @@
     <string name="settings_reminder_test_body">Сразу отправляет уведомление-напоминание, точно так же, как запланированное срабатывание.</string>
     <string name="settings_reminder_test_show_hydration">Показывать напоминание о гидратации</string>
     <string name="settings_hc_sources_title">Источники Health Connect</string>
-    <string name="settings_hc_sources_body">Приложения, которые добавляли данные о частоте сердечных сокращений и сне за последние 7 дней.</string>
+    <string name="settings_hc_sources_body">Приложения, которые добавляли данные о частоте сердечных сокращений и сне за последние 7 дней, и типы данных, которые каждое приложение заявляет для записи.</string>
     <string name="settings_hc_sources_empty">За последние 7 дней источники данных не найдены.</string>
+    <plurals name="settings_hc_sources_records">
+        <item quantity="one">%1$d запись - %2$s - %3$s</item>
+        <item quantity="few">%1$d записи - %2$s - %3$s</item>
+        <item quantity="many">%1$d записей - %2$s - %3$s</item>
+        <item quantity="other">%1$d записи - %2$s - %3$s</item>
+    </plurals>
+    <string name="settings_hc_sources_no_data">Нет данных о пульсе и сне за последние 7 дней</string>
+    <string name="settings_hc_sources_declares">Заявляет запись: %1$s</string>
+    <string name="settings_hc_sources_declared_not_seen">Заявлено, но не поступало 7 дней: %1$s</string>
+    <string name="settings_hc_sources_declared_unknown">Не установлено на этом телефоне: заявленные типы неизвестны</string>
     <string name="settings_body_profile_title">Профиль тела</string>
     <string name="settings_body_profile_body">Возраст, вес и частота сердечных сокращений используются для персонализации оценок энергии тела и кофеина. Все поля необязательны.</string>
     <string name="settings_body_profile_weight">Вес</string>

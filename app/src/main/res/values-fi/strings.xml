@@ -2296,8 +2296,16 @@
     <string name="settings_reminder_test_body">Lähettää muistutusilmoituksen heti, täsmälleen kuten ajastettu laukaisu tekisi.</string>
     <string name="settings_reminder_test_show_hydration">Näytä nesteytysmuistutus</string>
     <string name="settings_hc_sources_title">Health Connect -lähteet</string>
-    <string name="settings_hc_sources_body">Sovellukset, jotka toimittivat syke- ja unitietoja viimeisten 7 päivän aikana.</string>
+    <string name="settings_hc_sources_body">Sovellukset, jotka toimittivat syke- ja unitietoja viimeisten 7 päivän aikana, sekä tietotyypit, joita kukin sovellus ilmoittaa kirjoittavansa.</string>
     <string name="settings_hc_sources_empty">Viimeisten 7 päivän aikana ei löytynyt tietoja toimittaneita lähteitä.</string>
+    <plurals name="settings_hc_sources_records">
+        <item quantity="one">%1$d merkintä - %2$s - %3$s</item>
+        <item quantity="other">%1$d merkintää - %2$s - %3$s</item>
+    </plurals>
+    <string name="settings_hc_sources_no_data">Ei syke- tai unitietoja viimeisten 7 päivän aikana</string>
+    <string name="settings_hc_sources_declares">Ilmoittaa kirjoittavansa: %1$s</string>
+    <string name="settings_hc_sources_declared_not_seen">Ilmoitettu, mutta ei saapunut 7 päivään: %1$s</string>
+    <string name="settings_hc_sources_declared_unknown">Ei asennettu tähän puhelimeen: ilmoitetut tyypit tuntemattomia</string>
     <string name="settings_body_profile_title">Kehoprofiili</string>
     <string name="settings_body_profile_body">Ikä, paino ja syke yksilöivät kehon energian ja kofeiinin arviot. Kaikki kentät ovat valinnaisia.</string>
     <string name="settings_body_profile_weight">Paino</string>

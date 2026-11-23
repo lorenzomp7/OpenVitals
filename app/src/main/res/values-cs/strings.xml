@@ -1954,8 +1954,18 @@
     <string name="settings_reminder_test_body">Ihned odešle oznámení připomínky, přesně jako naplánované spuštění.</string>
     <string name="settings_reminder_test_show_hydration">Zobrazit připomenutí hydratace</string>
     <string name="settings_hc_sources_title">Zdroje Health Connect</string>
-    <string name="settings_hc_sources_body">Aplikace, které za posledních 7 dní přispěly daty o srdečním tepu a spánku.</string>
+    <string name="settings_hc_sources_body">Aplikace, které za posledních 7 dní přispěly daty o srdečním tepu a spánku, s typy dat, které podle svých deklarací zapisují.</string>
     <string name="settings_hc_sources_empty">Za posledních 7 dní nebyly nalezeny žádné přispívající zdroje.</string>
+    <plurals name="settings_hc_sources_records">
+        <item quantity="one">%1$d záznam - %2$s - %3$s</item>
+        <item quantity="few">%1$d záznamy - %2$s - %3$s</item>
+        <item quantity="many">%1$d záznamu - %2$s - %3$s</item>
+        <item quantity="other">%1$d záznamů - %2$s - %3$s</item>
+    </plurals>
+    <string name="settings_hc_sources_no_data">Za posledních 7 dní žádná data o tepu ani spánku</string>
+    <string name="settings_hc_sources_declares">Deklaruje zápis: %1$s</string>
+    <string name="settings_hc_sources_declared_not_seen">Deklarováno, ale za 7 dní nepřišlo: %1$s</string>
+    <string name="settings_hc_sources_declared_unknown">Není nainstalováno v tomto telefonu: deklarované typy nejsou známé</string>
     <string name="settings_body_profile_title">Tělesný profil</string>
     <string name="settings_body_profile_body">Věk, hmotnost a srdeční tep personalizují odhady tělesné energie a kofeinu. Všechna pole jsou volitelná.</string>
     <string name="settings_body_profile_weight">Hmotnost</string>

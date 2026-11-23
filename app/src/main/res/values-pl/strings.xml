@@ -2291,8 +2291,18 @@
     <string name="settings_reminder_test_body">Natychmiast publikuje powiadomienie z przypomnieniem, dokładnie tak jak zaplanowane wyzwolenie.</string>
     <string name="settings_reminder_test_show_hydration">Pokaż przypomnienie o nawodnieniu</string>
     <string name="settings_hc_sources_title">Źródła Health Connect</string>
-    <string name="settings_hc_sources_body">Aplikacje, które dostarczyły dane o tętnie i śnie w ciągu ostatnich 7 dni.</string>
+    <string name="settings_hc_sources_body">Aplikacje, które dostarczyły dane o tętnie i śnie w ciągu ostatnich 7 dni, z typami danych, które każda aplikacja deklaruje zapisywać.</string>
     <string name="settings_hc_sources_empty">Nie znaleziono źródeł danych z ostatnich 7 dni.</string>
+    <plurals name="settings_hc_sources_records">
+        <item quantity="one">%1$d wpis - %2$s - %3$s</item>
+        <item quantity="few">%1$d wpisy - %2$s - %3$s</item>
+        <item quantity="many">%1$d wpisów - %2$s - %3$s</item>
+        <item quantity="other">%1$d wpisu - %2$s - %3$s</item>
+    </plurals>
+    <string name="settings_hc_sources_no_data">Brak danych o tętnie i śnie w ciągu ostatnich 7 dni</string>
+    <string name="settings_hc_sources_declares">Deklaruje zapis: %1$s</string>
+    <string name="settings_hc_sources_declared_not_seen">Zadeklarowane, ale nie dotarły od 7 dni: %1$s</string>
+    <string name="settings_hc_sources_declared_unknown">Nie zainstalowano na tym telefonie: zadeklarowane typy nieznane</string>
     <string name="settings_body_profile_title">Profil ciała</string>
     <string name="settings_body_profile_body">Wiek, waga i tętno personalizują szacunki energii ciała i kofeiny. Wszystkie pola są opcjonalne.</string>
     <string name="settings_body_profile_weight">Waga</string>

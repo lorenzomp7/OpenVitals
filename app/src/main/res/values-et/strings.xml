@@ -2419,8 +2419,16 @@
     <string name="settings_reminder_test_body">Saadab meeldetuletuse teavituse kohe, täpselt nagu ajastatud käivitus.</string>
     <string name="settings_reminder_test_show_hydration">Näita joogimeeldetuletust</string>
     <string name="settings_hc_sources_title">Health Connecti allikad</string>
-    <string name="settings_hc_sources_body">Rakendused, mis on viimase 7 päeva jooksul lisanud pulsi- ja uneandmeid.</string>
+    <string name="settings_hc_sources_body">Rakendused, mis on viimase 7 päeva jooksul lisanud pulsi- ja uneandmeid, koos andmetüüpidega, mida iga rakendus deklareerib kirjutavat.</string>
     <string name="settings_hc_sources_empty">Viimase 7 päeva jooksul ei leitud ühtegi panustanud allikat.</string>
+    <plurals name="settings_hc_sources_records">
+        <item quantity="one">%1$d kirje - %2$s - %3$s</item>
+        <item quantity="other">%1$d kirjet - %2$s - %3$s</item>
+    </plurals>
+    <string name="settings_hc_sources_no_data">Viimase 7 päeva jooksul pole pulsi- ega uneandmeid</string>
+    <string name="settings_hc_sources_declares">Deklareerib kirjutamist: %1$s</string>
+    <string name="settings_hc_sources_declared_not_seen">Deklareeritud, kuid 7 päeva jooksul pole saabunud: %1$s</string>
+    <string name="settings_hc_sources_declared_unknown">Selles telefonis pole installitud: deklareeritud tüübid pole teada</string>
     <string name="settings_body_profile_height">Pikkus</string>
     <string name="settings_body_profile_measured_label">%1$s (mõõdetud)</string>
     <string name="settings_apple_health_import_progress_with_scan_percent">%1$d%%. %2$s. Skaneeritud %3$d/%4$d elementi. Valitud %5$d/%6$d kirjet, imporditud %7$d.</string>

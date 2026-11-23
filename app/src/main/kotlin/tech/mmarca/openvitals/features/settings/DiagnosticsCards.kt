@@ -17,6 +17,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import java.time.ZoneId
@@ -129,22 +130,78 @@ internal fun HealthConnectSourcesCard(
             } else {
                 sources.forEach { source ->
                     Spacer(Modifier.widthIn(min = 0.dp))
-                    Column(modifier = Modifier.padding(top = 12.dp)) {
-                        Text(
-                            text = source.displayName,
-                            style = MaterialTheme.typography.bodyMedium,
-                        )
-                        Text(
-                            text = "${source.recordCount} records - ${source.metrics.sorted().joinToString(", ")} - ${
-                                lastSeenFormatter.format(source.lastSeen)
-                            }",
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                            modifier = Modifier.padding(top = 2.dp),
-                        )
-                    }
+                    HealthConnectSourceRow(
+                        source = source,
+                        checked = CHECKED_METRICS,
+                        lastSeenFormatter = lastSeenFormatter,
+                    )
                 }
             }
+        }
+    }
+}
+
+/** The metrics this card reads; a declared one of these that never arrived is called out. */
+private val CHECKED_METRICS = setOf("heart rate", "sleep")
+
+@Composable
+private fun HealthConnectSourceRow(
+    source: HealthConnectSource,
+    checked: Set<String>,
+    lastSeenFormatter: DateTimeFormatter,
+) {
+    val secondary = MaterialTheme.colorScheme.onSurfaceVariant
+    Column(modifier = Modifier.padding(top = 12.dp)) {
+        Text(
+            text = source.displayName,
+            style = MaterialTheme.typography.bodyMedium,
+        )
+        val lastSeen = source.lastSeen
+        Text(
+            text = if (lastSeen == null) {
+                stringResource(R.string.settings_hc_sources_no_data)
+            } else {
+                pluralStringResource(
+                    R.plurals.settings_hc_sources_records,
+                    source.recordCount,
+                    source.recordCount,
+                    source.metrics.sorted().joinToString(", "),
+                    lastSeenFormatter.format(lastSeen),
+                )
+            },
+            style = MaterialTheme.typography.bodySmall,
+            color = secondary,
+            modifier = Modifier.padding(top = 2.dp),
+        )
+        val declared = source.declaredWrites
+        when {
+            declared == null && source.packageName != HealthConnectSource.UNKNOWN_PACKAGE -> Text(
+                text = stringResource(R.string.settings_hc_sources_declared_unknown),
+                style = MaterialTheme.typography.bodySmall,
+                color = secondary,
+                modifier = Modifier.padding(top = 2.dp),
+            )
+            !declared.isNullOrEmpty() -> Text(
+                text = stringResource(
+                    R.string.settings_hc_sources_declares,
+                    declared.sorted().joinToString(", "),
+                ),
+                style = MaterialTheme.typography.bodySmall,
+                color = secondary,
+                modifier = Modifier.padding(top = 2.dp),
+            )
+        }
+        val notSeen = remember(source, checked) { source.declaredNotSeen(checked) }
+        if (notSeen.isNotEmpty()) {
+            Text(
+                text = stringResource(
+                    R.string.settings_hc_sources_declared_not_seen,
+                    notSeen.sorted().joinToString(", "),
+                ),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.error,
+                modifier = Modifier.padding(top = 2.dp),
+            )
         }
     }
 }
