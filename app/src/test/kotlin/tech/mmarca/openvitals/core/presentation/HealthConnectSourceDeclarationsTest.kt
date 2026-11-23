@@ -6,7 +6,6 @@ import android.content.pm.ActivityInfo
 import android.content.pm.PackageInfo
 import android.content.pm.PackageManager
 import android.content.pm.ResolveInfo
-import io.mockk.anyConstructed
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.mockkConstructor
