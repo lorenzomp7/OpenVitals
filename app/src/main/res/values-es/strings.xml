@@ -3935,7 +3935,7 @@
     <string name="settings_brand_colors_google">Los cuatro colores de Google</string>
     <string name="settings_brand_colors_phone">Los colores del teléfono</string>
     <string name="settings_brand_colors_hero">Los colores de los tres anillos de arriba</string>
-    <string name="settings_brand_colors_tiles">Los colores de la pantalla principal</string>
+    <string name="settings_brand_colors_tiles">Los colores de los recuadros de la pantalla principal</string>
     <string name="settings_brand_colors_hero_tiles">Ambos: los colores de los anillos y de la pantalla principal</string>
     <string name="settings_brand_animated_title">Animados</string>
     <string name="settings_brand_animated_body">Activado: los botones e iconos de la pantalla principal se mueven; desactivado: se quedan quietos en sus colores. El botón OpenVitals siempre se mueve.</string>

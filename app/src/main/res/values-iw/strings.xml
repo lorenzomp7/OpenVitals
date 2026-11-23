@@ -240,7 +240,7 @@
     <string name="settings_brand_colors_google">ארבעת הצבעים של Google</string>
     <string name="settings_brand_colors_phone">צבעי הטלפון</string>
     <string name="settings_brand_colors_hero">צבעי שלוש הטבעות למעלה</string>
-    <string name="settings_brand_colors_tiles">צבעי המסך הראשי</string>
+    <string name="settings_brand_colors_tiles">צבעי האריחים במסך הראשי</string>
     <string name="settings_brand_colors_hero_tiles">שניהם: צבעי הטבעות וצבעי המסך הראשי</string>
     <string name="settings_brand_animated_title">מונפשים</string>
     <string name="settings_brand_animated_body">מופעל: הכפתורים והסמלים במסך הראשי זזים; כבוי: הם נשארים במקום בצבעיהם. מתג OpenVitals זז תמיד.</string>

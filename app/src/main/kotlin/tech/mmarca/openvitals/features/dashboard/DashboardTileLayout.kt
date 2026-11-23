@@ -336,10 +336,10 @@ private fun DashboardLargeTile(ring: DashboardHeroRing, details: List<String>) {
     }
 }
 
-private val DashboardLargeRingStroke = 11.dp
+private val DashboardLargeRingStroke = 10.dp
 
 /** The same room on every side, so the ring sits in the middle of its tile. */
-private val DashboardLargeTilePadding = 12.dp
+private val DashboardLargeTilePadding = 10.dp
 
 /** Slides a tile from its old place to its new one when the grid reflows, instead of jumping. */
 internal fun Modifier.animateTilePlacement(): Modifier = composed {

@@ -589,7 +589,7 @@
     <string name="settings_brand_colors_google">Τα τέσσερα χρώματα της Google</string>
     <string name="settings_brand_colors_phone">Τα χρώματα του τηλεφώνου</string>
     <string name="settings_brand_colors_hero">Τα χρώματα των τριών δακτυλίων επάνω</string>
-    <string name="settings_brand_colors_tiles">Τα χρώματα της αρχικής οθόνης</string>
+    <string name="settings_brand_colors_tiles">Τα χρώματα των πλακιδίων της αρχικής οθόνης</string>
     <string name="settings_brand_colors_hero_tiles">Και τα δύο: τα χρώματα των δακτυλίων και της αρχικής οθόνης</string>
     <string name="settings_brand_animated_title">Κινούμενα</string>
     <string name="settings_brand_animated_body">Ενεργό: τα κουμπιά και τα εικονίδια της αρχικής οθόνης κινούνται· ανενεργό: μένουν ακίνητα στα χρώματά τους. Ο διακόπτης OpenVitals κινείται πάντα.</string>
