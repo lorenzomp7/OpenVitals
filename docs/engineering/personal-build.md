@@ -12,12 +12,12 @@ The manual `personal-screenshots` workflow reuses `verify`; it never rewrites a 
 
 ## Release manifest check
 
-Before the emulator checks, `publish-personal-release` decodes the new APK's merged manifest with `apkanalyzer` and runs `scripts/check-release-manifest.py` against `personal/release-manifest.txt`: every requested permission and every exported activity, activity alias, service, receiver and provider, one per line. A permission or exported component the list does not have, or a listed one that is gone, fails the release, and the log shows what changed since the published APK. The signing certificate is compared separately, with `apksigner`, in the step before.
+Before the emulator checks, `publish-personal-release` decodes the new APK's merged manifest with `apkanalyzer` and runs `scripts/check-release-manifest.py` against `.github/personal-release-manifest.txt`: every requested permission and every exported activity, activity alias, service, receiver and provider, one per line. A permission or exported component the list does not have, or a listed one that is gone, fails the release, and the log shows what changed since the published APK. The signing certificate is compared separately, with `apksigner`, in the step before.
 
 When the change is intended (a new Health Connect type, a new widget receiver, a dependency that adds a component), regenerate the list from the built APK and commit it with the reason:
 
 ```bash
-python3 scripts/check-release-manifest.py --apk app/build/outputs/apk/debug/app-debug.apk --inventory personal/release-manifest.txt --write
+python3 scripts/check-release-manifest.py --apk app/build/outputs/apk/debug/app-debug.apk --inventory .github/personal-release-manifest.txt --write
 ```
 
 For a deeper look at an APK (classes, resources, signature details) or at the source apps on the phone, [REA](https://github.com/morluto/rea) (`inspect_android_package`, `inspect_apk_signature`, `pull_adb_package`) reads the same decoded manifest; it runs locally and is not part of the pipeline. The APKs of other apps stay out of the repository.

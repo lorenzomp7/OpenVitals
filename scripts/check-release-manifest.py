@@ -9,7 +9,7 @@ what the app may declare, and changing it is a reviewed commit, not a side effec
 dependency update. The signing certificate is checked separately, by apksigner, in
 publish-personal-release.
 
-  scripts/check-release-manifest.py --apk app.apk --inventory personal/release-manifest.txt
+  scripts/check-release-manifest.py --apk app.apk --inventory .github/personal-release-manifest.txt
   scripts/check-release-manifest.py --apk app.apk --previous-apk old.apk --inventory ...
   scripts/check-release-manifest.py --apk app.apk --inventory ... --write
 
@@ -88,6 +88,8 @@ def inventory(manifest_xml: str) -> list[str]:
 
 
 def read_inventory(path: pathlib.Path) -> list[str]:
+    if not path.is_file():
+        sys.exit(f"{path} is missing: generate it with --write and commit it (it must not sit in a git-ignored folder).")
     lines = path.read_text(encoding="utf-8").splitlines()
     return sorted({line.strip() for line in lines if line.strip() and not line.startswith("#")})
 

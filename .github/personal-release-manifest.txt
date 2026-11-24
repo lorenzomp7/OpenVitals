@@ -1,0 +1,157 @@
+# What the personal release APK declares: every requested permission and every exported
+# component of the merged manifest. scripts/check-release-manifest.py fails a release
+# that differs from this list. Regenerate it with --write and review the diff: a new
+# line here is a new permission or a new entry point into the app.
+exported activity androidx.activity.ComponentActivity
+exported activity androidx.compose.ui.tooling.PreviewActivity
+exported activity tech.mmarca.openvitals.MainActivity
+exported activity tech.mmarca.openvitals.PermissionsRationaleActivity
+exported activity tech.mmarca.openvitals.features.homewidgets.HomeMetricWidgetConfigurationActivity
+exported activity tech.mmarca.openvitals.features.homewidgets.HomeQuickBeverageWidgetConfigurationActivity
+exported activity-alias tech.mmarca.openvitals.OnboardingActivity
+exported activity-alias tech.mmarca.openvitals.UAndAboveOnboardingActivity
+exported activity-alias tech.mmarca.openvitals.ViewPermissionUsageActivity
+exported receiver androidx.profileinstaller.ProfileInstallReceiver
+exported receiver androidx.work.impl.diagnostics.DiagnosticsReceiver
+exported receiver tech.mmarca.openvitals.features.cycle.reminders.CycleReminderBootReceiver
+exported receiver tech.mmarca.openvitals.features.homewidgets.HomeBodyEnergyWidgetReceiver
+exported receiver tech.mmarca.openvitals.features.homewidgets.HomeCycleWidgetReceiver
+exported receiver tech.mmarca.openvitals.features.homewidgets.HomeDailyReadinessWidgetReceiver
+exported receiver tech.mmarca.openvitals.features.homewidgets.HomeMetricWidgetReceiver
+exported receiver tech.mmarca.openvitals.features.homewidgets.HomeQuickBeverageOneTapWidgetReceiver
+exported receiver tech.mmarca.openvitals.features.homewidgets.HomeQuickBeverageWidgetReceiver
+exported receiver tech.mmarca.openvitals.features.homewidgets.HomeTodayVitalsWidgetReceiver
+exported receiver tech.mmarca.openvitals.features.hydration.reminders.HydrationReminderBootReceiver
+exported receiver tech.mmarca.openvitals.features.mindfulness.reminders.MindfulnessReminderBootReceiver
+exported service androidx.glance.appwidget.GlanceRemoteViewsService
+exported service androidx.health.platform.client.impl.sdkservice.HealthDataSdkService
+exported service androidx.work.impl.background.systemjob.SystemJobService
+permission android.permission.ACCESS_COARSE_LOCATION
+permission android.permission.ACCESS_FINE_LOCATION
+permission android.permission.ACCESS_NETWORK_STATE
+permission android.permission.ACTIVITY_RECOGNITION
+permission android.permission.BLUETOOTH
+permission android.permission.BLUETOOTH_ADMIN
+permission android.permission.BLUETOOTH_ADVERTISE
+permission android.permission.BLUETOOTH_CONNECT
+permission android.permission.BLUETOOTH_SCAN
+permission android.permission.CAMERA
+permission android.permission.FOREGROUND_SERVICE
+permission android.permission.FOREGROUND_SERVICE_CONNECTED_DEVICE
+permission android.permission.FOREGROUND_SERVICE_DATA_SYNC
+permission android.permission.FOREGROUND_SERVICE_HEALTH
+permission android.permission.FOREGROUND_SERVICE_LOCATION
+permission android.permission.HIGH_SAMPLING_RATE_SENSORS
+permission android.permission.INTERNET
+permission android.permission.POST_NOTIFICATIONS
+permission android.permission.RECEIVE_BOOT_COMPLETED
+permission android.permission.VIBRATE
+permission android.permission.WAKE_LOCK
+permission android.permission.health.READ_ACTIVE_CALORIES_BURNED
+permission android.permission.health.READ_BASAL_BODY_TEMPERATURE
+permission android.permission.health.READ_BASAL_METABOLIC_RATE
+permission android.permission.health.READ_BLOOD_GLUCOSE
+permission android.permission.health.READ_BLOOD_PRESSURE
+permission android.permission.health.READ_BODY_FAT
+permission android.permission.health.READ_BODY_TEMPERATURE
+permission android.permission.health.READ_BODY_WATER_MASS
+permission android.permission.health.READ_BONE_MASS
+permission android.permission.health.READ_CERVICAL_MUCUS
+permission android.permission.health.READ_CYCLING_PEDALING_CADENCE
+permission android.permission.health.READ_DISTANCE
+permission android.permission.health.READ_ELEVATION_GAINED
+permission android.permission.health.READ_EXERCISE
+permission android.permission.health.READ_EXERCISE_ROUTES
+permission android.permission.health.READ_FLOORS_CLIMBED
+permission android.permission.health.READ_HEALTH_DATA_HISTORY
+permission android.permission.health.READ_HEALTH_DATA_IN_BACKGROUND
+permission android.permission.health.READ_HEART_RATE
+permission android.permission.health.READ_HEART_RATE_VARIABILITY
+permission android.permission.health.READ_HEIGHT
+permission android.permission.health.READ_HYDRATION
+permission android.permission.health.READ_INTERMENSTRUAL_BLEEDING
+permission android.permission.health.READ_LEAN_BODY_MASS
+permission android.permission.health.READ_MEDICAL_DATA_ALLERGIES_INTOLERANCES
+permission android.permission.health.READ_MEDICAL_DATA_CONDITIONS
+permission android.permission.health.READ_MEDICAL_DATA_LABORATORY_RESULTS
+permission android.permission.health.READ_MEDICAL_DATA_MEDICATIONS
+permission android.permission.health.READ_MEDICAL_DATA_PERSONAL_DETAILS
+permission android.permission.health.READ_MEDICAL_DATA_PRACTITIONER_DETAILS
+permission android.permission.health.READ_MEDICAL_DATA_PREGNANCY
+permission android.permission.health.READ_MEDICAL_DATA_PROCEDURES
+permission android.permission.health.READ_MEDICAL_DATA_SOCIAL_HISTORY
+permission android.permission.health.READ_MEDICAL_DATA_VACCINES
+permission android.permission.health.READ_MEDICAL_DATA_VISITS
+permission android.permission.health.READ_MEDICAL_DATA_VITAL_SIGNS
+permission android.permission.health.READ_MENSTRUATION
+permission android.permission.health.READ_MINDFULNESS
+permission android.permission.health.READ_NUTRITION
+permission android.permission.health.READ_OVULATION_TEST
+permission android.permission.health.READ_OXYGEN_SATURATION
+permission android.permission.health.READ_PLANNED_EXERCISE
+permission android.permission.health.READ_POWER
+permission android.permission.health.READ_RESPIRATORY_RATE
+permission android.permission.health.READ_RESTING_HEART_RATE
+permission android.permission.health.READ_SEXUAL_ACTIVITY
+permission android.permission.health.READ_SKIN_TEMPERATURE
+permission android.permission.health.READ_SLEEP
+permission android.permission.health.READ_SPEED
+permission android.permission.health.READ_STEPS
+permission android.permission.health.READ_STEPS_CADENCE
+permission android.permission.health.READ_TOTAL_CALORIES_BURNED
+permission android.permission.health.READ_VO2_MAX
+permission android.permission.health.READ_WEIGHT
+permission android.permission.health.READ_WHEELCHAIR_PUSHES
+permission android.permission.health.WRITE_ACTIVE_CALORIES_BURNED
+permission android.permission.health.WRITE_BASAL_BODY_TEMPERATURE
+permission android.permission.health.WRITE_BASAL_METABOLIC_RATE
+permission android.permission.health.WRITE_BLOOD_GLUCOSE
+permission android.permission.health.WRITE_BLOOD_PRESSURE
+permission android.permission.health.WRITE_BODY_FAT
+permission android.permission.health.WRITE_BODY_TEMPERATURE
+permission android.permission.health.WRITE_BODY_WATER_MASS
+permission android.permission.health.WRITE_BONE_MASS
+permission android.permission.health.WRITE_CERVICAL_MUCUS
+permission android.permission.health.WRITE_CYCLING_PEDALING_CADENCE
+permission android.permission.health.WRITE_DISTANCE
+permission android.permission.health.WRITE_ELEVATION_GAINED
+permission android.permission.health.WRITE_EXERCISE
+permission android.permission.health.WRITE_EXERCISE_ROUTE
+permission android.permission.health.WRITE_FLOORS_CLIMBED
+permission android.permission.health.WRITE_HEART_RATE
+permission android.permission.health.WRITE_HEART_RATE_VARIABILITY
+permission android.permission.health.WRITE_HEIGHT
+permission android.permission.health.WRITE_HYDRATION
+permission android.permission.health.WRITE_INTERMENSTRUAL_BLEEDING
+permission android.permission.health.WRITE_LEAN_BODY_MASS
+permission android.permission.health.WRITE_MEDICAL_DATA
+permission android.permission.health.WRITE_MENSTRUATION
+permission android.permission.health.WRITE_MINDFULNESS
+permission android.permission.health.WRITE_NUTRITION
+permission android.permission.health.WRITE_OVULATION_TEST
+permission android.permission.health.WRITE_OXYGEN_SATURATION
+permission android.permission.health.WRITE_PLANNED_EXERCISE
+permission android.permission.health.WRITE_POWER
+permission android.permission.health.WRITE_RESPIRATORY_RATE
+permission android.permission.health.WRITE_RESTING_HEART_RATE
+permission android.permission.health.WRITE_SEXUAL_ACTIVITY
+permission android.permission.health.WRITE_SLEEP
+permission android.permission.health.WRITE_SPEED
+permission android.permission.health.WRITE_STEPS
+permission android.permission.health.WRITE_STEPS_CADENCE
+permission android.permission.health.WRITE_TOTAL_CALORIES_BURNED
+permission android.permission.health.WRITE_VO2_MAX
+permission android.permission.health.WRITE_WEIGHT
+permission android.permission.health.WRITE_WHEELCHAIR_PUSHES
+permission app.comaps.debug.permission.READ_NAVIGATION_DATA
+permission app.comaps.fdroid.debug.permission.READ_NAVIGATION_DATA
+permission app.comaps.fdroid.permission.READ_NAVIGATION_DATA
+permission app.comaps.google.debug.permission.READ_NAVIGATION_DATA
+permission app.comaps.google.permission.READ_NAVIGATION_DATA
+permission app.comaps.huawei.debug.permission.READ_NAVIGATION_DATA
+permission app.comaps.huawei.permission.READ_NAVIGATION_DATA
+permission app.comaps.permission.READ_NAVIGATION_DATA
+permission app.comaps.test.permission.READ_NAVIGATION_DATA
+permission tech.mmarca.openvitals.debug.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION
+permission tech.mmarca.openwatch.debug.permission.OPENLINK
+permission tech.mmarca.openwatch.permission.OPENLINK
