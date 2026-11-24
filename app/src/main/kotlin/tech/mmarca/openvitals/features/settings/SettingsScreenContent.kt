@@ -61,6 +61,15 @@ internal fun LazyListScope.settingsScreenContent(
                         modifier = Modifier.padding(horizontal = LayoutMetrics.screenGutter),
                     )
                 }
+                item { SettingsCardSpacer() }
+                item {
+                    SourceTableCard(
+                        table = state.sourceTable,
+                        loading = state.sourceTableLoading,
+                        onLoad = viewModel::loadSourceTable,
+                        modifier = Modifier.padding(horizontal = LayoutMetrics.screenGutter),
+                    )
+                }
             }
         }
         // These route to their own screens; the branches keep the `when` exhaustive.

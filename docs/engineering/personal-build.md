@@ -12,7 +12,7 @@ The manual `personal-screenshots` workflow reuses `verify`; it never rewrites a 
 
 ## Release manifest check
 
-Before the emulator checks, `publish-personal-release` decodes the new APK's merged manifest with `apkanalyzer` and runs `scripts/check-release-manifest.py` against `.github/personal-release-manifest.txt`: every requested permission and every exported activity, activity alias, service, receiver and provider, one per line. A permission or exported component the list does not have, or a listed one that is gone, fails the release, and the log shows what changed since the published APK. The signing certificate is compared separately, with `apksigner`, in the step before.
+Before the emulator checks, `publish-personal-release` decodes the new APK's merged manifest with `apkanalyzer` and runs `scripts/check-release-manifest.py` against `.github/personal-release-manifest.txt`: every requested permission and every exported activity, activity alias, service, receiver and provider, one per line. A permission or exported component the list does not have, or a listed one that is gone, fails the release, and the log shows what changed since the published APK. The signing certificate is compared separately, with `apksigner`, in the step before. A unit test (`HealthConnectPermissionServiceTest`) holds the other half: every `android.permission.health.*` in the manifest belongs to a permission set the code manages, and every one the code asks for is in the manifest.
 
 When the change is intended (a new Health Connect type, a new widget receiver, a dependency that adds a component), regenerate the list from the built APK and commit it with the reason:
 

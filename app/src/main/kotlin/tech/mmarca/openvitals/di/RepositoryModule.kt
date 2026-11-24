@@ -6,12 +6,11 @@ import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
 import tech.mmarca.openvitals.data.repository.ActivityRepositoryImpl
-import tech.mmarca.openvitals.data.repository.CoMapsNavigationRepositoryImpl
 import tech.mmarca.openvitals.data.repository.BodyEnergyRepositoryImpl
 import tech.mmarca.openvitals.data.repository.BodyRepositoryImpl
 import tech.mmarca.openvitals.data.repository.CaffeineRepositoryImpl
+import tech.mmarca.openvitals.data.repository.CoMapsNavigationRepositoryImpl
 import tech.mmarca.openvitals.data.repository.CycleJournalRepositoryImpl
-import tech.mmarca.openvitals.data.repository.PillIntakeRepositoryImpl
 import tech.mmarca.openvitals.data.repository.CycleRepositoryImpl
 import tech.mmarca.openvitals.data.repository.FoodRepositoryImpl
 import tech.mmarca.openvitals.data.repository.HealthRepositoryImpl
@@ -21,15 +20,16 @@ import tech.mmarca.openvitals.data.repository.MedicalDocumentsRepositoryImpl
 import tech.mmarca.openvitals.data.repository.MedicalRecordsRepositoryImpl
 import tech.mmarca.openvitals.data.repository.MindfulnessRepositoryImpl
 import tech.mmarca.openvitals.data.repository.NutritionRepositoryImpl
+import tech.mmarca.openvitals.data.repository.PillIntakeRepositoryImpl
 import tech.mmarca.openvitals.data.repository.SleepRepositoryImpl
+import tech.mmarca.openvitals.data.repository.SourceInventoryRepositoryImpl
 import tech.mmarca.openvitals.data.repository.VitalsRepositoryImpl
 import tech.mmarca.openvitals.data.repository.contract.ActivityRepository
-import tech.mmarca.openvitals.data.repository.contract.CoMapsNavigationRepository
 import tech.mmarca.openvitals.data.repository.contract.BodyEnergyRepository
 import tech.mmarca.openvitals.data.repository.contract.BodyRepository
 import tech.mmarca.openvitals.data.repository.contract.CaffeineRepository
+import tech.mmarca.openvitals.data.repository.contract.CoMapsNavigationRepository
 import tech.mmarca.openvitals.data.repository.contract.CycleJournalRepository
-import tech.mmarca.openvitals.data.repository.contract.PillIntakeRepository
 import tech.mmarca.openvitals.data.repository.contract.CycleRepository
 import tech.mmarca.openvitals.data.repository.contract.FoodRepository
 import tech.mmarca.openvitals.data.repository.contract.HealthRepository
@@ -39,7 +39,9 @@ import tech.mmarca.openvitals.data.repository.contract.MedicalDocumentsRepositor
 import tech.mmarca.openvitals.data.repository.contract.MedicalRecordsRepository
 import tech.mmarca.openvitals.data.repository.contract.MindfulnessRepository
 import tech.mmarca.openvitals.data.repository.contract.NutritionRepository
+import tech.mmarca.openvitals.data.repository.contract.PillIntakeRepository
 import tech.mmarca.openvitals.data.repository.contract.SleepRepository
+import tech.mmarca.openvitals.data.repository.contract.SourceInventoryRepository
 import tech.mmarca.openvitals.data.repository.contract.VitalsRepository
 
 @Module
@@ -70,6 +72,10 @@ abstract class RepositoryModule {
     @Binds
     @Singleton
     abstract fun bindHydrationRepository(impl: HydrationRepositoryImpl): HydrationRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindSourceInventoryRepository(impl: SourceInventoryRepositoryImpl): SourceInventoryRepository
 
     @Binds
     @Singleton
