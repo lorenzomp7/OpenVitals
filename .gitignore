@@ -51,6 +51,7 @@ OpenVitals Design System/
 !.claude/skills/
 !.claude/settings.json
 !.claude/hooks/
+!.claude/rea/
 
 # The Gradle homes CI keeps in the workspace (scripts/ci-gradle.sh).
 .gradle-ci/
