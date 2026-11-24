@@ -19,8 +19,6 @@ import androidx.health.connect.client.records.HeartRateRecord
 import androidx.health.connect.client.records.HeartRateVariabilityRmssdRecord
 import androidx.health.connect.client.records.HeightRecord
 import androidx.health.connect.client.records.HydrationRecord
-import androidx.health.connect.client.records.InstantaneousRecord
-import androidx.health.connect.client.records.IntervalRecord
 import androidx.health.connect.client.records.LeanBodyMassRecord
 import androidx.health.connect.client.records.MindfulnessSessionRecord
 import androidx.health.connect.client.records.NutritionRecord
@@ -112,6 +110,8 @@ internal class SourceInventoryHealthReader(
     /** One data type to inventory, and the rows it produces. */
     private class InventoryType(
         val recordType: KClass<out Record>,
+        /** When a record of this type happened: the end of an interval, or the instant. */
+        val time: (Record) -> Instant,
         val derived: List<DerivedRow> = emptyList(),
     ) {
         /** The permission name of the type: READ_HEART_RATE is "heart rate". */
@@ -126,7 +126,7 @@ internal class SourceInventoryHealthReader(
             SourceInventoryRow(
                 type = type,
                 label = label,
-                lastSeenBySource = latestBySource(records),
+                lastSeenBySource = latestBySource(records, time),
                 readable = readable,
                 truncated = truncated,
             )
@@ -148,16 +148,10 @@ internal class SourceInventoryHealthReader(
                 .replace(Regex("(?<=[a-z0-9])(?=[A-Z])"), " ")
                 .lowercase()
 
-        internal fun recordTime(record: Record): Instant? = when (record) {
-            is IntervalRecord -> record.endTime
-            is InstantaneousRecord -> record.time
-            else -> null
-        }
-
-        internal fun latestBySource(records: List<Record>): Map<String, Instant> {
+        internal fun latestBySource(records: List<Record>, timeOf: (Record) -> Instant): Map<String, Instant> {
             val latest = mutableMapOf<String, Instant>()
             for (record in records) {
-                val time = recordTime(record) ?: continue
+                val time = timeOf(record)
                 val source = SyncedSourceOverlay.displaySource(record.metadata)
                 val previous = latest[source]
                 if (previous == null || time.isAfter(previous)) latest[source] = time
@@ -165,54 +159,67 @@ internal class SourceInventoryHealthReader(
             return latest
         }
 
+        /** The record interfaces that carry a time are internal to the client: each type says. */
+        private fun <T : Record> type(
+            recordType: KClass<T>,
+            time: (T) -> Instant,
+            derived: List<DerivedRow> = emptyList(),
+        ): InventoryType {
+            @Suppress("UNCHECKED_CAST")
+            val timeOfRecord: (Record) -> Instant = { record -> time(record as T) }
+            return InventoryType(recordType, timeOfRecord, derived)
+        }
+
         private val InventoryTypes: List<InventoryType> = listOf(
-            InventoryType(StepsRecord::class),
-            InventoryType(DistanceRecord::class),
-            InventoryType(
+            type(StepsRecord::class, StepsRecord::endTime),
+            type(DistanceRecord::class, DistanceRecord::endTime),
+            type(
                 ExerciseSessionRecord::class,
+                ExerciseSessionRecord::endTime,
                 derived = listOf(
                     DerivedRow("exercise route", type = "exercise route") { record ->
                         (record as ExerciseSessionRecord).exerciseRouteResult !is ExerciseRouteResult.NoData
                     },
                 ),
             ),
-            InventoryType(
+            type(
                 SleepSessionRecord::class,
+                SleepSessionRecord::endTime,
                 derived = listOf(
                     DerivedRow("sleep stages", type = "sleep") { record ->
                         (record as SleepSessionRecord).stages.isNotEmpty()
                     },
                 ),
             ),
-            InventoryType(HeartRateRecord::class),
-            InventoryType(RestingHeartRateRecord::class),
-            InventoryType(HeartRateVariabilityRmssdRecord::class),
-            InventoryType(OxygenSaturationRecord::class),
-            InventoryType(RespiratoryRateRecord::class),
-            InventoryType(BodyTemperatureRecord::class),
-            InventoryType(SkinTemperatureRecord::class),
-            InventoryType(BloodPressureRecord::class),
-            InventoryType(BloodGlucoseRecord::class),
-            InventoryType(Vo2MaxRecord::class),
-            InventoryType(ActiveCaloriesBurnedRecord::class),
-            InventoryType(TotalCaloriesBurnedRecord::class),
-            InventoryType(BasalMetabolicRateRecord::class),
-            InventoryType(FloorsClimbedRecord::class),
-            InventoryType(ElevationGainedRecord::class),
-            InventoryType(SpeedRecord::class),
-            InventoryType(PowerRecord::class),
-            InventoryType(StepsCadenceRecord::class),
-            InventoryType(CyclingPedalingCadenceRecord::class),
-            InventoryType(WheelchairPushesRecord::class),
-            InventoryType(WeightRecord::class),
-            InventoryType(HeightRecord::class),
-            InventoryType(BodyFatRecord::class),
-            InventoryType(LeanBodyMassRecord::class),
-            InventoryType(BoneMassRecord::class),
-            InventoryType(BodyWaterMassRecord::class),
-            InventoryType(HydrationRecord::class),
-            InventoryType(NutritionRecord::class),
-            InventoryType(MindfulnessSessionRecord::class),
+            type(HeartRateRecord::class, HeartRateRecord::endTime),
+            type(RestingHeartRateRecord::class, RestingHeartRateRecord::time),
+            type(HeartRateVariabilityRmssdRecord::class, HeartRateVariabilityRmssdRecord::time),
+            type(OxygenSaturationRecord::class, OxygenSaturationRecord::time),
+            type(RespiratoryRateRecord::class, RespiratoryRateRecord::time),
+            type(BodyTemperatureRecord::class, BodyTemperatureRecord::time),
+            type(SkinTemperatureRecord::class, SkinTemperatureRecord::endTime),
+            type(BloodPressureRecord::class, BloodPressureRecord::time),
+            type(BloodGlucoseRecord::class, BloodGlucoseRecord::time),
+            type(Vo2MaxRecord::class, Vo2MaxRecord::time),
+            type(ActiveCaloriesBurnedRecord::class, ActiveCaloriesBurnedRecord::endTime),
+            type(TotalCaloriesBurnedRecord::class, TotalCaloriesBurnedRecord::endTime),
+            type(BasalMetabolicRateRecord::class, BasalMetabolicRateRecord::time),
+            type(FloorsClimbedRecord::class, FloorsClimbedRecord::endTime),
+            type(ElevationGainedRecord::class, ElevationGainedRecord::endTime),
+            type(SpeedRecord::class, SpeedRecord::endTime),
+            type(PowerRecord::class, PowerRecord::endTime),
+            type(StepsCadenceRecord::class, StepsCadenceRecord::endTime),
+            type(CyclingPedalingCadenceRecord::class, CyclingPedalingCadenceRecord::endTime),
+            type(WheelchairPushesRecord::class, WheelchairPushesRecord::endTime),
+            type(WeightRecord::class, WeightRecord::time),
+            type(HeightRecord::class, HeightRecord::time),
+            type(BodyFatRecord::class, BodyFatRecord::time),
+            type(LeanBodyMassRecord::class, LeanBodyMassRecord::time),
+            type(BoneMassRecord::class, BoneMassRecord::time),
+            type(BodyWaterMassRecord::class, BodyWaterMassRecord::time),
+            type(HydrationRecord::class, HydrationRecord::endTime),
+            type(NutritionRecord::class, NutritionRecord::endTime),
+            type(MindfulnessSessionRecord::class, MindfulnessSessionRecord::endTime),
         )
     }
 }
