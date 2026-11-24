@@ -24,6 +24,7 @@ Recently added feature pages:
 - [Engineering guide](engineering/README.md): architecture, development setup, feature playbook, code analysis, and test parity.
 - [Architecture](engineering/architecture.md): current single-module architecture, feature boundaries, period detail pattern, and data-access rules.
 - [Feature playbook](engineering/feature-playbook.md): checklist for adding or extending a metric feature.
+- [Source apps](engineering/source-apps.md): what Zepp, Zepp Life and Gadgetbridge write to Health Connect, from public sources.
 - [Translations](engineering/translations.md): translate OpenVitals in your language, Codeberg Translate setup, shipping policy, and validation checks.
 
 ## Reference And Archive
