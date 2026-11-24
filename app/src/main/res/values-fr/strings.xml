@@ -1951,8 +1951,17 @@
     <string name="settings_reminder_test_body">Publie immédiatement une notification de rappel, exactement comme le ferait un déclenchement programmé.</string>
     <string name="settings_reminder_test_show_hydration">Afficher le rappel d\'hydratation</string>
     <string name="settings_hc_sources_title">Sources Santé Connect</string>
-    <string name="settings_hc_sources_body">Apps ayant fourni des données de fréquence cardiaque et de sommeil au cours des 7 derniers jours.</string>
+    <string name="settings_hc_sources_body">Apps ayant fourni des données de fréquence cardiaque et de sommeil au cours des 7 derniers jours, avec les types de données que chaque app déclare écrire.</string>
     <string name="settings_hc_sources_empty">Aucune source contributrice trouvée au cours des 7 derniers jours.</string>
+    <plurals name="settings_hc_sources_records">
+        <item quantity="one">%1$d enregistrement - %2$s - %3$s</item>
+        <item quantity="many">%1$d enregistrements - %2$s - %3$s</item>
+        <item quantity="other">%1$d enregistrements - %2$s - %3$s</item>
+    </plurals>
+    <string name="settings_hc_sources_no_data">Aucune donnée de fréquence cardiaque ou de sommeil au cours des 7 derniers jours</string>
+    <string name="settings_hc_sources_declares">Déclare écrire : %1$s</string>
+    <string name="settings_hc_sources_declared_not_seen">Déclaré mais non reçu depuis 7 jours : %1$s</string>
+    <string name="settings_hc_sources_declared_unknown">Non installée sur ce téléphone : types déclarés inconnus</string>
     <string name="settings_body_profile_title">Profil corporel</string>
     <string name="settings_body_profile_body">L\'âge, le poids et la fréquence cardiaque personnalisent les estimations d\'Énergie corporelle et de Caféine. Tous les champs sont facultatifs.</string>
     <string name="settings_body_profile_weight">Poids</string>

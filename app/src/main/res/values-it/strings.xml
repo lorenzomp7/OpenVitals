@@ -2432,8 +2432,17 @@
     <string name="settings_reminder_test_body">Pubblica subito una notifica di promemoria, esattamente come farebbe un’attivazione programmata.</string>
     <string name="settings_reminder_test_show_hydration">Mostra promemoria idratazione</string>
     <string name="settings_hc_sources_title">Fonti Health Connect</string>
-    <string name="settings_hc_sources_body">App che hanno contribuito dati di frequenza cardiaca e sonno negli ultimi 7 giorni.</string>
+    <string name="settings_hc_sources_body">App che hanno contribuito dati di frequenza cardiaca e sonno negli ultimi 7 giorni, con i tipi di dati che ogni app dichiara di scrivere.</string>
     <string name="settings_hc_sources_empty">Nessuna fonte con contributi trovata negli ultimi 7 giorni.</string>
+    <plurals name="settings_hc_sources_records">
+        <item quantity="one">%1$d record - %2$s - %3$s</item>
+        <item quantity="many">%1$d record - %2$s - %3$s</item>
+        <item quantity="other">%1$d record - %2$s - %3$s</item>
+    </plurals>
+    <string name="settings_hc_sources_no_data">Nessun dato di frequenza cardiaca o sonno negli ultimi 7 giorni</string>
+    <string name="settings_hc_sources_declares">Dichiara di scrivere: %1$s</string>
+    <string name="settings_hc_sources_declared_not_seen">Dichiarato ma non arrivato in 7 giorni: %1$s</string>
+    <string name="settings_hc_sources_declared_unknown">Non installata su questo telefono: tipi dichiarati sconosciuti</string>
     <string name="settings_body_profile_height">Altezza</string>
     <string name="settings_body_profile_measured_label">%1$s (misurato)</string>
     <string name="settings_apple_health_import_progress_with_scan_percent">%1$d%%. %2$s. Scansionati %3$d/%4$d elementi. Selezionati %5$d/%6$d record, importati %7$d.</string>

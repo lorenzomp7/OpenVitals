@@ -2314,8 +2314,16 @@
     <string name="settings_reminder_test_show_hydration">Show hydration reminder</string>
     <string name="settings_reminder_test_show_cycle">Show cycle reminder</string>
     <string name="settings_hc_sources_title">Health Connect sources</string>
-    <string name="settings_hc_sources_body">Apps that contributed heart-rate and sleep data over the last 7 days.</string>
+    <string name="settings_hc_sources_body">Apps that contributed heart-rate and sleep data over the last 7 days, with the data types each app declares it writes.</string>
     <string name="settings_hc_sources_empty">No contributing sources found in the last 7 days.</string>
+    <plurals name="settings_hc_sources_records">
+        <item quantity="one">%1$d record - %2$s - %3$s</item>
+        <item quantity="other">%1$d records - %2$s - %3$s</item>
+    </plurals>
+    <string name="settings_hc_sources_no_data">No heart-rate or sleep data in the last 7 days</string>
+    <string name="settings_hc_sources_declares">Declares writing: %1$s</string>
+    <string name="settings_hc_sources_declared_not_seen">Declared but not seen in 7 days: %1$s</string>
+    <string name="settings_hc_sources_declared_unknown">Not installed on this phone: declared types unknown</string>
     <string name="settings_body_profile_title">Body profile</string>
     <string name="settings_body_profile_body">Age, weight, and heart rate personalize Body energy and Caffeine estimates. All fields are optional.</string>
     <string name="settings_body_profile_weight">Weight</string>

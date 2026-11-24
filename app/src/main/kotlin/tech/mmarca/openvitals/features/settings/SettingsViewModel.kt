@@ -14,6 +14,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import tech.mmarca.openvitals.BuildConfig
 import tech.mmarca.openvitals.R
+import tech.mmarca.openvitals.core.presentation.HealthConnectSourceDeclarations
 import tech.mmarca.openvitals.data.repository.contract.HealthConnectPreferences
 import tech.mmarca.openvitals.data.repository.contract.HeartThresholdPreferences
 import tech.mmarca.openvitals.data.repository.contract.HealthRepository
@@ -77,6 +78,7 @@ class SettingsViewModel @Inject constructor(
     private val heartThresholdPreferences: HeartThresholdPreferences,
     private val permissionUxState: HealthConnectPermissionUxState,
     private val openWatchLink: tech.mmarca.openvitals.openwatch.OpenWatchLink? = null,
+    private val sourceDeclarations: HealthConnectSourceDeclarations? = null,
 ) : ViewModel() {
     companion object {
         private const val TAG = "SettingsViewModel"
@@ -118,7 +120,10 @@ class SettingsViewModel @Inject constructor(
         }
     }
 
-    /** Diagnostics: the contributors seen in the last week of heart-rate and sleep data. */
+    /**
+     * Diagnostics: the contributors seen in the last week of heart-rate and sleep data, and the
+     * apps here that declare writing either but sent none.
+     */
     private suspend fun loadHealthConnectSources() {
         if (!BuildConfig.OPENVITALS_DIAGNOSTICS) return
         val end = LocalDate.now()
@@ -127,13 +132,17 @@ class SettingsViewModel @Inject constructor(
             .getOrDefault(emptyList())
         val sleep = runCatching { sleepRepository.loadSleepSessions(start, end) }
             .getOrDefault(emptyList())
+        val observed = mapOf(
+            "heart rate" to heartRate.map { it.source to it.time },
+            "sleep" to sleep.map { it.source to it.endTime },
+        )
+        val seenPackages = observed.values.flatten().map { it.first.trim() }.filter { it.isNotEmpty() }.toSet()
+        // What each app's manifest declares, so "never writes it" reads apart from "nothing came".
+        val declarations = sourceDeclarations
+            ?.let { declarations -> runCatching { declarations.snapshot(seenPackages) }.getOrNull() }
+            .orEmpty()
         _uiState.value = _uiState.value.copy(
-            healthConnectSources = aggregateHealthConnectSources(
-                mapOf(
-                    "heart rate" to heartRate.map { it.source to it.time },
-                    "sleep" to sleep.map { it.source to it.endTime },
-                ),
-            ),
+            healthConnectSources = aggregateHealthConnectSources(observed, declarations),
         )
     }
 

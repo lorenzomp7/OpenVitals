@@ -2285,8 +2285,16 @@ Se Acceder a rutas de exercicio non aparece no diálogo de acceso, abre os axust
     <string name="settings_reminder_test_body">Publica de inmediato unha notificación de recordatorio, exactamente como o faría un disparo programado.</string>
     <string name="settings_reminder_test_show_hydration">Mostrar recordatorio de hidratación</string>
     <string name="settings_hc_sources_title">Fontes de Health Connect</string>
-    <string name="settings_hc_sources_body">Apps que achegaron datos de frecuencia cardíaca e sono nos últimos 7 días.</string>
+    <string name="settings_hc_sources_body">Apps que achegaron datos de frecuencia cardíaca e sono nos últimos 7 días, cos tipos de datos que cada app declara escribir.</string>
     <string name="settings_hc_sources_empty">Non se atoparon fontes nos últimos 7 días.</string>
+    <plurals name="settings_hc_sources_records">
+        <item quantity="one">%1$d rexistro - %2$s - %3$s</item>
+        <item quantity="other">%1$d rexistros - %2$s - %3$s</item>
+    </plurals>
+    <string name="settings_hc_sources_no_data">Sen datos de frecuencia cardíaca nin de sono nos últimos 7 días</string>
+    <string name="settings_hc_sources_declares">Declara que escribe: %1$s</string>
+    <string name="settings_hc_sources_declared_not_seen">Declarado pero non visto en 7 días: %1$s</string>
+    <string name="settings_hc_sources_declared_unknown">Non instalada neste teléfono: tipos declarados descoñecidos</string>
     <string name="settings_body_profile_title">Perfil corporal</string>
     <string name="settings_body_profile_body">A idade, o peso e a frecuencia cardíaca personalizan as estimacións de enerxía corporal e cafeína. Todos os campos son opcionais.</string>
     <string name="settings_body_profile_weight">Peso</string>

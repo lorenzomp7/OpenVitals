@@ -14,14 +14,17 @@ import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+import tech.mmarca.openvitals.core.presentation.HealthConnectSourceDeclarations
 import tech.mmarca.openvitals.data.repository.contract.HealthRepository
 import tech.mmarca.openvitals.data.repository.contract.HeartRepository
 import tech.mmarca.openvitals.data.repository.contract.SleepRepository
 import tech.mmarca.openvitals.domain.model.HealthConnectAvailability
+import tech.mmarca.openvitals.domain.model.HeartRateSample
 import tech.mmarca.openvitals.domain.preferences.BloodPressureGuideline
 import tech.mmarca.openvitals.features.cycle.reminders.CycleReminderController
 import tech.mmarca.openvitals.features.hydration.reminders.HydrationReminderController
@@ -113,6 +116,54 @@ class SettingsViewModelTest {
         verify(exactly = 1) { reminders.showTestReminder(any()) }
     }
 
+    @Test fun `diagnostics sources carry what each app declares and what never arrived`() = runTest {
+        val heart = mockk<HeartRepository>().also { repo ->
+            coEvery {
+                repo.loadHeartRateSamples(any<java.time.LocalDate>(), any<java.time.LocalDate>())
+            } returns listOf(
+                HeartRateSample(java.time.Instant.parse("2026-11-20T08:00:00Z"), 60, "com.huami.watch.hmwatchmanager"),
+            )
+        }
+        val declarations = mockk<HealthConnectSourceDeclarations>()
+        coEvery { declarations.snapshot(setOf("com.huami.watch.hmwatchmanager")) } returns mapOf(
+            "com.huami.watch.hmwatchmanager" to setOf(
+                "android.permission.health.WRITE_HEART_RATE",
+                "android.permission.health.WRITE_SLEEP",
+            ),
+            "nodomain.freeyourgadget.gadgetbridge" to setOf("android.permission.health.WRITE_SLEEP"),
+        )
+
+        val vm = viewModel(heartRepository = heart, sourceDeclarations = declarations)
+        advanceUntilIdle()
+
+        val sources = vm.uiState.value.healthConnectSources
+        assertEquals(
+            listOf("com.huami.watch.hmwatchmanager", "nodomain.freeyourgadget.gadgetbridge"),
+            sources.map { it.packageName },
+        )
+        assertEquals(setOf("sleep"), sources.first().declaredNotSeen(setOf("heart rate", "sleep")))
+        assertEquals(0, sources.last().recordCount)
+    }
+
+    @Test fun `diagnostics sources survive a failing declarations read`() = runTest {
+        val heart = mockk<HeartRepository>().also { repo ->
+            coEvery {
+                repo.loadHeartRateSamples(any<java.time.LocalDate>(), any<java.time.LocalDate>())
+            } returns listOf(
+                HeartRateSample(java.time.Instant.parse("2026-11-20T08:00:00Z"), 60, "com.huami.watch.hmwatchmanager"),
+            )
+        }
+        val declarations = mockk<HealthConnectSourceDeclarations>()
+        coEvery { declarations.snapshot(any()) } throws SecurityException("denied")
+
+        val vm = viewModel(heartRepository = heart, sourceDeclarations = declarations)
+        advanceUntilIdle()
+
+        val source = vm.uiState.value.healthConnectSources.single()
+        assertEquals(1, source.recordCount)
+        assertNull(source.declaredWrites)
+    }
+
     private fun viewModel(
         repository: HealthRepository = repo(),
         heartRepository: HeartRepository = heartRepo(),
@@ -121,6 +172,7 @@ class SettingsViewModelTest {
         cycleReminderController: CycleReminderController = mockk(relaxed = true),
         preferences: FakePreferences = FakePreferences(),
         permissionUxState: HealthConnectPermissionUxState = mockk(relaxed = true),
+        sourceDeclarations: HealthConnectSourceDeclarations? = null,
     ): SettingsViewModel =
         SettingsViewModel(
             repository = repository,
@@ -131,6 +183,7 @@ class SettingsViewModelTest {
             healthConnectPreferences = preferences,
             heartThresholdPreferences = preferences,
             permissionUxState = permissionUxState,
+            sourceDeclarations = sourceDeclarations,
         )
 
     private fun heartRepo(): HeartRepository =

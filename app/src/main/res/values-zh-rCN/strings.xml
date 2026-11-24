@@ -1947,8 +1947,16 @@
     <string name="settings_reminder_test_body">立即发送一条提醒通知，与计划触发时完全相同。</string>
     <string name="settings_reminder_test_show_hydration">显示饮水提醒</string>
     <string name="settings_hc_sources_title">Health Connect 来源</string>
-    <string name="settings_hc_sources_body">过去 7 天贡献心率和睡眠数据的应用。</string>
+    <string name="settings_hc_sources_body">过去 7 天贡献心率和睡眠数据的应用，以及每个应用声明写入的数据类型。</string>
     <string name="settings_hc_sources_empty">过去 7 天未找到贡献来源。</string>
+    <plurals name="settings_hc_sources_records">
+        <item quantity="one">%1$d 条记录 - %2$s - %3$s</item>
+        <item quantity="other">%1$d 条记录 - %2$s - %3$s</item>
+    </plurals>
+    <string name="settings_hc_sources_no_data">过去 7 天没有心率或睡眠数据</string>
+    <string name="settings_hc_sources_declares">声明写入：%1$s</string>
+    <string name="settings_hc_sources_declared_not_seen">已声明但 7 天内未收到：%1$s</string>
+    <string name="settings_hc_sources_declared_unknown">未安装在此手机上：声明的类型未知</string>
     <string name="settings_body_profile_title">身体档案</string>
     <string name="settings_body_profile_body">年龄、体重和心率用于个性化身体电量和咖啡因估算。所有字段均为可选。</string>
     <string name="settings_body_profile_weight">体重</string>

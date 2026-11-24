@@ -1832,8 +1832,16 @@
     <string name="settings_reminder_test_body">Publica de imediato uma notificação de lembrete, exatamente como um disparo agendado faria.</string>
     <string name="settings_reminder_test_show_hydration">Mostrar lembrete de hidratação</string>
     <string name="settings_hc_sources_title">Fontes do Health Connect</string>
-    <string name="settings_hc_sources_body">Aplicações que contribuíram com dados de frequência cardíaca e sono nos últimos 7 dias.</string>
+    <string name="settings_hc_sources_body">Aplicações que contribuíram com dados de frequência cardíaca e sono nos últimos 7 dias, com os tipos de dados que cada aplicação declara escrever.</string>
     <string name="settings_hc_sources_empty">Nenhuma fonte contribuinte encontrada nos últimos 7 dias.</string>
+    <plurals name="settings_hc_sources_records">
+        <item quantity="one">%1$d registo - %2$s - %3$s</item>
+        <item quantity="other">%1$d registos - %2$s - %3$s</item>
+    </plurals>
+    <string name="settings_hc_sources_no_data">Sem dados de frequência cardíaca nem de sono nos últimos 7 dias</string>
+    <string name="settings_hc_sources_declares">Declara que escreve: %1$s</string>
+    <string name="settings_hc_sources_declared_not_seen">Declarado mas não recebido em 7 dias: %1$s</string>
+    <string name="settings_hc_sources_declared_unknown">Não instalada neste telefone: tipos declarados desconhecidos</string>
     <string name="settings_body_profile_title">Perfil corporal</string>
     <string name="settings_body_profile_body">A idade, o peso e a frequência cardíaca personalizam as estimativas de Energia corporal e de Cafeína. Todos os campos são opcionais.</string>
     <string name="settings_body_profile_weight">Peso</string>
