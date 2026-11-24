@@ -15,6 +15,7 @@ import kotlinx.coroutines.launch
 import tech.mmarca.openvitals.BuildConfig
 import tech.mmarca.openvitals.R
 import tech.mmarca.openvitals.core.presentation.HealthConnectSourceDeclarations
+import tech.mmarca.openvitals.data.repository.contract.SourceInventoryRepository
 import tech.mmarca.openvitals.data.repository.contract.HealthConnectPreferences
 import tech.mmarca.openvitals.data.repository.contract.HeartThresholdPreferences
 import tech.mmarca.openvitals.data.repository.contract.HealthRepository
@@ -39,6 +40,9 @@ data class SettingsUiState(
     val healthConnectMindfulnessEnabled: Boolean = false,
     val appLockEnabled: Boolean = false,
     val healthConnectSources: List<HealthConnectSource> = emptyList(),
+    /** The "what does each source write" table; null until it is read on demand. */
+    val sourceTable: SourceTable? = null,
+    val sourceTableLoading: Boolean = false,
 ) {
     val visiblePermissions: Set<String>
         get() = permissionCategories.flatMap { it.permissions }.toSet()
@@ -79,6 +83,7 @@ class SettingsViewModel @Inject constructor(
     private val permissionUxState: HealthConnectPermissionUxState,
     private val openWatchLink: tech.mmarca.openvitals.openwatch.OpenWatchLink? = null,
     private val sourceDeclarations: HealthConnectSourceDeclarations? = null,
+    private val sourceInventoryRepository: SourceInventoryRepository? = null,
 ) : ViewModel() {
     companion object {
         private const val TAG = "SettingsViewModel"
@@ -86,6 +91,9 @@ class SettingsViewModel @Inject constructor(
 
     private val _uiState = MutableStateFlow(SettingsUiState())
     val uiState: StateFlow<SettingsUiState> = _uiState.asStateFlow()
+
+    /** What each app here declares writing, from the last diagnostics load. */
+    private var lastDeclarations: Map<String, Set<String>?> = emptyMap()
 
     /** OpenWatch's status line on the Settings root; null without the link (tests). */
     val openWatchSummary: StateFlow<tech.mmarca.openvitals.openwatch.OpenWatchLinkSummary?> =
@@ -141,9 +149,36 @@ class SettingsViewModel @Inject constructor(
         val declarations = sourceDeclarations
             ?.let { declarations -> runCatching { declarations.snapshot(seenPackages) }.getOrNull() }
             .orEmpty()
+        lastDeclarations = declarations
         _uiState.value = _uiState.value.copy(
             healthConnectSources = aggregateHealthConnectSources(observed, declarations),
         )
+    }
+
+    /**
+     * Diagnostics: reads, on demand, the latest record per source for every data type over the
+     * last 30 days, beside what each app declares writing. About one Health Connect call per type.
+     */
+    fun loadSourceTable() {
+        val inventoryRepository = sourceInventoryRepository ?: return
+        if (_uiState.value.sourceTableLoading) return
+        _uiState.value = _uiState.value.copy(sourceTableLoading = true)
+        viewModelScope.launch {
+            val declarations = sourceDeclarations
+                ?.let { declarations -> runCatching { declarations.snapshot() }.getOrNull() }
+                ?.let { fresh -> lastDeclarations + fresh }
+                ?: lastDeclarations
+            val table = runCatching {
+                buildSourceTable(
+                    inventory = inventoryRepository.loadSourceInventory(declaredWritersByType(declarations)),
+                    declarations = declarations,
+                )
+            }.onFailure { Log.w(TAG, "Source table read failed", it) }.getOrNull()
+            _uiState.value = _uiState.value.copy(
+                sourceTable = table ?: _uiState.value.sourceTable,
+                sourceTableLoading = false,
+            )
+        }
     }
 
     fun setBloodPressureGuideline(guideline: BloodPressureGuideline) {

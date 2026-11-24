@@ -57,7 +57,7 @@ jobs:
           if (( NEXT < 1070400000 )); then NEXT=1070400000; fi
           echo "OPENVITALS_VERSION_CODE=$NEXT" >> "$GITHUB_ENV"
           echo "code=$NEXT" >> "$GITHUB_OUTPUT"
-          echo "OPENVITALS_VERSION_NAME=2.17.27-personal-claude" >> "$GITHUB_ENV"
+          echo "OPENVITALS_VERSION_NAME=2.17.28-personal-claude" >> "$GITHUB_ENV"
       - name: Build the signed personal update
         env:
           OPENVITALS_RELEASE_STORE_FILE: ${{ github.workspace }}/personal/personal.p12
@@ -147,24 +147,24 @@ jobs:
           cat > release-notes.md <<EOF
           Scarica **OpenVitals.apk** dagli allegati e aprilo sul telefono.
 
-          Impostazioni → Diagnostica di debug → Fonti Health Connect:
-          - Ogni app sorgente mostra i tipi di dati che dichiara di scrivere in Health Connect (letti dal manifest dell'app installata sul telefono).
-          - In rosso i tipi dichiarati ma non arrivati negli ultimi 7 giorni (es. "Dichiarato ma non arrivato in 7 giorni: sonno"): così si distingue "non lo scrive mai" da "lo scrive ma non è arrivato".
-          - Compaiono anche le app che dichiarano di scrivere frequenza cardiaca o sonno ma non hanno mandato nulla (es. Gadgetbridge installato ma fermo).
-          - OpenVitals ora vede anche le app che dichiarano la schermata dei permessi Health Connect solo nella forma di Android 14.
+          Impostazioni → Diagnostica di debug → nuova scheda «Cosa scrive ogni sorgente»:
+          - Tocca «Leggi la tabella»: righe = tipi di dati (passi, battito, HRV, SpO₂, sonno e fasi, temperature, allenamenti e percorsi, misure corporee, nutrizione…), colonne = app sorgente.
+          - Ogni cella mostra la data dell'ultimo dato arrivato negli ultimi 30 giorni, «dichiarato» in rosso se l'app dichiara di scrivere quel tipo ma non è arrivato nulla, oppure «—».
+          - Con Zepp tra le sorgenti compare una nota: stress e PAI non hanno un tipo in Health Connect; Gadgetbridge può sostituire Zepp (serve la chiave di autenticazione).
+          - La tabella si legge solo al tocco: circa una chiamata a Health Connect per tipo.
 
-          Controlli della release: oltre alla firma, la pubblicazione confronta permessi richiesti e componenti esportati con l'elenco in .github/personal-release-manifest.txt e si ferma se cambiano.
+          Controlli: un test verifica che i permessi Health Connect del manifest siano esattamente quelli che il codice usa.
 
           Questa versione aggiorna l'installazione personale compatibile di OpenVitals senza disinstallarla. La revisione ha superato la verifica completa (verify) in questa stessa esecuzione; package e firma coincidono con l'APK pubblicato precedente; installazione, aggiornamento, avvio e import screenshot sono verificati su Android 15.
 
-          Versione: **2.17.27-personal-claude**. Version code: **$OPENVITALS_VERSION_CODE**.
+          Versione: **2.17.28-personal-claude**. Version code: **$OPENVITALS_VERSION_CODE**.
           Sorgenti: https://github.com/$GH_REPO/commit/$GITHUB_SHA
           Compilazione e verifica aggiornamento: https://github.com/$GH_REPO/actions/runs/$GITHUB_RUN_ID
           EOF
           if gh release view "$TAG" > /dev/null 2>&1; then
             echo "Release already exists; keeping the published APK unchanged."
           else
-            gh release create "$TAG" release/OpenVitals.apk release/SHA256SUMS.txt --target "$GITHUB_SHA" --title "OpenVitals 2.17.27 · main_claude" --notes-file release-notes.md --latest
+            gh release create "$TAG" release/OpenVitals.apk release/SHA256SUMS.txt --target "$GITHUB_SHA" --title "OpenVitals 2.17.28 · main_claude" --notes-file release-notes.md --latest
           fi
       - uses: actions/checkout@v5
         with:

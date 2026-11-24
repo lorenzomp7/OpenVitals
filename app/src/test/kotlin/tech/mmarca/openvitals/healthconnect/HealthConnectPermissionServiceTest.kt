@@ -22,6 +22,7 @@ import androidx.health.connect.client.records.SkinTemperatureRecord
 import androidx.health.connect.client.records.SleepSessionRecord
 import androidx.health.connect.client.records.StepsRecord
 import com.google.common.truth.Truth.assertThat
+import com.google.common.truth.Truth.assertWithMessage
 import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
@@ -133,6 +134,38 @@ class HealthConnectPermissionServiceTest {
         assertThat(managed.size).isGreaterThan(10)
         assertThat(managed).contains(HealthPermission.getReadPermission(SleepSessionRecord::class))
         assertThat(managed).contains(HealthPermission.getReadPermission(ExerciseSessionRecord::class))
+    }
+
+    /**
+     * The release check lists what the APK requests; this holds that list to what the code
+     * asks for. A permission the code asks for but the manifest lacks is refused without a
+     * prompt; one the manifest declares but no set manages is a grant nobody can use.
+     */
+    @Test
+    fun `the manifest declares exactly the health permissions the app manages`() {
+        val service = service(
+            availableFeatures = setOf(
+                HealthConnectFeatures.FEATURE_MINDFULNESS_SESSION,
+                HealthConnectFeatures.FEATURE_PLANNED_EXERCISE,
+                HealthConnectFeatures.FEATURE_READ_HEALTH_DATA_HISTORY,
+                HealthConnectFeatures.FEATURE_READ_HEALTH_DATA_IN_BACKGROUND,
+                HealthConnectFeatures.FEATURE_SKIN_TEMPERATURE,
+                MedicalCategoryMapping.FEATURE,
+            ),
+        )
+        val manifest = java.io.File("src/main/AndroidManifest.xml").readText()
+        val declared = Regex("""<uses-permission[^>]*android:name="(android\.permission\.health\.[A-Z0-9_]+)"""")
+            .findAll(manifest)
+            .map { it.groupValues[1] }
+            .toSet()
+        val used = (service.managedPermissions + service.allPermissions)
+            .filter { it.startsWith("android.permission.health.") }
+            .toSet()
+
+        assertWithMessage("asked for by the code, missing from the manifest").that(used - declared).isEmpty()
+        assertWithMessage("declared in the manifest, managed by no permission set")
+            .that(declared - used)
+            .containsExactlyElementsIn(DeclaredButNeverAsked)
     }
 
     // Feature gating.
@@ -597,6 +630,19 @@ class HealthConnectPermissionServiceTest {
     }
 
     private companion object {
+        /**
+         * In the manifest, asked for by no code: Health Connect files cadence under the steps
+         * and exercise permissions (getReadPermission(StepsCadenceRecord) is READ_STEPS), so
+         * these four names grant nothing. Kept until removing them is decided; a new entry here
+         * is a permission nobody uses.
+         */
+        val DeclaredButNeverAsked = setOf(
+            "android.permission.health.READ_STEPS_CADENCE",
+            "android.permission.health.WRITE_STEPS_CADENCE",
+            "android.permission.health.READ_CYCLING_PEDALING_CADENCE",
+            "android.permission.health.WRITE_CYCLING_PEDALING_CADENCE",
+        )
+
         /** A status int this SDK has no constant for, as a provider too old to answer returns. */
         const val UNNAMED_FEATURE_STATUS = 0
 

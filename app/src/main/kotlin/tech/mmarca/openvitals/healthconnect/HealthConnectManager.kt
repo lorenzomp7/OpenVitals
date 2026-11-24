@@ -124,8 +124,8 @@ class HealthConnectManager @Inject constructor(
     private val vitalsReader = VitalsHealthReader(readerSupport, context.packageName)
     private val changesReader = HealthConnectChangesReader(readerSupport)
     private val syncRecordsReader = SyncRecordsReader(readerSupport)
-
     // Exposed whole: one wrapper per call would pass this file's size limit.
+    internal val sourceInventoryReader = SourceInventoryHealthReader(readerSupport)
     private val medicalRecordsClient = HealthConnectMedicalRecordsClient(::client)
     internal val medicalRecordsReader = MedicalRecordsHealthReader(
         readerSupport, medicalRecordsClient, context.packageName, ::isMedicalRecordsAvailable,

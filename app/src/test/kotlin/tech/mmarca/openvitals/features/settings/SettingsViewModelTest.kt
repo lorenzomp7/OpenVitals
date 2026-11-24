@@ -20,11 +20,14 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import tech.mmarca.openvitals.core.presentation.HealthConnectSourceDeclarations
+import tech.mmarca.openvitals.data.repository.contract.SourceInventoryRepository
 import tech.mmarca.openvitals.data.repository.contract.HealthRepository
 import tech.mmarca.openvitals.data.repository.contract.HeartRepository
 import tech.mmarca.openvitals.data.repository.contract.SleepRepository
 import tech.mmarca.openvitals.domain.model.HealthConnectAvailability
 import tech.mmarca.openvitals.domain.model.HeartRateSample
+import tech.mmarca.openvitals.domain.model.SourceInventory
+import tech.mmarca.openvitals.domain.model.SourceInventoryRow
 import tech.mmarca.openvitals.domain.preferences.BloodPressureGuideline
 import tech.mmarca.openvitals.features.cycle.reminders.CycleReminderController
 import tech.mmarca.openvitals.features.hydration.reminders.HydrationReminderController
@@ -164,6 +167,47 @@ class SettingsViewModelTest {
         assertNull(source.declaredWrites)
     }
 
+    @Test fun `the source table is read on demand with the declared writers as candidates`() = runTest {
+        val declarations = mockk<HealthConnectSourceDeclarations>()
+        coEvery { declarations.snapshot(any()) } returns mapOf(
+            "com.huami.watch.hmwatchmanager" to setOf(
+                "android.permission.health.WRITE_HEART_RATE",
+                "android.permission.health.WRITE_OXYGEN_SATURATION",
+            ),
+        )
+        val inventory = mockk<SourceInventoryRepository>()
+        coEvery { inventory.loadSourceInventory(any(), any()) } returns SourceInventory(
+            windowDays = 30,
+            rows = listOf(
+                SourceInventoryRow(
+                    type = "heart rate",
+                    lastSeenBySource = mapOf("com.huami.watch.hmwatchmanager" to java.time.Instant.parse("2026-11-23T08:00:00Z")),
+                ),
+                SourceInventoryRow(type = "oxygen saturation"),
+            ),
+        )
+
+        val vm = viewModel(sourceDeclarations = declarations, sourceInventoryRepository = inventory)
+        advanceUntilIdle()
+        assertNull(vm.uiState.value.sourceTable)
+
+        vm.loadSourceTable()
+        advanceUntilIdle()
+
+        val table = vm.uiState.value.sourceTable!!
+        assertEquals(1, table.declaredNotSeenCount)
+        assertEquals(false, vm.uiState.value.sourceTableLoading)
+        io.mockk.coVerify {
+            inventory.loadSourceInventory(
+                mapOf(
+                    "heart rate" to setOf("com.huami.watch.hmwatchmanager"),
+                    "oxygen saturation" to setOf("com.huami.watch.hmwatchmanager"),
+                ),
+                any(),
+            )
+        }
+    }
+
     private fun viewModel(
         repository: HealthRepository = repo(),
         heartRepository: HeartRepository = heartRepo(),
@@ -173,6 +217,7 @@ class SettingsViewModelTest {
         preferences: FakePreferences = FakePreferences(),
         permissionUxState: HealthConnectPermissionUxState = mockk(relaxed = true),
         sourceDeclarations: HealthConnectSourceDeclarations? = null,
+        sourceInventoryRepository: SourceInventoryRepository? = null,
     ): SettingsViewModel =
         SettingsViewModel(
             repository = repository,
@@ -184,6 +229,7 @@ class SettingsViewModelTest {
             heartThresholdPreferences = preferences,
             permissionUxState = permissionUxState,
             sourceDeclarations = sourceDeclarations,
+            sourceInventoryRepository = sourceInventoryRepository,
         )
 
     private fun heartRepo(): HeartRepository =
