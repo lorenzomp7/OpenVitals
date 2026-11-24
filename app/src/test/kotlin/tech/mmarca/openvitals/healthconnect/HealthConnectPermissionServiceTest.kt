@@ -163,7 +163,9 @@ class HealthConnectPermissionServiceTest {
             .toSet()
 
         assertWithMessage("asked for by the code, missing from the manifest").that(used - declared).isEmpty()
-        assertWithMessage("declared in the manifest, managed by no permission set").that(declared - used).isEmpty()
+        assertWithMessage("declared in the manifest, managed by no permission set")
+            .that(declared - used)
+            .containsExactlyElementsIn(DeclaredButNeverAsked)
     }
 
     // Feature gating.
@@ -628,6 +630,19 @@ class HealthConnectPermissionServiceTest {
     }
 
     private companion object {
+        /**
+         * In the manifest, asked for by no code: Health Connect files cadence under the steps
+         * and exercise permissions (getReadPermission(StepsCadenceRecord) is READ_STEPS), so
+         * these four names grant nothing. Kept until removing them is decided; a new entry here
+         * is a permission nobody uses.
+         */
+        val DeclaredButNeverAsked = setOf(
+            "android.permission.health.READ_STEPS_CADENCE",
+            "android.permission.health.WRITE_STEPS_CADENCE",
+            "android.permission.health.READ_CYCLING_PEDALING_CADENCE",
+            "android.permission.health.WRITE_CYCLING_PEDALING_CADENCE",
+        )
+
         /** A status int this SDK has no constant for, as a provider too old to answer returns. */
         const val UNNAMED_FEATURE_STATUS = 0
 
