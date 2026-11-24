@@ -367,6 +367,12 @@ tasks.withType<Test>().configureEach {
     maxParallelForks = providers.gradleProperty("openvitals.testForks").orNull?.toInt()
         ?: (Runtime.getRuntime().availableProcessors() / 2).coerceIn(1, 4)
     maxHeapSize = "1g"
+    // A failure prints its message, not only its class: the CI log is often the only
+    // place a failing assertion can be read.
+    testLogging {
+        events(org.gradle.api.tasks.testing.logging.TestLogEvent.FAILED)
+        exceptionFormat = org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
+    }
     // The memory budget above assumes one test task at a time. The domain
     // module's tests take seconds; they go first rather than beside these.
     mustRunAfter(":domain:testCiUnitTest")

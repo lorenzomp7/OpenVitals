@@ -154,7 +154,10 @@ class HealthConnectPermissionServiceTest {
             ),
         )
         val manifest = java.io.File("src/main/AndroidManifest.xml").readText()
-        val declared = Regex("""android\.permission\.health\.[A-Z0-9_]+""").findAll(manifest).map { it.value }.toSet()
+        val declared = Regex("""<uses-permission[^>]*android:name="(android\.permission\.health\.[A-Z0-9_]+)"""")
+            .findAll(manifest)
+            .map { it.groupValues[1] }
+            .toSet()
         val used = (service.managedPermissions + service.allPermissions)
             .filter { it.startsWith("android.permission.health.") }
             .toSet()

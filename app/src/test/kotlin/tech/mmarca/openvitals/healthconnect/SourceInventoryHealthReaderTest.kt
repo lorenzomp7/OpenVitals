@@ -81,7 +81,7 @@ class SourceInventoryHealthReaderTest {
 
         assertThat(rows.getValue("heart rate").lastSeenBySource)
             .containsExactly(ZEPP, NOW.minusSeconds(DAY).plusSeconds(60))
-        assertThat(rows.getValue("sleep").lastSeenBySource.keys).containsExactly(ZEPP, FIT)
+        assertThat(rows.getValue("sleep session").lastSeenBySource.keys).containsExactly(ZEPP, FIT)
         assertThat(rows.getValue("sleep stages").lastSeenBySource.keys).containsExactly(ZEPP)
         assertThat(rows.getValue("sleep stages").type).isEqualTo("sleep")
         assertThat(rows.getValue("steps").lastSeenBySource.keys).containsExactly(FIT)
